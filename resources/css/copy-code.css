@@ -6,24 +6,42 @@
 }
 
 .copy-code button {
-    min-block-size: 2.5rem;
-    padding: 0.4rem 0.8rem;
-    border: 1px solid #829687;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-block-size: 2.75rem;
+    padding: 0.45rem 0.85rem;
+    border: 1px solid var(--line, #b5c0d5);
     border-radius: 0.35rem;
-    background: #fffefa;
-    color: #173628;
+    background: var(--surface, #ffffff);
+    color: var(--accent-ink, #254fbb);
     font: inherit;
     font-size: 0.85rem;
     font-weight: 650;
     cursor: pointer;
 }
 
+.copy-code button::before {
+    content: '';
+    flex: none;
+    box-sizing: border-box;
+    inline-size: 0.77rem;
+    block-size: 0.9rem;
+    border: 1.5px solid currentColor;
+    border-radius: 0.13rem;
+    box-shadow:
+        -2px -2px 0 -1px var(--surface, #ffffff),
+        -3px -3px 0 -1px currentColor;
+}
+
 .copy-code button:hover {
-    background: #edf3e6;
+    border-color: currentColor;
+    background: var(--soft, #eaf0ff);
 }
 
 .copy-code button:focus-visible {
-    outline: 3px solid #a74820;
+    outline: 3px solid var(--accent-ink, #254fbb);
     outline-offset: 3px;
 }
 
@@ -31,9 +49,34 @@
     cursor: progress;
 }
 
+.copy-code button[aria-disabled='true']::before {
+    block-size: 0.77rem;
+    border-radius: 50%;
+    border-inline-end-color: transparent;
+    box-shadow: none;
+}
+
 .copy-code-feedback {
     font-size: 0.875rem;
     line-height: 1.4;
+}
+
+.copy-code-feedback:not(:empty) {
+    padding: 0.3rem 0.6rem;
+    border-inline-start: 2px solid currentColor;
+    overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .copy-code button[aria-disabled='true']::before {
+        animation: copy-code-pending 800ms linear infinite;
+    }
+
+    @keyframes copy-code-pending {
+        to {
+            transform: rotate(1turn);
+        }
+    }
 }
 
 .code-example {
@@ -55,11 +98,6 @@
 }
 
 .copy-source {
-    padding-block: 1rem;
-    border-block-end: 1px solid var(--line, #cbd3c8);
-}
-
-.copy-source summary {
-    cursor: pointer;
-    font-weight: 650;
+    margin-block-start: 1rem;
+    border-block-end: 1px solid var(--line, #b5c0d5);
 }

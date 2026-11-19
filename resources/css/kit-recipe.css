@@ -12,7 +12,7 @@
     display: grid;
     gap: 0.85rem;
     padding: clamp(1.1rem, 3vw, 2rem);
-    background: #eef1e7;
+    background: var(--soft);
     color: var(--ink);
     border: 1px solid var(--line);
     border-radius: 0.55rem;
@@ -24,9 +24,9 @@
 .recipe-demo input {
     min-inline-size: 0;
     padding: 0.65rem;
-    background: #fffefa;
+    background: var(--surface);
     color: var(--ink);
-    border: 1px solid #79897e;
+    border: 1px solid var(--muted);
     border-radius: 0.35rem;
     font: inherit;
 }
@@ -35,7 +35,7 @@
     padding: 0.65rem 0.9rem;
     border: 0;
     border-radius: 0.35rem;
-    background: var(--forest);
+    background: var(--accent);
     color: white;
     font: inherit;
     cursor: pointer;
@@ -54,12 +54,44 @@
 .recipe-demo p {
     margin: 0;
 }
+.recipe-demo:focus-within {
+    border-color: currentColor;
+}
+.recipe-demo label:has(+ input:focus) {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+}
+.recipe-demo button:hover {
+    background: color-mix(in srgb, var(--accent) 82%, black);
+}
 .recipe-source {
     margin-block-start: 1rem;
     border-block-start: 1px solid var(--line);
 }
-.recipe-source summary {
-    padding-block: 0.8rem;
+.entry-recipe summary {
+    min-block-size: 2.75rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.4rem;
     cursor: pointer;
     font-weight: 650;
+    overflow-wrap: anywhere;
+}
+.entry-recipe summary::marker {
+    color: var(--muted);
+}
+.entry-recipe details[open] > summary,
+.entry-recipe summary:hover {
+    background: color-mix(in srgb, var(--ink) 7%, var(--paper));
+}
+.entry-recipe details[open] > summary {
+    border-inline-start: 0.2rem solid var(--accent-ink);
+    color: var(--accent-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+    .entry-recipe summary,
+    .recipe-demo {
+        transition:
+            background-color 150ms ease,
+            border-color 150ms ease;
+    }
 }

@@ -1,4 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { readFilters, writeFilters } from '../../../kit/utilities/url-filters/filters';
 import type { CatalogueEntry } from '../catalogue';
@@ -6,6 +7,9 @@ import { categoryLabel, useLocale } from '../i18n';
 import { searchEntries } from '../searchEntries';
 import type { Locale } from '../i18n';
 import CatalogueShell from '../components/CatalogueShell';
+import VaultDrawer from '../components/VaultDrawer';
+import VaultSection from '../components/VaultSection';
+import type { Workflow } from '../vault';
 import '../../css/browse.css';
 
 const categories = [
@@ -100,8 +104,18 @@ function EntryPreview({ entry }: { entry: CatalogueEntry }) {
     }
 }
 
-export default function Browse({ entries }: { entries: CatalogueEntry[] }) {
+export default function Browse({
+    entries,
+    workflows,
+}: {
+    entries: CatalogueEntry[];
+    workflows: Workflow[];
+}) {
     const { locale, t } = useLocale();
+    const [inspection, setInspection] = useState<{
+        workflow: Workflow;
+        returnFocus: HTMLElement | null;
+    } | null>(null);
     const pageUrl = usePage().url;
     const url = new URL(pageUrl, window.location.origin);
     const { query, category } = readFilters(url);
@@ -127,8 +141,14 @@ export default function Browse({ entries }: { entries: CatalogueEntry[] }) {
         router.visit(href, { preserveScroll: true, preserveState: true });
     }
 
+    function inspectWorkflow(workflow: Workflow, opener: HTMLElement | null = null) {
+        const active = document.activeElement;
+        const returnFocus = opener ?? (active instanceof HTMLElement ? active : null);
+        setInspection({ workflow, returnFocus });
+    }
+
     return (
-        <CatalogueShell home>
+        <CatalogueShell home vault={{ workflows, onInspect: inspectWorkflow }}>
             <Head title={t('Catalogue', 'Katalog', 'الفهرس')} />
             <section className="hero browse-hero" aria-labelledby="hero-title">
                 <div className="hero-copy">
@@ -297,6 +317,15 @@ export default function Browse({ entries }: { entries: CatalogueEntry[] }) {
                     </div>
                 )}
             </section>
+            <VaultSection workflows={workflows} onInspect={inspectWorkflow} />
+            {inspection && (
+                <VaultDrawer
+                    key={inspection.workflow.id}
+                    workflow={inspection.workflow}
+                    returnFocus={inspection.returnFocus}
+                    onClose={() => setInspection(null)}
+                />
+            )}
         </CatalogueShell>
     );
 }

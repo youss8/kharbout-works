@@ -1,18 +1,12 @@
-.browse-hero {
-    min-block-size: 16rem;
-    padding-block: clamp(1.8rem, 3.6vw, 3.5rem);
-}
-.browse-hero .hero-art {
-    max-inline-size: 17rem;
-}
-.browse-hero h1 {
-    font-size: clamp(2.9rem, 5.6vw, 5.25rem);
-}
-.browse-hero .hero-copy p {
-    margin-block: 0.9rem 1.25rem;
+@import './vault.css';
+
+.browse-directory,
+.vault {
+    --filter-shelf-space: 0rem;
 }
 .browse-directory {
-    margin-block-start: clamp(2rem, 4vw, 3rem);
+    container-type: inline-size;
+    margin-block-start: clamp(2rem, 4vw, 3.5rem);
 }
 .browse-toolbar,
 .browse-summary {
@@ -24,6 +18,10 @@
 }
 .browse-toolbar h2 {
     letter-spacing: -0.055em;
+}
+.browse-directory .browse-toolbar h2 {
+    font-size: clamp(2.1rem, 4.4vw, 3.65rem);
+    font-weight: 720;
 }
 .browse-search {
     display: flex;
@@ -59,6 +57,50 @@
 .browse-search button:hover {
     background: #224b38;
 }
+.browse-directory .browse-search {
+    align-items: center;
+    gap: 0;
+    padding: 0.2rem;
+    border: 1px solid var(--line);
+    border-radius: 0.55rem;
+    background: var(--surface);
+}
+.browse-directory .browse-search::before {
+    content: '';
+    flex: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin-inline-start: 0.6rem;
+    color: var(--muted);
+    background:
+        radial-gradient(circle at 39% 39%, transparent 25%, currentColor 29% 37%, transparent 41%),
+        linear-gradient(45deg, transparent 41%, currentColor 43% 57%, transparent 59%) right
+            bottom / 40% 40% no-repeat;
+}
+.browse-directory .browse-search input {
+    inline-size: clamp(11rem, 22vw, 18rem);
+    min-block-size: 2.75rem;
+    border: 0;
+    padding-inline: 0.6rem;
+    background: var(--surface);
+    color: var(--ink);
+}
+.browse-directory .browse-search button {
+    min-block-size: 2.75rem;
+    padding-inline: 1.05rem;
+    border: 0;
+    background: var(--accent);
+    color: white;
+}
+.browse-directory .browse-search button:hover {
+    background: color-mix(in srgb, var(--accent) 84%, black);
+}
+.browse-directory .browse-search :focus-visible {
+    outline-offset: -3px;
+}
+.browse-directory .browse-search button:focus-visible {
+    outline-color: white;
+}
 .browse-sr-only {
     position: absolute;
     inline-size: 1px;
@@ -71,39 +113,62 @@
 }
 .browse-categories {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    min-inline-size: 0;
     gap: 0.5rem;
-    padding-block: 1.15rem;
+    padding: 0.65rem 0.45rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-padding-inline: 0.45rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) transparent;
     border-block-end: 1px solid var(--line);
+    background: var(--paper);
+}
+.vault .browse-categories {
+    background-color: inherit;
+}
+.browse-categories > :is(a, button) {
+    flex: none;
+    min-block-size: 2.75rem;
+    white-space: nowrap;
 }
 .browse-categories a {
     display: inline-flex;
     align-items: center;
-    gap: 0.55rem;
-    padding: 0.52rem 0.78rem;
+    gap: 0.45rem;
+    padding: 0.38rem 0.8rem;
     border: 1px solid var(--line);
     border-radius: 2rem;
     text-decoration: none;
     color: var(--ink);
     font-size: 0.9rem;
     font-weight: 580;
-    background: #fffefa;
+    background: var(--surface);
 }
-.browse-categories a:hover {
-    background: #edf0e4;
-    border-color: #889784;
+.browse-directory .browse-categories a:not([aria-current]):hover {
+    background: var(--soft);
+    border-color: var(--accent-ink);
+    color: var(--accent-ink);
 }
 .browse-categories a[aria-current] {
-    background: var(--forest);
+    background: var(--accent);
     color: white;
-    border-color: var(--forest);
+    border-color: var(--accent);
 }
 .browse-categories a span {
-    font: 0.74rem var(--mono);
+    display: grid;
+    place-items: center;
+    min-inline-size: 1.25rem;
+    padding-inline: 0.2rem;
+    border-radius: 1rem;
+    background: var(--soft);
+    font: 0.72rem/1.6 var(--mono);
     color: var(--muted);
 }
 .browse-categories a[aria-current] span {
-    color: var(--lime);
+    background: #ffffff29;
+    color: white;
 }
 .browse-summary {
     padding-block: 0.9rem;
@@ -114,7 +179,8 @@
     color: var(--muted);
 }
 .browse-summary a {
-    font-weight: 600;
+    color: var(--accent-ink);
+    font-weight: 650;
 }
 .browse-grid {
     list-style: none;
@@ -127,7 +193,14 @@
     display: flex;
     min-inline-size: 0;
 }
+.browse-directory .browse-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: clamp(0.85rem, 1.8vw, 1.4rem);
+}
 .browse-card {
+    --preview-size: 8rem;
+    --card-ring: #a74820;
+    position: relative;
     display: flex;
     flex-direction: column;
     inline-size: 100%;
@@ -137,9 +210,33 @@
     overflow: hidden;
     background: #fffefa;
 }
+.browse-directory .browse-card {
+    --preview-size: clamp(8.7rem, 12vw, 11rem);
+    --card-ring: var(--accent-ink);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    box-shadow: 0 2px 0 color-mix(in srgb, var(--ink) 7%, transparent);
+}
+.browse-directory .browse-card:has(h3 a:is(:hover, :focus-visible)) {
+    border-color: var(--accent-ink);
+    box-shadow: 0 3px 0 color-mix(in srgb, var(--accent-ink) 28%, transparent);
+}
 .browse-card:focus-within {
-    outline: 3px solid #a74820;
+    outline: 3px solid var(--card-ring);
     outline-offset: 3px;
+}
+.browse-grid h3 :is(a, button) {
+    scroll-margin-block-start: var(--filter-shelf-space, 0rem);
+}
+/* Extend the title's activation area over its illustration. Body text stays selectable. */
+.browse-card:has(> .browse-preview) h3 :is(a, .vault-inspect)::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset-block-start: 0;
+    inset-inline: 0;
+    block-size: var(--preview-size);
+    cursor: pointer;
 }
 .browse-card-body {
     padding: 1.2rem 1.25rem;
@@ -164,6 +261,26 @@
 .browse-card-body h3 a:hover {
     color: #42643c;
 }
+.browse-directory .browse-card-body {
+    padding: clamp(1.05rem, 2vw, 1.55rem);
+}
+.browse-directory .metadata {
+    color: var(--accent-ink);
+    font-size: 0.76rem;
+    font-weight: 650;
+}
+.browse-directory .browse-card-body h3 {
+    margin-block: 0.4rem 0.6rem;
+    font-size: clamp(1.35rem, 2vw, 1.8rem);
+    font-weight: 690;
+}
+.browse-directory h3 a {
+    text-decoration-color: transparent;
+}
+.browse-directory h3 a:is(:hover, :focus-visible) {
+    color: var(--accent-ink);
+    text-decoration-color: currentColor;
+}
 .browse-card-summary {
     color: var(--muted);
     line-height: 1.5;
@@ -184,42 +301,181 @@
     font: 0.72rem/1.3 var(--mono);
     border-radius: 0.22rem;
 }
+.browse-directory .browse-requirements li {
+    padding: 0.24rem 0.48rem;
+    border-color: transparent;
+    border-radius: 0.25rem;
+    background: var(--soft);
+    color: var(--muted);
+}
 .browse-preview {
+    --preview-paper: #d6e4fd;
+    --preview-ink: #354f79;
+    --preview-step: 0.18rem;
+    position: relative;
     display: grid;
     place-items: center;
-    min-block-size: 8rem;
+    flex: none;
+    block-size: var(--preview-size);
     padding: 1rem;
     overflow: hidden;
-    background-color: #e8ece1;
-    background-image: radial-gradient(#b4c0ae 0.8px, transparent 0.8px);
-    background-size: 0.55rem 0.55rem;
+    background-color: var(--preview-paper);
+    background-image:
+        linear-gradient(
+            90deg,
+            color-mix(in srgb, var(--preview-ink) 10%, transparent) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            color-mix(in srgb, var(--preview-ink) 10%, transparent) 1px,
+            transparent 1px
+        );
+    background-position: center;
+    background-size: 1rem 1rem;
     border-block-end: 1px solid var(--line);
-    color: var(--forest);
+    color: var(--preview-ink);
+}
+.browse-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: var(--preview-ink);
+    opacity: calc(0.12 * var(--preview-active, 0));
+}
+.browse-preview > :first-child {
+    position: relative;
+}
+.vault-card-preview {
+    --preview-lift: -0.18rem;
+}
+.browse-preview::after {
+    content: '→';
+    position: absolute;
+    inset-block-start: 0.6rem;
+    inset-inline-end: 0.6rem;
+    display: grid;
+    place-items: center;
+    inline-size: 1.6rem;
+    block-size: 1.6rem;
+    border: 1px solid color-mix(in srgb, var(--preview-ink) 32%, transparent);
+    border-radius: 50%;
+    background: var(--preview-paper);
+    color: var(--preview-ink);
+    font:
+        1rem/1 system-ui,
+        sans-serif;
+}
+.browse-preview:dir(rtl) {
+    --preview-step: -0.18rem;
+}
+.browse-preview:dir(rtl)::after {
+    content: '←';
+}
+.preview-search-dialog {
+    --preview-paper: #e2e3ef;
+    --preview-ink: #4e506f;
+}
+.preview-keyboard-shortcut-label {
+    --preview-paper: #f2dfae;
+    --preview-ink: #624e27;
+}
+.preview-empty-state-page {
+    --preview-paper: #d6e4ec;
+    --preview-ink: #3d5869;
+}
+.preview-url-filters {
+    --preview-paper: #cee4dc;
+    --preview-ink: #2f554f;
+}
+.preview-catalogue-search {
+    --preview-paper: #e0e6cf;
+    --preview-ink: #43523c;
+}
+.preview-accessible-ui-review {
+    --preview-paper: #edddd6;
+    --preview-ink: #6a493f;
+}
+.browse-card:has(h3 :is(a, .vault-inspect):is(:hover, :focus-visible)) .browse-preview::after {
+    background: var(--preview-ink);
+    color: var(--preview-paper);
+}
+.browse-card:has(h3 :is(a, .vault-inspect):focus-visible) {
+    --preview-active: 1;
+}
+@media (hover: hover) and (pointer: fine) {
+    .browse-card:has(h3 :is(a, .vault-inspect):hover) {
+        --preview-active: 1;
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .browse-card {
+        transition:
+            border-color var(--motion-fast) ease-out,
+            box-shadow var(--motion-fast) ease-out;
+    }
+    .browse-preview::before {
+        transition: opacity var(--motion-preview) var(--motion-ease);
+    }
+    .browse-preview > :first-child {
+        translate: 0 calc(var(--preview-active, 0) * var(--preview-lift, -0.7rem));
+        transition: translate var(--motion-preview) var(--motion-ease);
+    }
+    .browse-preview::after {
+        transform: translateX(calc(var(--preview-active, 0) * var(--preview-step)));
+        transition:
+            transform var(--motion-fast) var(--motion-ease),
+            background-color var(--motion-fast) ease-out,
+            color var(--motion-fast) ease-out;
+    }
+
+    @supports (animation-timeline: view()) {
+        .browse-preview {
+            view-timeline-name: --sample-view;
+        }
+        .browse-preview > :first-child {
+            animation: sample-arrival linear both;
+            animation-timeline: --sample-view;
+            animation-range: entry 0% entry 85%;
+        }
+        @keyframes sample-arrival {
+            from {
+                opacity: 0.68;
+                scale: 0.94;
+            }
+            to {
+                opacity: 1;
+                scale: 1;
+            }
+        }
+    }
 }
 .card-keys {
     display: flex;
     align-items: center;
     gap: 0.55rem;
     font: 1rem var(--mono);
+    transform: rotate(-5deg);
 }
 .card-keys kbd {
     min-inline-size: 2.75rem;
     padding: 0.55rem 0.8rem;
     border-radius: 0.4rem;
     background: #fffefa;
-    box-shadow: 0 0.15rem #9daf98;
-}
-.preview-copy-code {
-    background-color: #e5ebdf;
+    color: #302c22;
+    border-color: #ac9b72;
+    box-shadow:
+        0 0.22rem #c5b27f,
+        0 0.4rem 0.6rem -0.3rem #63573273;
 }
 .card-copy,
 .card-page,
 .card-review,
 .card-search {
-    border: 1px solid #a8b5a2;
+    border: 1px solid color-mix(in srgb, var(--preview-ink) 48%, white);
     background: #fffefa;
     border-radius: 0.35rem;
-    box-shadow: 0 0.22rem #bdcbb4;
+    box-shadow: 0 0.22rem color-mix(in srgb, var(--preview-paper) 72%, var(--preview-ink));
     padding: 0.8rem;
     font: 0.76rem var(--mono);
 }
@@ -228,6 +484,12 @@
     grid-template-columns: 4.5rem auto;
     align-items: center;
     gap: 0.3rem 1rem;
+    border-color: #283b61;
+    background: #233960;
+    box-shadow:
+        0 0.22rem #94a9cd,
+        0 0.9rem 1.1rem -0.6rem #23396070;
+    transform: rotate(-3deg);
 }
 .card-copy i,
 .card-page i,
@@ -235,7 +497,11 @@
 .card-review i {
     height: 2px;
     display: block;
-    background: #8a9d81;
+    background: color-mix(in srgb, var(--preview-ink) 52%, white);
+}
+.card-copy i {
+    height: 3px;
+    background: #a5bdef;
 }
 .card-copy i:nth-child(2) {
     grid-row: 2;
@@ -245,8 +511,8 @@
     grid-column: 2;
     grid-row: 1 / 3;
     padding: 0.42rem 0.65rem;
-    background: var(--forest);
-    color: var(--lime);
+    background: #d7e6ff;
+    color: #20395f;
     border-radius: 0.25rem;
 }
 .card-page {
@@ -262,6 +528,11 @@
     inline-size: 100%;
 }
 .card-page b {
+    display: grid;
+    place-items: center;
+    inline-size: 2.3rem;
+    border: 1px dashed #879ba7;
+    border-radius: 0.2rem;
     font-size: 1.25rem;
     font-weight: normal;
 }
@@ -279,8 +550,34 @@
 .card-search {
     inline-size: 9.2rem;
 }
+.preview-search-dialog .card-search {
+    inline-size: min(100%, 12rem);
+    transform: rotate(3deg);
+}
+.preview-search-dialog .card-search b {
+    display: block;
+    padding: 0.24rem 0.5rem;
+    border: 1px solid #bbb7c9;
+    border-radius: 0.25rem;
+    background: #f3f0f8;
+}
+.preview-url-filters .card-filter {
+    border-inline-start: 3px solid #71c7ae;
+    background: #213f3c;
+    box-shadow: 0 0.25rem #8eb7a9;
+    transform: rotate(-2deg);
+}
+.preview-url-filters .card-filter b {
+    color: #b4e1b1;
+}
 .card-search b {
-    color: #42673a;
+    color: var(--preview-ink);
+}
+.preview-catalogue-search .card-search b {
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.2rem;
+    background: #d9ebc5;
+    color: #2c4527;
 }
 .card-search i {
     margin-block-start: 0.5rem;
@@ -296,7 +593,7 @@
     gap: 0.35rem 0.55rem;
 }
 .card-review b {
-    color: #47673a;
+    color: #32604d;
 }
 .card-review i {
     grid-column: 1/-1;
@@ -320,6 +617,56 @@
 .browse-empty p {
     color: var(--muted);
 }
+.browse-directory .browse-empty {
+    padding-block: clamp(2.5rem, 6vw, 4.25rem);
+    background: var(--surface);
+    border-color: var(--line);
+    border-radius: 0.75rem;
+}
+@media (min-width: 70rem) {
+    .browse-directory {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        margin-block-start: clamp(1.8rem, 2.45vw, 2.5rem);
+    }
+    .browse-directory > :is(.browse-toolbar, .browse-grid, .browse-empty) {
+        grid-column: 1 / -1;
+    }
+    .browse-directory :is(.browse-categories, .browse-summary) {
+        padding-block: 0.65rem;
+        border-block-end: 1px solid var(--line);
+    }
+    .browse-directory .browse-summary {
+        justify-content: end;
+        padding-inline-start: 1rem;
+        background: var(--paper);
+    }
+    .browse-directory > :is(.browse-grid, .browse-empty) {
+        margin-block-start: 0.8rem;
+    }
+}
+@media (min-height: 38rem) {
+    .browse-directory,
+    .vault {
+        /* Includes the chip, its focus ring, row padding and a narrow native scrollbar. */
+        --filter-shelf-space: 4.75rem;
+    }
+    .browse-categories {
+        position: sticky;
+        inset-block-start: var(--masthead-offset, 0px);
+        z-index: 3;
+    }
+    .browse-summary :is(a, button) {
+        scroll-margin-block-start: var(--filter-shelf-space);
+    }
+}
+@media (min-width: 70rem) and (min-height: 38rem) {
+    .browse-directory .browse-summary {
+        position: sticky;
+        inset-block-start: var(--masthead-offset, 0px);
+        z-index: 3;
+    }
+}
 @media (max-width: 58rem) {
     .browse-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -337,13 +684,28 @@
     .browse-grid {
         grid-template-columns: 1fr;
     }
-    .browse-preview {
-        min-block-size: 6.75rem;
+    .browse-card {
+        --preview-size: 6.75rem;
     }
     .browse-categories {
         gap: 0.4rem;
     }
     .browse-categories a {
         font-size: 0.82rem;
+    }
+}
+@container (max-width: 38rem) {
+    .browse-directory .browse-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+    .browse-directory .browse-search input {
+        flex: 1;
+        inline-size: 0;
+    }
+}
+@media (prefers-color-scheme: dark) {
+    .browse-card {
+        --card-ring: #f6b58f;
     }
 }

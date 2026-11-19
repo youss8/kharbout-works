@@ -45,6 +45,8 @@ Open [the development server](http://127.0.0.1:8000). Keep Laravel running and u
 
 Each entry has a **Download source (.zip)** link. Extract the archive and open its README for requirements, setup and a quick check. The archive includes the MIT notice. Individual examples also have a Copy button.
 
+On the home page, press `/` to search the **AI Skills, Gems & Command Vault** by keyword, platform or `#tag`. Open a workflow to fill its prompt variables, compare a simulated before-and-after example and copy the compiled prompt. Add or edit workflows in [the Vault registry](app/Catalogue/WorkflowVault.php). **Example tested** means the built-in example ran in the intended tool or review process.
+
 To try the dialog outside Laravel, download it from its entry into an empty folder and extract it there. From the folder containing the extracted `package.json`, run `npm ci` and `npm run dev`, then open the local URL printed by Vite.
 
 ## Follow a request

@@ -2,13 +2,16 @@ import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { isLocale, useLocale } from '../i18n';
 import CatalogueSearch from './CatalogueSearch';
+import type { VaultSearch } from './CatalogueSearch';
 
 export default function CatalogueShell({
     children,
     home = false,
+    vault,
 }: {
     children: ReactNode;
     home?: boolean;
+    vault?: VaultSearch;
 }) {
     const { locale, t, setLocale } = useLocale();
     return (
@@ -35,10 +38,11 @@ export default function CatalogueShell({
                         <bdi dir="ltr">Youssef’s Operations Kit</bdi>
                     </Link>
                     <nav aria-label={t('Main navigation', 'Hauptnavigation', 'التنقّل الرئيسي')}>
-                        <CatalogueSearch />
+                        <CatalogueSearch vault={vault} />
                         <Link href="/" aria-current={home ? 'page' : undefined}>
                             {t('Catalogue', 'Katalog', 'الفهرس')}
                         </Link>
+                        {vault && <a href="#ai-vault">{t('Vault', 'Vault', 'خزانة الأدوات')}</a>}
                         <a href="https://github.com/youss8/youssef-operations-kit">
                             GitHub <span aria-hidden="true">↗</span>
                         </a>
