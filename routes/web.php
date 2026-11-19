@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\CatalogueController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Browse')->name('catalogue.index');
-Route::inertia('/entries/keyboard-shortcut-label', 'Entry')->name('catalogue.entry');
+Route::get('/', [CatalogueController::class, 'index'])->name('catalogue.index');
+Route::get('/entries/{slug}', [CatalogueController::class, 'show'])
+    ->where('slug', '[a-z0-9-]+')
+    ->name('catalogue.entry');
+
+require base_path('kit/modules/catalogue-search/routes.php');

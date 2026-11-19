@@ -1,0 +1,36 @@
+.masthead nav {
+    flex-wrap: wrap;
+}
+.language-select {
+    max-inline-size: 100%;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: var(--paper);
+    color: var(--ink);
+}
+html:lang(ar) {
+    font-family: Tahoma, 'Segoe UI', sans-serif;
+}
+html:lang(ar) :is(h1, h2, h3) {
+    letter-spacing: normal;
+    line-height: 1.35;
+}
+html:lang(ar)
+    :is(.metadata, .browse-categories a span, .browse-summary p, .browse-requirements li) {
+    font-family: inherit;
+}
+[dir='rtl'] .site-header {
+    text-align: start;
+}
+@media (max-width: 32rem) {
+    .masthead {
+        align-items: start;
+        flex-direction: column;
+    }
+    .masthead nav {
+        gap: 0.8rem;
+    }
+}

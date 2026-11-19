@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Search the reading list</title>
+  <style>
+    :root { font: 100%/1.5 system-ui, sans-serif; color: #17382c; background: #f5f6ef; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: clamp(1rem, 5vw, 3rem); }
+    main { max-inline-size: 40rem; margin-inline: auto; }
+    h1 { margin: 0 0 1rem; font-size: clamp(1.55rem, 4vw, 2rem); line-height: 1.12; }
+    label { display: block; margin-block-end: .3rem; font-weight: 650; }
+    input, button { font: inherit; }
+    input { inline-size: 100%; padding: .55rem .75rem; border: 1px solid #758777; border-radius: .35rem; }
+    :focus-visible { outline: 3px solid #944729; outline-offset: 3px; }
+    .panel { margin-block-start: 1.2rem; padding: 1.2rem; background: white; border: 1px solid #c8d0c2; border-radius: .5rem; }
+    h2 { font-size: 1.2rem; margin: 0; }
+    p { margin: .4rem 0 1rem; color: #415147; }
+    button { padding: .5rem .8rem; color: white; background: #174a35; border: 0; border-radius: .3rem; cursor: pointer; }
+    ul { padding-inline-start: 1.3rem; }
+    li + li { margin-block-start: .4rem; }
+    .sr { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Reading list</h1>
+    <label for="search">Find a title</label>
+    <input id="search" type="search" value="sketch" autocomplete="off">
+    <p id="count" class="sr" role="status"></p>
+    <section class="panel" id="empty" aria-labelledby="message" hidden>
+      <h2 id="message">No matching titles</h2>
+      <p>Try a shorter search or clear it to see the full list.</p>
+      <button id="clear" type="button">Clear search</button>
+    </section>
+    <ul aria-label="Reading list">
+      <li>Designing for keyboards</li>
+      <li>Accessible forms</li>
+      <li>Interface patterns</li>
+    </ul>
+  </main>
+  <script>
+    const search = document.querySelector('#search');
+    const titles = Array.from(document.querySelectorAll('li'));
+    const empty = document.querySelector('#empty');
+    const count = document.querySelector('#count');
+
+    function filterTitles() {
+      const query = search.value.trim().toLowerCase();
+      let matches = 0;
+      for (const title of titles) {
+        title.hidden = !title.textContent.toLowerCase().includes(query);
+        if (!title.hidden) matches++;
+      }
+      empty.hidden = matches > 0;
+      count.textContent = matches === 1 ? '1 matching title' : matches + ' matching titles';
+    }
+
+    search.addEventListener('input', filterTitles);
+    document.querySelector('#clear').addEventListener('click', () => {
+      search.value = '';
+      filterTitles();
+      search.focus();
+    });
+    filterTitles();
+  </script>
+</body>
+</html>

@@ -12,5 +12,5 @@
     "skipLibCheck": true,
     "types": ["vite/client", "node"]
   },
-  "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "vite.config.ts"]
+  "include": ["resources/js/**/*.ts", "resources/js/**/*.tsx", "kit/**/*.ts", "tests/browser/**/*.ts", "playwright.config.ts", "vite.config.ts"]
 }

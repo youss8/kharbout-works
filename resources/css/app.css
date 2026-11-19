@@ -13,6 +13,48 @@
     font-synthesis: none;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --ink: #eff4ed;
+        --muted: #c0cdc1;
+        --paper: #111a16;
+        --line: #4b5d50;
+    }
+    html .hero {
+        color: #faf9f5;
+    }
+    html .hero-link,
+    html .command,
+    html .command kbd,
+    html .card-keys kbd {
+        color: #172b21;
+    }
+    html .browse-card,
+    html .browse-categories a:not([aria-current]),
+    html .browse-search input,
+    html .recipe-demo,
+    html .recipe-demo input,
+    html .skip-link,
+    html .copy-code button {
+        background-color: #1d2c23;
+        color: var(--ink);
+    }
+    html .browse-card-body .metadata {
+        color: #bcd4ad;
+    }
+    html .browse-card-body h3 a:hover {
+        color: var(--lime);
+    }
+    html .copy-code button:hover,
+    html .browse-categories a:not([aria-current]):hover {
+        background: #314638;
+    }
+    html :focus-visible {
+        outline-color: #f6b58f;
+    }
+}
+
 *,
 *::before,
 *::after {

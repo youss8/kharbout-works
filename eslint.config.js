@@ -6,7 +6,12 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig([
     {
-        files: ['resources/js/**/*.{ts,tsx}', 'vite.config.ts'],
+        files: [
+            'resources/js/**/*.{ts,tsx}',
+            'kit/**/*.ts',
+            'tests/browser/**/*.ts',
+            '*.config.ts',
+        ],
         extends: [js.configs.recommended, tseslint.configs.recommended],
     },
     {

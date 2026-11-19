@@ -23,6 +23,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: composer install --prefer-dist --no-interaction
+      - run: composer validate --strict
       - run: cp .env.example .env
       - run: php artisan key:generate
       - run: npm ci
@@ -32,3 +33,24 @@ jobs:
       - run: vendor/bin/pint --test
       - run: composer analyse
       - run: composer test
+      - run: npm run test:kit
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:browser
+
+  docker-smoke:
+    name: Docker catalogue
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config --quiet
+      - run: docker compose up --build --detach
+      - name: Verify the catalogue, entry and search example
+        run: |
+          curl --retry 20 --retry-all-errors --retry-delay 1 --fail --silent --show-error http://127.0.0.1:8080/ -o /dev/null
+          curl --fail --silent --show-error http://127.0.0.1:8080/entries/copy-code -o "$RUNNER_TEMP/catalogue-entry.html"
+          grep --quiet --fixed-strings 'copy-code' "$RUNNER_TEMP/catalogue-entry.html"
+          curl --fail --silent --show-error 'http://127.0.0.1:8080/examples/catalogue-search?q=keyboard' | jq -e '.count == 1 and .data[0].title == "Keyboard shortcut label"'
+      - if: failure()
+        run: docker compose logs
+      - if: always()
+        run: docker compose down
