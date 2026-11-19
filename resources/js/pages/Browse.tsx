@@ -2,7 +2,8 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import type { FormEvent } from 'react';
 import { readFilters, writeFilters } from '../../../kit/utilities/url-filters/filters';
 import type { CatalogueEntry } from '../catalogue';
-import { categoryLabel, localizeEntry, useLocale } from '../i18n';
+import { categoryLabel, useLocale } from '../i18n';
+import { searchEntries } from '../searchEntries';
 import type { Locale } from '../i18n';
 import CatalogueShell from '../components/CatalogueShell';
 import '../../css/browse.css';
@@ -35,16 +36,17 @@ function entryCount(count: number, locale: Locale) {
     }
 }
 
-function searchable(text: string) {
-    return text
-        .normalize('NFD')
-        .replace(/\p{M}+/gu, '')
-        .toLowerCase();
-}
-
 function EntryPreview({ entry }: { entry: CatalogueEntry }) {
     const { locale, t } = useLocale();
     switch (entry.slug) {
+        case 'search-dialog':
+            return (
+                <span className="card-search">
+                    <b>{t('Search…', 'Suchen…', 'ابحث…')}</b>
+                    <i />
+                    <i />
+                </span>
+            );
         case 'keyboard-shortcut-label':
             return (
                 <span className="card-keys" dir="ltr">
@@ -104,26 +106,13 @@ export default function Browse({ entries }: { entries: CatalogueEntry[] }) {
     const url = new URL(pageUrl, window.location.origin);
     const { query, category } = readFilters(url);
     const activeCategory = categories.find((item) => item.slug === category);
-    const terms = searchable(query).split(/\s+/).filter(Boolean);
-    const matches = entries
-        .filter((entry) => {
-            if (activeCategory && entry.category !== activeCategory.name) return false;
-            const localized = localizeEntry(entry, locale);
-            const text = searchable(
-                [
-                    entry.title,
-                    entry.summary,
-                    localized.title,
-                    localized.summary,
-                    entry.category,
-                    categoryLabel(entry.category, locale),
-                    ...entry.requirements,
-                    ...localized.requirements,
-                ].join(' '),
-            );
-            return terms.every((term) => text.includes(term));
-        })
-        .map((entry) => localizeEntry(entry, locale));
+    const matches = searchEntries(
+        activeCategory
+            ? entries.filter((entry) => entry.category === activeCategory.name)
+            : entries,
+        query,
+        locale,
+    );
     const numbers = new Intl.NumberFormat(locale);
 
     function filterUrl(search: string, collection: string) {

@@ -1,6 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
-const baseURL = 'http://127.0.0.1:8029';
+const runningURL = process.env.PLAYWRIGHT_BASE_URL;
+const baseURL = runningURL ?? 'http://127.0.0.1:8029';
 
 export default defineConfig({
     testDir: './tests/browser',
@@ -12,9 +13,11 @@ export default defineConfig({
         trace: 'retain-on-failure',
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE },
     },
-    webServer: {
-        command: 'php artisan serve --host=127.0.0.1 --port=8029 --no-reload',
-        url: baseURL,
-        reuseExistingServer: !process.env.CI,
-    },
+    webServer: runningURL
+        ? undefined
+        : {
+              command: 'php artisan serve --host=127.0.0.1 --port=8029 --no-reload',
+              url: baseURL,
+              reuseExistingServer: !process.env.CI,
+          },
 });

@@ -5,4 +5,5 @@ export type CatalogueEntry = {
     category: 'Components' | 'Pages' | 'Utilities' | 'Modules' | 'AI tools';
     requirements: string[];
     href: string;
+    downloadHref: string;
 };

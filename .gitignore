@@ -13,6 +13,8 @@
 /.zed
 /auth.json
 /node_modules
+/kit/components/search-dialog/node_modules
+/kit/components/search-dialog/dist
 /public/build
 /public/hot
 /public/storage

@@ -9,6 +9,9 @@ import skill from '../../../kit/ai-tools/accessible-ui-review/SKILL.md?raw';
 import gem from '../../../kit/ai-tools/accessible-ui-review/gem-instructions.md?raw';
 import { useLocale } from '../i18n';
 import CodeExample from './CodeExample';
+import CopyCodeRecipe from './CopyCodeRecipe';
+import SearchDialogRecipe from './SearchDialogRecipe';
+import ShortcutRecipe from './ShortcutRecipe';
 import '../../css/kit-recipe.css';
 
 function Source({ label, code }: { label: string; code: string }) {
@@ -106,6 +109,12 @@ function FilterPreview() {
 export default function KitRecipe({ slug }: { slug: string }) {
     const { t } = useLocale();
     switch (slug) {
+        case 'copy-code':
+            return <CopyCodeRecipe />;
+        case 'keyboard-shortcut-label':
+            return <ShortcutRecipe />;
+        case 'search-dialog':
+            return <SearchDialogRecipe />;
         case 'empty-state-page':
             return (
                 <Recipe

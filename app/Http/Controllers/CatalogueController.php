@@ -15,6 +15,9 @@ final class CatalogueController
 
     public function show(EntryCatalogue $catalogue, string $slug): Response
     {
-        return Inertia::render('Entry', ['entry' => $catalogue->entry($slug)]);
+        return Inertia::render('Entry', [
+            'entry' => $catalogue->entry($slug),
+            'entries' => $catalogue->all(),
+        ]);
     }
 }

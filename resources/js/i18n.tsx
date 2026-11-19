@@ -82,6 +82,18 @@ export function categoryLabel(category: CatalogueEntry['category'], locale: Loca
 
 type Text = Pick<CatalogueEntry, 'title' | 'summary'>;
 const translatedEntries: Record<string, Record<'de' | 'ar', Text>> = {
+    'search-dialog': {
+        de: {
+            title: 'Suchdialog mit Tastatursteuerung',
+            summary:
+                'Durchsuche eine Liste, wechsle mit den Pfeiltasten zwischen Treffern und öffne ein Ergebnis mit der Eingabetaste.',
+        },
+        ar: {
+            title: 'مربع البحث بلوحة المفاتيح',
+            summary:
+                'ابحث في قائمة، وتنقّل بين النتائج بمفاتيح الأسهم، ثم افتح النتيجة المطلوبة بمفتاح الإدخال.',
+        },
+    },
     'keyboard-shortcut-label': {
         de: {
             title: 'Tastenkürzel anzeigen',

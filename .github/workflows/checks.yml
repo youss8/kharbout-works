@@ -16,7 +16,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
-          extensions: mbstring, intl, dom, xml, curl
+          extensions: mbstring, intl, dom, xml, curl, phar
           coverage: none
       - uses: actions/setup-node@v4
         with:
@@ -42,13 +42,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
       - run: docker compose config --quiet
       - run: docker compose up --build --detach
-      - name: Verify the catalogue, entry and search example
+      - name: Verify the catalogue, source download and standalone build
         run: |
           curl --retry 20 --retry-all-errors --retry-delay 1 --fail --silent --show-error http://127.0.0.1:8080/ -o /dev/null
           curl --fail --silent --show-error http://127.0.0.1:8080/entries/copy-code -o "$RUNNER_TEMP/catalogue-entry.html"
           grep --quiet --fixed-strings 'copy-code' "$RUNNER_TEMP/catalogue-entry.html"
+          curl --fail --silent --show-error http://127.0.0.1:8080/entries/search-dialog/download -o "$RUNNER_TEMP/search-dialog.zip"
+          unzip -t "$RUNNER_TEMP/search-dialog.zip"
+          unzip -q "$RUNNER_TEMP/search-dialog.zip" -d "$RUNNER_TEMP/dialog-example"
+          npm ci --prefix "$RUNNER_TEMP/dialog-example"
+          npm run build --prefix "$RUNNER_TEMP/dialog-example"
           curl --fail --silent --show-error 'http://127.0.0.1:8080/examples/catalogue-search?q=keyboard' | jq -e '.count == 1 and .data[0].title == "Keyboard shortcut label"'
       - if: failure()
         run: docker compose logs

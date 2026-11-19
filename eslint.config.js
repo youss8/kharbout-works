@@ -8,14 +8,14 @@ export default defineConfig([
     {
         files: [
             'resources/js/**/*.{ts,tsx}',
-            'kit/**/*.ts',
+            'kit/**/*.{ts,tsx}',
             'tests/browser/**/*.ts',
             '*.config.ts',
         ],
         extends: [js.configs.recommended, tseslint.configs.recommended],
     },
     {
-        files: ['resources/js/**/*.{ts,tsx}'],
+        files: ['resources/js/**/*.{ts,tsx}', 'kit/**/*.tsx'],
         extends: [hooks.configs.flat.recommended],
         languageOptions: { globals: globals.browser },
     },

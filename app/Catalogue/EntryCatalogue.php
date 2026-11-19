@@ -42,15 +42,21 @@ final class EntryCatalogue
             'category' => 'AI tools',
             'requirements' => ['Claude Code or Gemini Gems'],
         ],
+        'search-dialog' => [
+            'title' => 'Keyboard search dialog',
+            'summary' => 'Search a list, move through matches with the arrow keys and open a result without leaving the keyboard.',
+            'category' => 'Components',
+            'requirements' => ['React', 'TypeScript', 'HTML dialog'],
+        ],
     ];
 
-    /** @return list<array{slug: string, title: string, summary: string, category: string, requirements: list<string>, href: string}> */
+    /** @return list<array{slug: string, title: string, summary: string, category: string, requirements: list<string>, href: string, downloadHref: string}> */
     public function all(): array
     {
         return array_map($this->entry(...), array_keys(self::ENTRIES));
     }
 
-    /** @return array{slug: string, title: string, summary: string, category: string, requirements: list<string>, href: string} */
+    /** @return array{slug: string, title: string, summary: string, category: string, requirements: list<string>, href: string, downloadHref: string} */
     public function entry(string $slug): array
     {
         abort_unless(isset(self::ENTRIES[$slug]), 404);
@@ -59,6 +65,7 @@ final class EntryCatalogue
             'slug' => $slug,
             ...self::ENTRIES[$slug],
             'href' => route('catalogue.entry', ['slug' => $slug], false),
+            'downloadHref' => route('catalogue.download', ['slug' => $slug], false),
         ];
     }
 }

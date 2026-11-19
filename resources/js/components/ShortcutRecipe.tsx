@@ -1,30 +1,8 @@
+import '../../../kit/components/keyboard-shortcut-label/shortcut.css';
+import markup from '../../../kit/components/keyboard-shortcut-label/index.html?raw';
+import styles from '../../../kit/components/keyboard-shortcut-label/shortcut.css?raw';
 import { useLocale } from '../i18n';
 import CodeExample from './CodeExample';
-import { ShortcutPreview } from './CatalogueShell';
-
-const markup = `<span class="command">
-  <span>Open search</span>
-  <span class="keys"><kbd>Ctrl</kbd> + <kbd>K</kbd></span>
-</span>`;
-
-const styles = `.command {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.keys { white-space: nowrap; }
-
-kbd {
-  display: inline-block;
-  padding: .2em .45em;
-  border: 1px solid currentColor;
-  border-block-end-width: 2px;
-  border-radius: .25em;
-  font: inherit;
-}`;
 
 export default function ShortcutRecipe() {
     const { t } = useLocale();
@@ -32,7 +10,25 @@ export default function ShortcutRecipe() {
         <div className="entry-content">
             <section className="entry-section" aria-labelledby="preview-title">
                 <h2 id="preview-title">{t('Preview', 'Vorschau', 'معاينة')}</h2>
-                <ShortcutPreview />
+                <figure
+                    className="shortcut-preview"
+                    aria-label={t(
+                        'Preview of a command with a keyboard shortcut',
+                        'Vorschau eines Befehls mit Tastenkürzel',
+                        'معاينة أمر مع اختصار لوحة المفاتيح',
+                    )}
+                    ref={(figure) => {
+                        if (!figure) return;
+                        const example = new DOMParser().parseFromString(markup, 'text/html');
+                        const label = example.querySelector('.command-label');
+                        const modifier = example.querySelector('kbd');
+                        if (label)
+                            label.textContent = t(label.textContent, 'Suche öffnen', 'افتح البحث');
+                        if (modifier)
+                            modifier.textContent = t(modifier.textContent, 'Strg', 'Ctrl');
+                        figure.replaceChildren(...example.body.children);
+                    }}
+                />
             </section>
             <aside
                 className="entry-facts"

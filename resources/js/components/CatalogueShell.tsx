@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
 import { isLocale, useLocale } from '../i18n';
+import CatalogueSearch from './CatalogueSearch';
 
 export default function CatalogueShell({
     children,
@@ -34,6 +35,7 @@ export default function CatalogueShell({
                         <bdi dir="ltr">Youssef’s Operations Kit</bdi>
                     </Link>
                     <nav aria-label={t('Main navigation', 'Hauptnavigation', 'التنقّل الرئيسي')}>
+                        <CatalogueSearch />
                         <Link href="/" aria-current={home ? 'page' : undefined}>
                             {t('Catalogue', 'Katalog', 'الفهرس')}
                         </Link>
@@ -71,28 +73,5 @@ export default function CatalogueShell({
                 </a>
             </footer>
         </>
-    );
-}
-
-export function ShortcutPreview() {
-    const { t } = useLocale();
-    return (
-        <figure
-            className="shortcut-preview"
-            aria-label={t(
-                'Preview of a command with a keyboard shortcut',
-                'Vorschau eines Befehls mit Tastenkürzel',
-                'معاينة أمر مع اختصار لوحة المفاتيح',
-            )}
-        >
-            <div className="command">
-                <span>{t('Open search', 'Suche öffnen', 'افتح البحث')}</span>
-                <span className="keys" dir="ltr">
-                    <kbd>{t('Ctrl', 'Strg', 'Ctrl')}</kbd>
-                    <span>+</span>
-                    <kbd>K</kbd>
-                </span>
-            </div>
-        </figure>
     );
 }

@@ -34,7 +34,7 @@ test('a category can be shared, refined and cleared', async ({ page }) => {
         page.getByRole('link', { name: 'Shareable URL filters', exact: true }),
     ).toBeVisible();
     await page.getByRole('link', { name: 'Clear filters' }).click();
-    await expect(page.getByRole('status')).toHaveText('6 entries');
+    await expect(page.getByRole('status')).toHaveText('7 entries');
 });
 
 test('a visitor can open every recipe on a narrow screen', async ({ page }) => {
@@ -47,7 +47,7 @@ test('a visitor can open every recipe on a narrow screen', async ({ page }) => {
     const paths = new Set(
         await links.evaluateAll((items) => items.map((item) => item.getAttribute('href')!)),
     );
-    expect(paths.size).toBe(6);
+    expect(paths.size).toBe(7);
     for (const path of paths) {
         await page.goto(path);
         await expect(page.getByRole('heading', { level: 1 })).toBeVisible();

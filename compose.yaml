@@ -2,4 +2,4 @@ services:
   catalogue:
     build: .
     ports:
-      - "127.0.0.1:8080:8000"
+      - "127.0.0.1:${CATALOGUE_PORT:-8080}:8000"

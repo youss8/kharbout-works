@@ -1,9 +1,7 @@
 import { Head, Link } from '@inertiajs/react';
 import type { CatalogueEntry } from '../catalogue';
 import CatalogueShell from '../components/CatalogueShell';
-import CopyCodeRecipe from '../components/CopyCodeRecipe';
 import KitRecipe from '../components/KitRecipe';
-import ShortcutRecipe from '../components/ShortcutRecipe';
 import { categoryLabel, localizeEntry, useLocale } from '../i18n';
 
 export default function Entry({ entry: original }: { entry: CatalogueEntry }) {
@@ -19,12 +17,16 @@ export default function Entry({ entry: original }: { entry: CatalogueEntry }) {
                 <p className="metadata">{categoryLabel(entry.category, locale)}</p>
                 <h1>{entry.title}</h1>
                 <p>{entry.summary}</p>
+                <a className="entry-download" href={entry.downloadHref} download>
+                    <span aria-hidden="true">↓</span>
+                    {t(
+                        'Download source (.zip)',
+                        'Quellcode herunterladen (.zip)',
+                        'تنزيل المصدر (.zip)',
+                    )}
+                </a>
             </header>
-            {entry.slug === 'keyboard-shortcut-label' && <ShortcutRecipe />}
-            {entry.slug === 'copy-code' && <CopyCodeRecipe />}
-            {entry.slug !== 'keyboard-shortcut-label' && entry.slug !== 'copy-code' && (
-                <KitRecipe slug={entry.slug} />
-            )}
+            <KitRecipe slug={entry.slug} />
         </CatalogueShell>
     );
 }

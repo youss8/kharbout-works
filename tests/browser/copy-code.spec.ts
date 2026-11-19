@@ -8,6 +8,26 @@ declare global {
 
 const shortcutEntry = '/entries/keyboard-shortcut-label';
 
+test('localizes the downloadable shortcut preview and keeps the original source', async ({
+    page,
+}) => {
+    await page.goto(shortcutEntry);
+    const preview = page.getByRole('figure').locator('.command');
+    const source = page.locator('pre').filter({ hasText: '<!doctype html>' });
+    for (const [locale, label, modifier] of [
+        ['en', 'Open search', 'Ctrl'],
+        ['de', 'Suche öffnen', 'Strg'],
+        ['ar', 'افتح البحث', 'Ctrl'],
+    ] as const) {
+        await page.locator('.language-select').selectOption(locale);
+        await expect(preview.locator('.command-label')).toHaveText(label);
+        await expect(preview.locator('kbd').first()).toHaveText(modifier);
+        await expect(preview.locator('.keys')).toHaveAttribute('dir', 'ltr');
+        await expect(source).toHaveAttribute('dir', 'ltr');
+        await expect(source).toContainText('Open search');
+    }
+});
+
 test('copies the selected example exactly and waits for the browser to confirm', async ({
     page,
 }) => {
