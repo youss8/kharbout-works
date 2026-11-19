@@ -6,6 +6,7 @@
     <testsuites>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
+            <directory>kit/modules/catalogue-search</directory>
         </testsuite>
     </testsuites>
     <source>

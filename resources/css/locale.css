@@ -1,0 +1,66 @@
+.masthead nav {
+    flex-wrap: wrap;
+}
+.catalogue-search-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    max-inline-size: 100%;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+.catalogue-search-trigger:hover {
+    border-color: var(--muted);
+}
+.catalogue-search-trigger kbd {
+    padding: 0.15rem 0.3rem;
+    border: 1px solid var(--line);
+    border-radius: 0.2rem;
+    color: var(--muted);
+    font: 0.72rem var(--mono);
+}
+.language-select {
+    max-inline-size: 100%;
+    font: inherit;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 0.35rem;
+    background: var(--paper);
+    color: var(--ink);
+}
+.entry-intro h1 {
+    hyphens: auto;
+    overflow-wrap: anywhere;
+}
+html:lang(ar) {
+    font-family: Tahoma, 'Segoe UI', sans-serif;
+}
+html:lang(ar) :is(h1, h2, h3) {
+    letter-spacing: normal;
+    line-height: 1.35;
+}
+html:lang(ar)
+    :is(.metadata, .browse-categories a span, .browse-summary p, .browse-requirements li) {
+    font-family: inherit;
+}
+[dir='rtl'] .site-header {
+    text-align: start;
+}
+@media (max-width: 32rem) {
+    .masthead {
+        align-items: start;
+        flex-direction: column;
+    }
+    .masthead nav {
+        gap: 0.8rem;
+    }
+}

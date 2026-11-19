@@ -3,9 +3,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test:browser": "playwright test",
+    "test:kit": "node --test kit/utilities/url-filters/filters.test.mjs",
     "dev": "vite",
-    "lint": "eslint resources/js vite.config.ts --max-warnings=0",
-    "format:check": "prettier --check resources/js resources/css vite.config.ts eslint.config.js",
+    "lint": "eslint resources/js kit/utilities/url-filters/filters.ts kit/components/search-dialog/*.tsx tests/browser playwright.config.ts vite.config.ts --max-warnings=0",
+    "format:check": "prettier --check resources/js resources/css kit/utilities/url-filters/filters.ts \"kit/components/*/*.{tsx,css,html}\" tests/browser playwright.config.ts vite.config.ts eslint.config.js",
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && vite build"
   },
@@ -17,6 +19,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@inertiajs/vite": "^3.0.0",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",

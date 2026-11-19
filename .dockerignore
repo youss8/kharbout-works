@@ -1,0 +1,16 @@
+.git
+.env
+.env.*
+!.env.example
+auth.json
+node_modules
+kit/components/search-dialog/node_modules
+kit/components/search-dialog/dist
+vendor
+public/build
+public/hot
+public/storage
+test-results
+playwright-report
+storage/*
+bootstrap/cache/*.php

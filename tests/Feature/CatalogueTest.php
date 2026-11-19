@@ -2,12 +2,22 @@
 
 use Inertia\Testing\AssertableInertia as Assert;
 
-it('renders the catalogue and its example entry', function (string $url, string $page) {
-    $this->withoutVite()
-        ->get($url)
-        ->assertOk()
-        ->assertInertia(fn (Assert $response) => $response->component($page));
-})->with([
-    'browse' => ['/', 'Browse'],
-    'entry' => ['/entries/keyboard-shortcut-label', 'Entry'],
-]);
+it('lists entries with shareable links covering each collection', function () {
+    $response = $this->withoutVite()->get('/')->assertOk()
+        ->assertInertia(fn (Assert $page) => $page->component('Browse')->has('entries', 7));
+
+    $entries = $response->inertiaProps('entries');
+    expect(array_values(array_unique(array_column($entries, 'category'))))->toEqualCanonicalizing([
+        'Components', 'Pages', 'Utilities', 'Modules', 'AI tools',
+    ]);
+
+    foreach ($entries as $entry) {
+        $this->get($entry['href'])->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Entry')
+                ->where('entry', $entry)->where('entries', $entries));
+    }
+});
+
+it('returns 404 for an unknown entry', function () {
+    $this->get('/entries/does-not-exist')->assertNotFound();
+});
