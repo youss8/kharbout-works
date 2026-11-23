@@ -29,12 +29,16 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
+      - run: npx astro check
       - run: npm run build
+      - run: npm run build:catalogue
       - run: vendor/bin/pint --test
       - run: composer analyse
       - run: composer test
       - run: npm run test:kit
       - run: npx playwright install --with-deps chromium
+      - run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - run: npm run test:workbench
       - run: npm run test:browser
 
   docker-smoke:

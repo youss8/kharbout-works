@@ -1,0 +1,17 @@
+erDiagram
+    BRANCH ||--o{ SITE : hosts
+    PROGRAM }o--o{ SITE : runs_at
+    SITE ||--o{ POSITION : contains
+    DEPARTMENT ||--o{ POSITION : groups
+    POSITION ||--o{ POSITION : "reports_to (direct / dotted)"
+    POSITION ||--o{ CONTRACT : filled_by
+    EMPLOYEE ||--o{ CONTRACT : signs
+    EMPLOYEE ||--|| USER_ACCOUNT : logs_in_as
+    CONTRACT ||--o{ CONTRACT_AMENDMENT : amended_by
+    CONTRACT ||--o{ PAY_TIER : "pays (encrypted)"
+    CONTRACT ||--o{ LEAVE_BALANCE : entitles
+    LEAVE_TYPE ||--o{ LEAVE_BALANCE : types
+    LEAVE_BALANCE ||--o{ LEAVE_REQUEST : consumed_by
+    LEAVE_REQUEST ||--o{ LEAVE_REQUEST_NOTE : annotated_by
+    EMPLOYEE ||--o{ ATTENDANCE_MONTH : timesheet
+    ATTENDANCE_MONTH ||--o{ DAY_DECISION : resolves

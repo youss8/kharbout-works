@@ -1,0 +1,59 @@
+{
+  "asOf": "2026-11-23",
+  "sponsors": [
+    { "id": "SP1", "name": "Northwind Foundation", "type": "foundation" },
+    { "id": "SP2", "name": "Contoso Impact Fund", "type": "corporate" },
+    { "id": "SP3", "name": "Fabrikam Civic Trust", "type": "public" }
+  ],
+  "proposals": [
+    { "id": "P-2026-014", "title": "Regional Skills Accelerator", "status": "active", "requested": { "USD": 450000 } },
+    { "id": "P-2026-021", "title": "Digital Inclusion Labs", "status": "submitted", "requested": { "EUR": 300000 } },
+    { "id": "P-2026-009", "title": "Youth Career Pathways (Renewal)", "status": "active", "previous": "P-2025-031", "requested": { "USD": 220000 } }
+  ],
+  "projects": [
+    { "id": "PRJ-101", "name": "Accelerator – North Hub", "proposals": ["P-2026-014"] },
+    { "id": "PRJ-102", "name": "Accelerator – Valley Office", "proposals": ["P-2026-014", "P-2026-009"] },
+    { "id": "PRJ-103", "name": "Pathways – Harbor Point", "proposals": ["P-2026-009"] }
+  ],
+  "agreements": [
+    {
+      "id": "FA-01",
+      "sponsor": "SP1",
+      "proposal": "P-2026-014",
+      "budget": 300000,
+      "currency": "USD",
+      "tranches": [
+        { "due": "2026-02-15", "amount": 100000, "state": "received", "receivedOn": "2026-02-10", "net": 99650 },
+        { "due": "2026-07-15", "amount": 100000, "state": "received", "receivedOn": "2026-08-02", "net": 99650 },
+        { "due": "2026-11-01", "amount": 100000, "state": "expected" }
+      ],
+      "reports": [{ "type": "interim", "due": "2026-12-10", "state": "requested" }]
+    },
+    {
+      "id": "FA-02",
+      "sponsor": "SP2",
+      "proposal": "P-2026-014",
+      "budget": 120000,
+      "currency": "USD",
+      "tranches": [{ "due": "2026-06-30", "amount": 120000, "state": "failed", "note": "Bank details mismatch" }],
+      "reports": []
+    },
+    {
+      "id": "FA-03",
+      "sponsor": "SP3",
+      "proposal": "P-2026-009",
+      "budget": 180000,
+      "currency": "EUR",
+      "tranches": [
+        { "due": "2026-03-01", "amount": 90000, "state": "received", "receivedOn": "2026-02-27", "net": 89800 },
+        { "due": "2026-09-01", "amount": 90000, "state": "received", "receivedOn": "2026-09-01", "net": 89800 }
+      ],
+      "reports": [{ "type": "annual", "due": "2026-10-31", "state": "requested" }]
+    }
+  ],
+  "healthRules": {
+    "offTrack": "any tranche failed",
+    "needsAttention": "any expected tranche past due OR any report past due",
+    "onTrack": "otherwise"
+  }
+}

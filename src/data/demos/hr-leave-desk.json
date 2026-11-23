@@ -1,0 +1,51 @@
+{
+  "site": { "id": "site-07", "name": "Northgate Hub", "weekend": ["Fri", "Sat"], "dailyHours": 8 },
+  "holidays": [
+    { "date": "2026-12-25", "name": "Winter Holiday" },
+    { "date": "2027-01-01", "name": "New Year" }
+  ],
+  "employee": { "id": "E-1042", "name": "Avery Lindqvist", "position": "Operations Coordinator", "managerId": "E-0880", "onProbation": false },
+  "balances": [
+    { "type": "annual", "deservedHours": 168, "usedHours": 40, "pendingHours": 16, "overtimeCreditHours": 8 },
+    { "type": "sick", "deservedHours": 112, "usedHours": 8, "pendingHours": 0, "overtimeCreditHours": 0 },
+    { "type": "unpaid", "deservedHours": 240, "usedHours": 0, "pendingHours": 0, "overtimeCreditHours": 0 }
+  ],
+  "team": [
+    { "id": "E-1051", "name": "Jordan Okafor", "leave": { "from": "2026-12-28", "to": "2026-12-30", "status": "accepted" } },
+    { "id": "E-1077", "name": "Mira Castell", "leave": null }
+  ],
+  "requests": [
+    {
+      "id": "LR-311",
+      "employeeId": "E-1042",
+      "type": "annual",
+      "from": "2026-12-27",
+      "to": "2026-12-31",
+      "partOfDay": "full",
+      "hours": 24,
+      "status": "pending",
+      "managerDecision": null,
+      "hrReview": null,
+      "timeline": [
+        { "at": "2026-11-20T09:14", "actor": "Avery Lindqvist", "event": "submitted" }
+      ]
+    },
+    {
+      "id": "LR-298",
+      "employeeId": "E-1077",
+      "type": "sick",
+      "from": "2026-11-10",
+      "to": "2026-11-10",
+      "partOfDay": "am",
+      "hours": 4,
+      "status": "accepted",
+      "managerDecision": "approved",
+      "hrReview": "seen",
+      "timeline": [
+        { "at": "2026-11-09T18:02", "actor": "Mira Castell", "event": "submitted" },
+        { "at": "2026-11-10T08:30", "actor": "Sam Ridley", "event": "approved" },
+        { "at": "2026-11-10T11:00", "actor": "HR · North Branch", "event": "reviewed" }
+      ]
+    }
+  ]
+}

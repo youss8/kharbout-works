@@ -1,0 +1,98 @@
+@import "tailwindcss" source(none);
+@source "../";
+@source "../../.astro/vault-previews";
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-subtle: var(--bg-subtle);
+  --color-hairline: var(--border-hairline);
+  --color-strong: var(--border-strong);
+  --color-ink: var(--ink-primary);
+  --color-ink-secondary: var(--ink-secondary);
+  --color-ink-muted: var(--ink-muted);
+  --color-accent: var(--accent-primary);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-tint: var(--accent-tint);
+  --color-ok: var(--status-ok);
+  --color-ok-tint: var(--status-ok-tint);
+  --color-warn: var(--status-warn);
+  --color-warn-tint: var(--status-warn-tint);
+  --color-crit: var(--status-crit);
+  --color-crit-tint: var(--status-crit-tint);
+}
+
+:root {
+  /* Light Default — Archival Stone & Deep Forest */
+  --bg-canvas: #F4F5F4;
+  --bg-surface: #FFFFFF;
+  --bg-subtle: #ECEEEB;
+  --border-hairline: #DCDFD9;
+  --border-strong: #B8C0B9;
+  --ink-primary: #101412;
+  --ink-secondary: #4A5550;
+  --ink-muted: #6B7570;
+  --accent-primary: #0F5C4A;
+  --accent-hover: #0B4638;
+  --accent-tint: #E7F2EE;
+  --status-ok: #166534;
+  --status-ok-tint: #DCFCE7;
+  --status-warn: #92400E;
+  --status-warn-tint: #FEF3C7;
+  --status-crit: #991B1B;
+  --status-crit-tint: #FEE2E2;
+}
+
+[data-theme="dark"] {
+  /* Engineered Dark Toggle — Deep Slate-Charcoal & Restrained Emerald */
+  --bg-canvas: #0B0F0E;
+  --bg-surface: #121816;
+  --bg-subtle: #18201D;
+  --border-hairline: #222D2A;
+  --border-strong: #32423D;
+  --ink-primary: #ECF1EE;
+  --ink-secondary: #A1B0AA;
+  --ink-muted: #6D7E78;
+  --accent-primary: #34D399;
+  --accent-hover: #10B981;
+  --accent-tint: #112822;
+  --status-ok: #4ADE80;
+  --status-ok-tint: #0D2818;
+  --status-warn: #FBBF24;
+  --status-warn-tint: #2A1F0D;
+  --status-crit: #F87171;
+  --status-crit-tint: #2C1215;
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light; scroll-padding-top: 6rem; }
+html[data-theme="dark"] { color-scheme: dark; }
+body { margin: 0; background: var(--bg-canvas); color: var(--ink-primary); font: 400 1rem/1.55 var(--font-sans); font-variant-numeric: tabular-nums; }
+h1, h2, h3 { margin: 0; line-height: 1.16; letter-spacing: -.025em; text-wrap: balance; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; }
+button:not(:disabled), select { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .58; }
+:focus-visible { outline: 3px solid var(--accent-primary); outline-offset: 3px; }
+[hidden], [x-cloak] { display: none !important; }
+svg { flex-shrink: 0; }
+code, kbd, pre, time, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.skip-link { position: fixed; top: .5rem; left: .5rem; transform: translateY(-160%); padding: .65rem 1rem; z-index: 99; background: var(--bg-surface); border: 1px solid var(--accent-primary); color: var(--ink-primary); }
+.skip-link:focus { transform: translateY(0); }
+.status-badge { --tone: var(--accent-primary); --tint: var(--accent-tint); display: inline-flex; align-items: center; gap: .4rem; padding: .22rem .5rem; max-width: 100%; width: fit-content; border: 1px solid currentColor; border-radius: 2px; color: var(--tone); font: 600 .75rem/1.45 var(--font-mono); }
+.status-badge[data-tone="ok"] { --tone: var(--status-ok); --tint: var(--status-ok-tint); }
+.status-badge[data-tone="warn"] { --tone: var(--status-warn); --tint: var(--status-warn-tint); }
+.status-badge[data-tone="crit"] { --tone: var(--status-crit); --tint: var(--status-crit-tint); }
+.status-badge.solid { background: var(--tone); border-color: var(--tone); color: var(--bg-surface); }
+.status-badge.surface { background: var(--tint); border-color: var(--border-hairline); }
+.status-badge.dashed { border-style: dashed; }
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

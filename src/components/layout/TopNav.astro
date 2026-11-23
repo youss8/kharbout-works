@@ -1,0 +1,115 @@
+---
+import { ArrowUpRight, Command, Menu, Moon, Sun, X } from "lucide-react";
+import GitHubMark from "../ui/GitHubMark.astro";
+import { profile } from "../../data/profile";
+
+const builtPages = import.meta.glob("/src/pages/**/*.{astro,ts}");
+const sections = [
+  ["01", "Systems", "systems"],
+  ["02", "Vault", "vault"],
+  ["03", "AI Kit", "ai-kit"],
+  ["04", "Templates", "templates"],
+  ["05", "Lab", "lab"],
+  ["06", "CV", "cv"],
+].map(([index, label, slug]) => ({
+  index, label, slug,
+  href: slug === "cv" || builtPages[`/src/pages/${slug}/index.astro`] ? `/${slug}/` : `/#directory-${slug}`,
+  current: Astro.url.pathname.split("/")[1] === slug,
+}));
+const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
+---
+<header class="site-header no-print">
+  <div class="nav-shell">
+    <a class="brand" href="/" aria-label="Youssef Operations Kit home">
+      <svg viewBox="0 0 36 36" width="33" height="33" aria-hidden="true">
+        <rect width="36" height="36" rx="3" fill="var(--accent-primary)"/>
+        <path d="m5.5 9 5.8 8 5.8-8m-5.8 8v10M21 9v18m9-18-9 9 10 9" fill="none" stroke="var(--bg-canvas)" stroke-width="2.8" stroke-linejoin="bevel"/>
+      </svg>
+      <span>YK <b>/</b> OPS-KIT</span>
+    </a>
+    <nav class="desktop-links" aria-label="Primary navigation">
+      {sections.map(({ index, label, href, current }) => <a href={href} aria-current={current ? "page" : undefined}><small>{index}</small>{label}</a>)}
+    </nav>
+    <div class="utilities">
+      {askAvailable && <button class="ask-trigger" type="button" aria-label="Open command search" aria-haspopup="dialog" data-ask-open><Command size={15} aria-hidden="true"/><kbd>Ctrl K</kbd></button>}
+      <button class="tool theme" type="button" aria-label="Dark mode" aria-pressed="false" title="Toggle dark mode" data-theme-toggle>
+        <Moon className="moon-icon" size={17} aria-hidden="true"/><Sun className="sun-icon" size={17} aria-hidden="true"/>
+      </button>
+      <a class="tool gh-link" href={profile.contact.repoUrl} aria-label="Operations Kit on GitHub"><GitHubMark/></a>
+      <button class="tool menu-trigger" type="button" aria-label="Open navigation" aria-haspopup="dialog" aria-expanded="false" aria-controls="mobile-nav" data-menu-open><Menu size={20} aria-hidden="true"/></button>
+    </div>
+  </div>
+  <dialog id="mobile-nav" aria-labelledby="mobile-heading">
+    <div class="drawer-head"><strong id="mobile-heading">Navigation</strong><button class="tool" type="button" aria-label="Close navigation" data-menu-close><X size={19}/></button></div>
+    <nav aria-label="Mobile navigation">
+      {sections.map(({ index, label, href, current }) => <a href={href} aria-current={current ? "page" : undefined}><small>{index}</small>{label}<ArrowUpRight size={16} aria-hidden="true"/></a>)}
+    </nav>
+    <a class="mobile-github" href={profile.contact.repoUrl}><GitHubMark size={16}/> Source on GitHub</a>
+  </dialog>
+</header>
+<script>
+  const themeButton = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  function syncThemeButton() {
+    themeButton?.setAttribute("aria-pressed", String(document.documentElement.dataset.theme === "dark"));
+  }
+  syncThemeButton();
+  themeButton?.addEventListener("click", () => {
+    const theme = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("yok-theme", theme); } catch { /* The selected theme still applies to this page. */ }
+    syncThemeButton();
+    window.dispatchEvent(new CustomEvent("yok-theme-change", { detail: { theme } }));
+  });
+  window.addEventListener("yok-theme-change", syncThemeButton);
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("[data-ask-open]")) {
+      window.dispatchEvent(new CustomEvent("yok-open-ask"));
+    }
+  });
+  const drawer = document.querySelector<HTMLDialogElement>("#mobile-nav");
+  const menuButton = document.querySelector<HTMLButtonElement>("[data-menu-open]");
+  menuButton?.addEventListener("click", () => {
+    if (!drawer || drawer.open) return;
+    drawer.showModal();
+    menuButton.setAttribute("aria-expanded", "true");
+  });
+  drawer?.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    if (event.target === drawer || event.target.closest("[data-menu-close], a[href]")) drawer.close();
+  });
+  drawer?.addEventListener("close", () => menuButton?.setAttribute("aria-expanded", "false"));
+  window.matchMedia("(min-width: 1061px)").addEventListener("change", (event) => {
+    if (event.matches && drawer?.open) drawer.close();
+  });
+</script>
+<style>
+  .site-header { position: sticky; inset-block-start: 0; z-index: 30; color: var(--ink-primary); background: var(--bg-surface); border-block-end: 1px solid var(--border-hairline); }
+  .nav-shell { max-width: 1440px; padding-inline: clamp(1rem, 4.3vw, 4.5rem); margin: auto; min-height: 67px; display: flex; gap: clamp(.8rem, 2vw, 2.3rem); align-items: center; justify-content: space-between; }
+  .brand, .desktop-links a, .tool, .ask-trigger, .mobile-github { display: inline-flex; align-items: center; justify-content: center; color: inherit; text-decoration: none; }
+  .brand { gap: .65rem; white-space: nowrap; font-family: var(--font-mono); font-size: .84rem; font-weight: 600; letter-spacing: -.04em; }
+  .brand b { color: var(--border-strong); margin-inline: .08rem; }
+  .desktop-links { display: flex; align-self: stretch; gap: clamp(.9rem, 1.8vw, 1.85rem); }
+  .desktop-links a { position: relative; gap: .3rem; font-size: .8rem; font-weight: 600; }
+  .desktop-links a:hover, .desktop-links a[aria-current], dialog nav a:hover { color: var(--accent-primary); }
+  .desktop-links a[aria-current]::after { content: ""; position: absolute; inset: auto 0 -1px; height: 2px; background: var(--accent-primary); }
+  nav small { font-family: var(--font-mono); color: var(--ink-secondary); font-size: .62rem; font-weight: 400; }
+  .utilities { display: flex; align-items: center; gap: 3px; }
+  .tool, .ask-trigger { padding: 0; cursor: pointer; min-height: 38px; background: none; border: 1px solid transparent; border-radius: 4px; }
+  .tool { min-width: 38px; }
+  .tool:hover, .ask-trigger:hover { background: var(--bg-subtle); }
+  .ask-trigger { gap: .45rem; padding-inline: .6rem; border-color: var(--border-hairline); }
+  kbd { font-family: var(--font-mono); font-size: .65rem; }
+  .theme :global(.sun-icon), .menu-trigger { display: none; }
+  :global([data-theme="dark"]) .theme :global(.sun-icon) { display: block; }
+  :global([data-theme="dark"]) .theme :global(.moon-icon) { display: none; }
+  dialog { position: fixed; inset: .7rem .7rem auto auto; width: min(21rem, calc(100% - 1.4rem)); max-height: calc(100dvh - 1.4rem); margin: 0; padding: 1.1rem; color: var(--ink-primary); background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 6px; }
+  dialog::backdrop { background: rgb(8 18 13 / 42%); }
+  .drawer-head, dialog nav a { display: flex; align-items: center; justify-content: space-between; }
+  dialog nav { margin-block: .8rem; }
+  dialog nav a { padding: .85rem .4rem; gap: 1rem; justify-content: flex-start; text-decoration: none; color: inherit; border-block-start: 1px solid var(--border-hairline); font-weight: 600; }
+  dialog nav a :global(svg) { margin-inline-start: auto; }
+  .mobile-github { gap: .5rem; font-size: .8rem; }
+  @media (max-width: 1060px) { .desktop-links { display: none; } .menu-trigger { display: inline-flex; } }
+  @media (max-width: 480px) { .gh-link { display: none; } .nav-shell { min-height: 57px; } .brand { gap: .4rem; } }
+  @media print { .site-header { display: none !important; } }
+</style>

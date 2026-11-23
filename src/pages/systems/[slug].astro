@@ -1,0 +1,49 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import SectionRail from '../../components/ui/SectionRail.astro';
+import StatusBadge from '../../components/ui/StatusBadge.astro';
+import ServiceDesk from '../../components/demos/ServiceDeskDemo';
+import Estate from '../../components/demos/EstateOverviewDemo';
+import Leave from '../../components/demos/LeaveEngineDemo.astro';
+import Attendance from '../../components/demos/AttendanceAmendDemo.astro';
+import Kpi from '../../components/demos/KpiCockpitDemo.astro';
+import Funding from '../../components/demos/FundingFlowDemo.astro';
+import { sandboxTitles } from '../../data/sandbox-directory';
+import '../../styles/workbench.css';
+export async function getStaticPaths() {
+    return (await getCollection('systems')).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+}
+interface Props { entry: CollectionEntry<'systems'> }
+const { entry } = Astro.props;
+const { data } = entry;
+const demoCodes = [['1A', '1B'], ['2A', '2C'], ['3A', '3B']][data.order - 1];
+const { Content } = await render(entry);
+---
+<BaseLayout title={data.title} description={data.scopeNote}>
+    <div class="page-shell">
+        <header class="page-heading"><a class="section-id" href="/systems/">01 / Systems</a><p class="case-id">{data.code}</p><h1>{data.title}</h1><p>{data.subtitle}</p></header>
+        <div class="study-grid">
+            <SectionRail />
+            <article class="study">
+                <section id="scope" class="scope-panel">
+                    <h2>Ownership and scope</h2><StatusBadge label={data.ownershipBadge} shape="surface"/>
+                    <dl><dt>Team</dt><dd>{data.teamSize}</dd><dt>Youssef’s direct ownership</dt><dd>{data.scopeNote}</dd><dt>Operational scale</dt><dd>{data.realWorldScale}</dd></dl>
+                    <div class="demo-links">{data.demoIds.map(id => <a href={'#'+id}>{sandboxTitles[id]} ↓</a>)}</div>
+                </section>
+                <div class="study-copy"><Content /></div>
+                <section id="sandboxes"><h2>Live sandboxes</h2>
+                    {data.demoIds.map((id, i) => <section id={id} aria-label={sandboxTitles[id]} class="sandbox">
+                        <div class="sandbox-heading"><span class="section-id">{data.code} / {demoCodes[i]}</span><h3>{sandboxTitles[id]}</h3></div>
+                        {id === 'service-desk' && <ServiceDesk client:load />}
+                        {id === 'estate-overview' && <Estate client:load />}
+                        {id === 'leave-engine' && <Leave />}
+                        {id === 'attendance-amend' && <Attendance />}
+                        {id === 'kpi-cockpit' && <Kpi />}
+                        {id === 'funding-flow' && <Funding />}
+                    </section>)}
+                </section>
+            </article>
+        </div>
+    </div>
+</BaseLayout>

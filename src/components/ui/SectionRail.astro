@@ -1,0 +1,31 @@
+---
+const links = [['scope','Ownership & scope'],['architecture','Architecture'],['audit','Codebase audit'],['modeling','Data modeling'],['diagram','Entity relationships'],['permissions','Access & roles'],['sandboxes','Live sandboxes']];
+---
+<nav class="section-rail" aria-label="Case study contents">
+    <p>In this case study</p>
+    {links.map(([id, label]) => <a href={'#' + id}>{label}</a>)}
+</nav>
+<script>
+    const railLinks = [...document.querySelectorAll<HTMLAnchorElement>('.section-rail a')];
+    const targets = railLinks.map(link => document.getElementById(link.hash.slice(1)));
+    let pending = false;
+    function updateRail() {
+        const current = targets.findLastIndex(target => target && target.getBoundingClientRect().top < innerHeight * .34);
+        railLinks.forEach((link, i) => {
+            if (i === Math.max(0, current)) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+        });
+        pending = false;
+    }
+    window.addEventListener('scroll', () => {
+        if (!pending) { pending = true; requestAnimationFrame(updateRail); }
+    }, { passive: true });
+    updateRail();
+</script>
+<style>
+    .section-rail { position: sticky; top: 6rem; display: grid; align-self: start; gap: .15rem; }
+    p { font: 600 .73rem var(--font-mono); text-transform: uppercase; color: var(--ink-secondary); margin-bottom: .6rem; }
+    a { font-size: .85rem; padding: .4rem .7rem; color: var(--ink-secondary); border-inline-start: 2px solid var(--border-hairline); }
+    a:hover, a[aria-current] { color: var(--accent-primary); border-color: var(--accent-primary); background: var(--accent-tint); }
+    @media (max-width: 850px) { .section-rail { position: static; display: flex; flex-wrap: wrap; gap: .25rem; } p { width: 100%; } }
+</style>

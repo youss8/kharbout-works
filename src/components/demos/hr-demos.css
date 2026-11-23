@@ -1,0 +1,61 @@
+.hr-desk { min-width: 0; container-type: inline-size; color: var(--ink-primary); }
+.hr-desk :is(h3,h4,h5,p,dl,dt,dd,ol,ul) { margin: 0; }
+.hr-heading, .hr-month { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .85rem; }
+.hr-desk h3 { font-size: clamp(1.28rem, 3cqi, 1.8rem); }
+.hr-desk h4 { font-size: 1.08rem; font-weight: 700; margin-bottom: .5rem; }
+.hr-desk h5 { font-size: .91rem; font-weight: 700; margin: .6rem 0 .35rem; }
+.hr-ref, .hr-context, .hr-timeline time { color: var(--ink-secondary); font: 500 .72rem/1.5 var(--font-mono); }
+.hr-desk .hr-ref { margin-bottom: .3rem; }
+.hr-desk .hr-context { margin-block: .35rem .65rem; }
+.hr-choices { display: flex; flex-wrap: wrap; gap: .35rem; margin: .5rem 0; }
+.hr-desk :is(button,select,input:not([type=checkbox]),textarea) { border: 1px solid var(--border-strong); border-radius: 3px; background: var(--bg-surface); color: var(--ink-primary); font: inherit; padding: .43rem .65rem; min-width: 0; }
+.hr-desk button { font-size: .8rem; font-weight: 600; }
+.hr-desk button:is([aria-pressed=true],[aria-selected=true]) { background: var(--accent-tint); color: var(--accent-primary); border-color: var(--accent-primary); }
+.hr-desk button:not(:disabled):hover { border-color: var(--accent-primary); }
+.hr-desk .hr-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--border-hairline); margin: .9rem 0 1rem; }
+.hr-metrics > div { padding: .65rem; border-inline-end: 1px solid var(--border-hairline); }
+.hr-metrics > div:last-child { border: 0; }
+.hr-metrics dt, .hr-hours dt, .hr-terms dt { font-size: .74rem; color: var(--ink-secondary); }
+.hr-metrics dd, .hr-hours dd { font: 600 .96rem/1.6 var(--font-mono); }
+.hr-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14.25rem), 1fr)); gap: .7rem; align-items: start; }
+.hr-panel { padding: .85rem; min-width: 0; border: 1px solid var(--border-hairline); border-radius: 4px; background: var(--bg-surface); }
+.hr-balance { border-block-start: 1px solid var(--border-hairline); padding-bottom: .65rem; }
+.hr-balance h5 { text-transform: capitalize; }
+.hr-hours { display: grid; grid-template-columns: 1fr 1fr; gap: .2rem .65rem; }
+.hr-balance .status-badge { margin-top: .4rem; }
+.hr-fields, .hr-detail { display: grid; gap: .6rem; }
+.hr-fields label { display: grid; gap: .2rem; font-size: .78rem; color: var(--ink-secondary); }
+.hr-fields :is(input,select,textarea) { width: 100%; }
+.hr-dates { display: grid; gap: .4rem; grid-template-columns: repeat(auto-fit,minmax(min(100%,9rem),1fr)); }
+.hr-pricing { display: grid; max-height: 15rem; overflow: auto; padding: 0; list-style: none; }
+.hr-pricing li { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .45rem; border-top: 1px solid var(--border-hairline); padding: .35rem 0; font: .7rem/1.35 var(--font-mono); }
+.hr-pricing li .status-badge { font-size: .68rem; }
+.hr-desk .hr-total { padding: .6rem; background: var(--accent-tint); color: var(--accent-primary); border-inline-start: 2px solid var(--accent-primary); font-weight: 600; }
+.hr-inbox p, .hr-detail, .hr-fields p, .hr-terms { font-size: .84rem; }
+.hr-desk .hr-timeline { padding-inline-start: .75rem; list-style: none; margin-block: .4rem; }
+.hr-timeline li { display: grid; gap: .15rem; border-inline-start: 2px solid var(--border-strong); padding: .2rem .65rem .65rem; font-size: .82rem; }
+.hr-notice:not(:empty) { padding: .65rem; border-inline-start: 2px solid var(--accent-primary); margin-top: .8rem; }
+.hr-desk details { margin-top: 1rem; border-top: 1px solid var(--border-hairline); padding-top: .7rem; }
+.hr-desk details summary { font-size: .84rem; font-weight: 600; cursor: pointer; }
+.hr-desk details p { margin-block-start: .5rem; font-size: .84rem; }
+.hr-month { margin-top: 1rem; }
+.hr-watermark { border: 2px dashed var(--border-strong); padding: .25rem .55rem; color: var(--ink-secondary); font: 700 1.35rem/1.2 var(--font-mono); letter-spacing: .12em; }
+.hr-table-wrap { max-width: 100%; overflow-x: auto; }
+.hr-table-wrap table { width: 100%; border-collapse: collapse; }
+.hr-table-wrap :is(th,td) { padding: .4rem; border-bottom: 1px solid var(--border-hairline); text-align: start; font-size: .78rem; }
+.hr-table-wrap tbody th { font: 500 .74rem/1.4 var(--font-mono); }
+.hr-action-row { cursor: pointer; }
+.hr-action-row:hover { background: var(--accent-tint); }
+.hr-progression { margin-block: 1rem .5rem; display: grid; gap: .4rem; }
+.hr-check { display: flex; align-items: center; gap: .4rem; font-size: .8rem; }
+.hr-check input { appearance: auto; accent-color: var(--accent-primary); }
+.hr-contracts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; margin: .65rem 0; }
+.hr-terms { display: grid; gap: .35rem; overflow-wrap: anywhere; }
+.hr-dialog { color: var(--ink-primary); background: var(--bg-surface); padding: 0; margin: auto; width: min(24rem, calc(100vw - 2rem)); max-height: calc(100dvh - 2rem); border: 1px solid var(--border-strong); border-radius: 6px; }
+.hr-dialog > div { padding: 1rem; }
+.hr-dialog::backdrop { background: rgb(8 16 12 / 50%); }
+@container (max-width: 34rem) {
+  .hr-desk .hr-metrics { grid-template-columns: 1fr 1fr; }
+  .hr-metrics > div { border: 1px solid var(--border-hairline); }
+  .hr-contracts { grid-template-columns: 1fr; }
+}

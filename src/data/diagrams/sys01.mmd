@@ -1,0 +1,54 @@
+erDiagram
+    REGION ||--o{ BRANCH : contains
+    BRANCH ||--o{ MEMBER : employs
+    MEMBER |o--o| USER_PROFILE : "may sign in as"
+    USER_PROFILE ||--o{ USER_ROLE : holds
+    BRANCH ||--o{ ASSET : holds
+    PROGRAM ||--o{ ASSET : "tags (funding)"
+    MEMBER ||--o{ ASSET : "custodian of"
+    ASSET ||--o{ EQUIPMENT_LOAN : "lent via"
+    ASSET |o--o| ENDPOINT : "managed as"
+    LICENSE ||--o{ LICENSE_SEAT : allocates
+    LICENSE_SEAT }o--o| ENDPOINT : "activated on"
+    BRANCH ||--o{ TICKET : raises
+    TICKET }o--o| ENDPOINT : concerns
+    USER_PROFILE ||--o{ TICKET : "assigned to"
+    TICKET ||--o{ TICKET_COMMENT : has
+    TICKET ||--o{ TIME_ENTRY : logs
+    ENDPOINT ||--o{ REMOTE_COMMAND : executes
+    ENDPOINT ||--o{ ALERT : raises
+    ALERT_RULE ||--o{ ALERT : triggers
+    RECORD_HISTORY }o--|| USER_PROFILE : "changed by"
+
+    TICKET {
+        uuid id PK
+        serial ref
+        text status "Open|In Progress|Pending|Scheduled|Resolved|Closed"
+        text priority "Critical|High|Medium|Low"
+        timestamptz sla_due_at "trigger-computed"
+        timestamptz first_response_at "trigger-stamped"
+        timestamptz resolved_at "CHECK: closed <=> not null"
+    }
+    ASSET {
+        uuid id PK
+        text asset_tag UK
+        text lifecycle_stage "9 stages"
+        text program_tag
+        jsonb metadata
+    }
+    EQUIPMENT_LOAN {
+        uuid id PK
+        text loan_scope "in-hours|after-hours|off-site|overnight"
+        bool needs_email_record "trigger-derived"
+        timestamptz due_at
+        timestamptz returned_at
+    }
+    RECORD_HISTORY {
+        bigint id PK
+        text table_name
+        uuid record_id
+        text operation
+        text_array changed_fields
+        jsonb before
+        jsonb after
+    }

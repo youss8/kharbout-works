@@ -1,0 +1,77 @@
+{
+  "asOf": "2026-09-30",
+  "window": { "from": "2026-01-01", "to": "2026-12-31" },
+  "sites": [
+    { "id": "S1", "name": "North Hub", "region": "Region A" },
+    { "id": "S2", "name": "Harbor Point", "region": "Region A" },
+    { "id": "S3", "name": "Valley Office", "region": "Region B" }
+  ],
+  "sponsors": [
+    { "id": "SP1", "name": "Northwind Foundation" },
+    { "id": "SP2", "name": "Contoso Impact Fund" }
+  ],
+  "tree": [
+    {
+      "id": "O1",
+      "level": "impact",
+      "title": "Increase workforce readiness in served regions",
+      "children": [
+        {
+          "id": "O1.1",
+          "level": "outcome",
+          "title": "Participants secure stable employment",
+          "kpis": [
+            {
+              "id": "K1",
+              "code": "EMP-01",
+              "name": "Participants placed in jobs",
+              "measure": "count",
+              "cumulative": false,
+              "targets": [
+                { "site": "S1", "sponsor": "SP1", "target": 120, "monthly": [8, 10, 12, 11, 9, 14, 13, 12, 10], "pending": 6 },
+                { "site": "S2", "sponsor": "SP1", "target": 80, "monthly": [4, 5, 3, 6, 7, 5, 4, 6, 5], "pending": 0 },
+                { "site": "S3", "sponsor": "SP2", "target": 100, "monthly": [9, 11, 10, 12, 13, 11, 12, 10, 12], "pending": 4 }
+              ]
+            },
+            {
+              "id": "K2",
+              "code": "EMP-02",
+              "name": "Placement retention at 6 months",
+              "measure": "percentage",
+              "denominatorBasis": "entered",
+              "targets": [
+                { "site": "S1", "sponsor": "SP1", "target": 75, "readings": [{ "month": "2026-09", "numerator": 52, "denominator": 70 }] },
+                { "site": "S2", "sponsor": "SP1", "target": 75, "readings": [{ "month": "2026-09", "numerator": 9, "denominator": 20 }] },
+                { "site": "S3", "sponsor": "SP2", "target": 75, "readings": [] }
+              ]
+            }
+          ],
+          "children": [
+            {
+              "id": "O1.1.1",
+              "level": "output",
+              "title": "Certified skills bootcamps delivered",
+              "kpis": [
+                {
+                  "id": "K3",
+                  "code": "TRN-04",
+                  "name": "Bootcamp graduates",
+                  "measure": "count",
+                  "cumulative": true,
+                  "targets": [
+                    { "site": "S1", "sponsor": "SP1", "target": 300, "latest": 214 },
+                    { "site": "S3", "sponsor": "SP2", "target": 250, "latest": 120 }
+                  ]
+                }
+              ],
+              "children": [
+                { "id": "A1", "level": "activity", "title": "Run quarterly cohorts", "kpis": [] }
+              ]
+            }
+          ]
+        },
+        { "id": "O1.2", "level": "outcome", "title": "Employers co-design curricula", "kpis": [] }
+      ]
+    }
+  ]
+}

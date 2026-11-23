@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import PromptCompiler from '../../components/toolkit/PromptCompiler.astro';
+import '../../styles/workbench.css';
+
+const items = (await getCollection('ai-kit')).sort((a, b) => a.data.order - b.data.order);
+const kinds = [
+    { id: '', title: 'All' }, { id: 'gem', title: 'Custom Gems' },
+    { id: 'skill', title: 'Coding Skills' }, { id: 'workflow', title: 'Automation Workflows' },
+];
+const categories = [...new Set(items.map(item => item.data.category))];
+const index = items.map(({ data }) => ({id: data.id, kind: data.kind, category: data.category,
+    text: [data.title, data.id, data.kind, data.category, data.summary, ...data.compatibility, ...data.variables.map(v => v.key)].join(' ').toLowerCase()}));
+---
+<BaseLayout title="AI engineering toolkit" description="Compile and download reusable architecture, code review and operations prompts.">
+    <div class="page-shell">
+        <header class="page-heading"><p class="section-id">03 / AI Kit</p><h1>AI engineering toolkit</h1>
+            <p>Choose a Gem, coding skill or workflow. Set its inputs, inspect the compiled prompt and take it into your engineering tools.</p></header>
+        <div class="kit-grid" data-index={JSON.stringify(index)} x-data={String.raw`{
+            items: JSON.parse($el.dataset.index), kind: '', category: '', query: '', active: '',
+            get matches() {
+                const words = this.query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+                return this.items.filter(it => (!this.kind || it.kind === this.kind) && (!this.category || it.category === this.category) && words.every(w => it.text.includes(w)))
+            },
+            init() { this.followHash() },
+            resetFilters() { this.query = ''; this.kind = ''; this.category = '' },
+            followHash() {
+                const id = location.hash.slice(1);
+                if (this.items.some(it => it.id === id)) {
+                    if (!this.matches.some(it => it.id === id)) this.resetFilters();
+                    this.active = id
+                } else this.filter()
+            },
+            filter() {
+                if (!this.matches.some(it => it.id === this.active)) this.active = this.matches[0]?.id ?? ''
+            },
+            choose(id) {
+                this.active = id;
+                if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
+                if (matchMedia('(max-width: 760px)').matches) this.$nextTick(() => document.getElementById(id)?.scrollIntoView())
+            }
+        }`} x-on:hashchange.window="followHash()" x-on:popstate.window="followHash()">
+            <aside class="kit-register" aria-label="Prompt directory">
+                <label class="search-label">Search toolkit<input type="search" placeholder="Name, variable or technology" x-ref="query" x-model="query" x-on:input="filter()" /></label>
+                <fieldset><legend>Kind</legend><div class="filter-list">
+                    {kinds.map(k => <button type="button" x-bind:aria-pressed={`kind === '${k.id}'`} x-on:click={`kind = '${k.id}'; filter()`}>{k.title}</button>)}
+                </div></fieldset>
+                <fieldset><legend>Category</legend><div class="filter-list">
+                    {['', ...categories].map(c => <button type="button" x-bind:aria-pressed={`category === '${c}'`} x-on:click={`category = '${c}'; filter()`}>{c || 'All categories'}</button>)}
+                </div></fieldset>
+                <p class="count" role="status" x-text="matches.length + (matches.length === 1 ? ' prompt' : ' prompts')">{items.length} prompts</p>
+                <nav aria-label="Toolkit entries">
+                    {items.map(({data}) => <a href={'#' + data.id} x-show={`matches.some(it => it.id === '${data.id}')`}
+                        x-bind:aria-current={`active === '${data.id}' ? 'true' : null`} x-on:click.prevent={`choose('${data.id}')`}>
+                        {data.title}<small>{data.kind} · {data.category}</small></a>)}
+                </nav>
+            </aside>
+            <div class="kit-detail">
+                <div x-show="!matches.length" class="kit-empty" x-cloak><h2>No matching prompts</h2>
+                    <button type="button" x-on:click="resetFilters(); filter(); $refs.query.focus()">Clear filters</button></div>
+                {items.map((item, i) => <article id={item.data.id} x-cloak={i === 0 ? undefined : true} x-show={`active === '${item.data.id}'`}>
+                    <PromptCompiler item={item} />
+                </article>)}
+            </div>
+        </div>
+    </div>
+</BaseLayout>
+<style>
+    .kit-grid { display:grid; grid-template-columns:minmax(15rem,19rem) minmax(0,1fr); align-items:start; gap:clamp(1rem,3vw,2.5rem); }
+    .kit-register,.kit-detail article,.kit-empty { background:var(--bg-surface); border:1px solid var(--border-hairline); }
+    .kit-register { padding:1rem; border-top:3px solid var(--accent-primary); }
+    .search-label, legend { font-size:.84rem; font-weight:600; }
+    .search-label { display:grid; gap:.3rem; }
+    input { width:100%; border:1px solid var(--border-strong); background:var(--bg-canvas); padding:.5rem; border-radius:3px; }
+    fieldset { margin-top:.85rem; }
+    .filter-list { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.3rem; }
+    button { border:1px solid var(--border-strong); border-radius:3px; padding:.26rem .45rem; font-size:.77rem; }
+    button[aria-pressed="true"] { color:var(--accent-primary); border-color:var(--accent-primary); background:var(--accent-tint); }
+    .count, small { color:var(--ink-secondary); font:.7rem/1.5 var(--font-mono); }
+    .count { margin:1rem 0 .3rem; }
+    nav { display:grid; }
+    nav a { display:block; padding:.55rem; border-top:1px solid var(--border-hairline); font-size:.87rem; line-height:1.35; font-weight:600; }
+    nav a[aria-current="true"] { border-inline-start:3px solid var(--accent-primary); color:var(--accent-primary); background:var(--accent-tint); }
+    small { display:block; margin-top:.15rem; }
+    .kit-detail { min-width:0; }
+    article,.kit-empty { padding:clamp(.8rem,2vw,1.7rem); }
+    .kit-empty h2 { margin-bottom:.65rem; }
+    @media (max-width:760px) { .kit-grid { grid-template-columns:1fr; } nav { overflow:auto; max-height:14rem; } }
+</style>

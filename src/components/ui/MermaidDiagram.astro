@@ -1,0 +1,86 @@
+---
+import mermaidAsset from 'mermaid/dist/mermaid.min.js?url';
+interface Props { source: string; label: string }
+const { source, label } = Astro.props;
+---
+<entity-diagram data-library={mermaidAsset}>
+    <figure aria-label={label}>
+        <figcaption><strong>Entity relationship diagram</strong>
+            <label>Scale <select aria-label="Diagram scale"><option value="100">Fit width</option><option value="175">175%</option><option value="300">300%</option></select></label>
+        </figcaption>
+        <div class="diagram-window" role="region" aria-label={label} tabindex="0"><div class="drawing"></div></div>
+        <details><summary>Mermaid source</summary><pre><code>{source}</code></pre></details>
+    </figure>
+</entity-diagram>
+<script>
+    import type mermaid from 'mermaid';
+    type Engine = typeof mermaid;
+    declare global { interface Window { mermaid: Engine } }
+    let library: Promise<Engine> | undefined;
+    function loadEngine(url: string) {
+        return library ??= new Promise<Engine>((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = () => resolve(window.mermaid);
+            script.onerror = () => { library = undefined; reject(new Error('Diagram library unavailable')); };
+            document.head.append(script);
+        });
+    }
+    class EntityDiagram extends HTMLElement {
+        async connectedCallback() {
+            const drawing = this.querySelector<HTMLElement>('.drawing')!;
+            const source = this.querySelector('code')!.textContent!;
+            const scale = this.querySelector('select')!;
+            scale.addEventListener('change', () => drawing.style.width = scale.value + '%');
+            let revision = 0;
+            const render = async () => {
+                const version = ++revision;
+                try {
+                    const engine = await loadEngine(this.dataset.library!);
+                    const dark = document.documentElement.dataset.theme === 'dark';
+                    engine.initialize({
+                        startOnLoad: false, securityLevel: 'strict', theme: 'base',
+                        themeVariables: {
+                            darkMode: dark, fontFamily: 'Plus Jakarta Sans, sans-serif',
+                            primaryColor: dark ? '#18201D' : '#E7F2EE', primaryTextColor: dark ? '#ECF1EE' : '#101412',
+                            primaryBorderColor: dark ? '#75978D' : '#53786C', lineColor: dark ? '#A1B0AA' : '#4A5550',
+                            background: dark ? '#121816' : '#FFFFFF',
+                        },
+                    });
+                    const { svg } = await engine.render('entities-' + version, source);
+                    if (version === revision) {
+                        drawing.innerHTML = svg;
+                        drawing.dataset.renderedTheme = dark ? 'dark' : 'light';
+                    }
+                } catch {
+                    if (version === revision) {
+                        drawing.textContent = 'The diagram could not load. The complete source is available below.';
+                        this.querySelector('details')!.open = true;
+                    }
+                }
+            };
+            const observer = new IntersectionObserver(entries => {
+                if (entries.some(entry => entry.isIntersecting)) {
+                    observer.disconnect();
+                    void render();
+                    window.addEventListener('yok-theme-change', render);
+                }
+            }, { rootMargin: '500px' });
+            observer.observe(this);
+        }
+    }
+    customElements.define('entity-diagram', EntityDiagram);
+</script>
+<style>
+    entity-diagram { display: block; min-width: 0; }
+    figure { margin: 1.5rem 0; border: 1px solid var(--border-hairline); background: var(--bg-surface); }
+    figcaption { padding: .7rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .6rem; border-bottom: 1px solid var(--border-hairline); }
+    label,summary { font-size: .82rem; }
+    select { padding: .3rem; border: 1px solid var(--border-strong); background: var(--bg-surface); border-radius: 3px; }
+    .diagram-window { overflow: auto; max-height: 65vh; padding: .8rem; }
+    .drawing { min-height: 9rem; }
+    .drawing :global(svg) { display: block; width: 100%; max-width: none !important; height: auto; }
+    details { border-top: 1px solid var(--border-hairline); padding: .6rem 1rem; }
+    summary { cursor: pointer; }
+    pre { max-height: 22rem; overflow: auto; font-size: .75rem; }
+</style>

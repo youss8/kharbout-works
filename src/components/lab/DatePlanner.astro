@@ -1,0 +1,26 @@
+<div x-data="datePlanner" class="lab-demo">
+    <p class="demo-label" x-text="'Itinerary builder · Step ' + step + ' of 3'">Itinerary builder · Step 1 of 3</p>
+    <div x-show="step === 1">
+        <fieldset><legend>What would you like to do together?</legend><div class="choices">
+            {['Creative','Outdoors','Food'].map(label => <button x-bind:aria-pressed={`interest === '${label}'`} x-on:click={`interest = '${label}'`}>{label}</button>)}
+        </div></fieldset>
+        <button class="lab-primary" x-on:click="step = 2">Set constraints</button>
+    </div>
+    <form x-show="step === 2" x-cloak x-on:submit.prevent="variant = 0; step = 3">
+        <div class="lab-fields">
+            <label>Start time<input type="time" required x-model="start"/></label>
+            <label>Time available (minutes)<input type="number" required min="30" max="480" x-model.number="limit"/></label>
+            <label>Total budget for two (€)<input type="number" required min="0" max="200" x-model.number="budget"/></label>
+        </div>
+        <label class="lab-check"><input type="checkbox" x-model="indoor"/> Indoor stops only</label>
+        <div class="choices"><button type="button" x-on:click="step = 1">Change interests</button><button class="lab-primary">Build itinerary</button></div>
+    </form>
+    <div x-show="step === 3" x-cloak>
+        <template x-if="route.length"><div>
+            <p class="lab-result" x-text="'€' + cost + ' for two · ' + duration + ' min including a 10-minute transfer'"></p>
+            <ol class="itinerary"><template x-for="(stop,i) in route" x-bind:key="stop.title"><li><time x-text="time(i ? route[0].duration + 10 : 0)"></time><strong x-text="stop.title"></strong><span x-text="stop.duration+' min · €'+stop.cost"></span></li></template></ol>
+        </div></template>
+        <p x-show="!route.length" role="status">No two stops fit these constraints. Try more time, a higher budget or outdoor stops.</p>
+        <div class="choices"><button x-on:click="step = 2">Edit constraints</button><button x-show="matches.length > 1" x-on:click="variant++">Try another itinerary</button></div>
+    </div>
+</div>

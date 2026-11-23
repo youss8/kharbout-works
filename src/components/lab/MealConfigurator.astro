@@ -1,0 +1,12 @@
+<div class="lab-demo" x-data="mealBuilder">
+    <fieldset><legend>Exclude allergens</legend><div class="choices">{['Soy','Sesame'].map(label => <button type="button" x-on:click={`exclude('${label}')`} x-bind:aria-pressed={`excluded.includes('${label}')`}>{label}</button>)}</div></fieldset>
+    <div class="lab-fields"><label>Base<select x-model="base"><template x-for="item in ingredients.filter(i => i.kind === 'base')"><option x-bind:value="item.id" x-text="item.name"></option></template></select></label>
+        <label>Bowls<select x-model.number="servings">{[1,2,3,4].map(n => <option value={n}>{n}</option>)}</select></label></div>
+    <fieldset><legend>Toppings</legend>
+        <template x-for="item in ingredients.filter(i => i.kind === 'topping')" x-bind:key="item.id"><label class="topping">
+            <input type="checkbox" x-model="toppings" x-bind:value="item.id" x-bind:disabled="!allowed(item)"/>
+            <span x-text="item.name"></span><small x-text="allowed(item) ? money(item.price) : 'Excluded · '+item.allergens.join(', ')"></small>
+        </label></template>
+    </fieldset>
+    <p class="lab-result" aria-live="polite" x-text="money(totals.price)+' · '+totals.calories+' kcal · '+totals.protein+' g protein'"></p>
+</div>

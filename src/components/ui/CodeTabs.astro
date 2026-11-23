@@ -1,0 +1,71 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Code } from 'astro:components';
+import PreviewFrame from './PreviewFrame.astro';
+interface Props { item: CollectionEntry<'vault'> }
+const { item } = Astro.props;
+const { data } = item;
+const themes = { light: 'github-light', dark: 'github-dark-dimmed' } as const;
+const labels = ['Live preview', 'Tailwind + Alpine', 'React 19 + TS', 'Laravel 13 + Livewire 4'];
+---
+<vault-code-tabs data-engine={data.previewEngine}>
+    <div class="tabs-head">
+        <div class="code-tabs" role="tablist" aria-label={data.title + ' example source'}>
+            {labels.map((label,i) => <button type="button" role="tab" id={item.id+'-tab-'+i} aria-controls={item.id+'-panel-'+i} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{label}</button>)}
+        </div>
+        <button class="copy-source" type="button">Copy source</button>
+    </div>
+    <div role="tabpanel" id={item.id+'-panel-0'} aria-labelledby={item.id+'-tab-0'}><PreviewFrame slug={item.id} title={data.title}/></div>
+    <div role="tabpanel" id={item.id+'-panel-1'} aria-labelledby={item.id+'-tab-1'} hidden><Code code={data.codeAlpine} lang="html" themes={themes} /></div>
+    <div role="tabpanel" id={item.id+'-panel-2'} aria-labelledby={item.id+'-tab-2'} hidden><Code code={data.codeReact} lang="tsx" themes={themes} /></div>
+    <div role="tabpanel" id={item.id+'-panel-3'} aria-labelledby={item.id+'-tab-3'} hidden>
+        <p class="file-label">Livewire component · PHP</p><Code code={data.codeLivewirePhp} lang="php" themes={themes} />
+        <p class="file-label">Component view · Blade</p><Code code={data.codeLivewireBlade} lang="blade" themes={themes} />
+    </div>
+    <div class="copy-note" role="status" aria-live="polite"></div>
+    <label class="manual-copy" hidden>Source to copy<textarea readonly rows="5"></textarea></label>
+</vault-code-tabs>
+<script>
+    class VaultCodeTabs extends HTMLElement {
+        connectedCallback() {
+            const tabs = [...this.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+            const panels = [...this.querySelectorAll<HTMLElement>('[role=tabpanel]')];
+            const feedback = this.querySelector<HTMLElement>('[role=status]')!;
+            const manual = this.querySelector<HTMLLabelElement>('.manual-copy')!;
+            const select = (index: number) => {
+                tabs.forEach((tab,i) => { tab.setAttribute('aria-selected',String(i===index)); tab.tabIndex = i===index ? 0 : -1; panels[i].hidden = i!==index; });
+                feedback.textContent = ''; manual.hidden = true;
+                if (index === 0) this.querySelector('vault-frame')?.dispatchEvent(new Event('activate-preview'));
+            };
+            tabs.forEach((tab,i) => {
+                tab.addEventListener('click', () => select(i));
+                tab.addEventListener('keydown', event => {
+                    const dest: Record<string, number> = { ArrowRight:(i+1)%tabs.length, ArrowLeft:(i+tabs.length-1)%tabs.length, Home:0, End:tabs.length-1 };
+                    const index = dest[event.key];
+                    if (index === undefined) return;
+                    event.preventDefault(); select(index); tabs[index].focus();
+                });
+            });
+            this.querySelector('.copy-source')!.addEventListener('click', async () => {
+                const index = panels.findIndex(panel => !panel.hidden);
+                const sourceIndex = index || (this.dataset.engine === 'react' ? 2 : 1);
+                const source = [...panels[sourceIndex].querySelectorAll('pre code')].map(code => code.textContent).join('\n\n');
+                try { await navigator.clipboard.writeText(source); feedback.textContent = 'Source copied.'; }
+                catch { manual.hidden = false; const textarea = manual.querySelector('textarea')!; textarea.value = source; textarea.select(); feedback.textContent = 'Source selected for manual copy.'; }
+            });
+        }
+    }
+    customElements.define('vault-code-tabs', VaultCodeTabs);
+</script>
+<style>
+    vault-code-tabs { display:block; margin-top:1.3rem; min-width:0; }
+    .tabs-head,.code-tabs { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem; }
+    .tabs-head { justify-content:space-between; border-block:1px solid var(--border-hairline); padding:.5rem 0; margin-bottom:.8rem; }
+    button { padding:.45rem .5rem; border-radius:3px; font-size:.82rem; font-weight:600; }
+    [role=tab][aria-selected="true"] { background:var(--accent-tint); color:var(--accent-primary); }
+    .copy-source { border:1px solid var(--border-strong); }
+    .copy-note:not(:empty) { padding:.45rem 0; font-size:.85rem; color:var(--accent-primary); }
+    .file-label { margin:.65rem 0; font:500 .75rem var(--font-mono); }
+    textarea { width:100%; }
+    vault-code-tabs :global(pre.astro-code) { border:1px solid var(--border-hairline); font-size:.8rem; line-height:1.6; padding:1rem; max-height:32rem; overflow:auto; tab-size:2; }
+</style>

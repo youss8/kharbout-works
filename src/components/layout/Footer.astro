@@ -1,0 +1,27 @@
+---
+import { ArrowUpRight, Mail } from "lucide-react";
+import { profile } from "../../data/profile";
+---
+<footer class="site-footer no-print">
+  <div class="footer-shell">
+    <div><a href="/" class="signature">{profile.brandName}</a><a class="license" href={profile.contact.repoUrl + "/blob/main/LICENSE"}>MIT License</a></div>
+    <nav aria-label="Contact and source">
+      <a href={"mailto:" + profile.contact.email}><Mail size={14} aria-hidden="true"/>Email</a>
+      <a href={profile.contact.github}>GitHub<ArrowUpRight size={13} aria-hidden="true"/></a>
+      <a href={profile.contact.linkedin}>LinkedIn<ArrowUpRight size={13} aria-hidden="true"/></a>
+    </nav>
+  </div>
+</footer>
+<style>
+  .site-footer { border-block-start: 1px solid var(--border-hairline); margin-block-start: 4rem; background: var(--bg-surface); }
+  .footer-shell { max-width: 1440px; margin: auto; padding: 1.6rem clamp(1rem, 4.3vw, 4.5rem); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; font-size: .82rem; }
+  .footer-shell > div, nav, nav a { display: flex; align-items: center; flex-wrap: wrap; }
+  .footer-shell > div { gap: .8rem; }
+  a { color: var(--ink-secondary); text-decoration: none; }
+  a:hover { text-decoration: underline; color: var(--accent-primary); }
+  .signature { font-weight: 700; color: var(--ink-primary); }
+  .license { border: 1px solid var(--border-hairline); border-radius: 2px; padding: .15rem .4rem; font: .64rem var(--font-mono); }
+  nav { gap: 1.1rem; }
+  nav a { gap: .3rem; min-height: 34px; }
+  @media print { .site-footer { display: none !important; } }
+</style>

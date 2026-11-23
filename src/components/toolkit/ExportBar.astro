@@ -1,0 +1,107 @@
+---
+import { Clipboard, Download, FileText } from 'lucide-react';
+import GitHubMark from '../ui/GitHubMark.astro';
+import { profile } from '../../data/profile';
+
+interface Props {
+    id: string;
+    sourcePath: string;
+    kind: 'prompt' | 'template';
+    hasJson?: boolean;
+}
+const { id, sourcePath, kind, hasJson = true } = Astro.props;
+const sourceRef = import.meta.env.PUBLIC_SOURCE_REF || process.env.VERCEL_GIT_COMMIT_SHA || process.env.CF_PAGES_COMMIT_SHA;
+const repository = profile.contact.repoUrl;
+const sourceUrl = sourceRef ? repository + '/blob/' + encodeURIComponent(sourceRef) + '/' + sourcePath.split('/').map(encodeURIComponent).join('/') : repository;
+const localUrl = '/raw/' + sourcePath.replace(/^src\/content\//, '');
+const prompt = kind === 'prompt';
+---
+<asset-export data-name={id} aria-label="Export options">
+    <div class="export-actions">
+        {prompt
+            ? <button type="button" x-on:click="$dispatch('asset-export', {action:'copy', text:compiled})"><Clipboard size={15} aria-hidden="true"/>Copy compiled prompt</button>
+            : <button type="button" data-copy-preview><Clipboard size={15} aria-hidden="true"/>Copy preview text</button>}
+        <button type="button" x-on:click="$dispatch('asset-export', {action:'copy', text:raw})"><Clipboard size={15} aria-hidden="true"/>{prompt ? 'Copy raw template' : 'Copy raw Markdown'}</button>
+        <button type="button" x-on:click="$dispatch('asset-export', {action:'md', text:compiled})"><Download size={15} aria-hidden="true"/>Download .md</button>
+        {hasJson && <button type="button" x-on:click="$dispatch('asset-export', {action:'json', text:jsonDownload})"><Download size={15} aria-hidden="true"/>Download .json</button>}
+        <a href={localUrl} target="_blank" rel="noopener"><FileText size={15} aria-hidden="true"/>View source file</a>
+        <a href={sourceUrl} target="_blank" rel="noopener"><GitHubMark size={15}/>{sourceRef ? 'View source on GitHub' : 'GitHub repository'}</a>
+    </div>
+    <p role="status" aria-live="polite"></p>
+    <label data-manual hidden>Text for manual copy<textarea readonly rows="4"></textarea></label>
+</asset-export>
+<script>
+    type ExportPayload = { action: 'copy' | 'md' | 'json'; text: unknown };
+    class AssetExport extends HTMLElement {
+        connectedCallback() {
+            const feedback = this.querySelector<HTMLElement>('[role=status]')!;
+            const manual = this.querySelector<HTMLLabelElement>('[data-manual]')!;
+            const field = manual.querySelector('textarea')!;
+            const copy = async (value: string) => {
+                manual.hidden = true;
+                try {
+                    await navigator.clipboard.writeText(value);
+                    feedback.textContent = 'Copied to clipboard.';
+                } catch {
+                    manual.hidden = false;
+                    field.value = value;
+                    field.focus();
+                    field.select();
+                    feedback.textContent = 'Text selected. Press Ctrl+C or Cmd+C to copy.';
+                }
+            };
+            this.querySelector('[data-copy-preview]')?.addEventListener('click', () => {
+                const preview = this.closest('article')?.querySelector('[data-template-preview]');
+                if (!preview) return;
+                const blocks = preview.querySelectorAll('h1,h2,h3,h4,h5,h6,p,li,tr,pre,blockquote');
+                const lines = [...blocks].filter(el => !el.parentElement?.closest('li,td,th,pre,blockquote')).map(el => {
+                    if (el.tagName === 'TR') return [...el.children].map(cell => cell.textContent?.trim()).join(' | ');
+                    const checkbox = el.querySelector<HTMLInputElement>('input[type=checkbox]');
+                    const prefix = checkbox ? checkbox.checked ? '[x] ' : '[ ] ' : '';
+                    return prefix + el.textContent?.trim();
+                }).filter(Boolean);
+                void copy(lines.join('\n'));
+            });
+            this.addEventListener('asset-export', (event) => {
+                const { action, text } = (event as CustomEvent<ExportPayload>).detail;
+                if (action === 'copy' && typeof text === 'string') { void copy(text); return; }
+                if (action !== 'md' && action !== 'json') return;
+                manual.hidden = true;
+                let body: string;
+                if (action === 'json') {
+                    try {
+                        const parsed = typeof text === 'string' ? JSON.parse(text) : text;
+                        if (parsed === undefined) throw new Error();
+                        body = JSON.stringify(parsed, null, 2) + '\n';
+                    } catch {
+                        feedback.textContent = 'The JSON source could not be read.';
+                        return;
+                    }
+                } else {
+                    if (typeof text !== 'string') return;
+                    body = text;
+                }
+                const mime = action === 'json' ? 'application/json' : 'text/markdown';
+                const url = URL.createObjectURL(new Blob([body], { type: mime + ';charset=utf-8' }));
+                const link = document.createElement('a');
+                link.download = this.dataset.name + '.' + action;
+                link.href = url;
+                this.append(link);
+                link.click();
+                link.remove();
+                window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
+                feedback.textContent = 'Download prepared: ' + link.download;
+            });
+        }
+    }
+    customElements.define('asset-export', AssetExport);
+</script>
+<style>
+    asset-export { display:block; margin-block-start:1rem; border-block-start:1px solid var(--border-hairline); padding-block-start:.7rem; }
+    .export-actions { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; }
+    .export-actions :is(button,a) { display:inline-flex; align-items:center; gap:.35rem; min-height:2.3rem; padding:.35rem .6rem; border:1px solid var(--border-strong); border-radius:3px; color:var(--ink-primary); background:var(--bg-surface); text-decoration:none; font-size:.78rem; font-weight:600; }
+    .export-actions :is(button,a):hover { color:var(--accent-primary); border-color:var(--accent-primary); }
+    asset-export [role=status]:not(:empty),asset-export label { display:block; color:var(--accent-primary); font-size:.8rem; margin-top:.45rem; }
+    asset-export [hidden] { display:none; }
+    asset-export textarea { display:block; width:100%; border:1px solid var(--border-strong); padding:.4rem; font-family:var(--font-mono); }
+</style>

@@ -1,0 +1,35 @@
+erDiagram
+    STRATEGY ||--o{ PROGRAM : "groups"
+    PROGRAM ||--o{ PROJECT : "runs"
+    PROGRAM ||--o{ OBJECTIVE : "owns framework"
+    SPONSOR ||--o{ FUNDING_AGREEMENT : "signs"
+    FUNDING_PROPOSAL ||--o{ FUNDING_AGREEMENT : "is funded by"
+    FUNDING_PROPOSAL }o--o{ PROJECT : "finances"
+    FUNDING_PROPOSAL ||--o{ PROPOSAL_SITE_ROW : "is delivered at"
+    FUNDING_PROPOSAL |o--o{ FUNDING_PROPOSAL : "renews"
+    FUNDING_AGREEMENT ||--o{ DISBURSEMENT : "pays out in"
+    FUNDING_AGREEMENT ||--o{ SPONSOR_REPORT : "requires"
+    OBJECTIVE |o--o{ OBJECTIVE : "parent of"
+    OBJECTIVE ||--o{ KPI : "measured by"
+    KPI_CATALOG ||--o{ KPI : "defines"
+    KPI ||--o{ KPI_TARGET : "committed as"
+    KPI_TARGET ||--o{ MEASUREMENT : "actuals"
+    MONTHLY_RETURN ||--o{ RETURN_LINE : "contains"
+    RETURN_LINE ||--o{ MEASUREMENT : "mirrored into"
+
+    STRATEGY { bigint id string name }
+    PROGRAM { bigint id bigint strategy_id bigint manager_id }
+    PROJECT { bigint id bigint program_id bigint region_id enum status date starts_on date ends_on }
+    SPONSOR { bigint id string name enum type enum approval_status }
+    FUNDING_PROPOSAL { bigint id bigint previous_proposal_id enum status enum kind decimal budget datetime on_hold_since }
+    FUNDING_AGREEMENT { bigint id bigint sponsor_id bigint proposal_id decimal budget enum currency }
+    DISBURSEMENT { bigint id bigint agreement_id bigint tranche_id bigint account_id decimal amount decimal net enum state date due_on }
+    SPONSOR_REPORT { bigint id bigint agreement_id enum type date due_on enum state json snapshot }
+    PROPOSAL_SITE_ROW { bigint id bigint proposal_id bigint region_id bigint project_id bool city_wide }
+    OBJECTIVE { bigint id bigint parent_id bigint program_id bigint proposal_id bigint contributes_to_id enum level }
+    KPI_CATALOG { bigint id string code enum measure bool cumulative enum denominator_basis enum frequency }
+    KPI { bigint id bigint objective_id bigint catalog_id decimal baseline decimal target }
+    KPI_TARGET { bigint id string source_type bigint source_id bigint kpi_id bigint project_id bigint site_id bool all_sites decimal target }
+    MEASUREMENT { bigint id bigint target_id bigint monthly_return_id decimal value decimal numerator decimal denominator enum status date planned_date }
+    MONTHLY_RETURN { bigint id bigint template_id date period enum status }
+    RETURN_LINE { bigint id bigint return_id bigint catalog_id enum attribution }

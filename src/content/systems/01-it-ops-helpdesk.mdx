@@ -1,0 +1,168 @@
+---
+{
+  "order": 1,
+  "code": "SYS-01",
+  "title": "IT Operations & Asset Helpdesk",
+  "subtitle": "One record of service requests, equipment and custody",
+  "ownershipBadge": "100% Solo End-to-End Architecture & Build",
+  "ownershipPercent": "100% solo",
+  "teamSize": "1 developer",
+  "scopeNote": "Youssef architected and built the entire platform. It was architecture-verified and test-covered. Internal management held the platform, endpoint agent and MCP server from live fleet rollout.",
+  "realWorldScale": "Engineered for ~900–1,000 assets and licenses, ~150 staff and ~15–20 monthly requests.",
+  "stack": [
+    "TypeScript 5.8",
+    "React 19",
+    "TanStack Start",
+    "Supabase PostgreSQL"
+  ],
+  "demoIds": [
+    "service-desk",
+    "estate-overview"
+  ],
+  "toughestProblemSummary": "One database trigger captures immutable field-level changes across twelve registers.",
+  "ecosystem": "TypeScript / React 19 / PostgreSQL",
+  "keyMetrics": [
+    {
+      "label": "live DB tables (52 created, 5 retired)",
+      "value": "47"
+    },
+    {
+      "label": "SQL migrations (~3,060 SQL lines)",
+      "value": "28"
+    },
+    {
+      "label": "Postgres functions",
+      "value": "21"
+    },
+    {
+      "label": "triggers",
+      "value": "54"
+    },
+    {
+      "label": "RLS policies (100% table coverage)",
+      "value": "~118"
+    },
+    {
+      "label": "indexes (partial/expression)",
+      "value": "~105"
+    },
+    {
+      "label": "authenticated screens",
+      "value": "40"
+    },
+    {
+      "label": "public API endpoints",
+      "value": "5"
+    },
+    {
+      "label": "RPC server functions",
+      "value": "4"
+    },
+    {
+      "label": "MCP tools",
+      "value": "11"
+    },
+    {
+      "label": "external cron availability sweep (~5m)",
+      "value": "1"
+    },
+    {
+      "label": "active role tiers (+5 legacy auto-translated)",
+      "value": "4"
+    },
+    {
+      "label": "lines TS/TSX",
+      "value": "~30k"
+    },
+    {
+      "label": "test files (~138 test cases)",
+      "value": "20"
+    }
+  ]
+}
+---
+
+import MermaidDiagram from '../../components/ui/MermaidDiagram.astro';
+import diagram from '../../data/diagrams/sys01.mmd?raw';
+
+<h2 id="architecture">Architectural approach</h2>
+
+An internal IT operations console replacing spreadsheets with one system of record: an SLA-driven service desk, hardware asset & custody register, software-license seat tracker, and 12 config-driven operational registers (servers, printers, backups, phone lines, CCTV, mailboxes, remote-access IDs). A lightweight endpoint agent streams telemetry, raises threshold/availability alerts, and executes approved remote scripts, while an AI copilot and 11-tool OAuth MCP server operate under the exact same Postgres RLS permissions. Every register change is captured in an immutable, field-level JSONB revision history.
+
+"Thick database, thin client" (business invariants at Postgres boundary so UI, agent API, copilot, and MCP tools behave identically); 4 RLS SQL helpers (`is_staff`, `can_write`, `is_manager`, `is_super_admin`) re-scoping ~30 policies atomically; pure unit-tested domain modules + thin `*.db.ts` adapters; 1 generic config-driven `Register` component powering 12 CRUD registers; explicit state machines (Tickets 6 states, Remote Commands 5, Runbooks 10 with allowed-transition map, Loans derived 5-state, Procedure Runs 4); expand–contract zero-downtime migration (`account_id` → `branch_id`); no soft deletes (explicit lifecycle flags + `on delete set null`).
+
+**Stack** · Node.js 22 (CI-pinned), TypeScript 5.8 (strict, ESM), TanStack Start 1.168 (SSR, file-based routing, `createServerFn` RPC), Vite 8, Nitro, React 19.2, Tailwind CSS 4.2, shadcn/ui (Radix + `cmdk`), Sonner, TanStack Query 5, react-hook-form + Zod 4, Supabase PostgreSQL (RLS, PL/pgSQL triggers, `pgcrypto`, PostgREST), Supabase Auth + OAuth issuer for MCP, Anthropic SDK + provider-agnostic OpenAI-compatible/Gemini/Groq/Ollama fallback, 11-tool MCP server, PowerShell/Bash endpoint agent, ESLint 9, Prettier, Playwright + axe-core, CycloneDX SBOM + `npm audit`, full EN/AR RTL i18n (~1.8k-line dictionary).
+
+<h2 id="audit">Codebase scale audit</h2>
+
+Counts from the solo repository’s architecture audit.
+
+| Measure | Count |
+| --- | ---: |
+| live DB tables (52 created, 5 retired) | 47 |
+| SQL migrations (~3,060 SQL lines) | 28 |
+| Postgres functions | 21 |
+| triggers | 54 |
+| RLS policies (100% table coverage) | ~118 |
+| indexes (partial/expression) | ~105 |
+| authenticated screens | 40 |
+| public API endpoints | 5 |
+| RPC server functions | 4 |
+| MCP tools | 11 |
+| external cron availability sweep (~5m) | 1 |
+| active role tiers (+5 legacy auto-translated) | 4 |
+| lines TS/TSX | ~30k |
+| test files (~138 test cases) | 20 |
+
+<h2 id="modeling">Hardest data-modeling problems</h2>
+
+
+### 1 · Immutable Generic Field-Level Revision History
+
+Single polymorphic `record_history` table + one `SECURITY DEFINER` trigger diffs `to_jsonb(NEW)` vs `to_jsonb(OLD)` key-by-key, stores `changed_fields[]`, `before`/`after` snapshots, and acting user while skipping no-op `updated_at` touches. `attach_history('<table>')` opts any table in; zero client write permissions.
+
+### 2 · Cross-Cutting Funding Tag vs. Strict Physical Hierarchy
+
+Branches host equipment funded by multiple Programs, so `Region → Branch → Member` stays a strict tree while `Program` is modeled as a cross-cutting tag rather than an impossible hierarchy parent.
+
+### 3 · DB-Enforced Lifecycles, Atomic Command Claim & Deduped Alerts
+
+- *Tickets:* `BEFORE` trigger canonicalizes aliases (`urgent`→`Critical`), computes `sla_due_at` (4/8/24/48h), manages `resolved_at` with CHECK `closed ⇔ resolved_at IS NOT NULL`; comment trigger stamps `first_response_at` only on non-internal comments.
+  - *Equipment Loans:* Trigger forces `due_at` and email flags to `NULL` for `in-hours` same-day loans, while `overnight`/`off-site`/`after-hours` loans derive `due_at` and require email record; partial index covers strictly the "needs chasing" set.
+  - *Remote Commands:* Atomic `FOR UPDATE SKIP LOCKED` claim prevents concurrent agent check-ins from double-executing commands.
+  - *Alerts:* Partial unique indexes guarantee max 1 open alert per `(endpoint, rule)` and 1 open availability alert per endpoint.
+
+<h2 id="diagram">Entity relationships</h2>
+
+<MermaidDiagram source={diagram} label="IT Operations & Asset Helpdesk entity relationships" />
+
+<h2 id="permissions">Roles and enforcement</h2>
+
+| Role | Scope |
+| --- | --- |
+| Super Admin | Bootstraps the first account. Invites managers, resets passwords and deletes endpoints. |
+| IT Manager | Queues remote scripts, reads the security audit log and invites specialists and employees. |
+| IT Specialist | Maintains registers, tickets, assets, loans and their work journal. |
+| Employee | Reads their own directory record. |
+
+### Enforcement layers
+
+- 100% RLS across all 47 tables
+- column-level `GRANT` restrictions
+- invite policy blocks `super_admin` invites
+- trigger overwrites `created_by`/`author_id`/`technician_id` with `auth.uid()`
+- `SECURITY INVOKER` dashboard RPC prevents queue-count leakage
+- SHA-256 agent token verifiers
+- strict body caps + per-token hashed rate limits
+- constant-time ≥32-char cron secret
+- DB length CHECKs (scripts ≤50k, output ≤100k)
+- 3-tier audit (`record_history`, `operation_events`, `audit_log`)
+- explicit AI data-sharing gate.
+
+### Modules
+
+Service Desk, Operations Overview, Asset Register & Custody (9 stages), RFC-4180 Spreadsheet Import (header normalization + row warnings), Equipment Loans, Licensing, Endpoint Management (RMM-lite), Remote Scripts, Runbooks/Operations (10-state), Procedures (checklists), Team Journal & Task Board (derived week/month reports), 12 Config-Driven Registers (`cleanForWrite` sanitizer), User Provisioning, AI Copilot, 11-Tool OAuth MCP Server.
+
+### Deployment and scope
+
+No file attachments on tickets; routing is manual (filters + bulk assign) with resolution-based SLA + first-response tracking; no outbound email service beyond identity-provider auth emails ("email record" on loans is a tracked obligation flag); assets track cost/purchase/warranty without automated depreciation math.

@@ -4,6 +4,8 @@
 !.env.example
 auth.json
 node_modules
+.astro
+dist
 kit/components/search-dialog/node_modules
 kit/components/search-dialog/dist
 vendor

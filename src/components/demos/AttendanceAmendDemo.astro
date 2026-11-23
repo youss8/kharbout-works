@@ -1,0 +1,72 @@
+---
+import './hr-demos.css';
+const tabs = ['Attendance month', 'Contract asSigned() diff'];
+const viewers = ['HR Manager', 'Platform Admin'];
+---
+<div class="hr-desk" x-data="attendanceDesk">
+  <div class="hr-heading"><div class="hr-choices" role="tablist" aria-label="Inspector view">
+    {tabs.map((name, i) => <button type="button" role="tab" id={`hr-tab-${i}`} aria-controls={`hr-panel-${i}`} x-bind:aria-selected={`tab === '${name}'`} x-bind:tabindex={`tab === '${name}' ? 0 : -1`} x-on:click={`tab = '${name}'`}
+      x-on:keydown.arrow-right.prevent={`$el.parentElement.children[${1-i}].click(); $el.parentElement.children[${1-i}].focus()`}
+      x-on:keydown.arrow-left.prevent={`$el.parentElement.children[${1-i}].click(); $el.parentElement.children[${1-i}].focus()`}>{name}</button>)}
+  </div><button type="button" x-on:click="reset()">Reset Demo State</button></div>
+  <div role="tabpanel" id="hr-panel-0" aria-labelledby="hr-tab-0" x-show="tab === 'Attendance month'">
+    <div class="hr-month"><div><h4 x-text="month.label"></h4><p class="hr-context" x-text="employee.name + ' · ' + employee.site"></p></div>
+      <strong class="hr-watermark" x-show="unresolved" aria-label="Unresolved punches">DRAFT</strong>
+    </div>
+    <dl class="hr-metrics"><div><dt>Month state</dt><dd><span class="status-badge" x-bind:class="month.state === 'draft' ? 'dashed' : month.state === 'locked' ? 'solid' : 'surface'"><span aria-hidden="true" x-text="month.state === 'draft' ? '−' : '✓'"></span><span x-text="month.state"></span></span></dd></div>
+      <div><dt>Unresolved days</dt><dd x-text="unresolved"></dd></div>
+      <div><dt>Overtime</dt><dd x-text="overtime + 'h'"></dd></div>
+      <div><dt>Annual leave credit</dt><dd data-credit x-text="month.overtimeCreditGrantedHours + 'h'"></dd></div>
+    </dl>
+    <div class="hr-table-wrap" role="region" aria-label="Attendance records" tabindex="0">
+      <table><thead><tr><th scope="col">Date</th><th scope="col">Punches</th><th scope="col">Decision</th><th scope="col">Hours</th><th scope="col">Overtime</th></tr></thead>
+        <tbody><template x-for="day in month.days" x-bind:key="day.date"><tr x-bind:class="{ 'hr-action-row': day.status === 'unresolved' }"
+          x-on:click="if (day.status === 'unresolved' && month.state === 'draft') { decisionDate = day.date; $refs.decision.showModal() }">
+          <th scope="row" x-text="day.date + ' · ' + day.dow"></th>
+          <td x-text="day.punches.join(' / ') || 'No punches'"></td>
+          <td><template x-if="day.status === 'unresolved'"><button type="button" x-bind:aria-label="'Resolve ' + day.date">Resolve punches</button></template>
+            <span class="status-badge" x-show="day.status !== 'unresolved'" x-bind:class="day.status === 'worked' ? 'surface' : 'dashed'"><span aria-hidden="true" x-text="day.status === 'worked' ? '✓' : '−'"></span><span x-text="day.resolution || day.status"></span></span>
+          </td>
+          <td x-text="day.hours + 'h'"></td><td x-text="day.overtime + 'h'"></td>
+        </tr></template></tbody>
+      </table>
+    </div>
+    <dialog class="hr-dialog" x-ref="decision" aria-labelledby="hr-decision-title" x-on:close="decisionDate = ''" x-on:click="if ($event.target === $el) $el.close()">
+      <div><p class="hr-ref" x-text="decisionDate"></p><h4 id="hr-decision-title">Resolve attendance day</h4>
+        <p x-text="decisionDay ? 'Recorded punches · ' + (decisionDay.punches.join(' / ') || 'None') : ''"></p>
+        <div class="hr-choices"><template x-for="option in resolutions" x-bind:key="option.label"><button type="button" x-text="option.label" x-on:click="decide(option); $refs.decision.close()"></button></template></div>
+        <button type="button" x-on:click="$refs.decision.close()">Cancel</button>
+      </div>
+    </dialog>
+    <div class="hr-progression">
+      <div class="hr-choices" aria-label="Timesheet workflow">
+        <button type="button" x-bind:disabled="month.state !== 'draft' || unresolved > 0" x-on:click="transition('confirm')">Employee confirm</button>
+        <button type="button" x-bind:disabled="month.state !== 'confirmed'" x-on:click="transition('approve')">Manager approve</button>
+        <button type="button" x-bind:disabled="month.state !== 'approved'" x-on:click="transition('lock')">HR lock</button>
+        <button type="button" x-bind:disabled="month.state !== 'locked'" x-on:click="transition('reopen')">Reopen</button>
+      </div>
+      <label class="hr-check"><input type="checkbox" x-model="selfApproval" x-bind:disabled="month.state !== 'confirmed'" /> Approving manager is the employee</label>
+      <label class="hr-check"><input type="checkbox" x-model="month.overtimeCreditConsumed" x-bind:disabled="month.state !== 'locked'" /> Credit already consumed</label>
+    </div>
+  </div>
+  <div role="tabpanel" id="hr-panel-1" aria-labelledby="hr-tab-1" x-show="tab === 'Contract asSigned() diff'" x-cloak>
+    <h4 x-text="contract.id"></h4><p class="hr-context" x-text="'Signed ' + contract.signedOn"></p>
+    <div class="hr-choices" role="group" aria-label="Salary viewer role">{viewers.map((name) => <button type="button" x-bind:aria-pressed={`viewer === '${name}'`} x-on:click={`viewer = '${name}'`}>{name}</button>)}</div>
+    <div class="hr-contracts">
+      <section class="hr-panel"><h5>asSigned() original</h5><p class="hr-context" x-text="contract.amendments[0].number + ' · before snapshot'"></p>
+        <dl class="hr-terms"><div><dt>Position</dt><dd x-text="original.title"></dd></div><div><dt>Site</dt><dd x-text="original.site"></dd></div>
+          <div><dt>Daily hours</dt><dd x-text="original.dailyHours + 'h'"></dd></div>
+          <div><dt>Pay tier</dt><dd x-text="pay(contract.amendments[0].payTierEncrypted)"></dd></div></dl>
+      </section>
+      <section class="hr-panel"><h5>Current live terms</h5><p class="hr-context" x-text="contract.amendments.at(-1).number + ' · applied'"></p>
+        <dl class="hr-terms"><div><dt>Position</dt><dd x-text="contract.live.title"></dd></div><div><dt>Site</dt><dd x-text="contract.live.site"></dd></div>
+          <div><dt>Daily hours</dt><dd x-text="contract.live.dailyHours + 'h'"></dd></div>
+          <div><dt>Pay tier</dt><dd x-text="pay(contract.live.payTierEncrypted)"></dd></div></dl>
+      </section>
+    </div>
+    <p class="hr-total" x-text="'Amendment offset · ' + contract.live.amendmentOffsetHours + 'h · ' + contract.live.annualLeaveDaysRemaining + ' leave days preserved'"></p>
+    <ol class="hr-timeline"><template x-for="a in contract.amendments" x-bind:key="a.number"><li><time x-text="a.effectiveOn"></time><strong x-text="a.number"></strong><span x-text="a.reason"></span></li></template></ol>
+  </div>
+  <p class="hr-notice" role="status" x-text="notice"></p>
+  <details><summary>What engineering invariant is running here?</summary><p>Every missing punch needs a human decision. The employee, manager and HR each advance one stage. Lock grants overtime credit once. Reopen revokes it only while it remains unused. The contract inspector reads original terms from the first amendment’s before snapshot and applies the viewer’s pay-tier visibility to both views.</p></details>
+</div>

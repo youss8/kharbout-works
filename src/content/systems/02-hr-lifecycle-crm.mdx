@@ -1,0 +1,182 @@
+---
+{
+  "order": 2,
+  "code": "SYS-02",
+  "title": "HR Lifecycle Platform",
+  "subtitle": "From employment terms to leave decisions and attendance",
+  "ownershipBadge": "3-Dev Team · Core Pre-RMS Contributor & Co-Architect",
+  "ownershipPercent": "Core pre-RMS contributor",
+  "teamSize": "3 developers",
+  "scopeNote": "Youssef co-architected the foundation and built core organization, employee, contract, leave and attendance modules. Recruitment (RMS) was a later team expansion. The audit totals describe the full platform.",
+  "realWorldScale": "~240 employees across five regional branches and 75–100 monthly active users. The move from paper reduced HR administrative workload by 75%+ and cross-department overhead by ~65%.",
+  "stack": [
+    "PHP 8.5",
+    "Laravel 13",
+    "Livewire 4",
+    "Alpine.js",
+    "MySQL"
+  ],
+  "demoIds": [
+    "leave-engine",
+    "attendance-amend"
+  ],
+  "toughestProblemSummary": "Signed contract terms remain reconstructible while working hours, pay tiers and leave balances change.",
+  "ecosystem": "PHP 8.5 / Laravel 13 / MySQL",
+  "keyMetrics": [
+    {
+      "label": "tables",
+      "value": "136"
+    },
+    {
+      "label": "migrations",
+      "value": "138"
+    },
+    {
+      "label": "Eloquent models",
+      "value": "123"
+    },
+    {
+      "label": "Livewire classes (+16 Form objects, 18 Concerns)",
+      "value": "271"
+    },
+    {
+      "label": "`LivewireTable` grids",
+      "value": "31"
+    },
+    {
+      "label": "controllers",
+      "value": "22"
+    },
+    {
+      "label": "routes",
+      "value": "~157"
+    },
+    {
+      "label": "service classes",
+      "value": "199"
+    },
+    {
+      "label": "policies",
+      "value": "29"
+    },
+    {
+      "label": "enums",
+      "value": "54"
+    },
+    {
+      "label": "Artisan commands",
+      "value": "52"
+    },
+    {
+      "label": "scheduled tasks",
+      "value": "~30"
+    },
+    {
+      "label": "notifications",
+      "value": "44"
+    },
+    {
+      "label": "Excel exports",
+      "value": "17"
+    },
+    {
+      "label": "audited models",
+      "value": "29"
+    },
+    {
+      "label": "Blade views",
+      "value": "680"
+    },
+    {
+      "label": "`lockForUpdate` concurrency sites",
+      "value": "~133"
+    },
+    {
+      "label": "test files",
+      "value": "293"
+    }
+  ]
+}
+---
+
+import MermaidDiagram from '../../components/ui/MermaidDiagram.astro';
+import diagram from '../../data/diagrams/sys02.mmd?raw';
+
+<h2 id="architecture">Architectural approach</h2>
+
+A multi-branch, bilingual (LTR/RTL) Human Capital platform covering the full employee lifecycle—org structure, employee records, contracts and amendments, leave pricing, attendance, and offboarding—where every step is a state machine scoped to branch and reporting line, payroll-sensitive columns are encrypted under a dedicated key, and signed PDFs render directly from the same templates shown in the UI.
+
+Server-driven TALL stack with dedicated Form objects and single-purpose Services (`LeaveRequestPricing`, `LeaveDecisionAuthority`, `ContractAmendmentService`, `MonthWorkflow`); trigger-keyed explicit state machines; shared branch/reporting-line scopes (`scopeInCity`, `scopeVisibleTo`) driving both UI dropdowns and validation; observer-maintained headcount counters under row locks; notification outbox + atomic delivery ledger; ordered nightly contract lifecycle chain (`apply amendments → deactivate → auto-renew → track renewals → deactivate departed staff`).
+
+**Stack** · PHP ^8.5, Laravel 13 (`bootstrap/app.php` architecture), Livewire 4, Volt, Flux 2, Alpine.js, Tailwind CSS v4 (`@theme`), Flowbite 3, MySQL (SQLite `:memory:` for tests), Laravel Reverb WebSockets, Chart.js 4, amCharts 5, SortableJS, Spatie Permission / ActivityLog / MediaLibrary / Browsershot (Puppeteer PDF), Maatwebsite Excel, `laravel-localization` (EN/AR RTL), `livewire-tables`, Web Push, ClamAV, ZKTeco ADMS biometric device ingest + LAN agent, PHPUnit 12, Laravel Pint.
+
+<h2 id="audit">Codebase scale audit</h2>
+
+Counts from the full three-developer repository.
+
+| Measure | Count |
+| --- | ---: |
+| tables | 136 |
+| migrations | 138 |
+| Eloquent models | 123 |
+| Livewire classes (+16 Form objects, 18 Concerns) | 271 |
+| `LivewireTable` grids | 31 |
+| controllers | 22 |
+| routes | ~157 |
+| service classes | 199 |
+| policies | 29 |
+| enums | 54 |
+| Artisan commands | 52 |
+| scheduled tasks | ~30 |
+| notifications | 44 |
+| Excel exports | 17 |
+| audited models | 29 |
+| Blade views | 680 |
+| `lockForUpdate` concurrency sites | ~133 |
+| test files | 293 |
+
+<h2 id="modeling">Hardest data-modeling problems</h2>
+
+
+### 1 · Immutable Signed Contracts (`asSigned()` Amendments)
+
+Live contract holds current terms while amendments store allow-listed before/after JSON snapshots; pay tiers stay outside JSON in dedicated-key encrypted columns; `asSigned()` reconstructs original signed terms from Amendment 1's `before`; applying refuses if live row drifted (optimistic concurrency); weekly integrity job checks chain continuity.
+
+### 2 · Deterministic Leave Balance Engine (`quote()`)
+
+Single stateless service powers preview, validation, pending reservations, approval deductions, and calendars. Passes weekend explicitly (zero global worker state), handles seniority accruals, same-calendar-year carryover from true predecessor (`COALESCE(terminated_at, end_date)`), preserves remaining days via `amendment_offset` when daily hours change, isolates overtime credits so recalculations never wipe them, and enforces probation caps & eligibility rules.
+
+### 3 · Dual Reporting Hierarchy & Concurrency Safety
+
+`Position` self-references twice (`direct_manager_id` solid line + `tech_manager_id` dotted line), driving org charts, manager visibility, leave authority escalation when a manager is on leave, and ~133 `lockForUpdate` sites with documented lock ordering (`request`, then `balance`).
+
+<h2 id="diagram">Entity relationships</h2>
+
+<MermaidDiagram source={diagram} label="HR Lifecycle Platform entity relationships" />
+
+<h2 id="permissions">Roles and enforcement</h2>
+
+| Role | Scope |
+| --- | --- |
+| Platform Admin | Administers the system. An explicit deny-list blocks salary access. |
+| Head-Office HR | Handles organization-wide HR operations. |
+| Regional HR | Access follows position, site and branch across five regional branches. |
+| Executive / General Manager | Reads across the organization and decides requests in their own reporting line. |
+| Manager | Acts on direct reports. |
+| Employee | Manages their own records and requests. |
+| Person-scoped grant | Attaches to an individual and cannot be attached to a role. |
+
+### Enforcement layers
+
+- One active role at a time (context switching)
+- per-action Livewire permission middleware preventing forged wire calls
+- 29 record policies with branch/line scopes
+- single shared scope for dropdowns & validation
+- dedicated encryption key for pay tiers (cast refuses to overwrite undecryptable values + key-health CLI check)
+- Spatie audit log on 29 models + delivery ledger + HR-seen tracking
+- ~133 `lockForUpdate` sites
+- SHA-256 device agent keys + registered serial-only biometric ingest.
+
+### Modules
+
+Employees (completeness, self-proposed profile changes, onboarding/renewal/offboarding journeys, probation reviews, critical-position alerts, dual-line org chart); Contracts (row-locked capacity guard, T-30/21/14/7 atomic expiry alerts, chunked auto-renewal, future-dated amendments, headless-Chrome file-based PDF rendering); Leave Management (pure `quote()`, eligibility rules, two-tier Manager → HR review with transactional send-back refund, team overlap warnings, stand-in nomination); Attendance (legacy Excel 5 binary parser, idempotent punch storage on `device_no + minute`, explicit human decision on 0/1-punch days with `DRAFT` watermark, `Confirm → Approve → Lock → Overtime-to-Leave Credit → Reopen`); Cross-Cutting (Unified Work Inbox, draggable 12-col lazy-mounted dashboard grid, notification outbox, Reverb chat).

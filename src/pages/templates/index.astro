@@ -1,0 +1,90 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import ExportBar from '../../components/toolkit/ExportBar.astro';
+import StatusBadge from '../../components/ui/StatusBadge.astro';
+import '../../styles/workbench.css';
+
+const entries = (await getCollection('templates')).sort((a,b) => a.data.order - b.data.order);
+const templates = await Promise.all(entries.map(async entry => {
+    const { Content } = await render(entry);
+    const schema = entry.data.formats.includes('json') ? JSON.parse(entry.data.jsonContent ?? '') : null;
+    return { entry, Content, schema, raw: entry.body ?? '' };
+}));
+const register = entries.map(({data}) => ({ id: data.id, category: data.category }));
+const categories = [...new Set(register.map(row => row.category))];
+const browserState = `{
+    items: ${JSON.stringify(register)}, category: '', chosen: ${JSON.stringify(register[0]?.id ?? '')},
+    get matches() { return this.items.filter(item => !this.category || item.category === this.category); },
+    fromHash() {
+        const id = location.hash.slice(1);
+        const row = this.items.find(item => item.id === id);
+        if (!row) return;
+        if (this.category && this.category !== row.category) this.category = '';
+        this.chosen = id;
+    },
+    filter(value) {
+        this.category = value;
+        if (!this.matches.some(item => item.id === this.chosen)) {
+            this.chosen = this.matches[0]?.id || '';
+            if (this.chosen) history.replaceState(null, '', '#' + this.chosen);
+        }
+    }
+}`;
+---
+<BaseLayout title="Ops & engineering templates" description="Reusable architecture, operations, planning and technical handover blueprints with Markdown and schema downloads.">
+  <div class="page-shell"><header class="page-heading"><p class="section-id">04 / Templates</p><h1>Ops & engineering templates</h1><p>Use a worked blueprint to agree on invariants, review a scope change or hand an operating system to its next owner.</p></header>
+    <div class="template-workspace" x-data={browserState} x-init="fromHash()" x-on:hashchange.window="fromHash()" x-on:popstate.window="fromHash()">
+      <aside class="register">
+        <fieldset><legend>Category</legend><div class="category-pills">
+          {['', ...categories].map(category => <button type="button" aria-pressed={!category ? 'true' : 'false'} x-bind:aria-pressed={`category === ${JSON.stringify(category)}`} x-on:click={`filter(${JSON.stringify(category)})`}>{category || 'All'}</button>)}
+        </div></fieldset>
+        <nav aria-label="Template directory">{entries.map(({data}) => <a href={'#' + data.id} x-show={`!category || category === ${JSON.stringify(data.category)}`}
+          x-bind:aria-current={`chosen === ${JSON.stringify(data.id)} ? 'true' : null`} x-on:click={`chosen = ${JSON.stringify(data.id)}`}>
+          <span>{data.title}</span><small>{data.category}</small></a>)}</nav>
+      </aside>
+      <div class="template-reader">
+        {templates.map(({entry, Content, schema, raw}, index) => {
+          const {data} = entry;
+          const views = ['Rendered preview', 'Raw Markdown', ...(schema ? ['JSON Schema'] : [])];
+          const state = `{ view: 0, raw: ${JSON.stringify(raw)}, get compiled() { return this.raw; }, jsonDownload: ${JSON.stringify(schema)} }`;
+          return <article id={data.id} aria-labelledby={data.id+'-title'} x-data={state} x-show={`chosen === ${JSON.stringify(data.id)}`} x-cloak={index !== 0}>
+            <header><p class="section-id">{data.category} / {data.formats.join(' + ')}</p><h2 id={data.id+'-title'}>{data.title}</h2><p>{data.summary}</p>
+              {data.isStarterPlaceholder && <StatusBadge label="Starter blueprint" shape="dashed"/>}
+            </header>
+            <div class="reader-tabs" role="tablist" aria-label={data.title + ' views'}>
+              {views.map((label,i) => <button type="button" id={data.id+'-tab-'+i} role="tab" aria-controls={data.id+'-view-'+i} aria-selected={i === 0 ? 'true' : 'false'}
+                x-bind:aria-selected={`view === ${i}`} x-bind:tabindex={`view === ${i} ? 0 : -1`} x-on:click={`view = ${i}`}
+                x-on:keydown.right.prevent={`view = ${(i+1)%views.length}; $el.parentElement.children[view].focus()`}
+                x-on:keydown.left.prevent={`view = ${(i+views.length-1)%views.length}; $el.parentElement.children[view].focus()`}
+                x-on:keydown.home.prevent="view = 0; $el.parentElement.firstElementChild.focus()"
+                x-on:keydown.end.prevent={`view = ${views.length-1}; $el.parentElement.lastElementChild.focus()`}>{label}</button>)}
+            </div>
+            <div class="template-prose" id={data.id+'-view-0'} role="tabpanel" aria-labelledby={data.id+'-tab-0'} x-show="view === 0" data-template-preview><Content /></div>
+            <div id={data.id+'-view-1'} role="tabpanel" aria-labelledby={data.id+'-tab-1'} x-show="view === 1" x-cloak><pre tabindex="0"><code>{raw}</code></pre></div>
+            {schema && <div id={data.id+'-view-2'} role="tabpanel" aria-labelledby={data.id+'-tab-2'} x-show="view === 2" x-cloak><pre tabindex="0"><code>{JSON.stringify(schema,null,2)}</code></pre></div>}
+            <ExportBar id={data.id} kind="template" hasJson={Boolean(schema)} sourcePath={entry.filePath ?? 'src/content/templates/' + entry.id + '.md'}/>
+          </article>;
+        })}
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+<style>
+  .template-workspace { display:grid; grid-template-columns:minmax(12rem,20rem) minmax(0,1fr); gap:clamp(1.1rem,3vw,3rem); align-items:start; }
+  .register,.template-reader article { min-width:0; background:var(--bg-surface); border:1px solid var(--border-hairline); border-radius:4px; }
+  .register { padding:1rem; }.register fieldset { margin:0; padding:0; border:0; }.register legend,.register nav small { color:var(--ink-secondary); font:500 .72rem/1.5 var(--font-mono); }
+  .category-pills,.reader-tabs { display:flex; flex-wrap:wrap; gap:.3rem; margin-block:.45rem .9rem; }
+  .category-pills button,.reader-tabs button { font-size:.8rem; padding:.4rem .6rem; border:1px solid var(--border-hairline); border-radius:3px; }
+  button[aria-pressed=true],button[aria-selected=true] { border-color:var(--accent-primary); color:var(--accent-primary); background:var(--accent-tint); }
+  .register nav a { display:grid; gap:.15rem; border-top:1px solid var(--border-hairline); padding:.7rem .25rem; text-decoration:none; color:var(--ink-primary); font-weight:600; font-size:.88rem; }
+  .register nav a[aria-current=true] { color:var(--accent-primary); border-inline-start:2px solid var(--accent-primary); padding-inline-start:.5rem; }
+  .template-reader article { padding:clamp(.85rem,2.6vw,2rem); scroll-margin-block-start:5rem; }
+  .template-reader h2 { margin:.5rem 0; font-size:clamp(1.5rem,2.7vw,2.5rem); }.template-reader header>p:not(.section-id) { margin-bottom:.6rem; }
+  .reader-tabs { padding-block:.7rem; margin-top:1.1rem; border-block:1px solid var(--border-hairline); }
+  .template-prose { max-width:85ch; overflow-wrap:anywhere; font-size:.93rem; }.template-prose :global(h2) { font-size:1.35rem; }.template-prose :global(h3) { margin-block:1.1rem .45rem; font-size:1.03rem; }
+  .template-prose :global(p),.template-prose :global(li) { margin-block:.4rem; }.template-prose :global(ul) { list-style:disc; padding-inline-start:1.2rem; }.template-prose :global(ol) { list-style:decimal; padding-inline-start:1.3rem; }
+  .template-prose :global(table) { display:block; max-width:100%; overflow:auto; margin-block:.75rem; font-size:.83rem; }.template-prose :global(th),.template-prose :global(td) { padding:.45rem; border:1px solid var(--border-hairline); text-align:start; vertical-align:top; }
+  .template-reader pre,.template-prose :global(pre) { margin-block:.6rem; max-width:100%; max-height:34rem; overflow:auto; padding:.8rem; font:400 .78rem/1.6 var(--font-mono); background:var(--bg-subtle); border:1px solid var(--border-hairline); }
+  @media(max-width:760px) { .template-workspace { grid-template-columns:minmax(0,1fr); } }
+</style>

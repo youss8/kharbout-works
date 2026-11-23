@@ -1,0 +1,113 @@
+---
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import BaseLayout from '../components/layout/BaseLayout.astro';
+import StatusBadge from '../components/ui/StatusBadge.astro';
+import { cvSummary, profile } from '../data/profile';
+import '../styles/print-cv.css';
+
+const { fullName, monogram, headline, contact, availability, coreStack } = profile;
+const position = profile.experience[0];
+const hasPortrait = existsSync(resolve('public', 'photo.jpg'));
+const germanyRelocation = availability.mobility.split(' · ').at(-1);
+const german = profile.languages.find(({ name }) => name === 'German');
+const stackRows = [
+  ['Languages', coreStack.languages],
+  ['Backend & data', coreStack.backendAndData],
+  ['Frontend & UX', coreStack.frontendAndUx],
+  ['AI & quality', coreStack.aiAndQuality],
+] as const;
+const contacts = [
+  { label: contact.email, href: 'mailto:' + contact.email },
+  { label: 'github.com/' + contact.githubHandle, href: contact.github },
+  { label: new URL(contact.linkedin).hostname.replace('www.', '') + new URL(contact.linkedin).pathname, href: contact.linkedin },
+  { label: 'Open-source operations kit', href: contact.repoUrl },
+];
+---
+
+<BaseLayout title={`CV · ${fullName}`} description={`${fullName} · ${headline}. International and DACH CV, available January 2027.`}>
+  <div class="cv-page" x-data={`{ dach: false, employer: ${JSON.stringify(position.defaultOrgLabel)} }`}>
+    <div class="cv-toolbar no-print" aria-label="CV settings">
+      <fieldset class="cv-fieldset">
+        <legend>CV format</legend>
+        <div class="cv-formats">
+          <button type="button" aria-pressed="true" x-bind:aria-pressed="!dach" x-on:click="dach = false">International / Remote Tech</button>
+          <button type="button" aria-pressed="false" x-bind:aria-pressed="dach" x-on:click="dach = true">DACH / Germany</button>
+        </div>
+      </fieldset>
+      <label class="cv-employer-setting" for="cv-employer">Employer for private PDF
+        <input id="cv-employer" name="cv-employer" type="text" autocomplete="off" value={position.defaultOrgLabel} x-model="employer" />
+      </label>
+      <button type="button" class="cv-print" x-on:click="window.print()">
+        <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M7 8V3h10v5M7 17H4V8h16v9h-3"/><path d="M7 14h10v7H7zM16 11h1"/></svg>
+        Print / Save PDF
+      </button>
+    </div>
+
+    <article class="cv-sheet" aria-label={`Curriculum vitae of ${fullName}`}>
+      <header class="cv-masthead">
+        <div>
+          <p class="cv-kicker">Curriculum vitae</p>
+          <h1>{fullName}</h1>
+          <p class="cv-headline">{headline}</p>
+          <address class="cv-contacts">
+            <span>{availability.location}</span>
+            {contacts.map(({ label, href }) => <a href={href}>{label}</a>)}
+          </address>
+        </div>
+        <div class="cv-portrait" x-show="dach" x-cloak>
+          {hasPortrait
+            ? <img src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/photo.jpg`} alt={fullName} width="96" height="116" />
+            : <span aria-label={`Initials of ${fullName}`}>{monogram}</span>}
+        </div>
+      </header>
+      <p class="cv-relocation" x-show="dach" x-cloak>{germanyRelocation}{german && ` · ${german.name} ${german.cefr} ${german.level.match(/\(.+\)/)?.[0] ?? ''}`}</p>
+
+      <section class="cv-section cv-focus">
+        <h2>Career focus</h2>
+        <div>
+          <p>{cvSummary.career}</p>
+          <p class="cv-available"><StatusBadge label={availability.badge} shape="surface" tone="ok" /></p>
+        </div>
+      </section>
+      <section class="cv-section">
+        <h2>Technical stack</h2>
+        <dl class="cv-stack">
+          {stackRows.map(([label, tools]) => <div><dt>{label}</dt><dd>{tools.join(' · ')}</dd></div>)}
+        </dl>
+      </section>
+      <section class="cv-section cv-experience">
+        <h2>Professional experience</h2>
+        <div>
+          <p class="cv-period">{position.period}</p>
+          <h3>{position.role}</h3>
+          <p class="cv-employer" x-text={`employer.trim() || ${JSON.stringify(position.defaultOrgLabel)}`}>{position.defaultOrgLabel}</p>
+          <p class="cv-job-location">{position.location}</p>
+          <p>Across all three platforms · {profile.aggregateMetrics.slice(0, 3).map(({ value, label }) => `${value} ${label.toLowerCase()}`).join(' · ')}</p>
+          <ul class="cv-projects">
+            {cvSummary.systems.map(({title, summary}) => <li><strong>{title}</strong> — {summary}</li>)}
+          </ul>
+        </div>
+      </section>
+      <section class="cv-section">
+        <h2>Education & certifications</h2>
+        <div>
+          {profile.education.map(({degree, institution, details}) => <p><strong>{degree}</strong> — {institution} ({details})</p>)}
+          <ul class="cv-credentials">
+            {profile.certifications.map(({name, issuer}) => <li>{name} <span>· {issuer}</span></li>)}
+          </ul>
+        </div>
+      </section>
+      <section class="cv-section">
+        <h2>Languages</h2>
+        <dl class="cv-languages">
+          {profile.languages.map(({name, level}) => <div><dt>{name}</dt><dd>{level}</dd></div>)}
+        </dl>
+      </section>
+      <section class="cv-section cv-leadership">
+        <h2>Leadership & mentorship</h2>
+        <div>{cvSummary.leadership.map((line) => <p>{line}</p>)}</div>
+      </section>
+    </article>
+  </div>
+</BaseLayout>

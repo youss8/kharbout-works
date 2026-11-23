@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import StatusBadge from '../../components/ui/StatusBadge.astro';
+import DatePlanner from '../../components/lab/DatePlanner.astro';
+import HabitTracker from '../../components/lab/HabitTracker.astro';
+import LandingStudy from '../../components/lab/LandingStudy.astro';
+import MealConfigurator from '../../components/lab/MealConfigurator.astro';
+import { labProjects } from '../../data/lab';
+import '../../styles/workbench.css';
+const demos = { 'date-planner': DatePlanner, 'habit-tracker': HabitTracker, 'landing-redesign': LandingStudy, 'meal-configurator': MealConfigurator };
+---
+<BaseLayout title="R&D lab">
+    <div class="page-shell"><header class="page-heading"><p class="section-id">05 / Lab</p><h1>R&amp;D lab</h1><p>Four personal, unshipped prototypes. Try the interaction behind each product idea.</p></header>
+        <div class="lab-grid">
+            {labProjects.map(project => {
+                const Demo = demos[project.id as keyof typeof demos];
+                return <article id={project.id}><header><StatusBadge label="Prototype · R&D Build" shape="dashed"/>
+                    <h2>{project.title}</h2><p>{project.summary}</p>
+                    {project.repoUrl && <a href={project.repoUrl}>Source repository</a>}
+                    {project.liveUrl && <a href={project.liveUrl}>Open standalone prototype</a>}
+                    {project.screenshot && <img src={project.screenshot} loading="lazy" alt={project.title + ' interface'}/>}
+                </header>{Demo && <Demo/>}</article>;
+            })}
+        </div>
+    </div>
+</BaseLayout>
+<style is:global>
+    .lab-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,29rem),1fr)); gap:clamp(1rem,2vw,2rem); align-items:start; }
+    .lab-grid article { background:var(--bg-surface); border:1px solid var(--border-hairline); border-top:3px solid var(--accent-primary); border-radius:3px; min-width:0; }
+    .lab-grid article>header,.lab-demo { padding:clamp(1rem,2vw,1.7rem); }
+    .lab-grid article>header p,.lab-note { color:var(--ink-secondary); font-size:.9rem; }
+    .lab-grid h2 { font-weight:600; font-size:clamp(1.4rem,2.2vw,2.15rem); margin:.7rem 0 .45rem; }
+    .lab-demo { border-top:1px solid var(--border-hairline); font-size:.92rem; }
+    .lab-demo fieldset { margin-bottom:1rem; }
+    .lab-demo legend,.lab-demo label { font-weight:600; }
+    .lab-demo :is(input,select,button) { border:1px solid var(--border-strong); background:var(--bg-surface); color:var(--ink-primary); border-radius:3px; padding:.48rem .65rem; }
+    .lab-demo button { font-size:.85rem; font-weight:600; }
+    .lab-demo button[aria-pressed="true"] { background:var(--accent-tint); color:var(--accent-primary); border-color:var(--accent-primary); }
+    .lab-demo button.lab-primary { background:var(--accent-primary); color:var(--bg-surface); border-color:var(--accent-primary); }
+    .demo-label { color:var(--ink-secondary); font:500 .78rem/1.5 var(--font-mono); margin:0 0 .65rem; }
+    .lab-demo .choices { display:flex; flex-wrap:wrap; gap:.4rem; margin:.5rem 0; }
+    .lab-fields { display:grid; gap:.65rem; grid-template-columns:repeat(auto-fit,minmax(min(9rem,100%),1fr)); margin-bottom:.8rem; }
+    .lab-fields label,.lab-head label { display:grid; gap:.28rem; font-size:.81rem; }
+    .lab-check { display:flex; align-items:center; gap:.45rem; margin:.8rem 0; }
+    .lab-result { font:600 .94rem/1.5 var(--font-mono); background:var(--accent-tint); color:var(--accent-primary); padding:.6rem .8rem; }
+    .itinerary li { display:grid; grid-template-columns:auto 1fr; column-gap:.6rem; padding:.65rem 0; border-bottom:1px solid var(--border-hairline); }
+    .itinerary li span { grid-column:2; }
+    .lab-head { display:flex; align-items:end; gap:1rem; justify-content:space-between; margin-bottom:1rem; }
+    .heatmap { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:.25rem; margin-bottom:1rem; }
+    .heatmap button { display:grid; place-items:center; padding:.25rem; font:500 .8rem var(--font-mono); }
+    .heatmap button[aria-pressed="true"] { background:var(--accent-primary); color:var(--bg-surface); }
+    .landing-sample { padding:1.2rem; background:var(--bg-subtle); border:1px solid var(--border-hairline); margin:.85rem 0; }
+    .landing-sample h4 { font-size:clamp(1.25rem,2.2vw,2rem); font-weight:600; line-height:1.12; margin-bottom:.65rem; }
+    .landing-sample button { margin-top:.9rem; }
+    .landing-sample[data-variant="Original"] { text-align:center; }
+    .landing-sample[data-variant="Original"] h4 { font-size:1.1rem; margin:.85rem; }
+    .landing-sample[data-variant="Original"] button { background:var(--bg-surface); color:var(--ink-primary); }
+    .landing-sample ol { margin-top:.85rem; padding-inline-start:1.25rem; list-style:decimal; }
+    .topping { display:flex; gap:.5rem; padding:.5rem 0; border-bottom:1px solid var(--border-hairline); align-items:center; }
+    .topping small { margin-inline-start:auto; font:500 .75rem var(--font-mono); }
+    .lab-note { margin-top:.8rem; }
+</style>

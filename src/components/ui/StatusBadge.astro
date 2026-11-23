@@ -1,0 +1,17 @@
+---
+interface Props {
+    label: string;
+    shape?: 'solid' | 'surface' | 'outline' | 'dashed';
+    tone?: 'accent' | 'ok' | 'warn' | 'crit';
+}
+const { label, shape = 'outline', tone = 'accent' } = Astro.props;
+const icons = {
+    solid: 'M4 8h8m-4-4 4 4-4 4',
+    surface: 'm3 8 3 3 7-7',
+    outline: 'M8 3v5m0 3v1',
+    dashed: 'M5 4v8m6-8v8',
+};
+---
+<span class:list={['status-badge', shape]} data-tone={tone}>
+    <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d={icons[shape]} /></svg>{label}
+</span>

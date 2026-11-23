@@ -1,0 +1,210 @@
+---
+{
+  "order": 3,
+  "code": "SYS-03",
+  "title": "Multi-Entity Funding, Portfolio & KPI Analytics",
+  "subtitle": "Funding, delivery and performance in one results framework",
+  "ownershipBadge": "3-Dev Team · ~80% Primary Architect & Full-Stack Builder",
+  "ownershipPercent": "~80% primary architect & builder",
+  "teamSize": "3 developers",
+  "scopeNote": "Youssef designed and built approximately 80% of workflows, interface patterns and KPI and funding architecture. The scale audit covers the three-developer team's repository.",
+  "realWorldScale": "Organization-wide portfolio history from 2018 to present, across ~150 staff and 50–60 weekly active platform users.",
+  "stack": [
+    "PHP 8.5",
+    "Laravel 13",
+    "Livewire 4",
+    "MySQL",
+    "Alpine.js"
+  ],
+  "demoIds": [
+    "kpi-cockpit",
+    "funding-flow"
+  ],
+  "toughestProblemSummary": "A pooled ratio calculated identically in PHP and SQL reconciles site reports with sponsor exports.",
+  "ecosystem": "PHP 8.5 / Laravel 13 / MySQL",
+  "keyMetrics": [
+    {
+      "label": "live tables",
+      "value": "~98"
+    },
+    {
+      "label": "migrations",
+      "value": "197"
+    },
+    {
+      "label": "Eloquent models (83 domain + 9 read-only HRIS)",
+      "value": "92"
+    },
+    {
+      "label": "Livewire routes",
+      "value": "51"
+    },
+    {
+      "label": "single-file Livewire components",
+      "value": "86"
+    },
+    {
+      "label": "concern traits",
+      "value": "164"
+    },
+    {
+      "label": "Blade components (59 core `ui/` kit)",
+      "value": "182"
+    },
+    {
+      "label": "Blade page files",
+      "value": "319"
+    },
+    {
+      "label": "invokable controllers",
+      "value": "24"
+    },
+    {
+      "label": "routes",
+      "value": "~78"
+    },
+    {
+      "label": "Action classes",
+      "value": "175"
+    },
+    {
+      "label": "domain support classes",
+      "value": "119"
+    },
+    {
+      "label": "backed enums",
+      "value": "64"
+    },
+    {
+      "label": "events / `12` listeners / `5` jobs / `7` observers",
+      "value": "12"
+    },
+    {
+      "label": "scheduled tasks",
+      "value": "11"
+    },
+    {
+      "label": "Artisan commands",
+      "value": "36"
+    },
+    {
+      "label": "notification files (`16` alert scanners, `24` recipient resolvers)",
+      "value": "72"
+    },
+    {
+      "label": "policies",
+      "value": "31"
+    },
+    {
+      "label": "permissions across `29` modules",
+      "value": "89"
+    },
+    {
+      "label": "built-in roles",
+      "value": "9"
+    },
+    {
+      "label": "middleware",
+      "value": "10"
+    },
+    {
+      "label": "Pest test files",
+      "value": "481"
+    }
+  ]
+}
+---
+
+import MermaidDiagram from '../../components/ui/MermaidDiagram.astro';
+import diagram from '../../data/diagrams/sys03.mmd?raw';
+
+<h2 id="architecture">Architectural approach</h2>
+
+A unified portfolio operating system linking the money side (sponsors, funding proposals, agreements, tranches, sponsor reporting) to the delivery side (strategy, programs, projects, schedules, tasks, risks) through one KPI results framework—with identical SQL and PHP rollups, RAG pacing, customizable 12-col Desk, bilingual intent "Ask" bar, Gantt scheduling, and WebSocket notifications.
+
+Single-purpose Action classes (175) for every write (authorize, validate, transaction/lock, audit); PHP + SQL rule parity (119 support classes); declarative state-machine transition tables with per-edge requirement keys; event-driven proposal approval side effects (re-base schedule, shift dates, pre-fill templates, generate monthly returns); scanner-based alerting backed by an idempotent alert ledger; read-only HRIS connection (stores IDs, never copied names); "reported data is never deleted" guards instead of soft deletes.
+
+**Stack** · PHP ^8.5 (strict types + Larastan 3.9), Laravel 13.17, Livewire 4.1 (single-file full-page components) + Flux UI 2.13 + Livewire Blaze, Alpine.js (48 custom JS modules), Tailwind CSS v4, Vite 8, ApexCharts 4.7, SheetJS (`xlsx`), `docx-preview`, SortableJS, Laravel Reverb 1.12, Laravel Fortify 1.37 (HRIS login, TOTP 2FA, email OTP, WebAuthn Passkeys, trusted devices), Spatie Permission 8.3, `laravel/ai` 1.3 (provider-agnostic gateway with per-call logging, Ollama pilot → Claude), Dual MySQL (primary + read-only HRIS connection), dedicated `ai` queue, Pest 5, Pint, full EN/AR RTL mirroring (charts, Gantt, drag-and-drop).
+
+<h2 id="audit">Codebase scale audit</h2>
+
+Counts from the full three-developer repository.
+
+| Measure | Count |
+| --- | ---: |
+| live tables | ~98 |
+| migrations | 197 |
+| Eloquent models (83 domain + 9 read-only HRIS) | 92 |
+| Livewire routes | 51 |
+| single-file Livewire components | 86 |
+| concern traits | 164 |
+| Blade components (59 core `ui/` kit) | 182 |
+| Blade page files | 319 |
+| invokable controllers | 24 |
+| routes | ~78 |
+| Action classes | 175 |
+| domain support classes | 119 |
+| backed enums | 64 |
+| events / `12` listeners / `5` jobs / `7` observers | 12 |
+| scheduled tasks | 11 |
+| Artisan commands | 36 |
+| notification files (`16` alert scanners, `24` recipient resolvers) | 72 |
+| policies | 31 |
+| permissions across `29` modules | 89 |
+| built-in roles | 9 |
+| middleware | 10 |
+| Pest test files | 481 |
+
+<h2 id="modeling">Hardest data-modeling problems</h2>
+
+
+### 1 · Canonical `Measurement` Mirror Across 4 Input Channels
+
+Unifies ad-hoc entries, monthly site returns (covering multiple sponsors), annual plan updates, and shared targets by mirroring every `LineShare` into one canonical `Measurement` row in the same transaction. Count KPIs sum approved values; level KPIs (%/avg) take the latest approved non-null value; pending figures render in a separate light band; attribution supports `shared` (each sponsor sees full total) or `split` (apportioned sum equals line).
+
+### 2 · Statistically Valid Pooled Ratios (`Σn / Σd × 100`) in PHP & MySQL
+
+Never averages percentages across sites. Computes pooled ratios via a derived table of per-target terms (solving MySQL `ONLY_FULL_GROUP_BY` restrictions on correlated subqueries in grouped aggregates), excluding and counting sites missing denominators.
+
+### 3 · Two-Level Objective Tree, Cross-Framework Links & Renewal Lineage
+
+Adjacency list (`parent_id`) + cross-framework `contributes_to_result_id` + renewal `copied_from_id` enabling `"last year reached X / Y%"` comparisons, cycle-checked via observer.
+
+### Query discipline
+
+ Shallow ≤4-level trees eager-load `childrenRecursive` in 1 query/level; `ResultsChain` executes a fixed query set and runs filters + gap detection (`no KPI`, `no target`) in memory; correlated-subquery SQL select columns allow server-side filtering/sorting by `% achieved` in one paginated query; relation-aware model methods run 0 per-row queries; unauthorized finance queries return `null` without hitting the DB.
+
+<h2 id="diagram">Entity relationships</h2>
+
+<MermaidDiagram source={diagram} label="Multi-Entity Funding, Portfolio & KPI Analytics entity relationships" />
+
+<h2 id="permissions">Roles and enforcement</h2>
+
+| Role | Scope |
+| --- | --- |
+| Super Admin | Platform administration. |
+| Executive (CEO) | Reads audit and finance. Role management, P&A configuration and sponsor approvals are excluded. |
+| Program / Unit Managers | Manage delivery within the assigned scope. |
+| Performance & Analytics | Maintains the results framework. The P&A Lead slot follows HRIS position. |
+| Finance | Handles permission-scoped financial workflows. |
+| Partnerships Manager | Holds exclusive sponsor approval. |
+| Partnerships Officer | Works on partnership operations. |
+| Communications | Access follows the communications role and department scope. |
+| Contributor | Read-only by default. |
+
+### Enforcement layers
+
+- Route `->can()` gates
+- 31 policies
+- customized HRIS-position permission override
+- global department task scope
+- field-level finance hiding (query skipped for unauthorized viewers)
+- permission-filtered notifications
+- WebAuthn Passkeys + TOTP + trusted devices + lockout-surge alerts
+- dedicated file-encryption keyring with rotation (fails closed)
+- 180+ transaction/lock files + 77 unique indexes
+- polymorphic audited `activities` log.
+
+### Modules
+
+Funding Proposals (12-state transition table + `"On Hold"` flag + change requests + renewals), Sponsors & Agreements (non-mixing currencies + 3-state disjoint health), Disbursements/Treasury, Sponsor Reports (versioned `schema_version` snapshots + completeness), KPI Framework & Readiness Check, Monthly Site Returns, Monthly Analytics Matrix, Annual Plans, Interactive Gantt Scheduler (baselines, critical path, slip tails, route tracing, undo stack), Tasks (4-phase with approver separation), Risks (heat map), Notifications & Escalation Ladder (+5 / +10 working days, non-working-day suppression), Customizable 12-Col Desk & Intent "Ask" Bar, AI Gateway & HRIS Integration.

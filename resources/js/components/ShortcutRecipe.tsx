@@ -22,9 +22,9 @@ export default function ShortcutRecipe() {
                         const example = new DOMParser().parseFromString(markup, 'text/html');
                         const label = example.querySelector('.command-label');
                         const modifier = example.querySelector('kbd');
-                        if (label)
+                        if (label?.textContent)
                             label.textContent = t(label.textContent, 'Suche öffnen', 'افتح البحث');
-                        if (modifier)
+                        if (modifier?.textContent)
                             modifier.textContent = t(modifier.textContent, 'Strg', 'Ctrl');
                         figure.replaceChildren(...example.body.children);
                     }}

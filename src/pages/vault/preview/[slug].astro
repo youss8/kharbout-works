@@ -1,0 +1,44 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import ReactExample from '../../../components/vault/ReactExample';
+import '@fontsource/plus-jakarta-sans/latin-400.css';
+import '@fontsource/plus-jakarta-sans/latin-600.css';
+import '@fontsource/jetbrains-mono/latin-500.css';
+import '../../../styles/tokens.css';
+export async function getStaticPaths() {
+    return (await getCollection('vault')).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+}
+interface Props { entry: CollectionEntry<'vault'> }
+const { data } = Astro.props.entry;
+---
+<!doctype html>
+<html lang="en" data-engine={data.previewEngine} data-theme="light"><head>
+    <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
+    <title>{data.title} · Live example</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <script is:inline>
+        const options = new URLSearchParams(location.search);
+        const root = document.documentElement;
+        if (['react','alpine'].includes(options.get('engine'))) root.dataset.engine = options.get('engine');
+        root.dataset.theme = options.get('theme') === 'dark' ? 'dark' : 'light';
+        root.dir = options.get('dir') === 'rtl' ? 'rtl' : 'ltr';
+    </script>
+</head><body class="example-body">
+    <main aria-label={data.title}>
+        <template id="alpine-example"><Fragment set:html={data.codeAlpine} /></template>
+        <script is:inline>
+            if (document.documentElement.dataset.engine === 'alpine') {
+                const host = document.getElementById('alpine-example');
+                host.after(host.content.cloneNode(true));
+            }
+        </script>
+        <ReactExample id={data.id} client:only="react" />
+    </main>
+</body></html>
+<style is:global>
+    .example-body { padding: clamp(.65rem,2vw,1.3rem); min-width: 0; background: var(--bg-surface); }
+    .example-body main { container-type: inline-size; }
+    .example-body :is(button,input,select,textarea) { max-width: 100%; }
+    .example-body button:focus-visible { outline-offset: 1px; }
+    .example-body dialog { margin: auto; }
+</style>
