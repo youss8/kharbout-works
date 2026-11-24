@@ -8,17 +8,17 @@ test("service desk filters, bulk actions, ticket lifecycle, comments, time and r
   await page.goto(path + "#service-desk");
   const desk = page.locator("[data-service-desk]");
   await expect(desk.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
-  const rows = desk.locator("tbody tr");
+  const rows = desk.locator("[data-request-row]");
   await expect(rows).toHaveCount(7);
   await expect(rows.first()).toContainText("#1042");
-  await expect(rows.first().locator(".desk-track i")).toHaveAttribute("style", /width: ?2%/);
+  await expect(rows.first().locator(".desk-track i")).toHaveAttribute("style", /width: ?100%/);
   await desk.getByRole("button", { name: /Breached/ }).click();
   await expect(rows).toHaveCount(1);
   await desk.getByRole("button", { name: /Breached/ }).click();
   await desk.getByLabel("Search requests").fill("printer");
   await expect(rows).toHaveCount(1);
   await desk.getByLabel("Select request 1043").check();
-  await desk.getByRole("button", { name: "Assign to me" }).click();
+  await desk.locator("header").getByRole("group", { name: "Bulk actions" }).getByRole("button", { name: "Assign to me" }).click();
   await expect(rows.first()).toContainText("Alex Rivera");
   await desk.getByRole("button", { name: "Clear filters" }).click();
   await desk.getByRole("button", { name: "New request" }).click();
@@ -27,7 +27,7 @@ test("service desk filters, bulk actions, ticket lifecycle, comments, time and r
   await compose.getByLabel("Requester").fill("Site coordinator");
   await compose.getByLabel("Priority").selectOption("Critical");
   await compose.getByRole("button", { name: "Create request" }).click();
-  const details = desk.getByRole("dialog", { name: "Request #1049" });
+  const details = desk.getByRole("region", { name: "Request #1049" });
   await expect(details).toBeVisible();
   await expect(page).toHaveURL(/ticket=t1049/);
   const stamp = details.locator("dt").filter({ hasText: "First public response" }).locator("..");
@@ -49,14 +49,69 @@ test("service desk filters, bulk actions, ticket lifecycle, comments, time and r
   await details.getByLabel("Work note").fill("Checked inventory");
   await details.getByRole("button", { name: "Log time" }).click();
   await expect(details).toContainText("Time log · 20 min");
+  await expect(details).toContainText("Logged 20 minutes of work.");
+  await expect(details).toContainText("Public reply posted.");
   await page.keyboard.press("Escape");
   await expect(details).toHaveCount(0);
   await desk.getByRole("button", { name: "Reset demo state" }).click();
   await expect(rows).toHaveCount(7);
   await expect(rows.filter({ hasText: "#1043" })).toContainText("Unassigned");
   await page.goto(path + "?ticket=t1#service-desk");
-  await expect(desk.getByRole("dialog", { name: "Request #1042" })).toBeVisible();
+  await expect(desk.getByRole("region", { name: "Request #1042" })).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("back restores a linked inline row and relaxes conflicting filters", async ({page}) => {
+  await page.goto(path + "?context=desk&ticket=t1#service-desk");
+  const desk = page.locator("[data-service-desk]");
+  const opened = desk.getByRole("region", { name: "Request #1042" });
+  await expect(opened).toBeVisible();
+  await desk.getByLabel("Search requests").fill("printer");
+  await expect(opened).toHaveCount(0);
+  await expect(desk.locator("[data-request-row]")).toHaveCount(1);
+  await page.goBack();
+  await expect(opened).toBeVisible();
+  await expect(desk.getByLabel("Search requests")).toHaveValue("");
+  await expect(page).toHaveURL(/context=desk&ticket=t1#service-desk/);
+  await expect(desk.locator("#toggle-t1")).toHaveAttribute("aria-expanded", "true");
+  await opened.getByRole("button", { name: "Collapse request" }).click();
+  await expect(desk.locator("#toggle-t1")).toBeFocused();
+});
+
+test("mobile selection remains touchable and pending search keeps the previous requests", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 830 });
+  await page.goto(path + "#service-desk");
+  const desk = page.locator("[data-service-desk]");
+  await expect(desk.locator("xpath=ancestor::astro-island[1]")).not.toHaveAttribute("ssr", "");
+  const table = desk.getByRole("region", { name: "Request table" });
+  const rows = table.locator("[data-request-row]");
+  const selectAll = table.getByRole("checkbox", { name: "Select all visible requests" });
+  const selectLabel = selectAll.locator("..");
+  await expect(selectLabel).toBeVisible();
+  const bounds = await selectLabel.boundingBox();
+  expect(bounds.width).toBeGreaterThanOrEqual(44);
+  expect(bounds.height).toBeGreaterThanOrEqual(44);
+  await selectLabel.click();
+  await expect(desk.getByRole("group", { name: "Bulk actions" })).toContainText("7 selected");
+  await table.getByLabel("Select request 1043").uncheck();
+  expect(await selectAll.evaluate(input => input.indeterminate)).toBe(true);
+
+  await page.clock.install({ time: new Date("2026-03-10T10:00:00Z") });
+  await page.clock.pauseAt(new Date("2026-03-10T10:00:02Z"));
+  await desk.getByLabel("Search requests").fill("printer");
+  await expect(table).toHaveAttribute("aria-busy", "true");
+  await expect(table).toHaveAttribute("data-loading", "true");
+  await expect(table).toHaveCSS("transition-delay", "0.15s");
+  await expect(rows).toHaveCount(7);
+  await page.clock.runFor(299);
+  await expect(rows).toHaveCount(7);
+  await page.clock.resume();
+  await expect(rows).toHaveCount(1);
+  await expect(table).toHaveAttribute("aria-busy", "false");
+  await expect(table).not.toHaveAttribute("data-loading", "true");
+  await selectAll.focus();
+  await page.keyboard.press("Space");
+  await expect(desk.getByRole("group", { name: "Bulk actions" })).toContainText("1 selected");
 });
 
 test("estate deduplicates threshold and availability alerts and clears loan obligations", async ({ page }) => {
@@ -93,10 +148,14 @@ test("estate deduplicates threshold and availability alerts and clears loan obli
   await estate.getByLabel("Loan scope").selectOption("overnight");
   await expect(estate.getByText("Required", { exact: true })).toBeVisible();
   await estate.getByLabel("Loan scope").selectOption("in-hours");
-  await expect(estate.getByText("NULL", { exact: true })).toBeVisible();
+  const dueDate = estate.locator(".ops-dates > div").filter({ hasText: "Due at" });
+  await expect(dueDate.locator('bdi[aria-label="not set"]')).toHaveText("—");
   await estate.getByLabel("Branch scope").selectOption("b3");
   await expect(estate.getByText("No outstanding actions in this scope.")).toBeVisible();
   await expect(estate.getByText("Test loan · Central Campus")).toBeVisible();
+  await estate.getByRole("button", { name: /CC-WS-003/ }).click();
+  await expect(estate.locator(".ops-caption").filter({ hasText: "Last seen" }).getByLabel("not set")).toHaveText("—");
+  await expect(estate.locator(".ops-dates > div").filter({ hasText: "CPU" }).locator("dd bdi")).toHaveText("12%");
   await estate.getByRole("button", { name: "Reset demo state" }).click();
   await expect(estate.getByRole("heading", { name: "Open alerts · 3" })).toBeVisible();
   await expect(estate.getByText("1,284", { exact: true })).toBeVisible();

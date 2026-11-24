@@ -21,7 +21,7 @@ const viewers = ['HR Manager', 'Platform Admin'];
     <div class="hr-table-wrap" role="region" aria-label="Attendance records" tabindex="0">
       <table><thead><tr><th scope="col">Date</th><th scope="col">Punches</th><th scope="col">Decision</th><th scope="col">Hours</th><th scope="col">Overtime</th></tr></thead>
         <tbody><template x-for="day in month.days" x-bind:key="day.date"><tr x-bind:class="{ 'hr-action-row': day.status === 'unresolved' }"
-          x-on:click="if (day.status === 'unresolved' && month.state === 'draft') { decisionDate = day.date; $refs.decision.showModal() }">
+          x-on:click="if (day.status === 'unresolved' && month.state === 'draft') { decisionDate = day.date; $refs.decision.showModal(); $refs.cancelDecision.focus() }">
           <th scope="row" x-text="day.date + ' · ' + day.dow"></th>
           <td x-text="day.punches.join(' / ') || 'No punches'"></td>
           <td><template x-if="day.status === 'unresolved'"><button type="button" x-bind:aria-label="'Resolve ' + day.date">Resolve punches</button></template>
@@ -35,7 +35,7 @@ const viewers = ['HR Manager', 'Platform Admin'];
       <div><p class="hr-ref" x-text="decisionDate"></p><h4 id="hr-decision-title">Resolve attendance day</h4>
         <p x-text="decisionDay ? 'Recorded punches · ' + (decisionDay.punches.join(' / ') || 'None') : ''"></p>
         <div class="hr-choices"><template x-for="option in resolutions" x-bind:key="option.label"><button type="button" x-text="option.label" x-on:click="decide(option); $refs.decision.close()"></button></template></div>
-        <button type="button" x-on:click="$refs.decision.close()">Cancel</button>
+        <button type="button" x-ref="cancelDecision" x-on:click="$refs.decision.close()">Cancel</button>
       </div>
     </dialog>
     <div class="hr-progression">
@@ -51,17 +51,17 @@ const viewers = ['HR Manager', 'Platform Admin'];
   </div>
   <div role="tabpanel" id="hr-panel-1" aria-labelledby="hr-tab-1" x-show="tab === 'Contract asSigned() diff'" x-cloak>
     <h4 x-text="contract.id"></h4><p class="hr-context" x-text="'Signed ' + contract.signedOn"></p>
-    <div class="hr-choices" role="group" aria-label="Salary viewer role">{viewers.map((name) => <button type="button" x-bind:aria-pressed={`viewer === '${name}'`} x-on:click={`viewer = '${name}'`}>{name}</button>)}</div>
+    <div class="hr-choices" role="group" aria-label="Salary viewer role">{viewers.map((name) => <button type="button" x-bind:aria-pressed={`viewer === '${name}'`} x-on:click={`switchViewer('${name}')`}>{name}</button>)}</div>
     <div class="hr-contracts">
       <section class="hr-panel"><h5>asSigned() original</h5><p class="hr-context" x-text="contract.amendments[0].number + ' · before snapshot'"></p>
         <dl class="hr-terms"><div><dt>Position</dt><dd x-text="original.title"></dd></div><div><dt>Site</dt><dd x-text="original.site"></dd></div>
           <div><dt>Daily hours</dt><dd x-text="original.dailyHours + 'h'"></dd></div>
-          <div><dt>Pay tier</dt><dd x-text="pay(contract.amendments[0].payTierEncrypted)"></dd></div></dl>
+          <div><dt>Pay tier</dt><dd x-text="contract.amendments[0].payTierEncrypted ?? '🔒 Pay withheld for this role'"></dd></div></dl>
       </section>
       <section class="hr-panel"><h5>Current live terms</h5><p class="hr-context" x-text="contract.amendments.at(-1).number + ' · applied'"></p>
         <dl class="hr-terms"><div><dt>Position</dt><dd x-text="contract.live.title"></dd></div><div><dt>Site</dt><dd x-text="contract.live.site"></dd></div>
           <div><dt>Daily hours</dt><dd x-text="contract.live.dailyHours + 'h'"></dd></div>
-          <div><dt>Pay tier</dt><dd x-text="pay(contract.live.payTierEncrypted)"></dd></div></dl>
+          <div><dt>Pay tier</dt><dd x-text="contract.live.payTierEncrypted ?? '🔒 Pay withheld for this role'"></dd></div></dl>
       </section>
     </div>
     <p class="hr-total" x-text="'Amendment offset · ' + contract.live.amendmentOffsetHours + 'h · ' + contract.live.annualLeaveDaysRemaining + ' leave days preserved'"></p>

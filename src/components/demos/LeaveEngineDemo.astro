@@ -6,9 +6,9 @@ const roles = ['Employee', 'Direct Manager', 'Regional HR'];
   <div class="hr-heading"><div class="hr-choices" role="group" aria-label="Leave desk role">
     {roles.map((role) => <button type="button" x-bind:aria-pressed={`role === '${role}'`} x-on:click={`pickRole('${role}')`}>{role}</button>)}
   </div><button type="button" x-on:click="reset()">Reset Demo State</button></div>
-  <p class="hr-context"><span x-text="site.name"></span> · Simulation date <time x-text="today"></time></p>
+  <p class="hr-context"><span x-text="site.name"></span> · Simulation date <time x-bind:datetime="today"><bdi x-text="today"></bdi></time></p>
   <dl class="hr-metrics">
-    <template x-for="item in summary" x-bind:key="item[0]"><div><dt x-text="item[0]"></dt><dd x-text="item[1]"></dd></div></template>
+    <template x-for="item in summary" x-bind:key="item[0]"><div><dt x-text="item[0]"></dt><dd><bdi x-text="item[1]"></bdi></dd></div></template>
   </dl>
   <div class="hr-columns">
     <section class="hr-panel">
@@ -16,8 +16,8 @@ const roles = ['Employee', 'Direct Manager', 'Regional HR'];
       <template x-for="b in balances" x-bind:key="b.type">
         <div class="hr-balance" x-bind:aria-label="b.type + ' balance'">
           <h5 x-text="b.type"></h5>
-          <dl class="hr-hours"><div><dt>Deserved</dt><dd x-text="b.deservedHours + 'h'"></dd></div><div><dt>Used</dt><dd x-text="b.usedHours + 'h'"></dd></div><div><dt>Pending</dt><dd x-text="b.pendingHours + 'h'"></dd></div><div><dt>Remaining</dt><dd x-text="remaining(b) + 'h'"></dd></div></dl>
-          <span x-show="b.overtimeCreditHours" class="status-badge surface" data-tone="ok"><span aria-hidden="true">＋</span><span x-text="b.overtimeCreditHours + 'h overtime credit'"></span></span>
+          <dl class="hr-hours"><div><dt>Deserved</dt><dd><bdi x-text="b.deservedHours + 'h'"></bdi></dd></div><div><dt>Used</dt><dd><bdi x-text="b.usedHours + 'h'"></bdi></dd></div><div><dt>Pending</dt><dd><bdi x-text="b.pendingHours + 'h'"></bdi></dd></div><div><dt>Remaining</dt><dd><bdi x-text="remaining(b) + 'h'"></bdi></dd></div></dl>
+          <span x-show="b.overtimeCreditHours" class="status-badge surface" data-tone="ok"><span aria-hidden="true">＋</span><span><bdi x-text="b.overtimeCreditHours + 'h'"></bdi> overtime credit</span></span>
         </div>
       </template>
     </section>
@@ -29,8 +29,9 @@ const roles = ['Employee', 'Direct Manager', 'Regional HR'];
         <label>Part of day<select x-model="form.partOfDay"><option value="full">Full day</option><option value="am">AM</option><option value="pm">PM</option></select></label>
         <label>Stand-in colleague<select x-model="form.standIn"><option value="">No stand-in nominated</option><template x-for="member in team" x-bind:key="member.id"><option x-bind:value="member.id" x-text="member.name"></option></template></select></label>
         <p x-show="overlapsWith(form).length" x-text="'Team overlap · ' + overlapsWith(form).join(', ')"></p>
-        <ul class="hr-pricing" aria-label="Day-by-day quote"><template x-for="d in priced.days" x-bind:key="d.date"><li><time x-text="d.date"></time><span class="status-badge" x-bind:class="d.hours ? 'surface' : 'dashed'"><span aria-hidden="true" x-text="d.hours ? '✓' : '−'"></span><span x-text="d.label"></span></span><span x-text="d.holiday || d.hours + 'h'"></span></li></template></ul>
-        <output class="hr-total" x-text="'Quoted hours · ' + priced.hours + 'h'"></output>
+        <p class="hr-context"><strong>Day-by-day chips [spec]</strong> show the weekends and holidays omitted by the observed <code>quote.excludedDates</code> contract.</p>
+        <ul class="hr-pricing" aria-label="Day-by-day quote"><template x-for="d in priced.days" x-bind:key="d.date"><li><time><bdi x-text="d.date"></bdi></time><span class="status-badge" x-bind:class="d.hours ? 'surface' : 'dashed'"><span aria-hidden="true" x-text="d.hours ? '●' : '○'"></span><span x-text="d.label"></span></span><bdi x-text="d.holiday || d.hours + 'h'"></bdi></li></template></ul>
+        <output class="hr-total">Quoted hours · <bdi x-bind:aria-label="priced.hours === null ? 'not set' : null" x-text="priced.hours === null ? '—' : priced.hours + 'h'"></bdi></output>
         <p x-show="problem" x-text="problem"></p>
         <button type="submit" x-bind:disabled="Boolean(problem)">Submit request</button>
       </form>
@@ -38,14 +39,14 @@ const roles = ['Employee', 'Direct Manager', 'Regional HR'];
     <aside class="hr-panel hr-inbox" aria-label="Leave decision drawer">
       <h4 x-text="role === 'Direct Manager' ? 'To decide' : role === 'Regional HR' ? 'HR review' : 'My requests'"></h4>
       <button type="button" x-show="role !== 'Employee'" x-bind:aria-pressed="history" x-on:click="toggleHistory()">Include decision history</button>
-      <div class="hr-choices"><template x-for="item in inbox" x-bind:key="item.id"><button type="button" x-bind:aria-pressed="selected === item.id" x-on:click="select(item.id)" x-text="item.id"></button></template></div>
+      <div class="hr-choices"><template x-for="item in inbox" x-bind:key="item.id"><button type="button" x-bind:aria-pressed="selected === item.id" x-on:click="select(item.id)"><bdi x-text="item.id"></bdi></button></template></div>
       <p x-show="!inbox.length">The decision queue is clear.</p>
       <template x-if="request">
         <div class="hr-detail">
-          <h5 x-text="request.id + ' · ' + request.type"></h5>
+          <h5><bdi x-text="request.id"></bdi> · <span x-text="request.type"></span></h5>
           <span class="status-badge" x-bind:class="request.status === 'pending' ? 'outline' : request.status === 'rejected' ? 'dashed' : 'surface'"><span aria-hidden="true" x-text="request.status === 'pending' ? '◷' : request.status === 'rejected' ? '−' : '✓'"></span><span x-text="request.status"></span></span>
-          <p x-text="request.from + ' → ' + request.to"></p>
-          <p x-text="request.hours + 'h · ' + request.partOfDay"></p>
+          <p><time x-bind:datetime="request.from"><bdi x-text="request.from"></bdi></time> – <time x-bind:datetime="request.to"><bdi x-text="request.to"></bdi></time></p>
+          <p><bdi x-text="request.hours + 'h'"></bdi> · <span x-text="request.partOfDay"></span></p>
           <p x-show="request.standIn" x-text="'Stand-in · ' + (team.find(m => m.id === request.standIn)?.name ?? '')"></p>
           <p x-show="overlapsWith(request).length" x-text="'Team overlap · ' + overlapsWith(request).join(', ')"></p>
           <div class="hr-fields" x-show="(role === 'Direct Manager' && request.status === 'pending') || (role === 'Regional HR' && request.status === 'accepted' && !request.hrReview)">
@@ -54,7 +55,7 @@ const roles = ['Employee', 'Direct Manager', 'Regional HR'];
             <div class="hr-choices" x-show="role === 'Regional HR'"><button type="button" x-on:click="decide('review')">Complete HR review</button><button type="button" x-bind:disabled="!note.trim()" x-on:click="decide('send-back')">HR send-back</button></div>
           </div>
           <h5>Decision timeline</h5>
-          <ol class="hr-timeline"><template x-for="(event, i) in request.timeline" x-bind:key="i"><li><time x-text="event.at.replace('T', ' ')"></time><strong x-text="event.actor"></strong><span x-text="event.event"></span><span x-show="event.note" x-text="event.note"></span></li></template></ol>
+          <ol class="hr-timeline"><template x-for="(event, i) in request.timeline" x-bind:key="i"><li><time x-bind:datetime="event.at"><bdi x-text="event.at.replace('T', ' ')"></bdi></time><strong x-text="event.actor"></strong><span x-text="event.event"></span><span x-show="event.note" x-text="event.note"></span></li></template></ol>
         </div>
       </template>
     </aside>

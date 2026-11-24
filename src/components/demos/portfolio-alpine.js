@@ -1,5 +1,6 @@
 import performance from '../../data/demos/pt-kpi-cockpit.json';
 import funding from '../../data/demos/pt-funding-flow.json';
+import { computePooledRatio } from '../../lib/kernels/pooledRatio';
 
 const periods = ['YTD', 'Q1', 'Q2', 'Q3', 'Q4'];
 const months = Array.from({ length: 12 }, (_, index) => {
@@ -39,13 +40,11 @@ function gapReason(kpi, target, month) {
 }
 
 function calculate(kpi, targets, month, method) {
-    const values = targets.map(target => snapshot(kpi, target, month)).filter(value => value !== null);
+    const readings = targets.map(target => snapshot(kpi, target, month));
+    const values = readings.filter(value => value !== null);
     const covered = values.length;
     if (kpi.measure === 'percentage') {
-        const numerator = values.reduce((sum, value) => sum + value.numerator, 0);
-        const denominator = values.reduce((sum, value) => sum + value.denominator, 0);
-        const average = covered ? values.reduce((sum, value) => sum + value.numerator / value.denominator, 0) / covered * 100 : null;
-        const pooled = denominator ? numerator / denominator * 100 : null;
+        const { numerator, denominator, average, pooled } = computePooledRatio(readings);
         const target = covered ? targets.filter(row => snapshot(kpi, row, month)).reduce((sum, row) => sum + row.target, 0) / covered : null;
         return { actual: method === 'naive' ? average : pooled, target, numerator, denominator };
     }
@@ -56,6 +55,7 @@ function calculate(kpi, targets, month, method) {
 }
 
 const states = {
+    zero: { name: 'Zero recorded', shape: 'outline', tone: 'neutral', icon: '○' },
     unavailable: { name: 'No reading', shape: 'dashed', tone: 'accent', icon: '–' },
     green: { name: 'On track', shape: 'surface', tone: 'ok', icon: '✓' },
     amber: { name: 'Needs attention', shape: 'outline', tone: 'warn', icon: '!' },
@@ -99,7 +99,7 @@ const kpiCockpit = () => ({
         const pending = this.includePending && month === reportMonth ? targets.reduce((sum, item) => sum + (item.pending ?? 0), 0) : 0;
         const ratio = rollup.actual === null || !rollup.target ? null : rollup.actual / rollup.target;
         const pace = ratio === null ? null : ratio / ((month + 1) / 12);
-        const state = pace === null ? states.unavailable : pace >= 0.9 ? states.green : pace >= 0.7 ? states.amber : states.red;
+        const state = pace === null ? states.unavailable : rollup.actual === 0 ? states.zero : pace >= 0.9 ? states.green : pace >= 0.7 ? states.amber : states.red;
         return { ...rollup, pending, ratio, state, progress: Math.min(100, (ratio ?? 0) * 100), pendingWidth: rollup.target ? Math.min(Math.max(0, 100 - (ratio ?? 0) * 100), pending / rollup.target * 100) : 0 };
     },
     get siteCount() {
@@ -184,7 +184,9 @@ const fundingFlow = () => ({
             const observer = new ResizeObserver(() => this.measure());
             observer.observe(this.$refs.map);
             for (const node of this.$refs.map.querySelectorAll('[data-flow-node]')) observer.observe(node);
-            this.disconnectObserver = () => observer.disconnect();
+            const direction = new MutationObserver(() => this.measure());
+            direction.observe(document.documentElement, { attributes: true, attributeFilter: ['dir'] });
+            this.disconnectObserver = () => { observer.disconnect(); direction.disconnect(); };
             this.measure();
         });
     },
@@ -246,11 +248,13 @@ const fundingFlow = () => ({
     measure() {
         const map = this.$refs.map;
         const origin = map.getBoundingClientRect();
+        const rtl = getComputedStyle(map).direction === 'rtl';
         const anchors = new Map([...map.querySelectorAll('[data-flow-node]')].map(node => [node.dataset.flowNode, node.getBoundingClientRect()]));
         this.edges = fundingEdges.flatMap(edge => {
             const from = anchors.get(edge.source), to = anchors.get(edge.target);
             if (!from || !to || !origin.width) return [];
-            const x1 = from.right - origin.left, x2 = to.left - origin.left;
+            const x1 = (rtl ? from.left : from.right) - origin.left;
+            const x2 = (rtl ? to.right : to.left) - origin.left;
             const y1 = from.top + from.height / 2 - origin.top, y2 = to.top + to.height / 2 - origin.top;
             const middle = (x1 + x2) / 2;
             const ceiling = maxRibbonCents.get(edge.currency);

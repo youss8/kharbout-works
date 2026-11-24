@@ -13,10 +13,10 @@ function quote(form, site, holidays) {
   const start = Date.parse(form.from + 'T00:00:00Z');
   const end = Date.parse(form.to + 'T00:00:00Z');
   if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) {
-    return { days: [], hours: 0, error: 'Choose a valid date range.' };
+    return { days: [], hours: null, error: 'Choose a valid date range.' };
   }
   if (end - start > 365 * dayMs) {
-    return { days: [], hours: 0, error: 'Quote one year at a time.' };
+    return { days: [], hours: null, error: 'Quote one year at a time.' };
   }
   const days = [];
   let hours = 0;
@@ -154,19 +154,28 @@ const resolutions = [
   { label: 'Approved Leave', hours: 8, status: 'leave' },
 ];
 
+function contractFor(viewer) {
+  const contract = structuredClone(attendanceFixture.contract);
+  if (viewer === 'Platform Admin') {
+    delete contract.live.payTierEncrypted;
+    for (const amendment of contract.amendments) delete amendment.payTierEncrypted;
+  }
+  return contract;
+}
+
 function initialAttendance() {
-  return { month: structuredClone(attendanceFixture.month), tab: 'Attendance month', viewer: 'HR Manager',
+  return { month: structuredClone(attendanceFixture.month), tab: 'Attendance month', viewer: 'HR Manager', contract: contractFor('HR Manager'),
     decisionDate: '', selfApproval: false, notice: '' };
 }
 
 function attendanceDesk() {
   return {
-    ...initialAttendance(), employee: attendanceFixture.employee, contract: attendanceFixture.contract, resolutions,
+    ...initialAttendance(), employee: attendanceFixture.employee, resolutions,
+    switchViewer(viewer) { this.contract = contractFor(viewer); this.viewer = viewer; },
     get unresolved() { return this.month.days.filter((d) => d.status === 'unresolved').length; },
     get overtime() { return this.month.days.reduce((sum, d) => sum + d.overtime, 0); },
     get decisionDay() { return this.month.days.find((d) => d.date === this.decisionDate); },
     get original() { return this.contract.amendments[0].before; },
-    pay(amount) { return this.viewer === 'HR Manager' ? amount : '[ENCRYPTED — BLOCKED BY ROLE DENY-LIST]'; },
     decide(option) {
       const day = this.decisionDay;
       if (!day || day.status !== 'unresolved' || this.month.state !== 'draft') return;
