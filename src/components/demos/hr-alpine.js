@@ -51,7 +51,7 @@ function initialLeave() {
   };
 }
 
-function leaveDesk() {
+export function leaveDesk() {
   return {
     ...initialLeave(),
     site: leaveFixture.site, employee: leaveFixture.employee, team: leaveFixture.team, holidays: leaveFixture.holidays,

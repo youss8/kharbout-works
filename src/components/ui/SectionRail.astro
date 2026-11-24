@@ -1,8 +1,13 @@
 ---
-const links = [['scope','Ownership & scope'],['architecture','Architecture'],['audit','Codebase audit'],['modeling','Data modeling'],['diagram','Entity relationships'],['permissions','Access & roles'],['sandboxes','Live sandboxes']];
+interface Props {
+    links?: Array<[string, string]>;
+    inline?: boolean;
+}
+const legacyLinks: Array<[string, string]> = [['scope','Ownership & scope'],['architecture','Architecture'],['audit','Codebase audit'],['modeling','Data modeling'],['diagram','Entity relationships'],['permissions','Access & roles'],['sandboxes','Live sandboxes']];
+const { links = legacyLinks, inline = false } = Astro.props;
 ---
-<nav class="section-rail" aria-label="Case study contents">
-    <p>In this case study</p>
+<nav class:list={['section-rail', { inline }]} aria-label="Case study contents">
+    {!inline && <p>In this case study</p>}
     {links.map(([id, label]) => <a href={'#' + id}>{label}</a>)}
 </nav>
 <script>
@@ -28,4 +33,10 @@ const links = [['scope','Ownership & scope'],['architecture','Architecture'],['a
     a { font-size: .85rem; padding: .4rem .7rem; color: var(--ink-secondary); border-inline-start: 2px solid var(--border-hairline); }
     a:hover, a[aria-current] { color: var(--accent-primary); border-color: var(--accent-primary); background: var(--accent-tint); }
     @media (max-width: 850px) { .section-rail { position: static; display: flex; flex-wrap: wrap; gap: .25rem; } p { width: 100%; } }
+    .section-rail.inline { position: static; display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .4rem; padding: .45rem; border: 1px solid var(--border-hairline); border-radius: .65rem; background: var(--bg-surface); }
+    .inline a { display: inline-flex; align-items: center; min-block-size: 44px; padding-inline: .65rem; border: 0; border-radius: .35rem; font-weight: 600; }
+    @media (max-width: 480px) {
+        .section-rail.inline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .inline a { padding-inline: .5rem; font-size: .8rem; }
+    }
 </style>

@@ -21,6 +21,27 @@
     "funding-flow"
   ],
   "toughestProblemSummary": "A pooled ratio calculated identically in PHP and SQL reconciles site reports with sponsor exports.",
+  "presentation": {
+    "headline": "Portfolio Tracking & Funding Analytics",
+    "introduction": "Compare KPI results reported by sites of different sizes, then follow funding from sponsor to project and see how a received tranche changes agreement health.",
+    "workflows": [
+      { "id": "kpi-cockpit", "title": "KPI reporting", "task": "Compare a pooled result with the average of site percentages." },
+      { "id": "funding-flow", "title": "Funding flow", "task": "Trace commitments by currency and record a tranche." }
+    ],
+    "designed": [
+      "Designed a shared results framework connecting project delivery and site returns to sponsor reporting.",
+      "Designed interface patterns for the objective tree, monthly reporting matrix, and funding views that show the path from sponsor to project."
+    ],
+    "built": [
+      "Built core reporting workflows and rollup rules shared by PHP and SQL, with approved and pending figures visible in separate bands.",
+      "Built core proposal and agreement workflows with explicit transition rules, currency-specific totals, and agreement health."
+    ],
+    "decisions": [
+      { "title": "Pool people across sites", "rationale": "Sites have different denominators. Adding the reported numerators and denominators gives each participant equal weight. The inspector identifies sites that lack a denominator, so reviewers can see the coverage behind the result.", "workflow": "kpi-cockpit", "action": "Compare the two rollups" },
+      { "title": "Give every reporting path one measurement model", "rationale": "Site returns, annual plans, ad hoc entries and shared targets feed the same reporting layer. Writing the canonical measurement in the same transaction as its source keeps the matrix and sponsor reporting aligned.", "workflow": "kpi-cockpit", "action": "Inspect the reporting matrix" },
+      { "title": "Keep currency attached to every funding step", "rationale": "A portfolio can contain commitments in several currencies. Tracing amounts with their currency makes every flow and balance readable, including after recording a receipt and recalculating agreement health.", "workflow": "funding-flow", "action": "Trace the funding flow" }
+    ]
+  },
   "ecosystem": "PHP 8.5 / Laravel 13 / MySQL",
   "keyMetrics": [
     {

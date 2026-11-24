@@ -1,18 +1,56 @@
 ---
-import { ArrowDownRight, ArrowRight, ArrowUpRight, Boxes, Braces, ChartNoAxesCombined, Check, CircuitBoard, CodeXml, Database, FileStack, FlaskConical, GitBranch, Layers3, Network, ScanLine, Users } from "lucide-react";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Boxes, Braces, CalendarDays, ChartNoAxesCombined, Check, Database, FileStack, FlaskConical, GitBranch, Layers3, Mail, Network, ScanLine, Users } from "lucide-react";
+import FeaturedWorkflows from "../components/demos/FeaturedWorkflows";
+import { leaveDesk } from "../components/demos/hr-alpine.js";
+import { kpiCockpit } from "../components/demos/portfolio-alpine.js";
 import BaseLayout from "../components/layout/BaseLayout.astro";
-import MetricStrip from "../components/ui/MetricStrip.astro";
 import { profile } from "../data/profile";
 
 const builtPages = import.meta.glob("/src/pages/**/*.{astro,ts}");
 const available = (slug: string) => `/src/pages/${slug}/index.astro` in builtPages;
+const leave = leaveDesk();
+const fullDay = leave.priced;
+leave.form.partOfDay = "am";
+const morning = leave.priced;
+const fullDayQuote = fullDay.hours === null ? "—" : `${fullDay.hours}h`;
+const morningQuote = morning.hours === null ? "—" : `${morning.hours}h`;
+const kpi = kpiCockpit();
+const pooled = kpi.result;
+const pooledRate = kpi.show(pooled.actual);
+kpi.method = "naive";
+const averageRate = kpi.show(kpi.result.actual);
+
 const systems = [
-  { code: "SYS-01", key: "IT-OPS", slug: "01-it-ops-helpdesk", title: "IT Operations & Asset Helpdesk", owner: "100% Solo", scope: "Solo end-to-end architecture & build. Architecture-verified, held from live fleet rollout.", stack: ["React 19", "TypeScript", "PostgreSQL"], metrics: [["47", "Live tables"], ["54", "Triggers"], ["~118", "RLS policies"], ["11", "MCP tools"]], nodes: ["Service desk", "Postgres RLS", "Field history"], icons: [CircuitBoard, Database, GitBranch], problem: "One database trigger records immutable, field-level changes across operational registers." },
-  { code: "SYS-02", key: "HR-CRM", slug: "02-hr-lifecycle-crm", title: "HR Lifecycle Platform", owner: "Core Pre-RMS", scope: "Core full-stack contributor and co-architect on a three-developer team. Metrics cover the full platform.", stack: ["Laravel 13", "Livewire 4", "MySQL"], metrics: [["136", "Tables"], ["138", "Migrations"], ["29", "Policies"], ["293", "Test files"]], nodes: ["Leave request", "Manager", "HR review"], icons: [FileStack, Users, Check], problem: "One deterministic leave quote powers previews, reservations, deductions and approval refunds." },
-  { code: "SYS-03", key: "KPI-ENGINE", slug: "03-portfolio-kpi-engine", title: "Funding, Portfolio & KPI Analytics", owner: "~80% Primary", scope: "Primary architect and full-stack builder on a three-developer team. Metrics cover the full platform.", stack: ["PHP 8.5", "Laravel 13", "MySQL"], metrics: [["~98", "Live tables"], ["197", "Migrations"], ["175", "Actions"], ["481", "Test files"]], nodes: ["Site return", "Measurement", "Pooled KPI"], icons: [FileStack, Database, ChartNoAxesCombined], problem: "PHP and SQL pool site numerators and denominators to keep reported ratios statistically valid." },
+  {
+    code: "SYS-03", key: "PORTFOLIO TRACKING", slug: "03-portfolio-kpi-engine", title: "Portfolio Tracking & Funding Analytics", owner: "~80% Primary",
+    scope: "Primary architect and full-stack builder on a three-developer team. The audit covers the full platform.",
+    stack: ["PHP 8.5", "Laravel 13", "MySQL"], metrics: [["~98", "Live tables"], ["197", "Migrations"], ["175", "Actions"], ["481", "Test files"]],
+    nodes: ["Site returns", "Rollup rules", "Pooled KPI"], icons: [FileStack, Database, ChartNoAxesCombined],
+    problem: "Sites report on different-sized groups. A simple average can misstate the portfolio result.",
+    evidence: "PHP and SQL pool site numerators and denominators to give each participant equal weight.",
+    demo: { id: "kpi-cockpit", title: "KPI cockpit", task: "Compare portfolio rollups", icon: ChartNoAxesCombined, figures: [["Pooled ratio", pooledRate], ["Site average", averageRate]] },
+  },
+  {
+    code: "SYS-02", key: "HR LIFECYCLE", slug: "02-hr-lifecycle-crm", title: "HR Lifecycle Platform", owner: "Core Pre-RMS",
+    scope: "Core full-stack contributor and co-architect on a three-developer team. The audit covers the full platform.",
+    stack: ["Laravel 13", "Livewire 4", "MySQL"], metrics: [["136", "Tables"], ["138", "Migrations"], ["29", "Policies"], ["293", "Test files"]],
+    nodes: ["Leave request", "Manager", "HR review"], icons: [FileStack, Users, Check],
+    problem: "Leave requests need a reliable balance before routing through manager and HR approval.",
+    evidence: "One deterministic leave quote powers previews, reservations, deductions and approval refunds.",
+    demo: { id: "leave-engine", title: "Leave approval desk", task: "Price a leave request", icon: Users, figures: [["Full days", fullDayQuote], ["Mornings only", morningQuote]] },
+  },
+];
+const caseHref = (slug: string) => `/systems/${slug}/`;
+const demoHref = (slug: string, demoId: string) => `${caseHref(slug)}#${demoId}`;
+const [tracking, hr] = systems;
+const demos = [
+  { slug: tracking.slug, ...tracking.demo },
+  { slug: hr.slug, ...hr.demo },
+  { slug: tracking.slug, id: "funding-flow", title: "Funding flow", task: "Trace funding by currency", icon: GitBranch },
+  { slug: hr.slug, id: "attendance-amend", title: "Attendance & contracts", task: "Review timesheets and signed terms", icon: CalendarDays },
 ];
 const directory = [
-  { path: "systems", name: "System sandboxes", count: "06", detail: "Explore queues, approvals, funding and KPI calculations.", icon: Network },
+  { path: "systems", name: "System sandboxes", count: "06", detail: "Explore business workflows, architecture and working demos.", icon: Network },
   { path: "vault", name: "Component vault", count: "20", detail: "Explore four tiers of reusable operational interfaces.", icon: Layers3 },
   { path: "ai-kit", name: "AI engineering toolkit", count: "11", detail: "Compile and export Gems, skills and workflows.", icon: Braces },
   { path: "templates", name: "Operations templates", count: "05", detail: "Download architecture, planning and handover documents.", icon: FileStack },
@@ -21,43 +59,102 @@ const directory = [
 const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
 ---
 <BaseLayout title={`${profile.fullName} — Engineering Workbench`} description={`${profile.fullName}’s software engineering portfolio, interactive systems, reusable operations kit and CV for commercial tech roles.`}>
+  <noscript><style is:inline>[data-workflow-controls] { display: none !important; }</style></noscript>
   <div class="workbench">
-    <div class="workbench-title"><span aria-hidden="true" class="locator">⌖</span> Engineering workbench</div>
     <section class="hero" aria-labelledby="home-title">
       <div class="intro">
-        <div class="availability"><Check size={13} strokeWidth={2.8} aria-hidden="true"/><span>{profile.availability.badge} · REMOTE / GERMANY RELOCATION</span></div>
+        <div class="workbench-title"><span class="workbench-mark" aria-hidden="true"></span> Engineering workbench</div>
         <h1 id="home-title">{profile.fullName}</h1>
         <p class="role">{profile.headline}</p>
-        <p class="pitch">{profile.subheadline} {profile.availability.careerFocus}</p>
-        <div class="hero-actions">
-          <a class="action primary" href={available("systems") ? "/systems/" : "#architecture"}>{available("systems") ? "Explore 3 systems & 6 live demos" : "Explore the 3 systems"}<ArrowRight className="directional-icon" size={15} aria-hidden="true"/></a>
-          <a class="action secondary" href="/cv/">Interactive CV & PDF <ArrowUpRight className="directional-icon" size={15} aria-hidden="true"/></a>
-        </div>
-        {askAvailable && <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog"><kbd>Ctrl K</kbd> Search the operations kit <ArrowRight className="directional-icon" size={12} aria-hidden="true"/></button>}
+        <p class="pitch">{profile.subheadline}</p>
+        <nav class="hero-actions" aria-label="Start exploring">
+          <a class="action primary" href="#featured-workflows">Try a workflow <ArrowDownRight className="directional-icon" size={16} aria-hidden="true"/></a>
+          <a class="action secondary" href="/cv/">Read my CV</a>
+          {available("vault") && <a class="action secondary" href="/vault/">Browse reusable code</a>}
+        </nav>
       </div>
-      <div class="switcher" id="architecture" x-data="{ active: 0, choose(i, focus) { this.active = i; if (focus) document.getElementById('system-tab-' + i)?.focus(); } }">
-        <div class="switcher-head"><strong><Boxes size={16} aria-hidden="true"/>System architecture</strong><span class="sheet-count"><span x-text="String(active + 1).padStart(2, '0')">01</span> / 03</span></div>
-        <div class="tabs" role="tablist" aria-label="System architecture">
+      <div class="featured">
+        <FeaturedWorkflows
+          tracking={{
+            title: kpi.current.name,
+            indicator: kpi.selected,
+            pooled: { value: pooledRate, detail: `${pooled.numerator} of ${pooled.denominator} people across reporting sites` },
+            average: { value: averageRate, detail: "Each reporting site receives equal weight, regardless of size." },
+            exclusions: kpi.exclusionNotes,
+            href: demoHref(tracking.slug, tracking.demo.id),
+          }}
+          hr={{
+            full: { value: fullDayQuote, days: fullDay.days },
+            am: { value: morningQuote, days: morning.days },
+            href: demoHref(hr.slug, hr.demo.id),
+          }}
+          client:load
+        />
+      </div>
+      <div class="availability">
+        <span>{profile.availability.badge} · REMOTE / GERMANY RELOCATION</span>
+        <a href={`mailto:${profile.contact.email}`}><Mail size={15} aria-hidden="true"/> Get in touch</a>
+      </div>
+    </section>
+    <section class="selected-systems" aria-labelledby="systems-heading">
+      <div class="section-heading system-heading">
+        <h2 id="systems-heading">Selected systems</h2><span class="heading-rule"></span>
+        {available("systems") && <a class="case-link" href="/systems/">All case studies <ArrowRight className="directional-icon" size={15} aria-hidden="true"/></a>}
+      </div>
+      {available("systems") && <nav class="demo-shortcuts" aria-label="Try a system demo">
+        {demos.map(({ slug, id, title, task, icon: Icon }) => {
+          return <a href={demoHref(slug, id)}>
+            <span class="demo-symbol"><Icon size={20} strokeWidth={1.7} aria-hidden="true"/></span>
+            <span><strong>{title}</strong><small>{task}</small></span>
+            <ArrowUpRight className="directional-icon demo-arrow" size={16} aria-hidden="true"/>
+          </a>;
+        })}
+      </nav>}
+      <div class="switcher" id="architecture" x-data="{
+        active: 0,
+        choose(i, focus) {
+          this.active = i;
+          if (focus) document.getElementById('system-tab-' + i)?.focus();
+        },
+        move(direction) {
+          const forward = getComputedStyle(this.$el).direction === 'rtl' ? -direction : direction;
+          const count = this.$refs.tabs.children.length;
+          this.choose((this.active + forward + count) % count, true);
+        }
+      }">
+        <div class="switcher-head"><strong><Boxes size={16} aria-hidden="true"/>System architecture</strong><span class="sheet-count"><span x-text="String(active + 1).padStart(2, '0')">01</span> / {String(systems.length).padStart(2, "0")}</span></div>
+        <div class="tabs" role="tablist" aria-label="System architecture" x-ref="tabs" x-cloak>
           {systems.map((sys, i) => <button type="button" role="tab" id={`system-tab-${i}`} aria-controls={`system-panel-${i}`} aria-selected={i === 0 ? "true" : "false"} tabindex={i === 0 ? 0 : -1}
             x-bind:aria-selected={`active === ${i}`} x-bind:tabindex={`active === ${i} ? 0 : -1`}
-            x-on:click={`choose(${i}, false)`} x-on:keydown.right.prevent={`choose(${(i + 1) % systems.length}, true)`} x-on:keydown.left.prevent={`choose(${(i + systems.length - 1) % systems.length}, true)`} x-on:keydown.home.prevent="choose(0, true)" x-on:keydown.end.prevent="choose(2, true)">
+            x-on:click={`choose(${i}, false)`} x-on:keydown.right.prevent="move(1)" x-on:keydown.left.prevent="move(-1)" x-on:keydown.home.prevent="choose(0, true)" x-on:keydown.end.prevent={`choose(${systems.length - 1}, true)`}>
             <span>{sys.code}</span> {sys.key}
           </button>)}
         </div>
         {systems.map((sys, i) => <article class="panel" role="tabpanel" tabindex="0" id={`system-panel-${i}`} aria-labelledby={`system-tab-${i}`} hidden={i !== 0} x-bind:hidden={`active !== ${i}`}>
-          <div class="panel-title"><h2>{sys.title}</h2><span class:list={["ownership", { solo: i === 0 }]}>{i === 0 ? <CodeXml size={12} aria-hidden="true"/> : <Users size={12} aria-hidden="true"/>}{sys.owner}</span></div>
-          <p class="scope">{sys.scope}</p>
-          <div class="diagram" aria-label="Workflow" role="group">
-            {sys.nodes.map((node, n) => { const Icon = sys.icons[n]!; return <div class="diagram-node"><span class="symbol"><Icon size={18} strokeWidth={1.6} aria-hidden="true"/></span><span>{node}</span></div> })}
+          <div class="panel-summary">
+            <h3>{sys.title}</h3>
+            <p class="problem">{sys.problem}</p>
+            <div class="scope"><span class="ownership"><Users size={13} aria-hidden="true"/>{sys.owner}</span><p>{sys.scope}</p></div>
+            <p class="evidence">{sys.evidence}</p>
+            {available("systems") ? <div class="panel-actions">
+              <a class="action primary" href={demoHref(sys.slug, sys.demo.id)}>Try demo <ArrowRight className="directional-icon" size={15} aria-hidden="true"/></a>
+              <a class="action secondary" href={caseHref(sys.slug)}>Read case study</a>
+            </div> : <span class="planned">Case study and two sandboxes planned</span>}
           </div>
-          <div class="stack-tags">{sys.stack.map((item) => <span>{item}</span>)}</div>
-          <dl class="system-metrics">{sys.metrics.map(([value, label]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
-          <p class="problem">{sys.problem}</p>
-          {available("systems") ? <a class="case-link" href={`/systems/${sys.slug}/`}>Open case study & 2 live sandboxes <ArrowRight className="directional-icon" size={14} aria-hidden="true"/></a> : <span class="planned">Case study and two sandboxes planned</span>}
+          <div class="panel-details">
+            <div class="diagram" aria-label="Workflow" role="group">
+              {sys.nodes.map((node, n) => { const Icon = sys.icons[n]!; return <div class="diagram-node"><span class="symbol"><Icon size={18} strokeWidth={1.6} aria-hidden="true"/></span><span>{node}</span></div> })}
+            </div>
+            <div class="demo-figures" role="group" aria-label="Starting example">
+              {sys.demo.figures.map(([label, value]) => <p><span>{label}</span> <bdi>{value}</bdi></p>)}
+            </div>
+            <p class="metric-label">Codebase audit</p>
+            <dl class="system-metrics">{sys.metrics.map(([value, label]) => <div><dt>{label}</dt><dd><bdi>{value}</bdi></dd></div>)}</dl>
+            <div class="stack-tags">{sys.stack.map((item) => <span>{item}</span>)}</div>
+          </div>
         </article>)}
       </div>
     </section>
-    <MetricStrip metrics={profile.aggregateMetrics}/>
     <section class="principles" aria-labelledby="pillars-heading">
       <div class="section-heading"><h2 id="pillars-heading">Engineering principles</h2><span class="heading-rule"></span></div>
       <div class="pillar-grid">{profile.pillars.map((pillar, i) => {
@@ -67,6 +164,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
     </section>
     <section class="directory" aria-labelledby="directory-heading">
       <div class="section-heading"><h2 id="directory-heading">Operations kit directory</h2><span class="heading-rule"></span><ArrowDownRight className="directional-icon" size={20} aria-hidden="true"/></div>
+      {askAvailable && <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog"><kbd>Ctrl K</kbd> Search the operations kit <ArrowRight className="directional-icon" size={12} aria-hidden="true"/></button>}
       <div class="directory-list">{directory.map(({ path, name, count, detail, icon: Icon }) => {
         const live = available(path); const Tag = live ? "a" : "article";
         return <Tag class="directory-row" id={`directory-${path}`} href={live ? `/${path}/` : undefined}><Icon size={20} strokeWidth={1.6} aria-hidden="true"/><h3>{name} <span aria-label={`${Number(count)} entries`}>{count}</span></h3><p>{detail}</p>{live ? <ArrowUpRight className="directional-icon" size={17} aria-hidden="true"/> : <span class="planned">Planned</span>}</Tag>;
@@ -76,54 +174,81 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
 </BaseLayout>
 <style>
   .workbench { max-width: 1440px; padding: 0 clamp(1rem, 4.3vw, 4.5rem); margin: 0 auto; }
-  .workbench-title, .availability, .sheet-count, .tabs button, .stack-tags span, .system-metrics dd, .planned, .locator, kbd, .directory-row h3 span, .pillar-icon span { font-family: var(--font-mono); }
-  .workbench-title { display: flex; align-items: center; gap: .55rem; margin: clamp(1.35rem, 3vw, 2.6rem) 0 0; text-transform: uppercase; letter-spacing: .11em; font-size: .69rem; font-weight: 500; color: var(--ink-secondary); }
-  .locator { color: var(--accent-primary); font-size: 1.35rem; line-height: 1; }
-  .hero { display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr); gap: clamp(2rem, 5.8vw, 7rem); align-items: center; padding-block: clamp(1.5rem, 3.9vw, 4rem); }
-  .availability { display: inline-flex; gap: .42rem; align-items: flex-start; width: fit-content; max-width: 100%; border: 1px solid var(--border-hairline); border-radius: 2px; background: var(--accent-tint); color: var(--accent-primary); font-size: clamp(.56rem, .73vw, .65rem); font-weight: 600; letter-spacing: .035em; padding: .38rem .45rem; line-height: 1.5; }
-  .availability :global(svg) { flex: none; margin-block-start: 1px; }
-  h1 { margin: 1.05rem 0 .8rem; max-width: 10ch; font-size: clamp(4rem, 7.65vw, 7.25rem); line-height: 1.12; letter-spacing: -.025em; font-weight: 700; text-wrap: balance; }
-  .role { margin: 0; font-size: clamp(1.1rem, 1.7vw, 1.65rem); line-height: 1.3; font-weight: 600; letter-spacing: -.035em; }
-  .pitch { max-width: 60ch; margin: .95rem 0 1.35rem; color: var(--ink-secondary); line-height: 1.7; font-size: clamp(.87rem, 1.05vw, 1rem); }
-  .hero-actions, .action, .search-hint, .switcher-head, .switcher-head strong, .case-link, .ownership, .section-heading, .stack-tags, .pillar-icon { display: flex; align-items: center; }
-  .hero-actions { gap: .55rem; flex-wrap: wrap; }
-  .action { gap: .7rem; border-radius: 4px; box-sizing: border-box; min-height: 42px; padding: .55rem .85rem; font-size: .79rem; font-weight: 700; text-decoration: none; }
+  .workbench-title, .availability > span, .sheet-count, .tabs button, .stack-tags span, .metric-label, .system-metrics dd, .planned, kbd, .directory-row h3 span, .pillar-icon span { font-family: var(--font-mono); }
+  .workbench-title { display: flex; align-items: center; gap: .55rem; text-transform: uppercase; letter-spacing: .11em; font-size: .72rem; font-weight: 600; color: var(--accent-primary); }
+  .workbench-mark { width: .56rem; height: .56rem; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 .22rem var(--accent-tint); }
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, .97fr); grid-template-areas: "intro feature" "availability feature"; gap: .65rem clamp(1.35rem, 4.8vw, 5rem); align-items: center; padding-block: clamp(1.75rem, 5.1vw, 5rem) clamp(1.5rem, 3.2vw, 3rem); }
+  .intro { grid-area: intro; align-self: end; }
+  .featured { grid-area: feature; min-width: 0; position: relative; isolation: isolate; }
+  .featured::before {
+    content: ""; position: absolute; z-index: -1; inset: -.9rem -.7rem; border-radius: 1.15rem; pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent-primary) 25%, transparent) 1px, transparent 1px) 0 0 / 13px 13px;
+    mask-image: linear-gradient(118deg, transparent 11%, black 52%, black);
+  }
+  .availability { grid-area: availability; align-self: start; display: flex; flex-wrap: wrap; gap: .1rem .85rem; align-items: center; color: var(--ink-secondary); }
+  .availability > span { font-size: .66rem; font-weight: 600; letter-spacing: .015em; }
+  .availability a { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; color: var(--accent-primary); font-size: .8rem; font-weight: 700; text-underline-offset: .22em; }
+  .availability a:hover { text-decoration: underline; }
+  h1 { margin: .8rem 0 .65rem; max-width: 10ch; font-size: clamp(3.05rem, 7vw, 6.8rem); line-height: .99; letter-spacing: -.075em; font-weight: 700; }
+  .role { margin: 0; font-size: clamp(1.02rem, 1.7vw, 1.52rem); line-height: 1.4; font-weight: 600; letter-spacing: -.032em; }
+  .pitch { max-width: 50ch; margin: .6rem 0 1rem; color: var(--ink-secondary); line-height: 1.65; font-size: clamp(.86rem, 1.1vw, 1rem); }
+  .hero-actions, .panel-actions, .action, .search-hint, .switcher-head, .switcher-head strong, .case-link, .ownership, .section-heading, .stack-tags, .pillar-icon { display: flex; align-items: center; }
+  .hero-actions, .panel-actions { gap: .45rem; flex-wrap: wrap; }
+  .action { gap: .55rem; border-radius: .4rem; min-height: 44px; padding: .55rem .75rem; font-size: .82rem; font-weight: 700; text-decoration: none; }
   .primary { border: 1px solid var(--accent-primary); background: var(--accent-primary); color: var(--bg-surface); }
   .primary:hover { background: var(--accent-hover); }
   .secondary { border: 1px solid var(--border-strong); background: var(--bg-surface); color: var(--ink-primary); }
-  .secondary:hover { border-color: var(--accent-primary); }
-  .search-hint { border: 0; background: transparent; padding: .4rem 0; margin-block-start: .55rem; color: var(--ink-secondary); font-size: .72rem; gap: .4rem; cursor: pointer; }
+  .secondary:hover { border-color: var(--accent-primary); background: var(--accent-tint); }
+  .search-hint { border: 0; background: transparent; min-height: 44px; padding: .4rem .15rem; margin-block-end: .5rem; color: var(--ink-secondary); font-size: .8rem; gap: .4rem; cursor: pointer; }
   kbd { font-size: .62rem; border: 1px solid var(--border-strong); border-radius: 2px; padding: .07rem .22rem; }
-  .switcher { border: 1px solid var(--border-strong); border-radius: 4px; overflow: clip; background: var(--bg-surface); scroll-margin-block-start: 6rem; }
+  .selected-systems { margin-block-end: clamp(1.65rem, 4vw, 3.25rem); }
+  .section-heading.system-heading { margin-block-start: 0; flex-wrap: wrap; }
+  .case-link { gap: .4rem; min-height: 44px; text-decoration: none; color: var(--accent-primary); font-size: .81rem; font-weight: 700; }
+  .case-link:hover { text-decoration: underline; }
+  .demo-shortcuts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: .65rem; margin-block-end: 1rem; }
+  .demo-shortcuts a { display: grid; grid-template-columns: auto minmax(0,1fr) auto; gap: .75rem; align-items: center; min-height: 60px; padding: .7rem .75rem; border: 1px solid var(--border-hairline); border-radius: .6rem; background: var(--bg-surface); }
+  .demo-shortcuts a:hover { border-color: var(--accent-primary); background: var(--accent-tint); }
+  .demo-shortcuts strong, .demo-shortcuts small { display: block; }
+  .demo-shortcuts strong { font-size: .88rem; }
+  .demo-shortcuts small { color: var(--ink-secondary); font-size: .73rem; }
+  .demo-symbol { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: .45rem; background: var(--accent-tint); color: var(--accent-primary); }
+  .demo-arrow { color: var(--accent-primary); }
+  .switcher { border: 1px solid var(--border-hairline); border-radius: .7rem; overflow: clip; background: var(--bg-surface); }
   .switcher-head { justify-content: space-between; border-block-end: 1px solid var(--border-hairline); padding: .75rem 1.05rem; }
   .switcher-head strong { gap: .5rem; text-transform: uppercase; letter-spacing: .07em; font-size: .67rem; font-family: var(--font-mono); color: var(--ink-secondary); }
   .switcher-head :global(svg) { color: var(--accent-primary); }
   .sheet-count { font-size: .62rem; color: var(--ink-secondary); }
-  .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .tabs button { border: 0; border-radius: 0; border-inline-end: 1px solid var(--border-hairline); border-block-end: 1px solid var(--border-hairline); padding: .55rem .25rem; background: var(--bg-subtle); color: var(--ink-secondary); font-size: .64rem; cursor: pointer; font-weight: 500; line-height: 1.4; }
+  .tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tabs button { border: 0; border-radius: 0; border-inline-end: 1px solid var(--border-hairline); border-block-end: 2px solid var(--border-hairline); min-height: 44px; padding: .5rem .2rem; background: var(--bg-subtle); color: var(--ink-secondary); font-size: clamp(.63rem,1.2vw,.76rem); cursor: pointer; font-weight: 600; line-height: 1.4; }
   .tabs button:last-child { border-inline-end: 0; }
   .tabs button[aria-selected="true"] { color: var(--accent-primary); background: var(--bg-surface); border-block-end: 2px solid var(--accent-primary); }
   .tabs button:focus-visible { outline-offset: -3px; }
-  .panel { padding: clamp(.85rem, 1.8vw, 1.55rem); }
+  .panel { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.1rem,3vw,2.5rem); padding: clamp(.85rem, 2.4vw, 1.75rem); }
   .panel[hidden] { display: none; }
-  .panel-title { display: flex; align-items: flex-start; justify-content: space-between; gap: .35rem; flex-wrap: wrap; }
-  .panel h2 { margin: 0; font-size: clamp(1.15rem, 1.7vw, 1.6rem); }
-  .ownership { gap: .3rem; border-radius: 2px; border: 1px solid var(--border-strong); padding: .15rem .38rem; font: 500 .64rem var(--font-mono); color: var(--ink-secondary); }
-  .ownership.solo { background: var(--accent-tint); color: var(--accent-primary); border-color: var(--accent-primary); }
-  .scope, .problem { margin: .45rem 0; color: var(--ink-secondary); font-size: .78rem; line-height: 1.5; }
-  .diagram { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; background: var(--bg-subtle); border: 1px solid var(--border-hairline); border-radius: 2px; margin: 1rem 0 .65rem; padding: .85rem .4rem; }
+  .panel:focus-visible { outline-offset: -3px; }
+  .panel h3 { margin: 0; font-size: clamp(1.2rem, 2.5vw, 1.85rem); }
+  .ownership { gap: .3rem; width: fit-content; border-radius: .25rem; border: 1px solid var(--border-hairline); padding: .2rem .45rem; font: 600 .69rem var(--font-mono); color: var(--ink-secondary); background: var(--bg-subtle); }
+  .scope { margin: .85rem 0; }
+  .scope p { margin-block-start: .35rem; }
+  .problem, .scope p, .evidence { color: var(--ink-secondary); font-size: .85rem; line-height: 1.6; }
+  .problem { margin-block-start: .5rem; }
+  .evidence { border-inline-start: 2px solid var(--accent-primary); padding-inline-start: .65rem; }
+  .panel-actions { margin-block-start: .9rem; }
+  .diagram { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; background: var(--bg-subtle); border: 1px solid var(--border-hairline); border-radius: .4rem; margin-block-end: .65rem; padding: .85rem .35rem; }
   .diagram-node { position: relative; display: grid; justify-items: center; text-align: center; gap: .4rem; color: var(--ink-secondary); font: 500 .6rem var(--font-mono); }
   .diagram-node:not(:last-child)::after { position: absolute; top: 15px; inset-inline-start: calc(50% + 17px); content: ""; width: calc(100% - 34px); border-block-start: 1px solid var(--border-strong); }
   .symbol { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--border-strong); border-radius: 3px; background: var(--bg-surface); color: var(--accent-primary); }
   .stack-tags { flex-wrap: wrap; gap: .35rem; }
   .stack-tags span { font-size: .61rem; padding: .13rem .35rem; border: 1px solid var(--border-hairline); border-radius: 2px; }
-  .system-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--border-hairline); margin: .8rem 0; padding-block: .55rem; }
+  .demo-figures { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .45rem; margin-block: .8rem; }
+  .demo-figures p { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .55rem; justify-content: space-between; padding: .45rem .6rem; background: var(--accent-tint); border-radius: .4rem; font-size: .75rem; color: var(--accent-primary); }
+  .demo-figures bdi { font: 600 .88rem var(--font-mono); }
+  .metric-label { color: var(--ink-secondary); font-size: .71rem; font-weight: 600; margin-block: .7rem .35rem; }
+  .system-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-block: 1px solid var(--border-hairline); margin: 0 0 .75rem; padding-block: .55rem; }
   .system-metrics div { display: flex; flex-direction: column-reverse; gap: .1rem; padding-inline-start: .55rem; border-inline-start: 1px solid var(--border-hairline); }
   .system-metrics div:first-child { border-inline-start: 0; padding-inline-start: 0; }
   .system-metrics dt { font-size: .62rem; color: var(--ink-secondary); }
   .system-metrics dd { margin: 0; line-height: 1.25; font-size: 1.15rem; font-weight: 500; letter-spacing: -.07em; }
-  .case-link { gap: .45rem; text-decoration: none; color: var(--accent-primary); font-size: .76rem; font-weight: 700; margin-block-start: .8rem; }
-  .case-link:hover { text-decoration: underline; }
   .planned { font-size: .62rem; color: var(--ink-secondary); }
   .section-heading { gap: 1rem; margin-block: clamp(2.3rem, 5vw, 4.3rem) 1.15rem; }
   .section-heading h2 { font-size: clamp(1.5rem, 2.8vw, 2.5rem); margin: 0; }
@@ -141,8 +266,15 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   .directory-row h3 { font-size: .95rem; margin: 0; }
   .directory-row h3 span { color: var(--ink-secondary); font-size: .67rem; margin-inline-start: .22rem; }
   .directory-row .planned { border: 1px dashed var(--border-strong); border-radius: 2px; padding: .1rem .3rem; }
-  @media (min-width: 1700px) { .hero { gap: 7rem; } }
-  @media (max-width: 890px) { .hero { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1.25rem; } h1 { font-size: clamp(3rem, 7.5vw, 5rem); } }
-  @media (max-width: 720px) { .hero { grid-template-columns: 1fr; align-items: start; gap: 1.5rem; } .intro { padding-block: .5rem; } h1 { max-width: 14ch; font-size: clamp(3.3rem, 10.4vw, 4.8rem); } .pillar-grid { grid-template-columns: 1fr; gap: .45rem; } .pillar-grid article { padding: .85rem 0; } .directory-row { grid-template-columns: 1.25rem 1fr auto; gap: .3rem .65rem; padding-inline: 0; } .directory-row p { grid-column: 2 / 4; grid-row: 2; } .directory-row > :last-child { grid-column: 3; grid-row: 1; } }
-  @media (prefers-reduced-motion: no-preference) { .action, .directory-row { transition: background-color var(--motion-duration) var(--motion-ease), border-color var(--motion-duration) var(--motion-ease); } }
+  @media (max-width: 740px) {
+    .hero, .panel { grid-template-columns: minmax(0,1fr); }
+    .hero { grid-template-areas: "intro" "feature" "availability"; row-gap: 1.3rem; align-items: start; }
+    h1 { max-width: 14ch; font-size: clamp(2.05rem, 11.6vw, 4.8rem); }
+    .pillar-grid { grid-template-columns: 1fr; gap: .45rem; }
+    .pillar-grid article { padding: .85rem 0; }
+    .directory-row { grid-template-columns: 1.25rem 1fr auto; gap: .3rem .65rem; padding-inline: 0; }
+    .directory-row p { grid-column: 2 / 4; grid-row: 2; }
+    .directory-row > :last-child { grid-column: 3; grid-row: 1; }
+  }
+  @media (prefers-reduced-motion: no-preference) { .action, .demo-shortcuts a, .directory-row { transition: background-color var(--motion-duration) var(--motion-ease), border-color var(--motion-duration) var(--motion-ease); } }
 </style>

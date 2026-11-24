@@ -58,8 +58,47 @@ for (const slug of cases) {
         await figure.getByRole('combobox').selectOption('175');
         await page.getByRole('button', { name: 'Dark mode' }).click();
         await expect(figure.locator('[data-rendered-theme="dark"] svg')).toBeVisible();
-        await expect(page.getByRole('navigation', { name: 'Case study contents' }).getByRole('link')).toHaveCount(7);
+        const contents = page.getByRole('navigation', { name: 'Case study contents' });
+        await expect(contents.getByRole('link')).toHaveCount(slug === cases[0] ? 7 : 4);
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
         expect(errors).toEqual([]);
+    });
+}
+
+for (const [slug, first, second] of [
+    [cases[1], 'leave-engine', 'attendance-amend'],
+    [cases[2], 'kpi-cockpit', 'funding-flow'],
+]) {
+    test(slug + ' leads with working demos followed by contribution and design decisions on mobile', async ({ page }) => {
+        await page.setViewportSize({ width: 320, height: 740 });
+        await page.emulateMedia({ reducedMotion: 'reduce' });
+        await page.goto('/systems/' + slug + '/');
+        await page.locator('html').evaluate(html => { html.dir = 'rtl'; });
+        await page.evaluate(() => document.fonts.ready);
+
+        const picker = page.getByRole('navigation', { name: 'Open a workflow' });
+        const links = picker.getByRole('link');
+        await expect(links).toHaveCount(2);
+        await expect(links.nth(0)).toHaveAttribute('href', '#' + first);
+        await expect(links.nth(1)).toHaveAttribute('href', '#' + second);
+        const tapTarget = await links.nth(1).boundingBox();
+        expect(tapTarget.height).toBeGreaterThanOrEqual(44);
+        expect(tapTarget.y + tapTarget.height).toBeLessThanOrEqual(740);
+        await links.nth(1).press('Enter');
+        await expect(page).toHaveURL(new RegExp('#' + second + '$'));
+        await expect(page.locator('#' + second)).toBeInViewport();
+
+        const sections = await page.locator('section:is(#sandboxes, #scope, #decisions, #technical-reference)').evaluateAll(elements => elements.map(element => element.id));
+        expect(sections).toEqual(['sandboxes', 'scope', 'decisions', 'technical-reference']);
+        const contents = page.getByRole('navigation', { name: 'Case study contents' });
+        await contents.getByRole('link', { name: 'My contribution' }).press('Enter');
+        await expect(page).toHaveURL(/#scope$/);
+        await expect(page.getByRole('heading', { name: 'What I designed and built' })).toBeInViewport();
+        await expect(page.getByRole('heading', { name: 'Designed', exact: true })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Built', exact: true })).toBeVisible();
+        await contents.getByRole('link', { name: 'Design decisions' }).press('Enter');
+        await expect(page).toHaveURL(/#decisions$/);
+        await expect(page.locator('#decisions .decision')).toHaveCount(3);
+        expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
     });
 }
