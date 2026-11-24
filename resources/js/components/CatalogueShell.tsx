@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
 import type { ReactNode } from 'react';
+import { siteName } from '../../../src/data/brand';
 import { isLocale, useLocale } from '../i18n';
 import CatalogueSearch from './CatalogueSearch';
 import type { VaultSearch } from './CatalogueSearch';
@@ -25,17 +26,15 @@ export default function CatalogueShell({
                         href="/"
                         className="brand"
                         aria-label={t(
-                            'Youssef’s Operations Kit home',
-                            'Youssef’s Operations Kit – Startseite',
-                            'الصفحة الرئيسية لمجموعة أدوات يوسف',
+                            `${siteName} home`,
+                            `${siteName} – Startseite`,
+                            `الصفحة الرئيسية · ${siteName}`,
                         )}
                     >
-                        <span className="brand-mark" aria-hidden="true">
-                            <i />
-                            <i />
-                            <i />
-                        </span>
-                        <bdi dir="ltr">Youssef’s Operations Kit</bdi>
+                        <img src="/favicon.svg" width="30" height="30" alt="" />
+                        <bdi lang="en" dir="ltr">
+                            {siteName}
+                        </bdi>
                     </Link>
                     <nav aria-label={t('Main navigation', 'Hauptnavigation', 'التنقّل الرئيسي')}>
                         <CatalogueSearch vault={vault} />
@@ -71,7 +70,9 @@ export default function CatalogueShell({
                 {children}
             </main>
             <footer className="shell site-footer">
-                <span>Youssef’s Operations Kit</span>
+                <bdi lang="en" dir="ltr">
+                    {siteName}
+                </bdi>
                 <a href="https://github.com/youss8/youssef-operations-kit/blob/main/LICENSE">
                     {t('MIT License', 'MIT-Lizenz', 'رخصة MIT')} <span aria-hidden="true">↗</span>
                 </a>

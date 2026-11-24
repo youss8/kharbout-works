@@ -1,10 +1,11 @@
 ---
 import { ArrowUpRight, Mail } from "lucide-react";
+import { siteName } from "../../data/brand";
 import { profile } from "../../data/profile";
 ---
 <footer class="site-footer no-print">
   <div class="footer-shell">
-    <div><a href="/" class="signature">{profile.brandName}</a><a class="license" href={profile.contact.repoUrl + "/blob/main/LICENSE"}>MIT License</a></div>
+    <div><a href="/" class="signature">{siteName}</a><a class="license" href={profile.contact.repoUrl + "/blob/main/LICENSE"}>MIT License</a></div>
     <nav aria-label="Contact and source">
       <a href={"mailto:" + profile.contact.email}><Mail size={14} aria-hidden="true"/>Email</a>
       <a href={profile.contact.github}>GitHub<ArrowUpRight size={13} aria-hidden="true"/></a>

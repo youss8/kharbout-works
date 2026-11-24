@@ -6,7 +6,6 @@ const relocation = "Open to Relocation to Germany";
 export const profile = {
   fullName: "Youssef Kharbout",
   monogram: "YK",
-  brandName: "Youssef Operations Kit",
   headline: "Full-Stack Software Engineer & Systems Architect",
   subheadline:
     "I design and build workflow software for portfolio tracking and HR, from data rules and approvals to the interfaces people use every day.",

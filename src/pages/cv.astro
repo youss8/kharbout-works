@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import StatusBadge from '../components/ui/StatusBadge.astro';
+import { siteName } from '../data/brand';
 import { profile } from '../data/profile';
 import '../styles/print-cv.css';
 
@@ -20,7 +21,7 @@ const contacts = [
   { label: contact.email, href: 'mailto:' + contact.email },
   { label: 'github.com/' + contact.githubHandle, href: contact.github },
   { label: new URL(contact.linkedin).hostname.replace('www.', '') + new URL(contact.linkedin).pathname, href: contact.linkedin },
-  { label: 'Open-source operations kit', href: contact.repoUrl },
+  { label: siteName, href: contact.repoUrl },
 ];
 ---
 

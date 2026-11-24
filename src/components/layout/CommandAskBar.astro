@@ -1,10 +1,11 @@
 ---
 import { ArrowDown, ArrowUp, CornerDownLeft, Search, X } from "lucide-react";
+import { siteName } from "../../data/brand";
 ---
 <div class="no-print" x-data="commandPalette" x-on:yok-open-ask.window="open()" x-on:yok-theme-change.window="syncTheme()" x-on:keydown.window="shortcut($event)">
   <dialog id="ask-workbench" class="ask-dialog" aria-labelledby="ask-title" x-on:cancel.prevent="close()" x-on:click.self="close()">
     <div class="ask-shell">
-      <header class="ask-header"><h2 id="ask-title">Search the operations kit</h2>
+      <header class="ask-header"><h2 id="ask-title">Search {siteName}</h2>
         <button class="ask-close" type="button" aria-label="Close command search" x-on:click="close()"><X size={18} aria-hidden="true"/></button></header>
       <div class="ask-input">
         <Search size={19} aria-hidden="true"/>
