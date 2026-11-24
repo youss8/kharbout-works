@@ -4,6 +4,7 @@ import FeaturedWorkflows from "../components/demos/FeaturedWorkflows";
 import { leaveDesk } from "../components/demos/hr-alpine.js";
 import { kpiCockpit } from "../components/demos/portfolio-alpine.js";
 import BaseLayout from "../components/layout/BaseLayout.astro";
+import { siteName } from "../data/brand";
 import { profile } from "../data/profile";
 
 const builtPages = import.meta.glob("/src/pages/**/*.{astro,ts}");
@@ -58,7 +59,7 @@ const directory = [
 ];
 const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
 ---
-<BaseLayout title={`${profile.fullName} — Engineering Workbench`} description={`${profile.fullName}’s software engineering portfolio, interactive systems, reusable operations kit and CV for commercial tech roles.`}>
+<BaseLayout title={profile.fullName} description={`${profile.fullName}’s engineering workbench with interactive system demos, reusable code, operations templates, and a CV.`}>
   <noscript><style is:inline>[data-workflow-controls] { display: none !important; }</style></noscript>
   <div class="workbench">
     <section class="hero" aria-labelledby="home-title">
@@ -163,8 +164,8 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
       })}</div>
     </section>
     <section class="directory" aria-labelledby="directory-heading">
-      <div class="section-heading"><h2 id="directory-heading">Operations kit directory</h2><span class="heading-rule"></span><ArrowDownRight className="directional-icon" size={20} aria-hidden="true"/></div>
-      {askAvailable && <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog"><kbd>Ctrl K</kbd> Search the operations kit <ArrowRight className="directional-icon" size={12} aria-hidden="true"/></button>}
+      <div class="section-heading"><h2 id="directory-heading">Workbench directory</h2><span class="heading-rule"></span><ArrowDownRight className="directional-icon" size={20} aria-hidden="true"/></div>
+      {askAvailable && <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog"><kbd>Ctrl K</kbd> Search {siteName} <ArrowRight className="directional-icon" size={12} aria-hidden="true"/></button>}
       <div class="directory-list">{directory.map(({ path, name, count, detail, icon: Icon }) => {
         const live = available(path); const Tag = live ? "a" : "article";
         return <Tag class="directory-row" id={`directory-${path}`} href={live ? `/${path}/` : undefined}><Icon size={20} strokeWidth={1.6} aria-hidden="true"/><h3>{name} <span aria-label={`${Number(count)} entries`}>{count}</span></h3><p>{detail}</p>{live ? <ArrowUpRight className="directional-icon" size={17} aria-hidden="true"/> : <span class="planned">Planned</span>}</Tag>;

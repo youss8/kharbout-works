@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
 import type { CommandIndex, SearchEntry } from '../data/command-index';
 import { vaultAliases } from '../data/command-index';
+import { siteName } from '../data/brand';
 import { profile } from '../data/profile';
 import { labProjects } from '../data/lab';
 import { sandboxTitles } from '../data/sandbox-directory';
@@ -40,7 +41,7 @@ const pages = [
     ],
 ];
 const pageAliases: Record<string, string[]> = {
-    '/': ['الصفحة الرئيسية', 'نبذة عن يوسف'],
+    '/': [siteName, 'الصفحة الرئيسية', 'نبذة عن يوسف'],
     '/systems/': ['الأنظمة', 'دراسات الحالة', 'مقارنة الأنظمة'],
     '/vault/': ['مكتبة المكونات', 'خزنة المكونات', 'أمثلة تفاعلية'],
     '/ai-kit/': ['الذكاء الاصطناعي', 'أدوات هندسية', 'قوالب الأوامر'],

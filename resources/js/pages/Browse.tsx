@@ -2,6 +2,7 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { readFilters, writeFilters } from '../../../kit/utilities/url-filters/filters';
+import { siteName } from '../../../src/data/brand';
 import type { CatalogueEntry } from '../catalogue';
 import { categoryLabel, useLocale } from '../i18n';
 import { searchEntries } from '../searchEntries';
@@ -153,9 +154,7 @@ export default function Browse({
             <section className="hero browse-hero" aria-labelledby="hero-title">
                 <div className="hero-copy">
                     <h1 id="hero-title" lang="en" dir="ltr">
-                        Youssef’s
-                        <br />
-                        Operations Kit
+                        {siteName}
                     </h1>
                     <p>
                         {t(

@@ -71,7 +71,7 @@ test('command palette resolves every intent, navigates options and restores focu
 }) => {
     await page.goto('/');
     const trigger = page.getByRole('button', { name: 'Open command search' });
-    const dialog = page.getByRole('dialog', { name: 'Search the operations kit' });
+    const dialog = page.getByRole('dialog', { name: 'Search Kharbout Works' });
     await trigger.focus();
     await page.keyboard.press('Control+k');
     await expect(dialog).toBeVisible();
@@ -129,7 +129,7 @@ test('command palette resolves every intent, navigates options and restores focu
 test('command actions persist the theme and navigate to live indexed assets', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 820 });
     await page.goto('/systems/');
-    const dialog = page.getByRole('dialog', { name: 'Search the operations kit' });
+    const dialog = page.getByRole('dialog', { name: 'Search Kharbout Works' });
     await page.getByRole('button', { name: 'Open command search' }).click();
     await search(page).fill('dark');
     await dialog.getByRole('option').filter({ hasText: 'Switch to dark mode' }).click();
@@ -158,7 +158,7 @@ test('Arabic, keyboard layout and typo matches lead to the same indexed destinat
 }) => {
     await page.goto('/');
     await page.keyboard.press('Control+k');
-    const dialog = page.getByRole('dialog', { name: 'Search the operations kit' });
+    const dialog = page.getByRole('dialog', { name: 'Search Kharbout Works' });
     const assets = dialog.getByRole('group', { name: resultGroups[2] });
     await search(page).fill('السِّيرَة الذَّاتِيَّة');
     await expect(
@@ -187,7 +187,7 @@ test('unreadable search index offers a retry and restores results for the pendin
     });
     await page.goto('/');
     await page.keyboard.press('Control+k');
-    const dialog = page.getByRole('dialog', { name: 'Search the operations kit' });
+    const dialog = page.getByRole('dialog', { name: 'Search Kharbout Works' });
     await expect(dialog.getByRole('alert')).toContainText('could not be loaded');
     await search(page).fill('cv');
     await dialog.getByRole('button', { name: 'Retry search' }).click();

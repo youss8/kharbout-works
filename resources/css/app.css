@@ -126,31 +126,8 @@ a {
     letter-spacing: -0.05em;
     text-decoration: none;
 }
-.brand-mark {
-    position: relative;
+.brand img {
     flex: none;
-    inline-size: 1.85rem;
-    block-size: 2.05rem;
-    color: var(--accent-ink);
-}
-.brand-mark i {
-    position: absolute;
-    inset-inline-start: 0.15rem;
-    inline-size: 1.52rem;
-    block-size: 0.63rem;
-    border: 1.5px solid var(--paper);
-    border-radius: 0.15rem;
-    background: currentColor;
-    transform: skewY(-13deg);
-}
-.brand-mark i:nth-child(1) {
-    inset-block-start: 1.24rem;
-}
-.brand-mark i:nth-child(2) {
-    inset-block-start: 0.79rem;
-}
-.brand-mark i:nth-child(3) {
-    inset-block-start: 0.34rem;
 }
 .masthead nav {
     flex-wrap: wrap;
@@ -284,7 +261,7 @@ kbd {
     color: var(--muted);
     font-size: 0.88rem;
 }
-.site-footer > span {
+.site-footer > bdi {
     font-weight: 650;
 }
 

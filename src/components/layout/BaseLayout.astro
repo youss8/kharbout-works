@@ -10,6 +10,7 @@ import '../../styles/tokens.css';
 import TopNav from './TopNav.astro';
 import Footer from './Footer.astro';
 import CommandAskBar from './CommandAskBar.astro';
+import { siteName } from '../../data/brand';
 import { profile } from '../../data/profile';
 interface Props { title: string; description?: string }
 const { title, description = profile.subheadline } = Astro.props;
@@ -26,7 +27,7 @@ const { title, description = profile.subheadline } = Astro.props;
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={description} />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-        <title>{title} · {profile.brandName}</title>
+        <title>{title} · {siteName}</title>
     </head>
     <body>
         <a class="skip-link no-print" href="#main-content">Skip to content</a>

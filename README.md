@@ -1,6 +1,8 @@
-# Youssef Operations Kit
+# Kharbout Works
 
 Youssef Kharbout’s engineering workbench brings six interactive system demonstrations, twenty reusable Vault kits, eleven prompt blueprints, five operations templates, four personal prototypes and an International/DACH CV into a static site.
+
+[Logo concept and palette](docs/design/kharbout-works-logo-concept.png)
 
 ## Run the workbench
 
