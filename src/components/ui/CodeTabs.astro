@@ -1,71 +1,90 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { Code } from 'astro:components';
 import PreviewFrame from './PreviewFrame.astro';
 interface Props { item: CollectionEntry<'vault'> }
 const { item } = Astro.props;
-const { data } = item;
-const themes = { light: 'github-light', dark: 'github-dark-dimmed' } as const;
-const labels = ['Live preview', 'Tailwind + Alpine', 'React 19 + TS', 'Laravel 13 + Livewire 4'];
+const labels = ['Live Preview','Tailwind v4 + Alpine.js','React 19 + TypeScript','Laravel 13 + Livewire 4 [PHP + Blade]'];
 ---
-<vault-code-tabs data-engine={data.previewEngine}>
-    <div class="tabs-head">
-        <div class="code-tabs" role="tablist" aria-label={data.title + ' example source'}>
-            {labels.map((label,i) => <button type="button" role="tab" id={item.id+'-tab-'+i} aria-controls={item.id+'-panel-'+i} aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}>{label}</button>)}
-        </div>
-        <button class="copy-source" type="button">Copy source</button>
-    </div>
-    <div role="tabpanel" id={item.id+'-panel-0'} aria-labelledby={item.id+'-tab-0'}><PreviewFrame slug={item.id} title={data.title}/></div>
-    <div role="tabpanel" id={item.id+'-panel-1'} aria-labelledby={item.id+'-tab-1'} hidden><Code code={data.codeAlpine} lang="html" themes={themes} /></div>
-    <div role="tabpanel" id={item.id+'-panel-2'} aria-labelledby={item.id+'-tab-2'} hidden><Code code={data.codeReact} lang="tsx" themes={themes} /></div>
-    <div role="tabpanel" id={item.id+'-panel-3'} aria-labelledby={item.id+'-tab-3'} hidden>
-        <p class="file-label">Livewire component · PHP</p><Code code={data.codeLivewirePhp} lang="php" themes={themes} />
-        <p class="file-label">Component view · Blade</p><Code code={data.codeLivewireBlade} lang="blade" themes={themes} />
-    </div>
-    <div class="copy-note" role="status" aria-live="polite"></div>
-    <label class="manual-copy" hidden>Source to copy<textarea readonly rows="5"></textarea></label>
+<vault-code-tabs data-engine={item.data.previewEngine}>
+  <div class="code-tabs" role="tablist" aria-label={item.data.title + ' example source'}>
+    {labels.map((label,i) => <button type="button" role="tab" id={item.id+'-tab-'+i} aria-controls={item.id+'-panel-'+i} aria-selected={i===0?'true':'false'} tabindex={i===0?0:-1}>{label}</button>)}
+  </div>
+  <div role="tabpanel" id={item.id+'-panel-0'} aria-labelledby={item.id+'-tab-0'}><PreviewFrame slug={item.id} title={item.data.title} engine={item.data.previewEngine}/></div>
+  {['alpine','react','livewire'].map((stack,i) => <div role="tabpanel" hidden id={item.id+'-panel-'+(i+1)} aria-labelledby={item.id+'-tab-'+(i+1)} data-source={'/vault/source/'+item.id+'/'+stack+'/'}></div>)}
+  <button type="button" class="copy-source">Copy source</button><span class="feedback" role="status"></span>
+  <label class="manual-copy" hidden>Source to copy<textarea readonly rows="6"></textarea></label>
 </vault-code-tabs>
 <script>
-    class VaultCodeTabs extends HTMLElement {
-        connectedCallback() {
-            const tabs = [...this.querySelectorAll<HTMLButtonElement>('[role=tab]')];
-            const panels = [...this.querySelectorAll<HTMLElement>('[role=tabpanel]')];
-            const feedback = this.querySelector<HTMLElement>('[role=status]')!;
-            const manual = this.querySelector<HTMLLabelElement>('.manual-copy')!;
-            const select = (index: number) => {
-                tabs.forEach((tab,i) => { tab.setAttribute('aria-selected',String(i===index)); tab.tabIndex = i===index ? 0 : -1; panels[i].hidden = i!==index; });
-                feedback.textContent = ''; manual.hidden = true;
-                if (index === 0) this.querySelector('vault-frame')?.dispatchEvent(new Event('activate-preview'));
-            };
-            tabs.forEach((tab,i) => {
-                tab.addEventListener('click', () => select(i));
-                tab.addEventListener('keydown', event => {
-                    const dest: Record<string, number> = { ArrowRight:(i+1)%tabs.length, ArrowLeft:(i+tabs.length-1)%tabs.length, Home:0, End:tabs.length-1 };
-                    const index = dest[event.key];
-                    if (index === undefined) return;
-                    event.preventDefault(); select(index); tabs[index].focus();
-                });
-            });
-            this.querySelector('.copy-source')!.addEventListener('click', async () => {
-                const index = panels.findIndex(panel => !panel.hidden);
-                const sourceIndex = index || (this.dataset.engine === 'react' ? 2 : 1);
-                const source = [...panels[sourceIndex].querySelectorAll('pre code')].map(code => code.textContent).join('\n\n');
-                try { await navigator.clipboard.writeText(source); feedback.textContent = 'Source copied.'; }
-                catch { manual.hidden = false; const textarea = manual.querySelector('textarea')!; textarea.value = source; textarea.select(); feedback.textContent = 'Source selected for manual copy.'; }
-            });
-        }
+  class VaultCodeTabs extends HTMLElement {
+    connectedCallback() {
+      const tabs = [...this.querySelectorAll<HTMLButtonElement>('[role=tab]')];
+      const panels = [...this.querySelectorAll<HTMLElement>('[role=tabpanel]')];
+      const feedback = this.querySelector<HTMLElement>('.feedback')!;
+      const manual = this.querySelector<HTMLLabelElement>('.manual-copy')!;
+      const cache = new Map<HTMLElement, Promise<void>>();
+      const load = (panel: HTMLElement) => {
+        if (!panel.dataset.source) return Promise.resolve();
+        const existing = cache.get(panel);
+        if (existing) return existing;
+        panel.setAttribute('aria-busy','true'); panel.dataset.loading = 'true';
+        const task = fetch(panel.dataset.source).then(async response => {
+          if (!response.ok) throw new Error('Source unavailable');
+          panel.innerHTML = await response.text();
+        }).catch(() => {
+          cache.delete(panel); panel.replaceChildren();
+          const error = document.createElement('div'); error.className = 'error-card'; error.setAttribute('role','alert');
+          error.textContent = 'The source files could not load. ';
+          const retry = document.createElement('button'); retry.textContent = 'Retry';
+          retry.onclick = () => { void load(panel); }; error.append(retry); panel.append(error);
+        }).finally(() => { delete panel.dataset.loading; panel.setAttribute('aria-busy','false'); });
+        cache.set(panel,task);
+        return task;
+      };
+      const select = (index: number) => {
+        tabs.forEach((tab,i) => { tab.setAttribute('aria-selected', String(i === index)); tab.tabIndex = i === index ? 0 : -1; panels[i].hidden = i !== index; });
+        manual.hidden = true; feedback.textContent = '';
+        if (!index) this.querySelector('vault-frame')?.dispatchEvent(new Event('activate-preview'));
+        else void load(panels[index]);
+      };
+      tabs.forEach((tab,i) => {
+        tab.onclick = () => select(i);
+        tab.onkeydown = event => {
+          const right = getComputedStyle(this).direction === 'rtl' ? -1 : 1;
+          const keys: Record<string,number> = {ArrowRight:(i+right+4)%4,ArrowLeft:(i-right+4)%4,Home:0,End:3};
+          const next = keys[event.key];
+          if (next !== undefined) { event.preventDefault(); select(next); tabs[next].focus(); }
+        };
+      });
+      const copy = async (source: string) => {
+        try { await navigator.clipboard.writeText(source); feedback.textContent = 'Source copied.'; }
+        catch { manual.hidden = false; const field = manual.querySelector('textarea')!; field.value = source; field.select(); feedback.textContent = 'Source selected for manual copy.'; }
+      };
+      this.addEventListener('click', event => {
+        if (!(event.target instanceof Element) || !event.target.closest('[data-copy-file]')) return;
+        const code = event.target.closest('section')?.querySelector('pre code')?.textContent;
+        if (code) void copy(code);
+      });
+      this.querySelector<HTMLButtonElement>('.copy-source')!.onclick = async () => {
+        let i = panels.findIndex(panel => !panel.hidden);
+        if (!i) i = this.querySelector<HTMLSelectElement>('[data-engine-select]')?.value === 'react' ? 2 : 1;
+        await load(panels[i]);
+        const source = [...panels[i].querySelectorAll('pre code')].map(code => code.textContent).join('\n\n');
+        if (!source) { select(i); return; }
+        await copy(source);
+      };
     }
-    customElements.define('vault-code-tabs', VaultCodeTabs);
+  }
+  customElements.define('vault-code-tabs', VaultCodeTabs);
 </script>
 <style>
-    vault-code-tabs { display:block; margin-top:1.3rem; min-width:0; }
-    .tabs-head,.code-tabs { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem; }
-    .tabs-head { justify-content:space-between; border-block:1px solid var(--border-hairline); padding:.5rem 0; margin-bottom:.8rem; }
-    button { padding:.45rem .5rem; border-radius:3px; font-size:.82rem; font-weight:600; }
-    [role=tab][aria-selected="true"] { background:var(--accent-tint); color:var(--accent-primary); }
-    .copy-source { border:1px solid var(--border-strong); }
-    .copy-note:not(:empty) { padding:.45rem 0; font-size:.85rem; color:var(--accent-primary); }
-    .file-label { margin:.65rem 0; font:500 .75rem var(--font-mono); }
-    textarea { width:100%; }
-    vault-code-tabs :global(pre.astro-code) { border:1px solid var(--border-hairline); font-size:.8rem; line-height:1.6; padding:1rem; max-height:32rem; overflow:auto; tab-size:2; }
+  vault-code-tabs { display:block; margin-block-start:1.2rem; min-inline-size:0; }
+  .code-tabs { display:flex; flex-wrap:wrap; gap:.25rem; border-block:1px solid var(--border-hairline); padding-block:.45rem; margin-block-end:.8rem; }
+  button { padding:.45rem .5rem; border-radius:3px; font-size:.82rem; font-weight:600; }
+  [role=tab][aria-selected=true] { color:var(--accent-primary); background:var(--accent-tint); }
+  .copy-source { margin-block-start:.6rem; border:1px solid var(--border-strong); }
+  .feedback { margin-inline-start:.5rem; font-size:.8rem; }
+  textarea { inline-size:100%; }
+  vault-code-tabs :global(.file-label) { font:.75rem var(--font-mono); margin-block:.85rem .3rem; overflow-wrap:anywhere; }
+  vault-code-tabs :global([data-copy-file]), vault-code-tabs :global(a[download]) { color:var(--accent-primary); text-decoration:underline; font-size:.8rem; }
+  vault-code-tabs :global(pre.astro-code) { border:1px solid var(--border-hairline); font-size:.8rem; line-height:1.55; padding:1rem; max-block-size:32rem; overflow:auto; tab-size:2; }
 </style>

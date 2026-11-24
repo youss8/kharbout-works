@@ -1,0 +1,22 @@
+{
+  "id": "redacted-pay-day-state",
+  "order": 5,
+  "tier": 1,
+  "title": "Withheld pay and attendance day states",
+  "category": "Forms & Guards",
+  "sourceSystems": [
+    "SYS-02"
+  ],
+  "provenance": "observed",
+  "summary": "Inspect the role-specific save payload and record a human decision for an incomplete day. All contract values in this role simulator are fictional.",
+  "previewEngine": "react",
+  "supportsRtl": true,
+  "interactionSpecs": [
+    "Omit restricted pay fields from the rendered form and save payload.",
+    "Resolve a missing or single punch using an explicit human decision."
+  ],
+  "sourceIds": [
+    "HR-04",
+    "HR-05"
+  ]
+}

@@ -1,0 +1,53 @@
+<section class="kit-panel" x-data="vaultKit">
+    <ol
+        class="flex gap-2 overflow-x-auto"
+        aria-label="Proposal lifecycle"
+        x-ref="track"
+        x-effect="current; $nextTick(()=>center($refs.track))"
+    >
+        <template x-for="step in stepViews" :key="step.label"
+            ><li :data-step-state="step.state" :aria-current="step.active?'step':null">
+                <span x-text="step.glyph+' '+step.label"></span>
+                <template x-if="step.active && held"
+                    ><span class="status-badge dashed">◐ On hold</span></template
+                >
+                <template x-if="step.date"
+                    ><small
+                        ><time :datetime="step.date"><bdi x-text="step.date"></bdi></time></small
+                ></template></li
+        ></template>
+    </ol>
+    <div class="kit-row">
+        <label><input type="checkbox" x-model="held" /> On hold</label
+        ><button :disabled="!legal.length" @click="begin();$refs.modal.showModal()">
+            Change status
+        </button>
+    </div>
+    <p role="status" x-text="notice"></p>
+    <dialog class="kit-panel" x-ref="modal" aria-label="Transition requirements">
+        <label
+            >Next status<select x-model="target">
+                <template x-for="s in legal"
+                    ><option x-text="s" :value="s"></option
+                ></template></select
+        ></label>
+        <div x-show="target==='Approved'">
+            <label><input type="checkbox" x-model="signed" /> Signed funding agreement</label
+            ><label><input type="checkbox" x-model="budget" /> Budget and dates confirmed</label>
+        </div>
+        <label>Reason<textarea x-model="reason"></textarea></label
+        ><button @click="version++">Simulate concurrent edit</button
+        ><button x-show="version!==expected" @click="expected=version">
+            Reload latest version
+        </button>
+        <ul role="status">
+            <template x-for="message in errors"><li x-text="message"></li></template>
+        </ul>
+        <div class="kit-row">
+            <button autofocus @click="$refs.modal.close()">Cancel</button
+            ><button :disabled="errors.length>0" @click="if(apply()) $refs.modal.close()">
+                Apply transition
+            </button>
+        </div>
+    </dialog>
+</section>

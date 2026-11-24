@@ -1,0 +1,33 @@
+<section class="kit-panel" x-data="vaultKit">
+    <label>Ask in English or Arabic<input type="search" dir="auto" x-model="query" /></label>
+    <div class="kit-row">
+        <template x-for="word in presets" :key="word"
+            ><button @click="query=word"><bdi x-text="word"></bdi></button
+        ></template>
+    </div>
+    <ul class="kit-list">
+        <template x-for="row in matches" :key="row.item.key"
+            ><li>
+                <button @click="pick(row.item.key)">
+                    <template x-for="(part,i) in row.highlights" :key="i"
+                        ><span
+                            :class="part.matched && 'bg-accent-tint underline'"
+                            x-text="part.text"
+                        ></span
+                    ></template>
+                </button>
+                <bdi x-show="row.alias.length"
+                    ><template x-for="(part,i) in row.alias" :key="i"
+                        ><span
+                            :class="part.matched && 'bg-accent-tint underline'"
+                            x-text="part.text"
+                        ></span></template
+                ></bdi>
+                <small
+                    x-text="'Match '+row.breakdown.lexical+' · intent '+row.breakdown.intent+' · layout −'+row.breakdown.layoutPenalty+' · recent '+row.breakdown.frecency.toFixed(1)+' · total '+row.score.toFixed(1)"
+                ></small></li
+        ></template>
+    </ul>
+    <p x-show="!matches.length">No matching destination.</p>
+    <p role="status" x-text="selected && 'Picked '+selected"></p>
+</section>

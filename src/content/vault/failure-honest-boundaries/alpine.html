@@ -1,0 +1,19 @@
+<section x-data="vaultKit" class="kit-panel">
+    <div class="kit-row">
+        <button @click="fetchRows(80)">Fast fetch (80ms)</button
+        ><button @click="fetchRows(900)">Slow fetch (900ms)</button
+        ><button @click="fetchRows(180,true)">Simulate failure</button>
+    </div>
+    <div :aria-busy="loading" :data-loading="loading ? 'true' : null">
+        <p>Inventory revision <bdi x-text="revision"></bdi></p>
+        <ul class="kit-list">
+            <template x-for="row in rows"><li x-text="row"></li></template>
+        </ul>
+    </div>
+    <div role="alert" x-show="error" class="error-card">
+        <span x-text="error"></span><button @click="fetchRows(80)">Retry</button>
+    </div>
+    <label>CSV notes cell <input x-model="csvCell" /></label>
+    <p>Exported cell <code x-text="escaped"></code></p>
+    <button @click="download()">Download CSV</button>
+</section>

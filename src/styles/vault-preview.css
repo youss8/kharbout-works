@@ -1,0 +1,35 @@
+main:has(#alpine-example[data-kit]) {
+  font-size: .875rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  color: var(--ink-primary);
+}
+main:has(#alpine-example[data-kit]) :is(input:not([type=checkbox],[type=radio],[type=range]), select, textarea, button) {
+  border: 1px solid var(--border-strong);
+  border-radius: 3px;
+  padding: .38rem .65rem;
+  color: inherit;
+  background: var(--bg-surface);
+}
+main:has(#alpine-example[data-kit]) :is(button[aria-pressed=true], button[aria-selected=true], .kit-action) {
+  color: var(--accent-primary); border-color: currentColor; background: var(--accent-tint);
+}
+main:has(#alpine-example[data-kit]) :is(input, select, textarea) { max-inline-size: 100%; min-inline-size: 0; accent-color: var(--accent-primary); }
+main:has(#alpine-example[data-kit]) :is(h2,h3,h4,legend) { font-weight: 650; }
+main:has(#alpine-example[data-kit]) table { max-inline-size:100%; font-size:.82rem; }
+main:has(#alpine-example[data-kit]) :is(th,td) { text-align:start; padding:.4rem; border-block-end:1px solid var(--border-hairline); }
+main:has(#alpine-example[data-kit]) :is(pre, code) { white-space:pre-wrap; overflow-wrap:anywhere; }
+.kit-panel { display: grid; align-content: start; gap: .8rem; min-inline-size: 0; }
+.kit-row { display:flex; align-items:center; flex-wrap:wrap; gap:.5rem; }
+.kit-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr)); gap:.8rem; }
+.kit-list { display:grid; gap:.4rem; }
+.kit-value { font: 700 1.75rem/1.2 var(--font-mono); font-variant-numeric: tabular-nums; }
+.kit-cell { display:grid; gap:.35rem; padding:.75rem; background:var(--bg-subtle); border:1px solid var(--border-hairline); }
+.kit-track { display:flex; block-size:.65rem; background:var(--bg-subtle); overflow:hidden; }
+.kit-track i { display:block; background:var(--accent-primary); }
+.kit-track .pending { background:repeating-linear-gradient(45deg,var(--ink-secondary) 0 2px,transparent 2px 4px); }
+.kit-panel label { display:grid; gap:.2rem; min-inline-size:0; }
+.kit-panel label:has(> input:is([type=checkbox],[type=radio])) { display:inline-flex; align-items:center; gap:.4rem; }
+.kit-panel dialog { max-inline-size:min(100%,32rem); padding:1rem; color:var(--ink-primary); background:var(--bg-surface); border:1px solid var(--border-strong); }
+.kit-panel dialog::backdrop { background:rgb(8 18 13 / 45%); }
+dialog.kit-panel:not([open]), .kit-panel dialog:not([open]) { display:none; }

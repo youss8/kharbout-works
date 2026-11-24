@@ -1,0 +1,21 @@
+{
+  "id": "status-gate-lifecycle",
+  "order": 13,
+  "tier": 3,
+  "title": "Lifecycle Stepper & Status Gate",
+  "category": "Workflows & State",
+  "sourceSystems": [
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "summary": "Move a proposal through seven stages with explicit transition requirements and version checks.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Review the funding and reason requirements",
+    "Change a record while its transition is open"
+  ],
+  "sourceIds": [
+    "PT-29",
+    "PT-30"
+  ]
+}

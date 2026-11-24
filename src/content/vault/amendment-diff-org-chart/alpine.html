@@ -1,0 +1,84 @@
+<section class="kit-panel" x-data="vaultKit">
+    <div class="kit-row" aria-label="Explorer view">
+        <template x-for="view in ['Contract','Org chart']"
+            ><button :aria-pressed="tab===view" @click="tab=view" x-text="view"></button
+        ></template>
+    </div>
+    <div class="kit-panel" x-show="tab==='Contract'">
+        <label
+            >Demo viewer<select :value="viewer" @change="switchViewer($event.target.value)">
+                <option>Coordinator</option>
+                <option>HR manager</option>
+            </select></label
+        >
+        <div class="kit-row">
+            <button :aria-pressed="!signed" @click="signed=false">Live terms</button
+            ><button :aria-pressed="signed" @click="signed=true">asSigned() original</button>
+        </div>
+        <dl class="kit-grid">
+            <template x-for="(v,k) in terms"
+                ><div>
+                    <dt x-text="k"></dt>
+                    <dd><bdi x-text="v"></bdi></dd></div
+            ></template>
+        </dl>
+        <p x-show="viewer==='Coordinator'">🔒 Pay is withheld for this viewer.</p>
+        <p role="status" x-show="payState==='loading'">Loading pay terms…</p>
+        <template x-if="payState==='error'"
+            ><p role="alert">
+                Pay terms could not load. <button @click="switchViewer(viewer)">Retry</button>
+            </p></template
+        >
+        <template x-for="a in amendments" :key="a.id"
+            ><details>
+                <summary x-text="a.id+' · '+a.date+' · '+a.reason"></summary>
+                <dl>
+                    <template x-for="(v,k) in a.before"
+                        ><div>
+                            <dt x-text="k"></dt>
+                            <dd><del x-text="v"></del> → <ins x-text="a.after[k]"></ins></dd></div
+                    ></template>
+                    <template x-if="pay"
+                        ><div>
+                            <dt>monthly pay</dt>
+                            <dd>
+                                <del x-text="pay.amendments[a.id].before"></del> →
+                                <ins x-text="pay.amendments[a.id].after"></ins>
+                            </dd></div
+                    ></template>
+                </dl></details
+        ></template>
+    </div>
+    <div class="kit-panel" x-show="tab==='Org chart'">
+        <div class="kit-row">
+            <button :aria-pressed="compact" @click="compact=!compact">Compact spacing</button
+            ><button
+                data-vacancies
+                :aria-pressed="hide"
+                @click="hide=!hide;if(!position)selected='P1'"
+            >
+                Hide vacancies</button
+            ><button @click="download($refs.svg)">Download SVG</button>
+        </div>
+        <small
+            >Solid line · direct report. Dashed line · technical report. Dashed box ·
+            vacancy.</small
+        >
+        <svg
+            class="w-full"
+            data-org-tree
+            aria-label="Reporting lines"
+            role="group"
+            x-ref="svg"
+            x-init="new MutationObserver(()=>draw($el)).observe(document.documentElement,{attributes:true,attributeFilter:['dir']})"
+            x-effect="draw($el)"
+            @click="select($event)"
+            @keydown.enter.prevent="select($event)"
+            @keydown.space.prevent="select($event)"
+        ></svg>
+        <p
+            role="status"
+            x-text="position?.title+' · '+(position?.vacant?'Vacant':position?.holder)"
+        ></p>
+    </div>
+</section>

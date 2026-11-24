@@ -1,0 +1,61 @@
+<section
+    x-data="vaultKit"
+    class="kit-panel"
+    @keydown.escape="$store.flow.pinned='';$store.flow.focus='';$store.flow.hover=''"
+>
+    <div class="kit-row" aria-label="Funding currency">
+        <template x-for="c in ['USD','EUR']"
+            ><button :aria-pressed="c===currency" @click="change(c)" x-text="c"></button
+        ></template>
+    </div>
+    <div class="flow-board" x-init="mount($el)">
+        <svg aria-hidden="true" x-effect="paint($el)"></svg>
+        <template x-for="col in graph.columns" :key="col.name"
+            ><section>
+                <h3 x-text="col.name"></h3>
+                <template x-for="n in col.nodes" :key="n.id">
+                    <button
+                        :data-node="n.id"
+                        :data-hot="String(hot(n.id))"
+                        :aria-pressed="$store.flow.pinned===n.id"
+                        @pointerenter="$store.flow.hover=n.id"
+                        @pointerleave="$store.flow.hover=''"
+                        @focus="$store.flow.focus=n.id"
+                        @blur="$store.flow.focus=''"
+                        @click="pick(n.id)"
+                    >
+                        <small><bdi x-text="n.id"></bdi></small><b x-text="n.label"></b>
+                    </button>
+                </template></section
+        ></template>
+    </div>
+    <p>
+        Ribbon width shows agreed funding. Each proposal divides its total equally among its linked
+        projects in this example.
+    </p>
+    <table class="flow-register">
+        <caption>
+            Agreement register ·
+            <span x-text="$store.flow.currency"></span>
+        </caption>
+        <thead>
+            <tr>
+                <th scope="col">Agreement</th>
+                <th scope="col">Sponsor → proposal</th>
+                <th scope="col">Budget</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template x-for="a in graph.agreements" :key="a.id"
+                ><tr :data-hot="String(hot(a.proposal)&&hot(a.sponsor))">
+                    <th scope="row"><bdi x-text="a.id"></bdi></th>
+                    <td><bdi x-text="a.sponsor+' → '+a.proposal"></bdi></td>
+                    <td>
+                        <bdi
+                            x-text="new Intl.NumberFormat('en',{style:'currency',currency,maximumFractionDigits:0}).format(a.budget)"
+                        ></bdi>
+                    </td></tr
+            ></template>
+        </tbody>
+    </table>
+</section>

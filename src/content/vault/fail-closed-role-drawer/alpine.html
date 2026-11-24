@@ -1,0 +1,29 @@
+<section x-data="vaultKit" class="kit-panel" @keydown.escape="close()">
+    <label
+        >Active role
+        <select :value="role" @change="change($event.target.value)">
+            <option>Regional HR</option>
+            <option>Manager</option>
+            <option>Employee</option>
+        </select></label
+    >
+    <div class="kit-row">
+        <template x-for="p in colleagues" :key="p.id"
+            ><button @click="open(p.id)" x-text="p.label"></button></template
+        ><button @click="open(404)">Open missing record</button>
+    </div>
+    <aside x-show="requestedId!==null" class="kit-panel profile-drawer" aria-label="Profile detail">
+        <button @click="close()">Close detail</button>
+        <div :data-loading="loading ? 'true' : null" :aria-busy="loading">
+            <p x-show="loading" role="status">Checking access…</p>
+            <template x-if="ready"
+                ><article>
+                    <h3 x-text="profile.label"></h3>
+                    <p x-text="profile.assignment"></p></article
+            ></template>
+            <div x-show="unavailable" role="alert" class="error-card">
+                Record unavailable <button @click="open(requestedId)">Retry</button>
+            </div>
+        </div>
+    </aside>
+</section>

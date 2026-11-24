@@ -1,0 +1,110 @@
+<section class="kit-panel" x-data="vaultKit">
+    <div class="kit-row">
+        <label
+            >Active role<select :value="role" @change="changeRole($event.target.value)">
+                <option>Regional HR</option>
+                <option>Employee</option>
+            </select></label
+        >
+        <label
+            >Search register<input
+                type="search"
+                maxlength="100"
+                :value="search"
+                @input="type($event.target.value)"
+        /></label>
+        <label
+            >Contract order<select :value="sort" @change="sortBy($event.target.value)">
+                <option>Ascending</option>
+                <option>Descending</option>
+            </select></label
+        >
+    </div>
+    <div data-header-chips aria-label="Active filters">
+        <button
+            x-show="active.length"
+            @click="clearFilter('status')"
+            x-text="'Clear status · '+statusSummary+' ×'"
+        ></button>
+        <button
+            x-show="region"
+            @click="clearFilter('region')"
+            x-text="'Clear region · '+region+' ×'"
+        ></button>
+        <button
+            x-show="query"
+            @click="clearFilter('query')"
+            x-text="'Clear search · '+query+' ×'"
+        ></button>
+    </div>
+    <table>
+        <thead class="sticky bg-surface" style="inset-block-start: 0">
+            <tr>
+                <th scope="col">Contract</th>
+                <th scope="col">
+                    <div x-init="attachHeader($el,'region')" data-search-label="Find region">
+                        <select hidden aria-hidden="true">
+                            <option value="">All regions</option>
+                            <option>North</option>
+                            <option>East</option>
+                            <option disabled>West (inactive)</option>
+                        </select>
+                        <button
+                            data-trigger
+                            data-header-trigger
+                            type="button"
+                            aria-label="Filter region"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                        >
+                            Filter region <small x-text="region||'All'"></small>
+                        </button>
+                    </div>
+                </th>
+                <th scope="col">
+                    <div x-init="attachHeader($el,'status')" data-search-label="Find status">
+                        <select multiple hidden aria-hidden="true">
+                            <template x-for="s in allowed"
+                                ><option :value="s" x-text="s"></option
+                            ></template>
+                            <option disabled>Archived</option>
+                        </select>
+                        <button
+                            data-trigger
+                            data-header-trigger
+                            type="button"
+                            aria-label="Filter status"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                        >
+                            Filter status <small x-text="statusSummary"></small>
+                        </button>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody :aria-busy="search.trim()!==query" :data-loading="search.trim()!==query||null">
+            <template x-for="r in rows" :key="r.label"
+                ><tr>
+                    <td x-text="r.label"></td>
+                    <td x-text="r.region"></td>
+                    <td x-text="r.status"></td></tr
+            ></template>
+        </tbody>
+    </table>
+    <p class="saved-count" aria-live="polite" x-text="rows.length+' matching contracts'"></p>
+    <p x-show="!rows.length">No contracts match.</p>
+    <div class="kit-row">
+        <label>View name<input maxlength="60" x-model="name" /></label
+        ><button @click="save()" :disabled="!name.trim()">Save view</button>
+    </div>
+    <ul class="kit-list">
+        <template x-for="v in scopedViews" :key="v.name"
+            ><li class="kit-row">
+                <span x-text="v.name+' · '+v.role"></span><button @click="apply(v)">Apply</button
+                ><button @click="remove(v)">Delete view</button>
+            </li></template
+        >
+    </ul>
+    <p role="status" x-text="notice"></p>
+</section>

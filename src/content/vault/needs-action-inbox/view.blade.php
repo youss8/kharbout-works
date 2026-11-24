@@ -1,0 +1,7 @@
+<section class="kit-panel"><label><input type="checkbox" wire:model.live="fault">Fail licenses query</label>
+@if($digest['failed'])<p role="alert">1 source unavailable · digest incomplete. <button wire:click="$set('fault',false)">Retry</button></p>@endif
+<ul>@foreach($digest['rows'] as $row)<li><span class="status-badge surface" data-tone="{{ $row['tone'] }}">{{ $row['glyph'] }} {{ $row['label'] }}</span> · <bdi>{{ $row['count'] }}</bdi></li>@endforeach</ul><h3>Work inbox</h3>
+<ul>@foreach($items as $key=>[$subject,$version,$handled,$waiting,$overlap])<li wire:key="{{ $key }}" x-data="{ expected: {{ $version }} }" @keydown.e.prevent="$wire.decide('{{ $key }}',expected,'Approve')" @keydown.s.prevent="$wire.decide('{{ $key }}',expected,'Snooze')" @keydown.j.prevent="$el.nextElementSibling?.querySelector('button')?.focus()" @keydown.k.prevent="$el.previousElementSibling?.querySelector('button')?.focus()">
+{{ $subject }} · {{ $handled??'Awaiting decision' }} · Waiting <bdi>{{ $waiting }}</bdi> days {{ $overlap }}<button @click="$wire.decide('{{ $key }}',expected,'Approve')">Approve</button><button @click="$wire.decide('{{ $key }}',expected,'Snooze')">Snooze</button>
+<button wire:click="stale('{{ $key }}')">Simulate stale version</button><button @click="expected=$wire.items['{{ $key }}'][1]">Reload item</button></li>@endforeach</ul>
+@if($undoItem)<button wire:key="undo-{{ $undoItem[2] }}" x-data x-init="setTimeout(()=>$el.hidden=true,6000)" wire:click="undo">Undo decision (6 seconds)</button>@endif<p role="status">{{ $outcome }}</p></section>

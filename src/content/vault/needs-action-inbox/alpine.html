@@ -1,0 +1,50 @@
+<section class="kit-panel" x-data="vaultKit" @keydown="keyboard($event,$el)">
+    <h3>Needs action</h3>
+    <label
+        ><input type="checkbox" :checked="fault" @change="load($event.target.checked)" /> Fail
+        licenses query</label
+    >
+    <template x-if="failed"
+        ><p role="alert">
+            <span x-text="failed+' source unavailable · digest incomplete.'"></span>
+            <button @click="load(false)">Retry</button>
+        </p></template
+    >
+    <ul class="kit-grid" :data-loading="busy||null">
+        <template x-for="r in digest" :key="r.key"
+            ><li>
+                <span
+                    class="status-badge surface"
+                    :data-tone="r.tone"
+                    x-text="r.glyph+' '+r.label"
+                ></span>
+                <bdi class="kit-value" x-text="r.count"></bdi></li
+        ></template>
+    </ul>
+    <h3>Work inbox</h3>
+    <small>J / K · move between items. E · approve. S · snooze.</small>
+    <ul class="kit-list">
+        <template x-for="(r,i) in rows" :key="r.key"
+            ><li>
+                <button
+                    data-inbox-row
+                    :aria-pressed="active===i"
+                    @focus="select(i)"
+                    @click="select(i)"
+                    x-text="r.subject"
+                ></button>
+                <span x-text="(r.handled??'Awaiting decision')+' · v'+r.expected"></span
+                ><small
+                    x-text="'Waiting '+r.waitingDays+' days'+(r.overlap?' · '+r.overlap:'')"
+                ></small></li
+        ></template>
+    </ul>
+    <div class="kit-row">
+        <button @click="decide('Approve')">Approve</button
+        ><button @click="decide('Snooze')">Snooze</button
+        ><button @click="stale()">Simulate stale version</button
+        ><button @click="reload()">Reload item</button>
+    </div>
+    <p role="status" x-text="outcome"></p>
+    <button x-show="undoItem" @click="undo()">Undo decision (6 seconds)</button>
+</section>

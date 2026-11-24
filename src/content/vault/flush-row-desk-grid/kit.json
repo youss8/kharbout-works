@@ -1,0 +1,23 @@
+{
+  "id": "flush-row-desk-grid",
+  "order": 17,
+  "tier": 4,
+  "category": "Navigation & Shell",
+  "sourceSystems": [
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Customizable operations desk",
+  "summary": "Reorder and resize panels while every row still spans twelve columns.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Customize the grid with drag handles or arrow keys.",
+    "Resize at a logical edge, cancel the draft, or save it locally."
+  ],
+  "sourceIds": [
+    "PT-40",
+    "PT-41",
+    "HR-24"
+  ]
+}

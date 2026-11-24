@@ -1,0 +1,20 @@
+{
+  "id": "shared-options-popover",
+  "order": 6,
+  "tier": 2,
+  "category": "Tables & Queues",
+  "sourceSystems": [
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Shared assignee directory",
+  "summary": "Assign twelve tasks from one searchable staff directory.",
+  "previewEngine": "alpine",
+  "interactionSpecs": [
+    "Open any task to assign a person.",
+    "Search the shared directory and inspect the live option count."
+  ],
+  "sourceIds": [
+    "PT-27"
+  ]
+}

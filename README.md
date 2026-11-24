@@ -1,6 +1,6 @@
 # Youssef Operations Kit
 
-Youssef Kharbout’s engineering workbench brings six interactive system demonstrations, ten reusable UI patterns, eleven prompt blueprints, five operations templates, four personal prototypes and an International/DACH CV into a static site.
+Youssef Kharbout’s engineering workbench brings six interactive system demonstrations, twenty reusable Vault kits, eleven prompt blueprints, five operations templates, four personal prototypes and an International/DACH CV into a static site.
 
 ## Run the workbench
 
@@ -23,7 +23,22 @@ Open the [local workbench](http://localhost:4321). Browse the [systems](http://l
 
 Astro 5 builds static routes from four Zod-validated content collections. The service desk and estate monitor hydrate as React 19/TypeScript islands. Alpine 3 handles the HR, funding, toolkit and lab interactions. The six case-study fixtures and three Mermaid diagrams come directly from the master handoff. Runtime changes are local to the browser.
 
-Vault entries include complete Alpine, React and Livewire implementations. Vite compiles the copyable React source, and each iframe runs an actual example in its own theme and writing direction. Shiki highlights the source at build time. Tailwind 4 and locally bundled Plus Jakarta Sans and JetBrains Mono supply the shared design tokens. The build-time search index powers the Fuse.js command bar.
+Each kit runs inside an isolated preview. Choose a viewport, theme, writing direction, grayscale, or preview implementation. The Alpine and React previews use the same source files shown in their code tabs. The Livewire tab includes PHP and Blade. Shiki highlights the files at build time, and the browser fetches a source tab when it opens. Tailwind 4 and locally bundled Plus Jakarta Sans and JetBrains Mono supply the shared design tokens.
+
+Ctrl+K searches the generated index in English and Arabic. The matcher normalizes Arabic spelling, tries the other keyboard layout, tolerates small typos and gives recently or frequently selected destinations a higher rank on this device.
+
+## Vault catalogue
+
+The three extraction lists contain 97 original entries: 44 Project Tracking, 28 IT Helpdesk and 25 pre-RMS HR. The master blueprint curates these into 20 kits and explicitly cites 53 source IDs. Filter by tier, category, source system, keyword or original ID (for example, PT-25). Each kit displays its cited IDs. The provenance badge follows the system evidence in the upgrade blueprint. Each mixed-provenance entry identifies its clean-room addition. Existing preview URLs still open the earlier examples. [Vault source](src/content/vault/) · [Upgrade blueprint](VAULT_MASTER_BLUEPRINT.md)
+
+| Tier | Kits in catalogue order |
+| --- | --- |
+| T1 · Primitives | 01 Status and urgency vocabulary · 02 Two-band progress and SLA drain · 03 Currency guard and leave balance · 04 Zero-safe queue signals · 05 Withheld pay and attendance day states |
+| T2 · Controls and guards | 06 Shared assignee popover · 07 Role-scoped saved views · 08 Guarded edits and confirmations · 09 Failure, retry and formula-safe CSV · 10 Local Office and PDF preview · 11 Fail-closed role drawer |
+| T3 · Workflows | 12 Bilingual Ask palette · 13 Lifecycle stepper and status gate · 14 Needs-action digest and versioned inbox · 15 CSV importer and configurable register · 16 Signed terms and dual-line org chart |
+| T4 · Flagship engines | 17 Twelve-column desk and row packing · 18 Funding Sankey by currency · 19 Branch endpoint patch panel · 20 Gantt scheduling and month timesheet |
+
+To reuse a kit, open its stack tab and copy each labelled file into the corresponding path. Compile the shared styles with Tailwind v4. For Alpine, register the default model factory as `vaultKit` before starting Alpine. React examples export a component. Livewire examples pair a namespaced PHP class with `resources/views/livewire/<kit-id>.blade.php`. Copy any kit-local app/, resources/ and public/ support files into the corresponding Laravel directories. The Office example ships four downloadable sample files and loads SheetJS and docx-preview on demand. Install the dependency versions recorded in package.json. For its Livewire example, add resources/js/office-preview/register.ts to the application’s Vite entries and copy the model, reader and sample files alongside it. [Design tokens](src/styles/tokens.css) · [Preview styles](src/styles/vault-preview.css)
 
 ## How to Replace Starter Assets
 
@@ -39,6 +54,7 @@ Vault entries include complete Alpine, React and Livewire implementations. Vite 
 
 ```sh
 npm ci
+npm test
 npx astro check
 npm run build
 npx playwright install chromium
@@ -48,9 +64,14 @@ python scripts/audit-public.py
 
 The browser suite serves the built `dist/` directory on loopback port 4339. Install Poppler (`pdfinfo` and `pdftotext` on PATH) for the A4 print checks. To exercise an existing local production preview, set `PLAYWRIGHT_WORKBENCH_URL`. Run `npm run preview` to serve the static output yourself.
 
-The production audit uses Python 3, Git and ripgrep to check publishable files, links and fixture integrity. The [verification report](docs/production-verification.md) records each phase gate.
+The Node tests cover the seven shared domain kernels, schedule and timesheet transitions, contrast arithmetic, and a source and public-asset scan. To check private employer or product names, supply one name per line through the optional `VAULT_FORBIDDEN_TERMS` environment variable or GitHub Actions secret. The production audit also checks links and fixture integrity. [Vault upgrade verification](docs/vault-upgrade-verification.md) · [Earlier production checks](docs/production-verification.md)
 
-To run the Livewire examples in isolation, create `test-results/livewire-runtime/`, then run `composer --working-dir=test-results/livewire-runtime require "laravel/framework:13.*" "livewire/livewire:4.*"` and `php tests/workbench/verify-livewire.php`. The check mounts and updates each component against the downloaded framework.
+To run the Livewire examples in isolation, create `test-results/livewire-runtime/`, then run `composer --working-dir=test-results/livewire-runtime require "laravel/framework:13.*" "livewire/livewire:4.*"` and `php tests/workbench/verify-livewire.php`. The check mounts and updates each component against the downloaded framework and checks the examples’ server-side actions. The verifier also builds the Office viewer using the copied files and a real Laravel Vite manifest. Run the following checks for schedule receipts, telemetry freshness and browser interactions against the Livewire client.
+
+~~~sh
+php tests/workbench/verify-tier4-contracts.php
+npx playwright test --config tests/workbench/livewire.playwright.config.mjs
+~~~
 
 In Vercel, import the GitHub repository with the Astro preset. In Cloudflare Pages, connect the same repository and select the Astro preset. In either provider, use the repository root, Node 24, `npm run build` and output directory `dist`. Set `SITE_URL` to the public origin when a domain is assigned. Source links use `PUBLIC_SOURCE_REF` when set, then the provider’s Git commit SHA, then the public `main` branch. Only portfolio assets are copied into the static export. [Vercel deployment guide](https://docs.astro.build/en/guides/deploy/vercel/) · [Cloudflare Pages deployment guide](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/)
 

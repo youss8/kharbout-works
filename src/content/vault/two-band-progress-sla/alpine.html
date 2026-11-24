@@ -1,0 +1,132 @@
+<section x-data="vaultKit" class="kit-panel delivery-preview">
+    <div class="kit-grid">
+        <label>Approved (%)<input type="range" min="0" max="140" x-model.number="approved" /></label
+        ><label>Pending (%)<input type="range" min="0" max="100" x-model.number="pending" /></label>
+    </div>
+    <label><input type="checkbox" x-model="missing" /> No approved reading</label>
+    <div class="kit-row">
+        <span class="status-badge outline" :data-tone="kpi.tone"
+            ><span x-text="kpi.tone === 'warn' ? '◐' : '○'"></span
+            ><bdi :aria-label="missing ? 'not set' : null" x-text="kpi.label"></bdi></span
+        ><span x-text="pending+'% pending'"></span>
+    </div>
+    <div
+        class="kit-track"
+        role="progressbar"
+        :data-tone="kpi.tone"
+        aria-label="Approved delivery"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        :aria-valuenow="missing ? null : kpi.width"
+        :aria-valuetext="kpi.label"
+    >
+        <i :style="{width:kpi.width+'%'}"></i
+        ><i class="pending" :style="{width:kpi.pending+'%'}"></i>
+    </div>
+    <label
+        >SLA elapsed minutes<input
+            type="range"
+            min="0"
+            max="2910"
+            step="1"
+            x-model.number="elapsed"
+            @input="restartClock()"
+    /></label>
+    <div class="kit-grid">
+        <label
+            >Ticket state<select x-model="mode" @change="$nextTick(()=>restartClock())">
+                <option>Open</option>
+                <option>Closed</option>
+                <option>Missing SLA</option>
+            </select></label
+        ><label
+            >Time language<select x-model="locale">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+            </select></label
+        >
+    </div>
+    <output
+        ><bdi
+            :lang="locale"
+            :aria-label="sla.state === 'unknown' ? 'not set' : null"
+            x-text="sla.label"
+        ></bdi
+    ></output>
+    <div
+        class="kit-track"
+        role="progressbar"
+        aria-label="Elapsed SLA"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        :aria-valuenow="sla.width"
+        :aria-valuetext="sla.label"
+    >
+        <i :style="{width:(sla.width ?? 0)+'%'}"></i>
+    </div>
+    <fieldset class="kit-panel">
+        <legend>Funding capacity</legend>
+        <div class="kit-grid">
+            <label
+                >Received amount<input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    x-model.number="received"
+                    @change="received=Math.max(0,Number(received))"
+            /></label>
+            <label
+                >Committed amount<input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    x-model.number="committed"
+                    @change="committed=Math.max(0,Number(committed))"
+            /></label>
+            <label
+                >Funding currency<select aria-label="Funding currency" x-model="currency">
+                    <option value="">Not set</option>
+                    <option>USD</option>
+                    <option>EUR</option>
+                </select></label
+            >
+        </div>
+        <template x-if="funding.value"
+            ><div class="kit-panel">
+                <dl class="kit-row items-baseline tabular-nums">
+                    <div>
+                        <dt>Received</dt>
+                        <dd x-text="funding.value.received"></dd>
+                    </div>
+                    <div>
+                        <dt>Committed</dt>
+                        <dd x-text="funding.value.committed"></dd>
+                    </div>
+                </dl>
+                <div
+                    class="kit-track"
+                    role="progressbar"
+                    aria-label="Funding received"
+                    aria-valuemin="0"
+                    :aria-valuemax="committed"
+                    :aria-valuenow="Math.min(committed,received)"
+                    :aria-valuetext="funding.value.received+' of '+funding.value.committed+' · '+funding.value.label"
+                >
+                    <i
+                        :style="{width:funding.value.width+'%',background:funding.value.over?'var(--status-warn)':'var(--accent-primary)'}"
+                    ></i>
+                </div>
+                <p
+                    aria-live="polite"
+                    :data-tone="funding.value.over?'warn':'neutral'"
+                    x-text="(funding.value.over?'◐ ':'')+funding.value.label"
+                ></p></div
+        ></template>
+        <template x-if="funding.error"
+            ><p role="alert">
+                <span x-text="funding.error"></span>
+                <button type="button" @click="currency='USD'">Retry with USD</button>
+            </p></template
+        >
+    </fieldset>
+</section>

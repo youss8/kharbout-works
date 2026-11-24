@@ -1,0 +1,25 @@
+{
+  "id": "needs-action-inbox",
+  "order": 14,
+  "tier": 3,
+  "title": "Needs-Action Digest & Work Inbox",
+  "category": "Workflows & State",
+  "sourceSystems": [
+    "SYS-01",
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "summary": "A failed digest source stays visible as an incomplete report. Versioned decisions support keyboard triage and undo.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Fail and retry a digest source",
+    "Test stale and duplicate decisions",
+    "Undo a decision within six seconds"
+  ],
+  "sourceIds": [
+    "IT-18",
+    "HR-19",
+    "PT-23"
+  ]
+}

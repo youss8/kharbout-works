@@ -1,0 +1,49 @@
+<section class="kit-panel" x-data="vaultKit">
+    <label><input type="checkbox" x-model="mix" /> Attempt mixed-currency total</label>
+    <template x-if="summary.reason"
+        ><div class="error-card" role="alert">
+            <span x-text="summary.reason"></span
+            ><button @click="mix=false">Retry per currency</button>
+        </div></template
+    >
+    <div class="kit-grid">
+        <template x-for="total in summary.totals" :key="total"
+            ><bdi class="kit-cell" x-text="total"></bdi
+        ></template>
+    </div>
+    <label><input type="checkbox" x-model="eligible" /> Annual leave entitlement</label>
+    <template x-if="!eligible"><p>This contract has no annual leave entitlement.</p></template>
+    <template x-if="eligible"
+        ><div class="kit-panel">
+            <label
+                >Used hours<input type="range" min="0" max="160" step=".25" x-model.number="used"
+            /></label>
+            <div class="kit-row">
+                <label><input type="checkbox" x-model="credit" /> Include 8h overtime credit</label
+                ><label><input type="checkbox" x-model="pending" /> Reserve 16h pending</label>
+            </div>
+            <p>
+                120h entitlement <span x-show="credit">+ 8h credit</span> −
+                <bdi x-text="used"></bdi>h used
+                <span x-show="pending">− 16h pending</span>
+            </p>
+            <div
+                class="balance-bands"
+                role="img"
+                :aria-label="'Used '+used+' hours, reserved '+(pending?16:0)+' hours, remaining '+left.hours+' hours'"
+            >
+                <i class="used" :style="{width:left.usedWidth+'%'}"></i
+                ><i class="reserved" :style="{width:left.pendingWidth+'%'}"></i>
+                <i
+                    x-show="credit"
+                    class="credit"
+                    :style="{insetInlineStart:left.creditStart+'%'}"
+                ></i>
+            </div>
+            <span x-show="left.hours<0">△ Overdrawn</span>
+            <output class="kit-cell"
+                ><span>Remaining balance</span><bdi class="kit-value" x-text="left.duration"></bdi
+                ><span x-text="left.hours+' hours'"></span
+            ></output></div
+    ></template>
+</section>

@@ -1,0 +1,39 @@
+<section class="kit-panel" x-data="vaultKit">
+    <div class="kit-grid">
+        <template x-for="state in states" :key="state.label"
+            ><div class="kit-cell">
+                <span :class="'status-badge ' + state.shape" :data-tone="state.tone"
+                    ><span aria-hidden="true" x-text="state.glyph"></span
+                    ><span x-text="state.label"></span
+                ></span>
+                <span
+                    x-show="state.label==='In progress' && held"
+                    class="status-badge outline"
+                    data-tone="warn"
+                    >Ⅱ On hold</span
+                >
+                <small
+                    x-show="state.urgency"
+                    :data-urgency="state.urgency?.variant"
+                    x-text="state.urgency?.label"
+                ></small></div
+        ></template>
+    </div>
+    <label><input type="checkbox" x-model="held" /> Place in-progress work on hold</label>
+    <label
+        >Risk rating
+        <select x-model="rating">
+            <option value="">Not set</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+        </select></label
+    >
+    <p>Likelihood: <span x-text="ratings[rating]"></span></p>
+    <label>Priority input<input x-model="raw" /></label>
+    <p>Reader <strong x-text="readPriority(raw)"></strong></p>
+    <div class="kit-row">
+        <button @click="save">Write priority</button><span>Stored <b x-text="saved"></b></span>
+    </div>
+    <output aria-live="polite" x-text="message"></output>
+</section>

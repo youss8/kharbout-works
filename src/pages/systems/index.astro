@@ -32,14 +32,14 @@ const rows = [
     .systems-matrix :is(td,th) { padding: clamp(.8rem,1.7vw,1.5rem); vertical-align: top; border: 1px solid var(--border-hairline); text-align: start; }
     .systems-matrix th:first-child { width: 16%; background: var(--bg-subtle); font-size: .84rem; }
     .systems-matrix td { font-size: .92rem; }
-    h2 { margin-top: .9rem; font-size: 1.32rem; }
+    h2 { margin-block-start: .9rem; font-size: 1.32rem; }
     a:hover { text-decoration: underline; }
-    .table-link { display: block; color: var(--accent-primary); text-decoration: underline; margin-bottom: .5rem; }
+    .table-link { display: block; color: var(--accent-primary); text-decoration: underline; margin-block-end: .5rem; }
     @media (max-width: 740px) {
         .systems-matrix :is(table,thead,tbody,tr,td,th) { display: block; width: 100%; }
         .systems-matrix table { border: 0; }
         .systems-matrix th:first-child { width: 100%; }
-        .systems-matrix td::before { content: attr(data-code); display: block; font: 600 .72rem var(--font-mono); color: var(--accent-primary); margin-bottom: .3rem; }
+        .systems-matrix td::before { content: attr(data-code); display: block; font: 600 .72rem var(--font-mono); color: var(--accent-primary); margin-block-end: .3rem; }
         .systems-matrix tr { margin-block-end: 1rem; }
     }
 </style>

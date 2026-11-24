@@ -1,0 +1,38 @@
+[data-note-trigger] { anchor-name: --decision-trigger; }
+#guard-note {
+    position: fixed;
+    margin: auto;
+    inline-size: min(300px, calc(100% - 1rem));
+    max-block-size: calc(100dvh - 1rem);
+    overflow: auto;
+    border: 1px solid var(--border-strong, GrayText);
+    background: var(--bg-surface, Canvas);
+    color: var(--ink-primary, CanvasText);
+    padding: .85rem;
+}
+@supports (position-area: block-end span-inline-end) {
+    #guard-note {
+        inset: auto;
+        margin: .25rem;
+        position-anchor: --decision-trigger;
+        position-area: block-end span-inline-end;
+        position-try-fallbacks: flip-inline, flip-block, flip-inline flip-block;
+    }
+}
+#guard-note:not(:popover-open) { display: none; }
+#guard-note textarea { inline-size: 100%; border: 1px solid var(--border-strong, GrayText); padding: .4rem; }
+#guard-note button { min-block-size: 44px; border: 1px solid var(--border-strong, GrayText); padding-inline: .65rem; }
+@media (max-width: 639px) {
+    #guard-modal[open] {
+        position: fixed;
+        inset-block: auto 0;
+        inset-inline: 0;
+        inline-size: 100%;
+        max-inline-size: 100%;
+        margin: 0;
+        max-block-size: 85dvh;
+        overflow: auto;
+        padding-block-end: max(1rem, env(safe-area-inset-bottom));
+        border-radius: 0.5rem 0.5rem 0 0;
+    }
+}

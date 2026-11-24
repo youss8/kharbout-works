@@ -1,0 +1,21 @@
+{
+  "id": "fail-closed-role-drawer",
+  "order": 11,
+  "tier": 2,
+  "category": "Navigation & Shell",
+  "sourceSystems": [
+    "SYS-02"
+  ],
+  "provenance": "observed",
+  "title": "Fail-closed role drawer",
+  "summary": "Switch roles or open another record while a profile request is in flight.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Open two records rapidly and inspect the returned identity.",
+    "Switch to Employee while viewing a restricted record."
+  ],
+  "sourceIds": [
+    "HR-12",
+    "HR-13"
+  ]
+}

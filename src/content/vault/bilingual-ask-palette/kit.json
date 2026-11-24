@@ -1,0 +1,20 @@
+{
+  "id": "bilingual-ask-palette",
+  "order": 12,
+  "tier": 3,
+  "title": "Bilingual Ask Palette",
+  "category": "Navigation & Shell",
+  "sourceSystems": [
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "summary": "Find a destination by Arabic alias, keyboard layout or intent. Inspect how each match was ranked.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Try the four query presets",
+    "Pick a destination to influence its next score"
+  ],
+  "sourceIds": [
+    "PT-37"
+  ]
+}

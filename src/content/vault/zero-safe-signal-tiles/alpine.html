@@ -1,0 +1,51 @@
+<section class="kit-panel" x-data="vaultKit">
+    <div class="kit-grid" role="group" aria-label="Status filters">
+        <template x-for="t in tiles" :key="t.id"
+            ><button
+                :aria-pressed="slice===t.id"
+                :aria-label="t.label+', '+t.count"
+                @click="toggle(t.id)"
+            >
+                <span
+                    class="status-badge"
+                    :class="t.count?'surface':'outline'"
+                    :data-tone="t.tone"
+                    x-text="t.glyph+' '+t.label"
+                ></span>
+                <bdi aria-hidden="true" x-effect="countTo($el,t.count)"></bdi
+                ><span
+                    x-show="slice===t.id"
+                    class="ms-auto"
+                    aria-hidden="true"
+                    title="Show everything"
+                    >×</span
+                >
+            </button></template
+        >
+    </div>
+    <div class="signal-strip" role="group" aria-label="Filter by segment">
+        <span x-show="!rows.length">No records</span>
+        <template x-for="t in tiles.filter(t=>t.count)" :key="t.id"
+            ><button
+                class="signal-segment"
+                :style="{'--segment':t.width}"
+                :aria-pressed="slice===t.id"
+                :aria-label="'Filter '+t.label"
+                @click="toggle(t.id)"
+            >
+                <span aria-hidden="true" :data-tone="t.tone"></span></button
+        ></template>
+    </div>
+    <div class="kit-row">
+        <button @click="clear">Zero out breaches</button
+        ><button class="underline" @click="slice=''">Show all</button>
+    </div>
+    <output aria-live="polite" x-text="'Showing '+visible.length+' of '+rows.length"></output>
+    <ul class="kit-list">
+        <template x-for="r in visible" :key="r.id"
+            ><li>
+                <bdi x-text="r.id"></bdi> ·
+                <span x-text="tiles.find(t=>t.id===r.state).label"></span></li
+        ></template>
+    </ul>
+</section>

@@ -1,0 +1,28 @@
+{
+  "id": "guarded-modals-dirty-close",
+  "order": 8,
+  "tier": 2,
+  "category": "Forms & Guards",
+  "sourceSystems": [
+    "Cross-System",
+    "SYS-01",
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Guarded edits and confirmations",
+  "summary": "Compare normalized inputs, protect unsaved changes and require an explicit reset.",
+  "previewEngine": "alpine",
+  "interactionSpecs": [
+    "Add padding to hours, append seconds to the start time, or reorder work days to test normalized comparisons.",
+    "Choose a local attachment, reject a save, then try Back or Retry while your draft is intact.",
+    "Try the typed reset and required-note actions."
+  ],
+  "sourceIds": [
+    "PT-19",
+    "PT-21",
+    "IT-11",
+    "HR-09",
+    "HR-10"
+  ]
+}

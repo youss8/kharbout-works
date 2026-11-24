@@ -1,21 +1,50 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { expect, test } from '@playwright/test';
 
-const items = readdirSync('src/content/vault').filter(file => file.endsWith('.json')).map(file =>
-    JSON.parse(readFileSync('src/content/vault/' + file, 'utf8')),
-);
+const items = readdirSync('src/content/vault',{withFileTypes:true}).filter(file => file.isDirectory()).map(file =>
+    JSON.parse(readFileSync('src/content/vault/' + file.name + '/kit.json', 'utf8')),
+).sort((a,b)=>a.order-b.order);
+test('an original extraction ID opens its curated example in either implementation', async ({page}) => {
+    await page.goto('/vault/');
+    await page.getByRole('searchbox').fill('PT-25');
+    const nav = page.getByRole('navigation', {name:'Component patterns'});
+    await expect(nav.getByRole('link')).toHaveCount(1);
+    const card = page.locator('#office-pdf-preview');
+    await expect(card.getByText('Source entries · PT-25')).toBeVisible();
+    await card.getByRole('button', {name:'Dark',exact:true}).click();
+    await card.getByRole('button', {name:'RTL',exact:true}).click();
+    for (const engine of ['react','alpine']) {
+        await card.getByLabel('Preview implementation').selectOption(engine);
+        const frame = card.frameLocator('iframe');
+        await expect(frame.locator('html')).toHaveAttribute('data-engine',engine);
+        await expect(frame.locator('html')).toHaveAttribute('data-theme','dark');
+        await expect(frame.locator('html')).toHaveAttribute('dir','rtl');
+        await expect(frame.getByRole('button', {name:'Open file preview'})).toBeVisible();
+    }
+});
 test('vault filters and empty state work at 375 pixels', async ({ page }) => {
-    expect(items).toHaveLength(10);
+    expect(items.map(item=>item.order)).toEqual(Array.from({length:20},(_,i)=>i+1));
+    expect([1,2,3,4].map(t=>items.filter(item=>item.tier===t).length)).toEqual([5,6,5,4]);
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/vault/');
     const nav = page.getByRole('navigation', { name: 'Component patterns' });
-    await expect(nav.getByRole('link')).toHaveCount(10);
+    await expect(nav.getByRole('link')).toHaveCount(20);
+    await page.getByRole('button',{name:'T2 Controls & Guards'}).click();
+    await expect(nav.getByRole('link')).toHaveCount(6);
+    await page.getByLabel('Source system').selectOption('SYS-03');
+    await expect(nav.getByRole('link')).toHaveCount(items.filter(item=>item.tier===2 && item.sourceSystems.includes('SYS-03')).length);
+    await page.getByRole('button',{name:'Tables & Queues'}).click();
+    await expect(nav.getByRole('link')).toHaveCount(items.filter(item => item.tier === 2 && item.sourceSystems.includes('SYS-03') && item.category === 'Tables & Queues').length);
+    await page.getByRole('searchbox').fill('assignee');
+    await expect(nav.getByRole('link')).toHaveCount(1);
+    await page.getByRole('searchbox').fill('no matching kit');
+    await page.getByRole('button',{name:'Clear filters'}).click();
     await page.getByRole('button', { name: 'Forms & Guards' }).click();
     await expect(nav.getByRole('link')).toHaveCount(items.filter(item => item.category === 'Forms & Guards').length);
     await page.getByRole('searchbox').fill('qqzzzz');
     await expect(nav.getByRole('link')).toHaveCount(0);
     await page.getByRole('button', { name: 'Clear filters' }).click();
-    await expect(nav.getByRole('link')).toHaveCount(10);
+    await expect(nav.getByRole('link')).toHaveCount(20);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
 });
 
@@ -44,15 +73,20 @@ for (const item of items) {
         await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
         await card.getByRole('button', { name: 'Light', exact: true }).click();
         await card.getByRole('button', { name: 'Desktop' }).click();
-        const snippets = [item.previewEngine === 'react' ? item.codeReact : item.codeAlpine,
-            item.codeAlpine, item.codeReact, item.codeLivewirePhp + '\n\n' + item.codeLivewireBlade];
+        await card.getByRole('button',{name:'Grayscale'}).click();
+        await expect(card.locator('iframe')).toHaveCSS('filter','grayscale(1)');
+        await expect(card.getByText(item.provenance === 'observed' ? 'Observed in Codebase' : 'Observed + Clean-Room [spec]',{exact:true})).toBeVisible();
         const tabs = card.getByRole('tab');
-        for (let index = 0; index < snippets.length; index++) {
+        for (let index = 0; index < 4; index++) {
             await tabs.nth(index).click();
             await expect(tabs.nth(index)).toHaveAttribute('aria-selected', 'true');
             await card.getByRole('button', { name: 'Copy source' }).click();
             await expect(card.getByRole('status')).toHaveText('Source copied.');
-            expect((await page.evaluate(() => navigator.clipboard.readText())).replaceAll('\r\n','\n')).toBe(snippets[index]);
+            const sourcePanel = card.locator('[data-source]').nth((index || (item.previewEngine === 'react' ? 2 : 1))-1);
+            const paths = await sourcePanel.locator('.file-label').allTextContents();
+            expect(paths.length).toBeGreaterThan(0);
+            const files = paths.map(path=>readFileSync(path,'utf8').replaceAll('\r\n','\n').trimEnd());
+            expect((await page.evaluate(() => navigator.clipboard.readText())).replaceAll('\r\n','\n')).toBe(files.join('\n\n'));
         }
         await page.getByRole('button', { name: 'Dark mode' }).click();
         const token = card.getByRole('tabpanel').locator('pre.astro-code span[style]').first();

@@ -1,0 +1,29 @@
+{
+  "id": "status-tone-vocabulary",
+  "order": 1,
+  "tier": 1,
+  "title": "Status, urgency and priority vocabulary",
+  "category": "Data Visualization",
+  "sourceSystems": [
+    "Cross-System",
+    "SYS-01",
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "summary": "Read workflow state by shape, glyph and word. Try legacy priority values before writing a canonical value.",
+  "previewEngine": "react",
+  "supportsRtl": true,
+  "interactionSpecs": [
+    "Read legacy aliases and sort unknown priorities last.",
+    "Switch to grayscale and submit a canonical priority."
+  ],
+  "sourceIds": [
+    "PT-05",
+    "PT-07",
+    "IT-02",
+    "IT-04",
+    "HR-01",
+    "HR-02"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "spreadsheet-importer-register",
+  "order": 15,
+  "tier": 3,
+  "title": "CSV Importer & Config-Driven Register",
+  "category": "Tables & Queues",
+  "sourceSystems": [
+    "SYS-01"
+  ],
+  "provenance": "observed-plus-spec",
+  "summary": "Map spreadsheet headers to register fields, inspect warnings and save partial writes with a clean-room field diff.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Parse the sample CSV",
+    "Inspect normalized dates and unmapped metadata",
+    "Edit a partial record and download the filtered register"
+  ],
+  "sourceIds": [
+    "IT-22",
+    "IT-25"
+  ]
+}

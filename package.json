@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node --test tests/*.test.mjs",
     "test:browser": "playwright test",
     "test:kit": "node --test kit/utilities/url-filters/filters.test.mjs",
     "dev": "astro dev",
@@ -28,13 +29,14 @@
     "@types/alpinejs": "^3.17.0",
     "alpinejs": "^3.17.5",
     "astro": "^5.18.2",
-    "fuse.js": "^7.5.0",
+    "docx-preview": "^0.4.0",
     "lucide-react": "^1.78.0",
     "mermaid": "^11.17.2",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "shiki": "^3.23.0",
-    "tailwindcss": "^4.3.5"
+    "tailwindcss": "^4.3.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

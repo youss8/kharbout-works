@@ -1,0 +1,71 @@
+<section
+    class="kit-panel"
+    x-data="vaultKit"
+    @keydown.escape="close()"
+    @scroll.window="close()"
+    @resize.window="close()"
+>
+    <div class="kit-row">
+        <label
+            >Branch
+            <select x-model="branch">
+                <template x-for="g in groups" :key="g.id"
+                    ><option :value="g.id" x-text="g.name"></option
+                ></template></select
+        ></label>
+        <button @click="outage()">Simulate branch outage</button
+        ><button @click="checkIn()">Simulate agent check-in</button>
+    </div>
+    <p>● Online · ◐ Stale · ○ Never seen</p>
+    <p>Last refresh <time data-poll-clock x-text="refreshed"></time> · 15-second interval</p>
+    <template x-for="g in groups" :key="g.id"
+        ><section>
+            <h3>
+                <span x-text="g.name"></span> ·
+                <bdi x-text="g.online+'/'+g.endpoints.length"></bdi> online
+            </h3>
+            <div class="estate-ports" @scroll="close()">
+                <template x-for="e in g.endpoints" :key="e.id"
+                    ><button
+                        :aria-label="e.name+' · '+stateLabels[state(e)]"
+                        :data-state="state(e)"
+                        :aria-describedby="current===e.id?'telemetry':null"
+                        @focus="inspect(e.id,$el)"
+                        @pointerenter="inspect(e.id,$el)"
+                        @click="inspect(e.id,$el)"
+                        @blur="close()"
+                        @pointerleave="close()"
+                    >
+                        <span x-text="stateLabels[state(e)][0]"></span
+                        ><small x-text="e.name.split('-').at(-1)"></small></button
+                ></template>
+            </div></section
+    ></template>
+    <template x-if="detail"
+        ><aside role="tooltip" id="telemetry" class="estate-tip" :style="position">
+            <strong x-text="detail.name+' · '+stateLabels[state(detail)]"></strong>
+            <p>Last check-in <bdi x-text="detail.last_seen?.slice(11,16) ?? 'Never'"></bdi></p>
+            <dl>
+                <template x-for="k in metrics"
+                    ><div style="display: contents">
+                        <dt x-text="k.toUpperCase()"></dt>
+                        <dd>
+                            <template x-if="detail.last_seen"
+                                ><span
+                                    ><meter
+                                        :aria-label="k"
+                                        min="0"
+                                        max="100"
+                                        :value="detail[k]"
+                                    ></meter
+                                    ><bdi x-text="detail[k]+'%'"></bdi></span
+                            ></template>
+                            <span x-show="!detail.last_seen" aria-label="not set">—</span>
+                        </dd>
+                    </div></template
+                >
+            </dl>
+        </aside></template
+    >
+    <p role="status" x-text="message"></p>
+</section>

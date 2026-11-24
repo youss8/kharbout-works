@@ -1,0 +1,27 @@
+{
+  "id": "saved-views-sticky-filters",
+  "order": 7,
+  "tier": 2,
+  "category": "Tables & Queues",
+  "sourceSystems": [
+    "Cross-System",
+    "SYS-01",
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Role-scoped saved views",
+  "summary": "Draft register filters, save named views and inspect what survives a role change.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Apply draft filters in one action.",
+    "Save and reapply a view, then switch roles."
+  ],
+  "sourceIds": [
+    "PT-15",
+    "PT-16",
+    "PT-17",
+    "IT-08",
+    "HR-11"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": "office-pdf-preview",
+  "order": 10,
+  "tier": 2,
+  "category": "Navigation & Shell",
+  "sourceSystems": [
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Private Office and PDF preview",
+  "summary": "Inspect spreadsheets, documents and PDFs locally with explicit render limits.",
+  "previewEngine": "alpine",
+  "interactionSpecs": [
+    "Preview a capped worksheet and switch sheets.",
+    "Open a local file or download an unsupported file."
+  ],
+  "sourceIds": [
+    "PT-25"
+  ]
+}
