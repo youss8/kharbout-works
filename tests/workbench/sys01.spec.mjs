@@ -77,6 +77,12 @@ test("estate deduplicates threshold and availability alerts and clears loan obli
   await estate.getByRole("button", { name: "Run availability sweep" }).click();
   await expect(estate.getByRole("heading", { name: "Open alerts · 3" })).toBeVisible();
   await estate.getByLabel("Branch scope").selectOption("b2");
+  await expect(estate.getByText("430", { exact: true })).toBeVisible();
+  await expect(estate.getByText("Licenses expiring within 30 days")).toBeVisible();
+  await expect(estate.getByText("Overdue loans")).toHaveCount(0);
+  const harborFlow = estate.getByRole("group", { name: /Daily opened and resolved ticket counts · Harbor Office/ });
+  await expect(harborFlow.locator(".flow-day")).toHaveCount(7);
+  await expect(harborFlow.locator(".flow-day").last()).toContainText("2 / 0");
   await expect(estate.getByRole("button", { name: /NH-SRV-FILE/ })).toHaveCount(0);
   await expect(estate.getByRole("heading", { name: "Open alerts · 2" })).toBeVisible();
   await estate.getByRole("button", { name: /HO-LT-007/ }).click();
@@ -88,8 +94,12 @@ test("estate deduplicates threshold and availability alerts and clears loan obli
   await expect(estate.getByText("Required", { exact: true })).toBeVisible();
   await estate.getByLabel("Loan scope").selectOption("in-hours");
   await expect(estate.getByText("NULL", { exact: true })).toBeVisible();
+  await estate.getByLabel("Branch scope").selectOption("b3");
+  await expect(estate.getByText("No outstanding actions in this scope.")).toBeVisible();
+  await expect(estate.getByText("Test loan · Central Campus")).toBeVisible();
   await estate.getByRole("button", { name: "Reset demo state" }).click();
   await expect(estate.getByRole("heading", { name: "Open alerts · 3" })).toBeVisible();
+  await expect(estate.getByText("1,284", { exact: true })).toBeVisible();
   await expect(estate.locator(".flow-day")).toHaveCount(7);
   await page.setViewportSize({ width: 375, height: 830 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);

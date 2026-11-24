@@ -17,6 +17,16 @@ test('KPI rollups separate missing denominators, pending counts and cumulative s
     const result = demo.locator('.result-value');
     await expect(result).toHaveText('67.8%');
     await expect(demo.getByText('1 site excluded · missing denominator')).toBeVisible();
+    const period = demo.getByRole('combobox', { name: 'Period', exact: true });
+    await period.selectOption('Q4');
+    await expect(result).toHaveText('—');
+    await expect(demo.getByText('3 sites excluded · after reporting cutoff')).toBeVisible();
+    await expect(demo.getByText('Annual time elapsed · 75%')).toBeVisible();
+    await demo.getByRole('button', { name: 'Gaps', exact: true }).click();
+    await expect(demo.getByText('EMP-02 · North Hub · After reporting cutoff')).toBeVisible();
+    await expect(demo.getByText('EMP-02 · North Hub · Missing denominator')).toHaveCount(0);
+    await period.selectOption('YTD');
+    await expect(result).toHaveText('67.8%');
     await demo.getByLabel('Rollup method').selectOption('naive');
     await expect(result).toHaveText('59.6%');
     await demo.getByRole('combobox', { name: 'Site', exact: true }).selectOption('S2');
@@ -30,7 +40,7 @@ test('KPI rollups separate missing denominators, pending counts and cumulative s
     await expect(demo.getByRole('region', { name: 'Objective tree' }).getByText('334', { exact: true })).toBeVisible();
     await demo.getByRole('button', { name: 'Trend', exact: true }).click();
     await expect(demo.getByRole('columnheader', { name: 'Linear target' })).toBeVisible();
-    await demo.getByRole('combobox', { name: 'Period', exact: true }).selectOption('Q1');
+    await period.selectOption('Q1');
     await expect(demo.getByText('Annual time elapsed · 25%')).toBeVisible();
     await demo.getByRole('button', { name: 'Gaps', exact: true }).click();
     await expect(demo.getByText('O1.2 · No KPI linked')).toBeVisible();
@@ -51,6 +61,14 @@ test('the Sankey traces the correct projects and receiving a tranche updates its
     await expect(totals).toContainText('EUR 180,000');
     await expect(totals).toContainText('EUR 300,000');
     await expect(demo.locator('.ribbons path[d^="M"]')).toHaveCount(7);
+    for (const [proposal, currency, expected] of [['P-2026-014', 'USD', 420000], ['P-2026-009', 'EUR', 180000]]) {
+        const incoming = demo.locator(`.ribbons path[data-target="${proposal}"][data-currency="${currency}"]`);
+        const outgoing = demo.locator(`.ribbons path[data-source="${proposal}"][data-currency="${currency}"]`);
+        const sum = (paths, attribute) => paths.reduce((total, path) => total + Number(path.getAttribute(attribute)), 0);
+        expect(await incoming.evaluateAll(sum, 'data-amount')).toBe(expected);
+        expect(await outgoing.evaluateAll(sum, 'data-amount')).toBe(expected);
+        expect(await outgoing.evaluateAll(sum, 'stroke-width')).toBeCloseTo(await incoming.evaluateAll(sum, 'stroke-width'));
+    }
     const sponsor = demo.locator('[data-flow-node="SP1"]');
     await sponsor.hover();
     await expect(demo.locator('[data-flow-node="PRJ-101"]')).toHaveClass(/is-traced/);

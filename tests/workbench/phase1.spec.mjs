@@ -139,12 +139,11 @@ for (const format of ['international', 'dach']) {
         await page.pdf({ path: filename, preferCSSPageSize: true, printBackground: true });
         const metadata = execFileSync('pdfinfo', [filename], { encoding: 'utf8' });
         const pages = Number(metadata.match(/^Pages:\s+(\d+)/m)?.[1]);
-        expect(pages).toBeGreaterThanOrEqual(1);
-        expect(pages).toBeLessThanOrEqual(2);
+        expect(pages).toBe(1);
         expect(metadata).toMatch(/^Page size:.*\(A4\)/m);
         const pdfText = execFileSync('pdftotext', ['-enc', 'UTF-8', filename, '-'], { encoding: 'utf8' });
         const text = pdfText.replace(/\s+/g, ' ');
-        for (const term of ['Youssef Kharbout', 'Fictional Works Group', 'SaaS', 'University of Aleppo', 'Germany', 'mentorship']) {
+        for (const term of ['Youssef Kharbout', 'Fictional Works Group', 'SaaS', 'University of Aleppo', 'Germany', 'mindfulness', 'community impact', 'leading by example']) {
             expect(text).toContain(term);
         }
         expect(text).not.toMatch(/(?:GPA|72\s*%|Employer for private PDF|Print \/ Save PDF)/i);

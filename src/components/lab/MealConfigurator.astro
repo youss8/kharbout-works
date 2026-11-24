@@ -2,11 +2,25 @@
     <fieldset><legend>Exclude allergens</legend><div class="choices">{['Soy','Sesame'].map(label => <button type="button" x-on:click={`exclude('${label}')`} x-bind:aria-pressed={`excluded.includes('${label}')`}>{label}</button>)}</div></fieldset>
     <div class="lab-fields"><label>Base<select x-model="base"><template x-for="item in ingredients.filter(i => i.kind === 'base')"><option x-bind:value="item.id" x-text="item.name"></option></template></select></label>
         <label>Bowls<select x-model.number="servings">{[1,2,3,4].map(n => <option value={n}>{n}</option>)}</select></label></div>
+    <fieldset><legend>Optional macro targets for the whole meal</legend>
+        <div class="lab-fields">
+            <label>Minimum protein (g)<input type="number" min="0" step="1" x-model.number="minimumProtein" /></label>
+            <label>Maximum carbs (g)<input type="number" min="0" step="1" x-model.number="maximumCarbs" /></label>
+            <label>Maximum fat (g)<input type="number" min="0" step="1" x-model.number="maximumFat" /></label>
+        </div>
+    </fieldset>
     <fieldset><legend>Toppings</legend>
         <template x-for="item in ingredients.filter(i => i.kind === 'topping')" x-bind:key="item.id"><label class="topping">
-            <input type="checkbox" x-model="toppings" x-bind:value="item.id" x-bind:disabled="!allowed(item)"/>
-            <span x-text="item.name"></span><small x-text="allowed(item) ? money(item.price) : 'Excluded · '+item.allergens.join(', ')"></small>
+            <input type="checkbox" x-model="toppings" x-bind:value="item.id" x-bind:disabled="Boolean(toppingIssue(item))"/>
+            <span x-text="item.name"></span><small x-text="toppingIssue(item) || money(item.price)"></small>
         </label></template>
     </fieldset>
-    <p class="lab-result" aria-live="polite" x-text="money(totals.price)+' · '+totals.calories+' kcal · '+totals.protein+' g protein'"></p>
+    <div aria-live="polite">
+        <p class="lab-result" x-text="money(totals.price)+' · '+totals.calories+' kcal · '+totals.protein+' g protein'"></p>
+        <p class="lab-note" x-text="totals.carbs+' g carbs · '+totals.fat+' g fat'"></p>
+        <p class="lab-note" x-show="hasTargets" x-cloak x-text="nutritionStatus"></p>
+    </div>
 </div>
+<style>
+    .lab-fields input { min-width: 0; width: 100%; }
+</style>

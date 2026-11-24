@@ -3,13 +3,12 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import StatusBadge from '../components/ui/StatusBadge.astro';
-import { cvSummary, profile } from '../data/profile';
+import { profile } from '../data/profile';
 import '../styles/print-cv.css';
 
 const { fullName, monogram, headline, contact, availability, coreStack } = profile;
 const position = profile.experience[0];
 const hasPortrait = existsSync(resolve('public', 'photo.jpg'));
-const germanyRelocation = availability.mobility.split(' · ').at(-1);
 const german = profile.languages.find(({ name }) => name === 'German');
 const stackRows = [
   ['Languages', coreStack.languages],
@@ -25,7 +24,7 @@ const contacts = [
 ];
 ---
 
-<BaseLayout title={`CV · ${fullName}`} description={`${fullName} · ${headline}. International and DACH CV, available January 2027.`}>
+<BaseLayout title={`CV · ${fullName}`} description={`${fullName} · ${headline}. International and DACH CV, available ${availability.month}.`}>
   <div class="cv-page" x-data={`{ dach: false, employer: ${JSON.stringify(position.defaultOrgLabel)} }`}>
     <div class="cv-toolbar no-print" aria-label="CV settings">
       <fieldset class="cv-fieldset">
@@ -61,12 +60,12 @@ const contacts = [
             : <span aria-label={`Initials of ${fullName}`}>{monogram}</span>}
         </div>
       </header>
-      <p class="cv-relocation" x-show="dach" x-cloak>{germanyRelocation}{german && ` · ${german.name} ${german.cefr} ${german.level.match(/\(.+\)/)?.[0] ?? ''}`}</p>
+      <p class="cv-relocation" x-show="dach" x-cloak>{availability.relocation}{german && ` · ${german.name} ${german.cefr} ${german.level.match(/\(.+\)/)?.[0] ?? ''}`}</p>
 
       <section class="cv-section cv-focus">
         <h2>Career focus</h2>
         <div>
-          <p>{cvSummary.career}</p>
+          <p>{availability.careerFocus}</p>
           <p class="cv-available"><StatusBadge label={availability.badge} shape="surface" tone="ok" /></p>
         </div>
       </section>
@@ -85,7 +84,7 @@ const contacts = [
           <p class="cv-job-location">{position.location}</p>
           <p>Across all three platforms · {profile.aggregateMetrics.slice(0, 3).map(({ value, label }) => `${value} ${label.toLowerCase()}`).join(' · ')}</p>
           <ul class="cv-projects">
-            {cvSummary.systems.map(({title, summary}) => <li><strong>{title}</strong> — {summary}</li>)}
+            {position.highlights.map(highlight => <li>{highlight}</li>)}
           </ul>
         </div>
       </section>
@@ -106,7 +105,7 @@ const contacts = [
       </section>
       <section class="cv-section cv-leadership">
         <h2>Leadership & mentorship</h2>
-        <div>{cvSummary.leadership.map((line) => <p>{line}</p>)}</div>
+        <div>{profile.leadership.sections.map((line) => <p>{line}</p>)}</div>
       </section>
     </article>
   </div>

@@ -62,7 +62,7 @@ export const GET: APIRoute = async () => {
     entries,
     intents: [
       { terms: ["cv", "resume", "résumé", "pdf", "print"], title: "Open the print-ready CV", summary: "Choose International or DACH, then Print / Save PDF.", href: "/cv/" },
-      { terms: ["germany", "relocate", "relocation", "dach", "german"], title: "Germany relocation and availability", summary: profile.availability.mobility + " · Available January 2027.", href: "/cv/" },
+      { terms: ["germany", "relocate", "relocation", "dach", "german"], title: "Germany relocation and availability", summary: `${profile.availability.mobility} · Available ${profile.availability.month}.`, href: "/cv/" },
       { terms: ["email", "contact", "hire", "reach"], title: "Email Youssef", summary: profile.contact.email, href: "mailto:" + profile.contact.email },
       { terms: ["solo", "ownership"], title: "Which system was built solo?", summary: "SYS-01 was 100% solo, architecture-verified and held from live fleet rollout.", href: byCode.get("SYS-01") },
       { terms: ["react", "typescript"], title: "Explore the React service desk", summary: "Inspect a ticket, change its state and verify its SLA.", href: bySandbox.get("service-desk") },

@@ -17,10 +17,12 @@ function flattenTree(nodes, parents = []) {
 const objectives = flattenTree(performance.tree);
 const indicators = objectives.flatMap(node => node.kpis ?? []);
 
+const latestPercentageReading = (target, month) => target.readings.findLast(item => item.month <= months[month].key);
+
 function snapshot(kpi, target, month) {
     if (month < 0 || month > reportMonth) return null;
     if (kpi.measure === 'percentage') {
-        const reading = target.readings.findLast(item => item.month <= months[month].key);
+        const reading = latestPercentageReading(target, month);
         return reading?.denominator > 0 ? reading : null;
     }
     if (kpi.cumulative) return month === reportMonth ? target.latest : null;
@@ -28,22 +30,28 @@ function snapshot(kpi, target, month) {
     return target.monthly.slice(0, month + 1).reduce((sum, actual) => sum + actual, 0);
 }
 
+function gapReason(kpi, target, month) {
+    if (month > reportMonth) return 'After reporting cutoff';
+    if (kpi.measure === 'percentage' && (month === reportMonth || latestPercentageReading(target, month))) {
+        return 'Missing denominator';
+    }
+    return 'No reading at cutoff';
+}
+
 function calculate(kpi, targets, month, method) {
     const values = targets.map(target => snapshot(kpi, target, month)).filter(value => value !== null);
     const covered = values.length;
-    const excluded = targets.length - covered;
     if (kpi.measure === 'percentage') {
         const numerator = values.reduce((sum, value) => sum + value.numerator, 0);
         const denominator = values.reduce((sum, value) => sum + value.denominator, 0);
         const average = covered ? values.reduce((sum, value) => sum + value.numerator / value.denominator, 0) / covered * 100 : null;
         const pooled = denominator ? numerator / denominator * 100 : null;
         const target = covered ? targets.filter(row => snapshot(kpi, row, month)).reduce((sum, row) => sum + row.target, 0) / covered : null;
-        return { actual: method === 'naive' ? average : pooled, target, covered, excluded, numerator, denominator };
+        return { actual: method === 'naive' ? average : pooled, target, numerator, denominator };
     }
     return {
         actual: covered ? values.reduce((sum, value) => sum + value, 0) : null,
         target: targets.reduce((sum, value) => sum + value.target, 0),
-        covered, excluded,
     };
 }
 
@@ -66,7 +74,7 @@ const kpiCockpit = () => ({
         const start = this.period === 'YTD' ? 0 : this.cutoff - 2;
         return months.slice(start, this.cutoff + 1);
     },
-    get elapsed() { return (this.cutoff + 1) / 12; },
+    get elapsed() { return (Math.min(this.cutoff, reportMonth) + 1) / 12; },
     get visibleNodes() { return objectives.filter(node => !node.parents.some(id => this.collapsed.includes(id))); },
     get current() { return indicators.find(kpi => kpi.code === this.selected); },
     get targets() { return this.matching(this.current); },
@@ -76,6 +84,15 @@ const kpiCockpit = () => ({
     toggleNode(id) { this.collapsed = this.collapsed.includes(id) ? this.collapsed.filter(item => item !== id) : [...this.collapsed, id]; },
     get rows() { return indicators.map(kpi => this.summary(kpi)); },
     get result() { return this.summary(this.current); },
+    get exclusionNotes() {
+        const counts = new Map();
+        for (const target of this.targets) {
+            if (snapshot(this.current, target, this.cutoff) !== null) continue;
+            const reason = gapReason(this.current, target, this.cutoff);
+            counts.set(reason, (counts.get(reason) ?? 0) + 1);
+        }
+        return [...counts].map(([reason, count]) => `${count} ${count === 1 ? 'site' : 'sites'} excluded · ${reason.toLowerCase()}`);
+    },
     summary(kpi, month = this.cutoff) {
         const targets = this.matching(kpi);
         const rollup = calculate(kpi, targets, month, this.method);
@@ -97,7 +114,7 @@ const kpiCockpit = () => ({
         for (const kpi of indicators) {
             for (const row of this.matching(kpi)) {
                 if (snapshot(kpi, row, this.cutoff) !== null) continue;
-                const reason = kpi.measure === 'percentage' ? 'Missing denominator' : 'No reading at cutoff';
+                const reason = gapReason(kpi, row, this.cutoff);
                 gaps.push(kpi.code + ' · ' + this.siteName(row.site) + ' · ' + reason);
             }
         }
@@ -125,6 +142,33 @@ const fundColumns = [
     { name: 'Proposal', nodes: funding.proposals.map(row => ({ id: row.id, label: row.title })) },
     { name: 'Project', nodes: funding.projects.map(row => ({ id: row.id, label: row.name })) },
 ];
+
+function fundingConnections() {
+    const connections = new Map();
+    function add(source, target, currency, cents) {
+        const id = `${source}:${target}:${currency}`;
+        connections.set(id, { id, source, target, currency, cents: (connections.get(id)?.cents ?? 0) + cents });
+    }
+
+    for (const { sponsor, proposal, currency, budget } of funding.agreements) {
+        const cents = Math.round(budget * 100);
+        add(sponsor, proposal, currency, cents);
+        const projects = funding.projects.filter(project => project.proposals.includes(proposal));
+        if (!projects.length) continue;
+        // The handoff supplies relationships but no allocation. Split each agreement evenly for the demo.
+        const share = Math.floor(cents / projects.length);
+        const remainder = cents % projects.length;
+        projects.forEach((project, index) => add(proposal, project.id, currency, share + Number(index < remainder)));
+    }
+    return [...connections.values()];
+}
+
+export const fundingEdges = fundingConnections();
+const maxRibbonCents = new Map();
+for (const { currency, cents } of fundingEdges) {
+    maxRibbonCents.set(currency, Math.max(1, cents, maxRibbonCents.get(currency) ?? 0));
+}
+
 function health(agreement) {
     if (agreement.tranches.some(row => row.state === 'failed')) return 'offTrack';
     const overdue = [...agreement.tranches, ...agreement.reports].some(row => ['expected', 'requested'].includes(row.state) && row.due < funding.asOf);
@@ -203,18 +247,14 @@ const fundingFlow = () => ({
         const map = this.$refs.map;
         const origin = map.getBoundingClientRect();
         const anchors = new Map([...map.querySelectorAll('[data-flow-node]')].map(node => [node.dataset.flowNode, node.getBoundingClientRect()]));
-        const links = [
-            ...this.agreements.map(a => ({ source: a.sponsor, target: a.proposal, currency: a.currency, amount: a.budget, label: this.money(a.budget, a.currency) })),
-            ...funding.projects.flatMap(p => p.proposals.map(proposal => ({ source: proposal, target: p.id, currency: 'link', amount: 0, label: 'Project relationship' }))),
-        ];
-        this.edges = links.flatMap(edge => {
+        this.edges = fundingEdges.flatMap(edge => {
             const from = anchors.get(edge.source), to = anchors.get(edge.target);
             if (!from || !to || !origin.width) return [];
             const x1 = from.right - origin.left, x2 = to.left - origin.left;
             const y1 = from.top + from.height / 2 - origin.top, y2 = to.top + to.height / 2 - origin.top;
             const middle = (x1 + x2) / 2;
-            const ceiling = Math.max(1, ...this.agreements.filter(a => a.currency === edge.currency).map(a => a.budget));
-            return [{ ...edge, path: 'M' + x1 + ' ' + y1 + ' C' + middle + ' ' + y1 + ', ' + middle + ' ' + y2 + ', ' + x2 + ' ' + y2, width: edge.amount ? edge.amount / ceiling * 14 : 2 }];
+            const ceiling = maxRibbonCents.get(edge.currency);
+            return [{ id: edge.id, path: 'M' + x1 + ' ' + y1 + ' C' + middle + ' ' + y1 + ', ' + middle + ' ' + y2 + ', ' + x2 + ' ' + y2, width: edge.cents / ceiling * 14 }];
         });
     },
 });

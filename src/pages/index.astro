@@ -20,7 +20,7 @@ const directory = [
 ];
 const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
 ---
-<BaseLayout title="Youssef Kharbout — Engineering Workbench" description="Youssef Kharbout’s software engineering portfolio, interactive systems, reusable operations kit and CV for commercial tech roles.">
+<BaseLayout title={`${profile.fullName} — Engineering Workbench`} description={`${profile.fullName}’s software engineering portfolio, interactive systems, reusable operations kit and CV for commercial tech roles.`}>
   <div class="workbench">
     <div class="workbench-title"><span aria-hidden="true" class="locator">⌖</span> Engineering workbench</div>
     <section class="hero" aria-labelledby="home-title">
@@ -28,7 +28,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
         <div class="availability"><Check size={13} strokeWidth={2.8} aria-hidden="true"/><span>{profile.availability.badge} · REMOTE / GERMANY RELOCATION</span></div>
         <h1 id="home-title">{profile.fullName}</h1>
         <p class="role">{profile.headline}</p>
-        <p class="pitch">I build operational systems with TypeScript, React 19 and PostgreSQL, and with PHP 8.5, Laravel 13 and MySQL. I’m available in January 2027 for commercial startups, SaaS product teams and freelance engineering, including relocation to Germany.</p>
+        <p class="pitch">{profile.subheadline} {profile.availability.careerFocus}</p>
         <div class="hero-actions">
           <a class="action primary" href={available("systems") ? "/systems/" : "#architecture"}>{available("systems") ? "Explore 3 systems & 6 live demos" : "Explore the 3 systems"}<ArrowRight size={15} aria-hidden="true"/></a>
           <a class="action secondary" href="/cv/">Interactive CV & PDF <ArrowUpRight size={15} aria-hidden="true"/></a>

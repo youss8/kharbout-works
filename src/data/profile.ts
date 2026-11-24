@@ -1,10 +1,15 @@
+const availableFrom = new Date("2027-01-01T00:00:00Z");
+const availabilityMonth = new Intl.DateTimeFormat("en", { month: "long", year: "numeric", timeZone: "UTC" }).format(availableFrom);
+const availabilityShortMonth = new Intl.DateTimeFormat("en", { month: "short", year: "numeric", timeZone: "UTC" }).format(availableFrom);
+const relocation = "Open to Relocation to Germany";
+
 export const profile = {
   fullName: "Youssef Kharbout",
   monogram: "YK",
   brandName: "Youssef Operations Kit",
   headline: "Full-Stack Software Engineer & Systems Architect",
   subheadline:
-    "Architecting structured web platforms, complex operational workflows, and disciplined AI engineering tooling across TypeScript/React 19 and PHP 8.5/Laravel 13.",
+    "I build operational systems with TypeScript, React 19 and PostgreSQL, and with PHP 8.5, Laravel 13 and MySQL.",
   pillars: [
     {
       index: "01",
@@ -26,7 +31,9 @@ export const profile = {
     },
   ],
   availability: {
-    badge: "OPEN TO TECH ROLES · JAN 2027",
+    month: availabilityMonth,
+    badge: `OPEN TO TECH ROLES · ${availabilityShortMonth.toUpperCase()}`,
+    careerFocus: "I’m seeking commercial tech roles at remote international startups and SaaS product companies, freelance engineering projects, and tech relocation to Germany.",
     targetRoles: [
       "Full-Stack Software Engineer",
       "Product / Systems Engineer",
@@ -40,7 +47,8 @@ export const profile = {
     sectorTransitionNote:
       "Transitioning from internal NGO systems engineering exclusively into commercial tech startups, SaaS product teams, and international engineering roles (not seeking NGO roles).",
     location: "Aleppo, Syria (UTC+3)",
-    mobility: "Remote Worldwide · Open to Relocation to Germany",
+    relocation,
+    mobility: `Remote Worldwide · ${relocation}`,
   },
   contact: {
     email: "youssefkharbout3@gmail.com",
@@ -62,8 +70,7 @@ export const profile = {
       period: "Nov 2024 – Dec 2026",
       location: "Aleppo, Syria · ~150 Staff Countrywide (50 Local Hub · 50–60 Weekly Active Platform Users)",
       highlights: [
-        "Core full-stack engineer and systems architect across 3 enterprise internal platforms spanning TypeScript/React 19/Supabase Postgres and PHP 8.5/Laravel 13/Livewire 4/MySQL (~280+ live tables, 363 migrations, 794 automated test files across the full suite).",
-        "IT Operations & Asset Helpdesk (100% Solo End-to-End): Architected and built a 47-table TypeScript/TanStack Start/React 19/Postgres platform (54 triggers, ~118 RLS policies, 12 config-driven registers, endpoint telemetry agent, AI copilot, and 11-tool OAuth MCP server) engineered to consolidate ~900–1,000 hardware assets and licenses and unify a 15–20/month IT request workflow.",
+        "IT Operations & Asset Helpdesk (100% Solo End-to-End): Architected and built a 47-table TypeScript/TanStack Start/React 19/Supabase Postgres platform (54 triggers, ~118 RLS policies, 12 config-driven registers, endpoint telemetry agent, AI copilot, and 11-tool OAuth MCP server) for ~900–1,000 hardware assets and licenses and 15–20 monthly IT requests. Architecture-verified and held from live fleet rollout.",
         "Multi-Entity Funding, Portfolio & KPI Analytics Platform (~80% Primary Architect & Builder, 3-dev team): Led workflow design, UI architecture, and core implementation across ~98 tables, 197 migrations, 175 Action classes, and 481 Pest test files—tracking full organizational history from 2018–present with PHP/SQL-synced pooled KPI ratios, non-mixing multi-currency tracking, and interactive Gantt/Sankey views.",
         "HR Lifecycle Platform (Core Contributor & Co-Architect, 3-dev team, Pre-RMS Core): Co-built the foundational architecture, employee directory, immutable asSigned() contract amendments, deterministic leave pricing engine, and attendance workflows serving ~240 employees and 75–100 monthly active users—replacing paper forms and manual notepad math to cut HR administrative workload by 75%+ and cross-department workflow overhead by ~65%.",
       ],
@@ -89,8 +96,10 @@ export const profile = {
   ],
   leadership: {
     title: "Youth Leadership & Training Facilitation (2015 – Present)",
-    summary:
-      "11+ years volunteering as a youth scout leader guiding and mentoring youth (ages 9–20) across personal development, teamwork, emotional/social maturity, mindfulness, and community impact. Certified Trainer (TOT) designing and delivering workshops on personality, leading by example, and self-development for 20–30-year-old community leadership cohorts.",
+    sections: [
+      "11+ years of Scout youth leadership (2015–present), mentoring ages 9–20 in teamwork, personal development, emotional and social maturity, mindfulness, and community impact.",
+      "Training of Trainers (TOT) certified. Designed and delivered workshops on personality, leading by example, and self-development for leadership cohorts ages 20–30.",
+    ],
   },
   coreStack: {
     languages: ["TypeScript 5.8 (Strict)", "PHP 8.5 (Strict)", "SQL (PostgreSQL / MySQL)", "JavaScript (ESNext)", "HTML5 / CSS3"],
@@ -119,26 +128,4 @@ export const profile = {
       "Git / GitHub / CycloneDX SBOM",
     ],
   },
-};
-
-export const cvSummary = {
-  career: "Seeking remote full-stack roles at international startups and SaaS product companies, freelance engineering projects and tech relocation to Germany. My search is exclusively for commercial technology roles.",
-  systems: [
-    {
-      title: "IT operations & asset helpdesk",
-      summary: "100% solo end-to-end architecture and build. Designed a 47-table platform for ~900–1,000 assets and licenses and 15–20 requests per month. The endpoint agent and 11-tool MCP server were architecture-verified. The platform did not enter live fleet use.",
-    },
-    {
-      title: "HR lifecycle platform",
-      summary: "Core contributor and co-architect on a three-developer team, before RMS. Built organization, employee, contract amendment, leave and attendance workflows. The platform served ~240 employees and 75–100 monthly users, cutting HR administration by 75%+ and cross-department overhead by ~65%.",
-    },
-    {
-      title: "Funding, portfolio & KPI analytics",
-      summary: "Primary architect and builder of ~80% of the platform on a three-developer team. Designed PHP/SQL pooled ratios, multi-currency tracking and Gantt/Sankey views across a platform with ~98 tables, 197 migrations and 481 Pest test files.",
-    },
-  ],
-  leadership: [
-    "11+ years of Scout youth leadership (2015–present), mentoring ages 9–20 in teamwork and personal development.",
-    "Training of Trainers (TOT) certified. Designed and led self-development and leadership workshops for ages 20–30.",
-  ],
 };

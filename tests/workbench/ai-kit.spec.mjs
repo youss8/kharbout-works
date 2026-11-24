@@ -66,6 +66,9 @@ test('every starter compiles literal values, copies both forms, and downloads va
             else expect(JSON.parse(contents)).toMatchObject({ id, raw, compiled, variables: values });
         }
         const local = await card.getByRole('link', { name: 'View source file' }).getAttribute('href');
+        const github = new URL(await card.getByRole('link', { name: 'View source on GitHub' }).getAttribute('href'));
+        expect(github.origin).toBe('https://github.com');
+        expect(github.pathname.split('/').slice(5)).toEqual(['src', 'content', 'ai-kit', file]);
         const response = await page.request.get(local);
         expect(response.ok()).toBe(true);
         expect((await response.text()).replaceAll('\r\n','\n')).toBe(source.replaceAll('\r\n','\n'));

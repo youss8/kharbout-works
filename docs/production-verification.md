@@ -47,4 +47,12 @@ The retained Laravel catalogue passed `npm run build:catalogue`, `npm run lint`,
 
 ## Fixture interpretation
 
-The leave fixture contains a 24-hour open annual request and a 16-hour pending balance. On reset the desk reconciles the working ledger to the recorded 24-hour reservation. The original JSON stays verbatim. The estate monitor presents organization-wide aggregates in the all-branches view. KPI history shows missing readings where the fixture supplies only a reporting-cutoff snapshot.
+The leave fixture contains a 24-hour open annual request and a 16-hour pending balance. On reset the desk reconciles the working ledger to the recorded 24-hour reservation. The original JSON stays verbatim.
+
+The estate monitor uses a synthetic [branch breakdown](../src/data/demos/it-estate-branches.json) that reconciles to the handoff’s organization-wide fixture. The Sankey splits each agreement equally across its proposal’s linked projects, assigns any rounding remainder in whole cents, and preserves totals in each currency. The KPI cockpit reports periods after the fixture’s cutoff separately from missing denominators and leaves unavailable historical readings blank.
+
+## November 24 handoff follow-up
+
+The final build generated 20 HTML pages. Astro reported zero errors, warnings, or hints across 56 files. All 62 workbench tests passed against the preview started by Playwright. Both CV formats produced one text-selectable A4 page containing the full leadership and mentorship details.
+
+The public-file audit checked 238 publishable files and 578 local references. All six original fixtures and three diagrams match the handoff. The 16 GitHub source links resolve to file paths present on `origin/main`, and all 16 local Markdown downloads match their sources. All 10 isolated Livewire examples, nine Laravel feature tests, and four URL-filter tests passed.

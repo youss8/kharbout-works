@@ -46,7 +46,7 @@
           <output class="result-value" aria-live="polite" x-text="show(result.actual)"></output>
           <p x-show="method === 'pooled'" x-text="'Σ numerators ' + result.numerator + ' / Σ denominators ' + result.denominator"></p>
           <p x-show="method === 'naive'">Each reporting site receives equal weight.</p>
-          <p x-text="result.excluded + (result.excluded === 1 ? ' site excluded' : ' sites excluded') + ' · missing denominator'"></p>
+          <template x-for="note in exclusionNotes" :key="note"><p x-text="note"></p></template>
         </div>
       </template>
       <p x-show="current.cumulative" class="explain">Latest approved site readings at the reporting cutoff. Earlier snapshots are unavailable.</p>

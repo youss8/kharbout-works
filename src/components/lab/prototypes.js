@@ -70,25 +70,47 @@ function habitTracker() {
 }
 
 const ingredients = [
-    { id: 'rice', name: 'Brown rice', kind: 'base', price: 300, calories: 216, protein: 5, allergens: [] },
-    { id: 'greens', name: 'Garden greens', kind: 'base', price: 250, calories: 35, protein: 3, allergens: [] },
-    { id: 'chickpeas', name: 'Spiced chickpeas', kind: 'topping', price: 180, calories: 164, protein: 9, allergens: [] },
-    { id: 'tofu', name: 'Grilled tofu', kind: 'topping', price: 240, calories: 140, protein: 16, allergens: ['Soy'] },
-    { id: 'sesame', name: 'Sesame crunch', kind: 'topping', price: 90, calories: 57, protein: 2, allergens: ['Sesame'] },
-    { id: 'peppers', name: 'Roasted peppers', kind: 'topping', price: 110, calories: 40, protein: 1, allergens: [] },
+    { id: 'rice', name: 'Brown rice', kind: 'base', price: 300, calories: 216, protein: 5, carbs: 45, fat: 2, allergens: [] },
+    { id: 'greens', name: 'Garden greens', kind: 'base', price: 250, calories: 35, protein: 3, carbs: 5, fat: 0, allergens: [] },
+    { id: 'chickpeas', name: 'Spiced chickpeas', kind: 'topping', price: 180, calories: 164, protein: 9, carbs: 27, fat: 3, allergens: [] },
+    { id: 'tofu', name: 'Grilled tofu', kind: 'topping', price: 240, calories: 140, protein: 16, carbs: 3, fat: 7, allergens: ['Soy'] },
+    { id: 'sesame', name: 'Sesame crunch', kind: 'topping', price: 90, calories: 57, protein: 2, carbs: 2, fat: 5, allergens: ['Sesame'] },
+    { id: 'peppers', name: 'Roasted peppers', kind: 'topping', price: 110, calories: 40, protein: 1, carbs: 9, fat: 0, allergens: [] },
 ];
 function mealBuilder() {
     return {
         ingredients, base: 'rice', toppings: ['chickpeas'], excluded: [], servings: 1,
+        minimumProtein: null, maximumCarbs: null, maximumFat: null,
         get selected() { return ingredients.filter(item => item.id === this.base || this.toppings.includes(item.id)); },
         get totals() {
             return this.selected.reduce((sum, item) => ({
                 price: sum.price + item.price * this.servings,
                 calories: sum.calories + item.calories * this.servings,
                 protein: sum.protein + item.protein * this.servings,
-            }), { price: 0, calories: 0, protein: 0 });
+                carbs: sum.carbs + item.carbs * this.servings,
+                fat: sum.fat + item.fat * this.servings,
+            }), { price: 0, calories: 0, protein: 0, carbs: 0, fat: 0 });
         },
         allowed(item) { return !item.allergens.some(allergen => this.excluded.includes(allergen)); },
+        get hasTargets() { return [this.minimumProtein, this.maximumCarbs, this.maximumFat].some(limit => limit !== null); },
+        get invalidTargets() { return [this.minimumProtein, this.maximumCarbs, this.maximumFat].some(limit => limit !== null && (!Number.isInteger(limit) || limit < 0)); },
+        get nutritionStatus() {
+            if (this.invalidTargets) return 'Enter macro targets in whole grams of 0 or more.';
+            const { protein, carbs, fat } = this.totals;
+            const issues = [];
+            if (this.minimumProtein !== null && protein < this.minimumProtein) issues.push(`Add ${this.minimumProtein - protein} g protein`);
+            if (this.maximumCarbs !== null && carbs > this.maximumCarbs) issues.push(`Reduce carbs by ${carbs - this.maximumCarbs} g`);
+            if (this.maximumFat !== null && fat > this.maximumFat) issues.push(`Reduce fat by ${fat - this.maximumFat} g`);
+            return issues.length ? issues.join(' · ') : 'Meal meets your macro targets.';
+        },
+        toppingIssue(item) {
+            if (!this.allowed(item)) return 'Excluded · ' + item.allergens.join(', ');
+            if (this.toppings.includes(item.id) || this.invalidTargets) return '';
+            const { carbs, fat } = this.totals;
+            if (item.carbs > 0 && this.maximumCarbs !== null && carbs + item.carbs * this.servings > this.maximumCarbs) return 'Over carb limit';
+            if (item.fat > 0 && this.maximumFat !== null && fat + item.fat * this.servings > this.maximumFat) return 'Over fat limit';
+            return '';
+        },
         exclude(allergen) {
             this.excluded = this.excluded.includes(allergen) ? this.excluded.filter(x => x !== allergen) : [...this.excluded, allergen];
             this.toppings = this.toppings.filter(id => this.allowed(ingredients.find(item => item.id === id)));

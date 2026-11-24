@@ -33,7 +33,7 @@ Vault entries include complete Alpine, React and Livewire implementations. Vite 
 | Architecture and operations templates | [Template entries](src/content/templates/) | Edit the Markdown body, supported formats and optional JSON schema. |
 | Lab projects | [Lab metadata](src/data/lab.ts) | Update the summary or supply a screenshot, repository URL or live URL. Each current prototype also has a working demonstration. |
 | DACH headshot | `public/photo.jpg` | Drop in a portrait and rebuild. A 96 × 116 monogram appears when a portrait is absent. |
-| Career and contact information | [Profile](src/data/profile.ts) | Update the shared public profile and concise CV wording. |
+| Career and contact information | [Profile](src/data/profile.ts) | Update the shared availability date, career focus, project highlights, leadership, and contact information. |
 
 ## Verify and deploy
 
@@ -52,7 +52,7 @@ The production audit uses Python 3, Git and ripgrep to check publishable files, 
 
 To run the Livewire examples in isolation, create `test-results/livewire-runtime/`, then run `composer --working-dir=test-results/livewire-runtime require "laravel/framework:13.*" "livewire/livewire:4.*"` and `php tests/workbench/verify-livewire.php`. The check mounts and updates each component against the downloaded framework.
 
-In Vercel, import the GitHub repository with the Astro preset. In Cloudflare Pages, connect the same repository and select the Astro preset. In either provider, use the repository root, Node 24, `npm run build` and output directory `dist`. Set `SITE_URL` to the public origin when a domain is assigned. Set `PUBLIC_SOURCE_REF` to a published Git revision if the provider does not supply its commit SHA. Only portfolio assets are copied into the static export. [Vercel deployment guide](https://docs.astro.build/en/guides/deploy/vercel/) · [Cloudflare Pages deployment guide](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/)
+In Vercel, import the GitHub repository with the Astro preset. In Cloudflare Pages, connect the same repository and select the Astro preset. In either provider, use the repository root, Node 24, `npm run build` and output directory `dist`. Set `SITE_URL` to the public origin when a domain is assigned. Source links use `PUBLIC_SOURCE_REF` when set, then the provider’s Git commit SHA, then the public `main` branch. Only portfolio assets are copied into the static export. [Vercel deployment guide](https://docs.astro.build/en/guides/deploy/vercel/) · [Cloudflare Pages deployment guide](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/)
 
 Domain candidates are `youssefkharbout.dev`, `youss.dev`, `opskit.youss.dev` and `kharbout.dev`.
 
