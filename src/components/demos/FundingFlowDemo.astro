@@ -1,9 +1,5 @@
 ---
-import funding from '../../data/demos/pt-funding-flow.json';
-const connections = [
-  ...funding.agreements.map(a => ({ from: a.sponsor, to: a.proposal, currency: a.currency })),
-  ...funding.projects.flatMap(project => project.proposals.map(from => ({ from, to: project.id, currency: 'link' }))),
-];
+import { fundingEdges } from './portfolio-alpine.js';
 ---
 <div class="funding-demo" x-data="fundingFlow">
   <header class="demo-heading"><p>Portfolio date <time datetime="2026-11-23">23 November 2026</time>.</p><button type="button" x-on:click="reset">Reset Demo State</button></header>
@@ -14,15 +10,16 @@ const connections = [
   </template></div>
   <div class="health-chips" aria-label="Filter agreement health">
     <button type="button" :aria-pressed="healthFilter === ''" x-on:click="healthFilter = ''">All <span x-text="agreements.length"></span></button>
-    <template x-for="[key, state] in Object.entries(healthLabels)" :key="key"><button type="button" :class="'status-badge ' + state.shape" :data-tone="state.tone" :aria-pressed="healthFilter === key" x-on:click="healthFilter = healthFilter === key ? '' : key"><span aria-hidden="true" x-text="state.icon"></span><span x-text="state.name"></span><span x-text="count(key)"></span></button></template>
+    <template x-for="[key, state] in Object.entries(healthLabels)" :key="key"><button type="button" :class="'status-badge ' + (count(key) === 0 ? 'outline' : state.shape)" :data-tone="count(key) === 0 ? 'neutral' : state.tone" :aria-pressed="healthFilter === key" x-on:click="healthFilter = healthFilter === key ? '' : key"><span aria-hidden="true" x-text="count(key) === 0 ? '○' : state.icon"></span><span x-text="state.name"></span><bdi x-text="count(key)"></bdi></button></template>
   </div>
   <figure class="flow-figure">
     <figcaption><strong>Portfolio connections</strong><span>Hover, focus or select a node to trace its funding chain.</span></figcaption>
     <div class="flow-map" x-ref="map" x-on:keydown.escape="pinned = ''; hovered = ''; focused = ''">
-      <svg class="ribbons" aria-hidden="true">{connections.map(({ from, to, currency }) => {
-        const match = `edges.find(edge => edge.source === '${from}' && edge.target === '${to}')`;
-        return <path class={currency} x-bind:d={`${match}?.path ?? ''`} x-bind:stroke-width={`${match}?.width ?? 0`}
-          x-bind:class={`{ 'dim-edge': trace && !(related.includes('${from}') && related.includes('${to}')) }`}></path>;
+      <svg class="ribbons" aria-hidden="true">{fundingEdges.map(({ id, source, target, currency, cents }) => {
+        const match = `edges.find(edge => edge.id === ${JSON.stringify(id)})`;
+        return <path class={currency} data-source={source} data-target={target} data-currency={currency} data-amount={cents / 100}
+          x-bind:d={`${match}?.path ?? ''`} x-bind:stroke-width={`${match}?.width ?? 0`}
+          x-bind:class={`{ 'dim-edge': trace && !(related.includes(${JSON.stringify(source)}) && related.includes(${JSON.stringify(target)})) }`}></path>;
       })}</svg>
       <template x-for="column in columns" :key="column.name"><div class="map-column"><h4 x-text="column.name"></h4><template x-for="node in column.nodes" :key="node.id">
         <button type="button" class="map-node" :data-flow-node="node.id" :class="traceClass(node.id)" :aria-pressed="pinned === node.id"
@@ -30,8 +27,8 @@ const connections = [
           x-on:click="pinned = pinned === node.id ? '' : node.id"><small class="mono" x-text="node.id"></small><strong x-text="node.label"></strong></button>
       </template></div></template>
     </div>
-    <div class="flow-key"><span><i></i>USD</span><span><i class="eur"></i>EUR</span><span><i class="relationship"></i>Project relationship</span></div>
-    <p>Ribbon width follows agreement size within each currency. Dashed project links carry no allocation, since project-level budgets are unavailable.</p>
+    <div class="flow-key"><span><i></i>USD</span><span><i class="eur"></i>EUR</span></div>
+    <p>Ribbon width shows agreed funding within each currency. For this simulation, each agreement is divided equally among its proposal’s linked projects.</p>
   </figure>
   <div class="view-tabs" aria-label="Portfolio records"><template x-for="tab in ['Register','Tranche Lanes','Ledger','Calendar']">
     <button type="button" :aria-pressed="activeTab === tab" x-on:click="activeTab = tab" x-text="tab"></button>
@@ -67,21 +64,21 @@ const connections = [
   <details><summary>What Engineering Invariant Is Running Here?</summary><p>A failed tranche makes an agreement off track. Otherwise an overdue expected tranche or overdue requested report needs attention. All remaining agreements are on track. Receiving a tranche updates its gross cash ledger and recomputes its health; net cash remains unrecorded until supplied.</p></details>
 </div>
 <style>
-  .funding-demo { container-type: inline-size; }.demo-heading,.health-chips,.view-tabs,.flow-key { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; }.demo-heading { justify-content: space-between; margin-bottom:.6rem; }
+  .funding-demo { container-type: inline-size; }.demo-heading,.health-chips,.view-tabs,.flow-key { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; }.demo-heading { justify-content: space-between; margin-block-end:.6rem; }
   .demo-heading .mono,figcaption span,.flow-figure > p,.flow-key,.fund-totals section > span { font-size: .78rem; color: var(--ink-secondary); }
   .fund-totals { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); border: 1px solid var(--border-hairline); margin-block: 1rem; }.fund-totals section { padding: .8rem; }.fund-totals section + section { border-inline-start: 1px solid var(--border-hairline); }
-  .fund-totals section > * { display: block; }.fund-totals strong { font: 600 clamp(.9rem,2.4cqw,1.65rem)/1.35 var(--font-mono); }.fund-totals dl { margin-top:.5rem; }.fund-totals dl div { display:flex; flex-wrap:wrap; gap:.25rem .5rem; justify-content:space-between; font-size:.8rem; }.fund-totals dd { margin:0; font-family:var(--font-mono); }
+  .fund-totals section > * { display: block; }.fund-totals strong { font: 600 clamp(.9rem,2.4cqw,1.65rem)/1.35 var(--font-mono); }.fund-totals dl { margin-block-start:.5rem; }.fund-totals dl div { display:flex; flex-wrap:wrap; gap:.25rem .5rem; justify-content:space-between; font-size:.8rem; }.fund-totals dd { margin:0; font-family:var(--font-mono); }
   .health-chips button[aria-pressed=true],.view-tabs button[aria-pressed=true]{ outline:2px solid var(--accent-primary); outline-offset:1px; }
   .flow-figure { margin: 1rem 0; border:1px solid var(--border-hairline); padding:clamp(.4rem,2cqw,1.2rem); }.flow-figure figcaption span { display:block; }
   .flow-map { display:grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap:clamp(.55rem,4.5cqw,3rem); position:relative; margin-block:.8rem; }
-  .ribbons { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }.ribbons path { fill:none; opacity:.72; stroke:var(--accent-primary); }.ribbons .EUR { stroke:var(--status-warn); }.ribbons .link { stroke:var(--ink-secondary); stroke-dasharray:3 3; }.ribbons .dim-edge { opacity:.12; }
+  .ribbons { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }.ribbons path { fill:none; opacity:.72; stroke:var(--accent-primary); }.ribbons .EUR { stroke:var(--ink-secondary); stroke-dasharray:7 3; }.ribbons .dim-edge { opacity:.12; }
   .map-column { position:relative; display:grid; grid-template-rows:auto repeat(3, minmax(3.7rem,1fr)); gap:.5rem; align-items:stretch; min-width:0; }
   .map-column h4 { font-size:.78rem; margin:0; }.map-column .map-node { display:block; min-width:0; width:100%; border:1px solid var(--border-strong); padding:clamp(.22rem,1cqw,.7rem); text-align:start; background:var(--bg-surface); color:var(--ink-primary); overflow-wrap:anywhere; }.map-node small,.map-node strong { display:block; }.map-node small { font-size:.65rem; color:var(--ink-secondary); }.map-node strong { font-size:clamp(.65rem,1.5cqw,.83rem); }
   .map-node.is-dimmed { color:var(--ink-secondary); background:var(--bg-subtle); }.map-column .is-traced { border-color:var(--accent-primary); background:var(--accent-tint); }
-  .flow-key { gap: .6rem 1.2rem; }.flow-key span { display:flex; align-items:center; gap:.35rem; }.flow-key i { width:1.25rem; border-top:4px solid var(--accent-primary); }.flow-key .eur { border-color:var(--status-warn); }.flow-key .relationship { border-top:2px dashed var(--ink-secondary); }
+  .flow-key { gap: .6rem 1.2rem; }.flow-key span { display:flex; align-items:center; gap:.35rem; }.flow-key i { width:1.25rem; border-block-start:4px solid var(--accent-primary); }.flow-key .eur { border-color:var(--ink-secondary); border-block-start-style:dashed; }
   .fund-table-wrap { max-width:100%; overflow-x:auto; }.funding-demo table { width:100%; font-size:.81rem; }.funding-demo :is(th,td) { padding:.45rem; text-align:start; }.funding-demo tr.is-traced { background:var(--accent-tint); }.funding-demo tr[data-agreement] { cursor:pointer; }
-  .view-tabs { margin-block: .7rem; }.lanes section,.calendar-list li { display:flex; gap:.5rem 1rem; align-items:start; flex-wrap:wrap; border-bottom:1px solid var(--border-hairline); padding:.55rem 0; }.lanes ol { margin:0; }.lanes li { font-size:.82rem; }.lanes li strong { margin-inline-start:.5rem; }.calendar-list { padding:0; font-size:.85rem; }.calendar-list time { font-family:var(--font-mono); }.calendar-list small { margin-inline-start:auto; }
-  .funding-demo dialog { position:fixed; margin:0; inset:0 0 0 auto; width:min(28rem,96vw); max-width:100%; height:100dvh; max-height:100dvh; border:1px solid var(--border-strong); background:var(--bg-surface); color:var(--ink-primary); padding:0; }.funding-demo dialog::backdrop {background:rgb(10 20 15 / 40%);}.drawer-body {padding:1.2rem;min-height:100%;}.drawer-body h4,.drawer-body h5 {margin:.5rem 0;font-weight:700;}.drawer-body ol li {border-block-start:1px solid var(--border-hairline);padding:.6rem 0;}.drawer-total {font-family:var(--font-mono);margin-block:.7rem;}.fund-feedback {color:var(--accent-primary);margin-block:.4rem;}.fund-feedback:empty {display:none;}
+  .view-tabs { margin-block: .7rem; }.lanes section,.calendar-list li { display:flex; gap:.5rem 1rem; align-items:start; flex-wrap:wrap; border-block-end:1px solid var(--border-hairline); padding:.55rem 0; }.lanes ol { margin:0; }.lanes li { font-size:.82rem; }.lanes li strong { margin-inline-start:.5rem; }.calendar-list { padding:0; font-size:.85rem; }.calendar-list time { font-family:var(--font-mono); }.calendar-list small { margin-inline-start:auto; }
+  .funding-demo dialog { position:fixed; margin:0; inset-block:0; inset-inline:auto 0; width:min(28rem,96vw); max-width:100%; height:100dvh; max-height:100dvh; border:1px solid var(--border-strong); background:var(--bg-surface); color:var(--ink-primary); padding:0; }.funding-demo dialog::backdrop {background:rgb(10 20 15 / 40%);}.drawer-body {padding:1.2rem;min-height:100%;}.drawer-body h4,.drawer-body h5 {margin:.5rem 0;font-weight:700;}.drawer-body ol li {border-block-start:1px solid var(--border-hairline);padding:.6rem 0;}.drawer-total {font-family:var(--font-mono);margin-block:.7rem;}.fund-feedback {color:var(--accent-primary);margin-block:.4rem;}.fund-feedback:empty {display:none;}
   .funding-demo details {margin-block-start:1rem;}
   @container (max-width:440px) { .fund-totals section {padding:.5rem;} .fund-totals dl div {display:block;} .flow-map {gap:.6rem;} }
 </style>

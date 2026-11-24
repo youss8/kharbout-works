@@ -1,0 +1,11 @@
+button[data-vacancies][aria-pressed='true'] {
+    color: var(--bg-surface);
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+[data-org-tree] [role='button'] {
+    cursor: pointer;
+}
+[data-org-tree] [role='button']:focus-visible rect {
+    stroke-width: 3;
+}

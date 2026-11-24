@@ -87,7 +87,7 @@ import diagram from '../../data/diagrams/sys01.mmd?raw';
 
 <h2 id="architecture">Architectural approach</h2>
 
-An internal IT operations console replacing spreadsheets with one system of record: an SLA-driven service desk, hardware asset & custody register, software-license seat tracker, and 12 config-driven operational registers (servers, printers, backups, phone lines, CCTV, mailboxes, remote-access IDs). A lightweight endpoint agent streams telemetry, raises threshold/availability alerts, and executes approved remote scripts, while an AI copilot and 11-tool OAuth MCP server operate under the exact same Postgres RLS permissions. Every register change is captured in an immutable, field-level JSONB revision history.
+An internal IT operations console replacing spreadsheets with one system of record: an SLA-driven service desk, hardware asset & custody register, software-license seat tracker, and 12 config-driven operational registers (servers, printers, backups, phone lines, CCTV, mailboxes, remote-access IDs). A lightweight endpoint agent streams telemetry, raises threshold/availability alerts, and executes approved remote scripts, while an AI copilot and 11-tool OAuth MCP server operate under the exact same Postgres RLS permissions.
 
 "Thick database, thin client" (business invariants at Postgres boundary so UI, agent API, copilot, and MCP tools behave identically); 4 RLS SQL helpers (`is_staff`, `can_write`, `is_manager`, `is_super_admin`) re-scoping ~30 policies atomically; pure unit-tested domain modules + thin `*.db.ts` adapters; 1 generic config-driven `Register` component powering 12 CRUD registers; explicit state machines (Tickets 6 states, Remote Commands 5, Runbooks 10 with allowed-transition map, Loans derived 5-state, Procedure Runs 4); expand–contract zero-downtime migration (`account_id` → `branch_id`); no soft deletes (explicit lifecycle flags + `on delete set null`).
 
@@ -117,7 +117,7 @@ Counts from the solo repository’s architecture audit.
 <h2 id="modeling">Hardest data-modeling problems</h2>
 
 
-### 1 · Immutable Generic Field-Level Revision History
+### 1 · PostgreSQL backend architecture and immutable register history
 
 Single polymorphic `record_history` table + one `SECURITY DEFINER` trigger diffs `to_jsonb(NEW)` vs `to_jsonb(OLD)` key-by-key, stores `changed_fields[]`, `before`/`after` snapshots, and acting user while skipping no-op `updated_at` touches. `attach_history('<table>')` opts any table in; zero client write permissions.
 
@@ -157,11 +157,24 @@ Branches host equipment funded by multiple Programs, so `Region → Branch → M
 - constant-time ≥32-char cron secret
 - DB length CHECKs (scripts ≤50k, output ≤100k)
 - 3-tier audit (`record_history`, `operation_events`, `audit_log`)
-- explicit AI data-sharing gate.
+- per-table safe selects that degrade the Copilot’s context when a source is unavailable.
 
 ### Modules
 
 Service Desk, Operations Overview, Asset Register & Custody (9 stages), RFC-4180 Spreadsheet Import (header normalization + row warnings), Equipment Loans, Licensing, Endpoint Management (RMM-lite), Remote Scripts, Runbooks/Operations (10-state), Procedures (checklists), Team Journal & Task Board (derived week/month reports), 12 Config-Driven Registers (`cleanForWrite` sanitizer), User Provisioning, AI Copilot, 11-Tool OAuth MCP Server.
+
+### Observed interface behavior
+
+A `?ticket=<id>` link opens an inline expanding row and relaxes filters that would hide the request. Selecting requests reveals bulk actions in the panel header. The frontend presents a message-based audit timeline. A visual before/after JSONB diff is a clean-room Vault enhancement marked **[spec]**.
+
+The Copilot is a full-page chat. Each table is selected independently under the current user's permissions, so other sources remain available if one fails. An explicit data-sharing consent drawer is **[spec]**. The Hierarchy Explorer supports delete only. A retire-or-delete choice is **[spec]**. The Checklist Runner waits for request confirmation before marking an item complete.
+
+### Engineering highlights
+
+- Formula-safe CSV export quotes fields, neutralizes spreadsheet formula prefixes and emits a UTF-8 BOM for Arabic text.
+- The RFC-4180 importer normalizes header aliases and reports row-level problems before writing records.
+- Part-based bilingual formatters return `{text, values}` so translated messages control the order of numbers and units.
+- Arithmetic contrast tests measure foreground and background token pairs in both themes against WCAG AA thresholds.
 
 ### Deployment and scope
 

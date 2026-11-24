@@ -1,0 +1,23 @@
+{
+  "id": "currency-guard-balance",
+  "order": 3,
+  "tier": 1,
+  "title": "Currency guard and leave balance",
+  "category": "Data Visualization",
+  "sourceSystems": [
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed-plus-spec",
+  "summary": "Total a ledger within a currency and price remaining leave in hours. The visual balance strip is a clean-room addition [spec].",
+  "previewEngine": "react",
+  "supportsRtl": true,
+  "interactionSpecs": [
+    "Reject missing and mixed currency codes.",
+    "Price overtime credit and pending leave separately."
+  ],
+  "sourceIds": [
+    "PT-04",
+    "HR-03"
+  ]
+}

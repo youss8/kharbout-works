@@ -44,6 +44,9 @@ test('all five entries filter by category, resolve their deep link, and export t
         expect(renderedText).not.toContain('## ');
         if (id === '03-state-machine-permission-matrix') expect(renderedText).toContain('"initial": "draft"');
         const sourceLink = await article.getByRole('link', { name: 'View source file' }).getAttribute('href');
+        const github = new URL(await article.getByRole('link', { name: 'View source on GitHub' }).getAttribute('href'));
+        expect(github.origin).toBe('https://github.com');
+        expect(github.pathname.split('/').slice(5)).toEqual(['src', 'content', 'templates', id + '.md']);
         const response = await request.get(sourceLink);
         expect(response.ok()).toBeTruthy();
         const original = await readFile(path.join('src/content/templates', id + '.md'), 'utf8');

@@ -1,0 +1,22 @@
+{
+  "id": "amendment-diff-org-chart",
+  "order": 16,
+  "tier": 3,
+  "title": "Signed Contract & Org Chart Explorer",
+  "category": "Workflows & State",
+  "sourceSystems": [
+    "SYS-02"
+  ],
+  "provenance": "observed-plus-spec",
+  "summary": "Reconstruct signed terms and inspect direct and technical reporting lines. Downloading the visible chart as a local SVG is a clean-room addition [spec].",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Compare signed and live contract terms",
+    "Inspect direct and technical reporting lines",
+    "Export the visible chart as SVG"
+  ],
+  "sourceIds": [
+    "HR-20",
+    "HR-21"
+  ]
+}

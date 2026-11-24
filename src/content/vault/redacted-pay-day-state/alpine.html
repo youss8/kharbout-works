@@ -1,0 +1,42 @@
+<section class="kit-panel" x-data="vaultKit">
+    <label
+        >Active role<select :value="role" @change="switchRole($event.target.value)">
+            <option>Platform Admin</option>
+            <option>HR Manager</option>
+        </select></label
+    >
+    <form class="kit-panel" @submit.prevent="save">
+        <label>Job title<input required x-model="form.title" /></label>
+        <template x-if="role==='HR Manager'"
+            ><label
+                >Monthly pay<input
+                    required
+                    type="number"
+                    min="0"
+                    step=".01"
+                    x-model.number="form.pay" /></label
+        ></template>
+        <template x-if="role!=='HR Manager'"
+            ><p class="kit-cell">
+                🔒 Pay is withheld for this role. Saving preserves the stored amount.
+            </p></template
+        >
+        <button>Save contract</button>
+    </form>
+    <template x-if="receipt"><pre aria-label="Save payload" x-text="receipt"></pre></template>
+    <label
+        >Attendance day<select x-model="day">
+            <template x-for="[id,label] in days" :key="id"
+                ><option :value="id" x-text="label"></option
+            ></template></select
+    ></label>
+    <span
+        class="status-badge"
+        :class="decidable?'dashed':'surface'"
+        x-text="days.find(d=>d[0]===day)[2]+' '+days.find(d=>d[0]===day)[1]"
+    ></span>
+    <div class="kit-row" x-show="decidable">
+        <button @click="day='decided_present'">Mark present</button
+        ><button @click="day='decided_absent'">Mark absent</button>
+    </div>
+</section>

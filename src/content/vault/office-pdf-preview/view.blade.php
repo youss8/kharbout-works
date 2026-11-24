@@ -1,0 +1,30 @@
+{{-- Register register.ts as a Laravel Vite entry with the model, reader and local sample files.
+     The browser loads the bundled viewer when the user opens it. --}}
+<div wire:ignore x-ref="officeHost" x-data="{ready:false, loading:false,error:'', async start(){
+    this.loading=true;this.error='';
+    try {await import(await this.$wire.previewModule());this.ready=true;
+    this.$nextTick(()=>this.$refs.officeHost.querySelector('[data-open-preview]').click())}
+    catch {this.error='The local preview module could not load.'}finally{this.loading=false}}}">
+    <button x-show="!ready" :disabled="loading" @click="start()">Open file preview</button>
+    <p role="alert" x-show="error"><span x-text="error"></span><button @click="start()">Retry</button></p>
+    <template x-if="ready"><section x-data="privateOfficePreview" class="kit-panel"><button data-open-preview @click="open()">Open file preview</button>
+  <dialog id="office-modal" class="kit-panel m-auto max-w-full" style="width:min(48rem,calc(100% - 1rem));max-height:90dvh;overflow:auto" aria-label="Private file preview" @cancel.prevent="close()">
+    <header class="kit-row"><strong x-text="current.name"></strong><button @click="close()">Close preview</button></header>
+    <div class="kit-row"><button @click="load(await $wire.previewAdjacent(-1,index,files.length))" :disabled="index===0"><span aria-hidden="true" class="directional-icon inline-block">←</span> Previous file</button><button @click="load(await $wire.previewAdjacent(+1,index,files.length))" :disabled="index===files.length-1">Next file <span aria-hidden="true" class="directional-icon inline-block">→</span></button></div>
+    <label>Choose local files <input type="file" multiple @change="add($event.target.files);$event.target.value=''"></label>
+    <div :aria-busy="loading" :data-loading="loading?'true':null"><p x-show="loading" role="status">Reading file…</p>
+      <div x-show="error" class="error-card" role="alert"><span x-text="error"></span><button @click="load(index)">Retry</button></div>
+      <template x-if="kind==='sheet'"><div><div class="worksheet-tabs" role="tablist" aria-label="Worksheets" @keydown="moveSheet($event,$el)">
+     <template x-for="(name,i) in sheets" :key="name"><button type="button" role="tab" :id="'sheet-tab-'+i" aria-controls="sheet-content"
+        :aria-selected="sheet===i" :tabindex="sheet===i?0:-1" @click="chooseSheet(i)" x-text="name"></button></template></div>
+     <label class="worksheet-select">Worksheet <select :value="sheet" @change="chooseSheet(Number($event.target.value))"><template x-for="(s,i) in sheets"><option :value="i" x-text="s"></option></template></select></label>
+        <p x-show="clipped" role="status" x-text="'Preview limited to 500 rows × 50 columns. Source: '+totalRows+' rows × '+totalCols+' columns.'"></p>
+        <div tabindex="0" role="tabpanel" id="sheet-content" :aria-labelledby="'sheet-tab-'+sheet" aria-label="Worksheet contents" style="overflow:auto;max-height:18rem"><table><tbody><template x-for="(row,i) in rows" :key="i"><tr><template x-for="(cell,j) in row" :key="j"><td x-text="cell"></td></template></tr></template></tbody></table></div></div></template>
+      <template x-if="kind==='document'"><iframe title="Document pages" sandbox="" :srcdoc="documentHtml" class="office-pages"></iframe></template>
+            <template x-if="kind==='pdf'"><object :data="current.url" type="application/pdf" aria-label="Local PDF" class="w-full" style="height:16rem"><p>Use the download link to read this PDF.</p></object></template>
+      <p x-show="kind==='unsupported'">This file type has no local preview. Download the original below.</p>
+    </div><a x-show="['sheet','document','pdf'].includes(kind)" :href="kind==='pdf'?current.url:standaloneUrl" target="_blank" rel="noopener noreferrer">Open preview in new tab</a>
+        <a :href="current.url" :download="current.name">Download original</a>
+  </dialog>
+</section></template>
+</div>

@@ -13,14 +13,14 @@ const systems = [
 ];
 const directory = [
   { path: "systems", name: "System sandboxes", count: "06", detail: "Explore queues, approvals, funding and KPI calculations.", icon: Network },
-  { path: "vault", name: "Component vault", count: "10", detail: "Inspect and reuse dual-stack interface patterns.", icon: Layers3 },
+  { path: "vault", name: "Component vault", count: "20", detail: "Explore four tiers of reusable operational interfaces.", icon: Layers3 },
   { path: "ai-kit", name: "AI engineering toolkit", count: "11", detail: "Compile and export Gems, skills and workflows.", icon: Braces },
   { path: "templates", name: "Operations templates", count: "05", detail: "Download architecture, planning and handover documents.", icon: FileStack },
   { path: "lab", name: "R&D lab", count: "04", detail: "Try independent product and interaction prototypes.", icon: FlaskConical },
 ];
 const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
 ---
-<BaseLayout title="Youssef Kharbout — Engineering Workbench" description="Youssef Kharbout’s software engineering portfolio, interactive systems, reusable operations kit and CV for commercial tech roles.">
+<BaseLayout title={`${profile.fullName} — Engineering Workbench`} description={`${profile.fullName}’s software engineering portfolio, interactive systems, reusable operations kit and CV for commercial tech roles.`}>
   <div class="workbench">
     <div class="workbench-title"><span aria-hidden="true" class="locator">⌖</span> Engineering workbench</div>
     <section class="hero" aria-labelledby="home-title">
@@ -28,12 +28,12 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
         <div class="availability"><Check size={13} strokeWidth={2.8} aria-hidden="true"/><span>{profile.availability.badge} · REMOTE / GERMANY RELOCATION</span></div>
         <h1 id="home-title">{profile.fullName}</h1>
         <p class="role">{profile.headline}</p>
-        <p class="pitch">I build operational systems with TypeScript, React 19 and PostgreSQL, and with PHP 8.5, Laravel 13 and MySQL. I’m available in January 2027 for commercial startups, SaaS product teams and freelance engineering, including relocation to Germany.</p>
+        <p class="pitch">{profile.subheadline} {profile.availability.careerFocus}</p>
         <div class="hero-actions">
-          <a class="action primary" href={available("systems") ? "/systems/" : "#architecture"}>{available("systems") ? "Explore 3 systems & 6 live demos" : "Explore the 3 systems"}<ArrowRight size={15} aria-hidden="true"/></a>
-          <a class="action secondary" href="/cv/">Interactive CV & PDF <ArrowUpRight size={15} aria-hidden="true"/></a>
+          <a class="action primary" href={available("systems") ? "/systems/" : "#architecture"}>{available("systems") ? "Explore 3 systems & 6 live demos" : "Explore the 3 systems"}<ArrowRight className="directional-icon" size={15} aria-hidden="true"/></a>
+          <a class="action secondary" href="/cv/">Interactive CV & PDF <ArrowUpRight className="directional-icon" size={15} aria-hidden="true"/></a>
         </div>
-        {askAvailable && <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog"><kbd>Ctrl K</kbd> Search the operations kit <ArrowRight size={12} aria-hidden="true"/></button>}
+        {askAvailable && <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog"><kbd>Ctrl K</kbd> Search the operations kit <ArrowRight className="directional-icon" size={12} aria-hidden="true"/></button>}
       </div>
       <div class="switcher" id="architecture" x-data="{ active: 0, choose(i, focus) { this.active = i; if (focus) document.getElementById('system-tab-' + i)?.focus(); } }">
         <div class="switcher-head"><strong><Boxes size={16} aria-hidden="true"/>System architecture</strong><span class="sheet-count"><span x-text="String(active + 1).padStart(2, '0')">01</span> / 03</span></div>
@@ -53,7 +53,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
           <div class="stack-tags">{sys.stack.map((item) => <span>{item}</span>)}</div>
           <dl class="system-metrics">{sys.metrics.map(([value, label]) => <div><dt>{label}</dt><dd>{value}</dd></div>)}</dl>
           <p class="problem">{sys.problem}</p>
-          {available("systems") ? <a class="case-link" href={`/systems/${sys.slug}/`}>Open case study & 2 live sandboxes <ArrowRight size={14} aria-hidden="true"/></a> : <span class="planned">Case study and two sandboxes planned</span>}
+          {available("systems") ? <a class="case-link" href={`/systems/${sys.slug}/`}>Open case study & 2 live sandboxes <ArrowRight className="directional-icon" size={14} aria-hidden="true"/></a> : <span class="planned">Case study and two sandboxes planned</span>}
         </article>)}
       </div>
     </section>
@@ -66,10 +66,10 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
       })}</div>
     </section>
     <section class="directory" aria-labelledby="directory-heading">
-      <div class="section-heading"><h2 id="directory-heading">Operations kit directory</h2><span class="heading-rule"></span><ArrowDownRight size={20} aria-hidden="true"/></div>
+      <div class="section-heading"><h2 id="directory-heading">Operations kit directory</h2><span class="heading-rule"></span><ArrowDownRight className="directional-icon" size={20} aria-hidden="true"/></div>
       <div class="directory-list">{directory.map(({ path, name, count, detail, icon: Icon }) => {
         const live = available(path); const Tag = live ? "a" : "article";
-        return <Tag class="directory-row" id={`directory-${path}`} href={live ? `/${path}/` : undefined}><Icon size={20} strokeWidth={1.6} aria-hidden="true"/><h3>{name} <span aria-label={`${Number(count)} entries`}>{count}</span></h3><p>{detail}</p>{live ? <ArrowUpRight size={17} aria-hidden="true"/> : <span class="planned">Planned</span>}</Tag>;
+        return <Tag class="directory-row" id={`directory-${path}`} href={live ? `/${path}/` : undefined}><Icon size={20} strokeWidth={1.6} aria-hidden="true"/><h3>{name} <span aria-label={`${Number(count)} entries`}>{count}</span></h3><p>{detail}</p>{live ? <ArrowUpRight className="directional-icon" size={17} aria-hidden="true"/> : <span class="planned">Planned</span>}</Tag>;
       })}</div>
     </section>
   </div>
@@ -81,7 +81,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   .locator { color: var(--accent-primary); font-size: 1.35rem; line-height: 1; }
   .hero { display: grid; grid-template-columns: minmax(0, 1.22fr) minmax(0, 1fr); gap: clamp(2rem, 5.8vw, 7rem); align-items: center; padding-block: clamp(1.5rem, 3.9vw, 4rem); }
   .availability { display: inline-flex; gap: .42rem; align-items: flex-start; width: fit-content; max-width: 100%; border: 1px solid var(--border-hairline); border-radius: 2px; background: var(--accent-tint); color: var(--accent-primary); font-size: clamp(.56rem, .73vw, .65rem); font-weight: 600; letter-spacing: .035em; padding: .38rem .45rem; line-height: 1.5; }
-  .availability :global(svg) { flex: none; margin-top: 1px; }
+  .availability :global(svg) { flex: none; margin-block-start: 1px; }
   h1 { margin: 1.05rem 0 .8rem; max-width: 10ch; font-size: clamp(4rem, 7.65vw, 7.25rem); line-height: 1.12; letter-spacing: -.025em; font-weight: 700; text-wrap: balance; }
   .role { margin: 0; font-size: clamp(1.1rem, 1.7vw, 1.65rem); line-height: 1.3; font-weight: 600; letter-spacing: -.035em; }
   .pitch { max-width: 60ch; margin: .95rem 0 1.35rem; color: var(--ink-secondary); line-height: 1.7; font-size: clamp(.87rem, 1.05vw, 1rem); }
@@ -92,7 +92,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   .primary:hover { background: var(--accent-hover); }
   .secondary { border: 1px solid var(--border-strong); background: var(--bg-surface); color: var(--ink-primary); }
   .secondary:hover { border-color: var(--accent-primary); }
-  .search-hint { border: 0; background: transparent; padding: .4rem 0; margin-top: .55rem; color: var(--ink-secondary); font-size: .72rem; gap: .4rem; cursor: pointer; }
+  .search-hint { border: 0; background: transparent; padding: .4rem 0; margin-block-start: .55rem; color: var(--ink-secondary); font-size: .72rem; gap: .4rem; cursor: pointer; }
   kbd { font-size: .62rem; border: 1px solid var(--border-strong); border-radius: 2px; padding: .07rem .22rem; }
   .switcher { border: 1px solid var(--border-strong); border-radius: 4px; overflow: clip; background: var(--bg-surface); scroll-margin-block-start: 6rem; }
   .switcher-head { justify-content: space-between; border-block-end: 1px solid var(--border-hairline); padding: .75rem 1.05rem; }
@@ -122,12 +122,12 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   .system-metrics div:first-child { border-inline-start: 0; padding-inline-start: 0; }
   .system-metrics dt { font-size: .62rem; color: var(--ink-secondary); }
   .system-metrics dd { margin: 0; line-height: 1.25; font-size: 1.15rem; font-weight: 500; letter-spacing: -.07em; }
-  .case-link { gap: .45rem; text-decoration: none; color: var(--accent-primary); font-size: .76rem; font-weight: 700; margin-top: .8rem; }
+  .case-link { gap: .45rem; text-decoration: none; color: var(--accent-primary); font-size: .76rem; font-weight: 700; margin-block-start: .8rem; }
   .case-link:hover { text-decoration: underline; }
   .planned { font-size: .62rem; color: var(--ink-secondary); }
   .section-heading { gap: 1rem; margin-block: clamp(2.3rem, 5vw, 4.3rem) 1.15rem; }
   .section-heading h2 { font-size: clamp(1.5rem, 2.8vw, 2.5rem); margin: 0; }
-  .heading-rule { flex: 1; border-top: 1px solid var(--border-strong); }
+  .heading-rule { flex: 1; border-block-start: 1px solid var(--border-strong); }
   .pillar-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(.85rem, 2.5vw, 2.5rem); }
   .pillar-grid article { border-block-start: 2px solid var(--accent-primary); padding: 1rem 0; }
   .pillar-icon { color: var(--accent-primary); justify-content: space-between; }
@@ -144,5 +144,5 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   @media (min-width: 1700px) { .hero { gap: 7rem; } }
   @media (max-width: 890px) { .hero { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 1.25rem; } h1 { font-size: clamp(3rem, 7.5vw, 5rem); } }
   @media (max-width: 720px) { .hero { grid-template-columns: 1fr; align-items: start; gap: 1.5rem; } .intro { padding-block: .5rem; } h1 { max-width: 14ch; font-size: clamp(3.3rem, 10.4vw, 4.8rem); } .pillar-grid { grid-template-columns: 1fr; gap: .45rem; } .pillar-grid article { padding: .85rem 0; } .directory-row { grid-template-columns: 1.25rem 1fr auto; gap: .3rem .65rem; padding-inline: 0; } .directory-row p { grid-column: 2 / 4; grid-row: 2; } .directory-row > :last-child { grid-column: 3; grid-row: 1; } }
-  @media (prefers-reduced-motion: no-preference) { .action, .directory-row { transition: background-color 120ms ease, border-color 120ms ease; } }
+  @media (prefers-reduced-motion: no-preference) { .action, .directory-row { transition: background-color var(--motion-duration) var(--motion-ease), border-color var(--motion-duration) var(--motion-ease); } }
 </style>

@@ -1,0 +1,173 @@
+<section x-data="vaultKit" class="kit-panel" @keydown="shortcut($event)">
+    <div class="kit-row">
+        <template x-for="t in ['Gantt','Timesheet']"
+            ><button :aria-pressed="tab===t" @click="tab=t;notice=''" x-text="t"></button
+        ></template>
+    </div>
+    <div x-show="tab==='Gantt'" class="kit-panel">
+        <div class="kit-row">
+            <label
+                >Zoom
+                <select x-model.number="zoom">
+                    <template x-for="(v,i) in zooms"
+                        ><option :value="i" x-text="v+' px/day'"></option
+                    ></template></select
+            ></label>
+            <label><input type="checkbox" x-model="showCritical" /> Critical path</label
+            ><label
+                >Trace task
+                <select x-model="selected">
+                    <option value="phase">Delivery plan · parent</option>
+                    <template x-for="r in rows"
+                        ><option :value="r.id" x-text="r.name"></option
+                    ></template></select
+            ></label>
+        </div>
+        <label
+            >Route emphasis<select x-model="routeMode">
+                <option value="selected">Selected route</option>
+                <option value="all">All routes</option>
+                <option value="none">None</option>
+            </select></label
+        >
+        <p x-text="'Delivery plan · '+trace.roles.phase"></p>
+        <div
+            class="horizon"
+            role="slider"
+            tabindex="0"
+            aria-label="Schedule horizon"
+            aria-valuemin="0"
+            :aria-valuemax="Math.ceil(maxStart)"
+            :aria-valuenow="Math.round(windowStart)"
+            :aria-valuetext="'From '+timescale(Math.floor(windowStart)+1).label"
+            @pointerdown="beginPan($event,$el)"
+            @keydown="horizonKey($event)"
+        >
+            <template x-for="l in lanes" :key="l.id"
+                ><i
+                    class="horizon-bar"
+                    :data-traced="String(isTraced(l.id))"
+                    :style="{insetInlineStart:(l.start-1)/days*100+'%',inlineSize:(l.end-l.start+1)/days*100+'%',insetBlockStart:1+l.lane*.3+'rem'}"
+                ></i
+            ></template>
+            <template x-for="t in horizonLabels" :key="t.day"
+                ><small :style="{insetInlineStart:(t.day-1)/days*100+'%'}" x-text="t.label"></small
+            ></template>
+            <i
+                class="horizon-window"
+                :style="{insetInlineStart:windowStart/days*100+'%',inlineSize:visibleDays/days*100+'%'}"
+            ></i>
+        </div>
+        <p>
+            Drag a bar or move it one day. Dashed lines mark baselines. Solid tails show delay.
+            Shading marks Friday and Saturday.
+        </p>
+        <div
+            class="schedule-plot"
+            x-init="mountPlot($el);$watch('zoom',()=>$nextTick(()=>syncWindow()))"
+            @scroll="syncWindow()"
+            tabindex="0"
+            role="region"
+            aria-label="Task schedule"
+        >
+            <template x-for="r in rows" :key="r.id"
+                ><div
+                    class="schedule-track"
+                    :style="{inlineSize:days*zooms[zoom]+'px',gridTemplateColumns:'repeat('+days+','+zooms[zoom]+'px)'}"
+                >
+                    <template
+                        x-for="d in Array.from({length:days},(_,i)=>i+1).filter(n=>timescale(n).weekend)"
+                        ><i
+                            class="weekend"
+                            :style="{insetInlineStart:(d-1)*zooms[zoom]+'px',inlineSize:zooms[zoom]+'px'}"
+                        ></i
+                    ></template>
+                    <i
+                        class="baseline"
+                        :style="{insetInlineStart:(Math.max(1,r.baselineEnd-(r.endDay-r.startDay))-1)*zooms[zoom]+'px',inlineSize:(r.endDay-r.startDay+1)*zooms[zoom]+'px'}"
+                    ></i>
+                    <i
+                        x-show="r.endDay>r.baselineEnd"
+                        class="slip"
+                        :style="{insetInlineStart:r.baselineEnd*zooms[zoom]+'px',inlineSize:(r.endDay-r.baselineEnd)*zooms[zoom]+'px'}"
+                    ></i>
+                    <button
+                        class="task"
+                        :data-critical="String(showCritical&&critical.has(r.id))"
+                        :data-traced="String(isTraced(r.id))"
+                        :aria-pressed="selected===r.id"
+                        :style="{gridColumn:r.startDay+' / '+(r.endDay+1)}"
+                        @click="select(r.id)"
+                        @pointerdown="dragStart($event,r.id,$el)"
+                        x-text="r.name"
+                    ></button></div
+            ></template>
+        </div>
+        <div class="kit-row">
+            <button :disabled="selected==='phase'" @click="shift(selected,-1)">Move −1 day</button
+            ><button :disabled="selected==='phase'" @click="shift(selected,1)">Move +1 day</button
+            ><button :disabled="!history.length" @click="undo()">Undo</button
+            ><button :disabled="!future.length" @click="redo()">Redo</button>
+        </div>
+        <ul>
+            <template x-for="r in rows.filter(r=>routeMode==='all'||trace.nodes.has(r.id))"
+                ><li
+                    x-text="(trace.roles[r.id]??'Off route')+' · '+r.wbs+' · '+r.name+' · '+r.progress+'% complete · '+timescale(r.startDay).label+' – '+timescale(r.endDay).label+(showCritical&&critical.has(r.id)?' · Critical':'')"
+                ></li
+            ></template>
+        </ul>
+        <ol class="funding-routes" aria-label="Task funding routes">
+            <template x-for="route in fundingRoutes" :key="route.task"
+                ><li :data-traced="String(route.traced)">
+                    <bdi x-text="route.wbs"></bdi> → <bdi x-text="route.proposal"></bdi> →
+                    <bdi x-text="route.agreement"></bdi>
+                    <span x-text="route.traced?' · On route':' · Off route'"></span></li
+            ></template>
+        </ol>
+    </div>
+    <div x-show="tab==='Timesheet'" class="kit-panel">
+        <p>Open → Confirmed → Approved → Locked</p>
+        <strong x-text="month.status"></strong>
+        <label
+            >Acting role
+            <select x-model="role">
+                <template x-for="r in roles"><option x-text="r"></option></template></select
+        ></label>
+        <div class="month-resolve">
+            <template x-for="(day,i) in ['March 3 · one punch','March 9 · zero punches']"
+                ><label
+                    ><span x-text="day"></span>
+                    <select
+                        :disabled="role!=='Employee'||month.status!=='Open'"
+                        :value="month.answers[i]"
+                        @change="answer(i,$event.target.value)"
+                    >
+                        <option value="">Resolve day</option>
+                        <template x-for="d in decisions"
+                            ><option x-text="d"></option
+                        ></template></select></label
+            ></template>
+        </div>
+        <label x-show="role==='Manager'"
+            ><input type="checkbox" x-model="self" /> Approving my own month</label
+        ><label x-show="month.status==='Locked'&&role==='HR'"
+            ><input type="checkbox" :checked="month.consumed" @change="consumption($el.checked)" />
+            Credit consumed</label
+        >
+        <div class="kit-row">
+            <template x-for="a in actions"
+                ><button
+                    :disabled="role!==responsible"
+                    @click="advance(a)"
+                    x-text="a"
+                ></button></template
+            ><button :disabled="!printable" @click="download()">Export timesheet</button
+            ><button :disabled="!printable" @click="printMonth()">Print timesheet</button>
+        </div>
+        <p x-text="'Next decision · '+responsible"></p>
+        <p
+            x-text="(printable?'Punches resolved':'DRAFT · Resolve both days before export')+' · Overtime '+month.overtime+'h · Leave credit '+month.credit+'h'"
+        ></p>
+    </div>
+    <p role="status" x-text="notice"></p>
+</section>

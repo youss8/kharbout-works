@@ -1,0 +1,25 @@
+{
+  "id": "two-band-progress-sla",
+  "order": 2,
+  "tier": 1,
+  "title": "Two-band delivery and SLA drain",
+  "category": "Data Visualization",
+  "sourceSystems": [
+    "SYS-01",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "summary": "Compare approved and pending delivery against the target, then move the service clock through its deadline.",
+  "previewEngine": "react",
+  "supportsRtl": true,
+  "interactionSpecs": [
+    "Separate pending units and clamp over-delivery at 100%.",
+    "Scrub elapsed time, close a ticket, or remove its SLA.",
+    "Compare received and committed funding in one currency, including zero capacity and overfunding."
+  ],
+  "sourceIds": [
+    "PT-01",
+    "PT-02",
+    "IT-01"
+  ]
+}

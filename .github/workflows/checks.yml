@@ -29,6 +29,9 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
+      - run: npm test
+        env:
+          VAULT_FORBIDDEN_TERMS: ${{ secrets.VAULT_FORBIDDEN_TERMS }}
       - run: npx astro check
       - run: npm run build
       - run: npm run build:catalogue
@@ -39,6 +42,13 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - run: npm run test:workbench
+      - name: Exercise the Vault examples on Laravel 13 and Livewire 4
+        run: |
+          mkdir -p test-results/livewire-runtime
+          composer --working-dir=test-results/livewire-runtime require 'laravel/framework:13.*' 'livewire/livewire:4.*' --no-interaction --prefer-dist
+          php tests/workbench/verify-livewire.php
+          php tests/workbench/verify-tier4-contracts.php
+          npx playwright test --config tests/workbench/livewire.playwright.config.mjs
       - run: npm run test:browser
 
   docker-smoke:

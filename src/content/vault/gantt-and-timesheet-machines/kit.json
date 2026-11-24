@@ -1,0 +1,23 @@
+{
+  "id": "gantt-and-timesheet-machines",
+  "order": 20,
+  "tier": 4,
+  "category": "Data Visualization",
+  "sourceSystems": [
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Delivery schedule and month timesheet",
+  "summary": "Move a task with its dependent work, then resolve attendance and post overtime credit.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Move a task by integer days and undo its full successor ripple.",
+    "Resolve unanswered days, confirm, approve, lock and reopen a month."
+  ],
+  "sourceIds": [
+    "PT-43",
+    "PT-44",
+    "HR-25"
+  ]
+}

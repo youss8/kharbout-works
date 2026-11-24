@@ -1,0 +1,72 @@
+Youssef’s Operations Kit
+Concept note
+
+Youssef’s Operations Kit is an open-source parts catalogue for developers. Each entry solves a specific problem, shows what it needs to run, and gives the visitor source material they can take into their own project. The idea behind the site is simple. A developer should be able to answer “What does this do, will it fit my stack, and how can I check that it works?” during one visit.
+
+The problem it solves
+---------------------
+
+A developer might find a useful component in a repository and still spend half an hour figuring out which files to copy, which dependencies it assumes, or what happens when something fails. The same problem appears with AI workflows. A prompt is easy to copy, but its value is hard to judge without knowing its inputs or seeing a worked example.
+
+The kit brings those missing pieces together. Someone arriving for a copy button can see that it uses React and TypeScript, try it with the keyboard, inspect what happens when clipboard access fails, and find the source. That small, complete experience is the model for the whole website.
+
+Who it serves
+-------------
+
+The primary visitor is a developer with a task already in mind. They may need a search dialog for an internal tool, URL filters they can share with a colleague, or a Laravel endpoint for a small catalogue. They care about compatibility and how quickly they can verify the result.
+
+A second audience is developers learning a pattern. They can follow one example from visible behavior to source and then try changing it. The site also gives collaborators a practical way to understand Youssef’s work. They can inspect the decisions around accessibility, failure handling and verification for themselves.
+
+What’s inside
+-------------
+
+Collection | What someone can take away                           | Current example
+-----------+------------------------------------------------------+-------------------------------
+Components | A focused interaction to reuse in an interface       | A keyboard search dialog
+Pages      | A complete solution to a common screen state         | An empty-results page with a way back
+Utilities  | A small piece of application logic                   | Shareable search and category filters
+Modules    | A backend capability with a defined input and output | A Laravel catalogue search endpoint
+AI tools   | Reusable instructions for a development task         | An accessible UI review for Claude Code or Gemini Gems
+
+The AI workflows area gives visitors another way into the material. Someone who knows the job they need to do can open a workflow such as UI state specification, inspect its example prompt and see what a useful result looks like. The current collection contains eight workflows. Six have tested examples and two are labelled Planned.
+
+How a visit should feel
+-----------------------
+
+The homepage opens with a real item from the kit. In the approved design, Copy code appears beside a cobalt illustration of an open tool case. Its purpose, requirements and Open component action are visible on the first phone screen. That placement lets the example explain the product before asking the visitor to browse it.
+
+From there, the visitor has three natural paths:
+
+1. Find a part. Search by task or technology, narrow by category, and compare entries in a compact index.
+
+2. Inspect a part. Open its entry to understand the behavior, requirements and source. The main catalogue also offers downloadable source packages with setup and verification instructions.
+
+3. Explore the kit. Follow the field guide through Copy code, Accessible UI review and Catalogue search endpoint. Together they show the range of the collection, from a single interface control to a review method and a backend module.
+
+The primary action is opening an entry that fits the visitor’s project. The more meaningful outcome happens afterward, when they successfully reuse it and can verify the behavior independently.
+
+Visual and interaction concept
+------------------------------
+
+The reference is a printed industrial parts catalogue. Warm paper backgrounds, dark ink, cobalt technical illustrations and ruled rows give the site a recognizable identity. Inter carries the explanations. Monospaced text makes requirements such as Laravel 13 · PHP 8.4 easy to spot while scanning. The tool case provides a visual theme that can carry across the collection as new entries appear.
+
+Motion has a specific role in the field guide. As the visitor scrolls through an example, the pinned visual changes with the accompanying explanation. Reversing the scroll reverses that change. Search results and keyboard focus respond immediately, and reduced-motion users get each illustration alongside its corresponding text. English, German and Arabic support, including right-to-left layout, makes the same journey available across languages.
+
+What makes the catalogue trustworthy
+------------------------------------
+
+The publishing standard matters more than the catalogue’s size. An entry earns its place by solving a concrete problem, naming its dependencies, providing a usable example and explaining how to check it. Proposed work stays visibly Planned until its example runs.
+
+That is also how I’d judge the website’s success. Can a developer arrive with a real problem, choose the right entry, reuse it in another project and confirm that it works without needing Youssef to explain the missing steps?
+
+Project references
+------------------
+
+Working prototype
+C:/xampp/htdocs/youssefs-operations-kit/docs/design/illustrated-catalogue.html
+
+Design system
+C:/xampp/htdocs/youssefs-operations-kit/DESIGN.md
+
+Project overview
+C:/xampp/htdocs/youssefs-operations-kit/README.md

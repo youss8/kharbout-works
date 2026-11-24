@@ -1,0 +1,57 @@
+<section class="kit-panel" x-data="vaultKit" @keydown.escape="if(editing) cancel()">
+    <div class="kit-row">
+        <button x-show="!editing" @click="customize()">Customize grid</button>
+        <template x-if="editing"
+            ><div class="kit-row">
+                <button @click="save()">Done</button><button @click="cancel()">Cancel</button
+                ><button @click="reset()">Reset to role default</button>
+            </div></template
+        >
+    </div>
+    <p x-show="editing">Drag a header or use arrow keys to swap. Shift + arrow resizes a panel.</p>
+    <div x-ref="grid" class="desk-layout">
+        <template x-for="p in rows.flat()" :key="p.panel">
+            <article
+                data-grid-panel
+                :style="'--span:'+p.cols"
+                @dragover.prevent
+                @drop.prevent="swap(drag,p.panel,$refs.grid)"
+            >
+                <header>
+                    <button
+                        :disabled="!editing"
+                        :draggable="editing"
+                        @dragstart="drag=p.panel;$event.dataTransfer.setData('text/plain',p.panel)"
+                        @keydown="keys($event,p.panel,$refs.grid)"
+                        x-text="p.title"
+                    ></button
+                    ><bdi x-text="p.cols+'/12'"></bdi>
+                </header>
+                <div x-show="editing" class="kit-row">
+                    <button
+                        :disabled="!canSize(p.panel,-2)"
+                        @click="size(p.panel,-2,$refs.grid)"
+                        :aria-label="'Shrink '+p.title"
+                    >
+                        −2</button
+                    ><button
+                        :disabled="!canSize(p.panel,2)"
+                        @click="size(p.panel,2,$refs.grid)"
+                        :aria-label="'Grow '+p.title"
+                    >
+                        +2</button
+                    ><button
+                        class="grip"
+                        @pointerdown="edgeStart($event,p.panel,$refs.grid)"
+                        @keydown="keys($event,p.panel,$refs.grid)"
+                        :aria-label="'Drag to resize '+p.title"
+                    >
+                        ↔
+                    </button>
+                </div>
+            </article></template
+        >
+    </div>
+    <output x-text="monitor"></output>
+    <p role="status" x-text="notice"></p>
+</section>

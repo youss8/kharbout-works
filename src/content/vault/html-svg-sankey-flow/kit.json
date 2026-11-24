@@ -1,0 +1,20 @@
+{
+  "id": "html-svg-sankey-flow",
+  "order": 18,
+  "tier": 4,
+  "category": "Data Visualization",
+  "sourceSystems": [
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Funding flow by currency",
+  "summary": "Trace each agreement from its sponsor through a proposal to funded projects.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Focus a sponsor or project to trace funding in one direction.",
+    "Switch currency to inspect a separate register."
+  ],
+  "sourceIds": [
+    "PT-42"
+  ]
+}

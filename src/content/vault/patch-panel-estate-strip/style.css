@@ -1,0 +1,55 @@
+.kit-panel:has(.estate-ports) {
+    grid-template-columns: minmax(0, 1fr);
+}
+.estate-ports {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(2, minmax(2.75rem, auto));
+    grid-auto-columns: minmax(2.75rem, 1fr);
+    gap: 0.2rem;
+    overflow-x: auto;
+    padding: 0.18rem;
+    max-inline-size: 100%;
+}
+.estate-ports button {
+    padding: 0.15rem;
+    white-space: normal;
+    min-inline-size: 2.75rem;
+    background: var(--bg-surface);
+    border: 1px solid currentColor;
+}
+.estate-ports [data-state='online'] {
+    color: var(--status-ok);
+    background: var(--status-ok-tint);
+}
+.estate-ports [data-state='stale'] {
+    color: var(--status-warn);
+    background: var(--status-warn-tint);
+    border-style: dashed;
+}
+.estate-ports [data-state='unknown'] {
+    color: var(--ink-secondary);
+    border-style: dotted;
+}
+.estate-ports small {
+    display: block;
+    font-size: 0.65rem;
+}
+.estate-tip {
+    position: fixed;
+    z-index: 2;
+    padding: 0.5rem;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    font-size: 0.76rem;
+    pointer-events: none;
+}
+.estate-tip dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.2rem;
+}
+.estate-tip meter {
+    max-inline-size: 60%;
+    margin-inline-end: 0.35rem;
+}

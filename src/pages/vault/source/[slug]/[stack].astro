@@ -1,0 +1,28 @@
+---
+import { getCollection } from 'astro:content';
+import { Code } from 'astro:components';
+import { sourceFiles, type Stack } from '../../../../lib/vault-sources';
+export const partial = true;
+export async function getStaticPaths() {
+  return (await getCollection('vault')).flatMap(item => ['alpine','react','livewire'].map(stack => ({params:{slug:item.id, stack}})));
+}
+const { slug, stack } = Astro.params;
+const files = sourceFiles(slug!, stack as Stack);
+function laravelPath(file: (typeof files)[number]) {
+    const name = file.path.split('/' + slug + '/')[1] ?? '';
+    if (name === 'view.blade.php') return 'resources/views/livewire/' + slug + '.blade.php';
+    if (name === 'Example.php') {
+        const component = file.code.match(/class\s+(\w+)\s+extends\s+Component/);
+        const namespace = file.code.match(/namespace App\\([^;]+);/);
+        return component && namespace ? 'app/' + namespace[1].replaceAll('\\','/') + '/' + component[1] + '.php' : '';
+    }
+    if (/^(app|resources|public)\//.test(name)) return name;
+    if (slug === 'office-pdf-preview' && name.endsWith('.ts')) return 'resources/js/office-preview/' + name;
+    return '';
+}
+const fixtures = import.meta.glob<string>('../../../../content/vault/*/sample.*', {eager:true,query:'?url&no-inline',import:'default'});
+const themes = {light:'github-light', dark:'github-dark-dimmed'} as const;
+---
+{stack === 'alpine' && <p>Register the model with <code>Alpine.data('vaultKit', model)</code> before starting Alpine.</p>}
+{files.map(file => <section class="source-file"><p class="file-label">{file.path}</p>{stack === 'livewire' && laravelPath(file) && <p class="type-meta">Laravel path · <code>{laravelPath(file)}</code></p>}<button type="button" data-copy-file>Copy file</button><Code code={file.code} lang={file.lang} themes={themes}/></section>)}
+{Object.entries(fixtures).filter(([path])=>path.includes('/'+slug+'/')).map(([path,url]) => <p><a href={url} download={path.split('/').pop()}>Download {path.split('/').pop()}</a></p>)}

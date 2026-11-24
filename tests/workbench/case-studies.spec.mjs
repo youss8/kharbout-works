@@ -16,6 +16,24 @@ test('fixtures and ER sources match the handoff verbatim', () => {
     diagrams.forEach(([, content], i) => expect(read('src/data/diagrams/sys0' + (i + 1) + '.mmd')).toBe(content));
 });
 
+test('synthetic branch allocations reconcile with the original estate fixture', () => {
+    const read = name => JSON.parse(readFileSync(`src/data/demos/${name}.json`, 'utf8'));
+    const estate = read('it-estate-ops');
+    const allocations = read('it-estate-branches');
+    const branches = Object.values(allocations);
+    expect(Object.keys(allocations).sort()).toEqual(estate.branches.map(branch => branch.id).sort());
+    expect(branches.reduce((sum, branch) => sum + branch.assets, 0)).toBe(estate.assets.total);
+    expect(branches.reduce((sum, branch) => sum + branch.failedCommands, 0)).toBe(estate.commands.failed_last_24h);
+    expect(branches.flatMap(branch => branch.loanIds).sort()).toEqual(estate.loans.map(loan => loan.id).sort());
+    expect(branches.flatMap(branch => branch.licenseIds).sort()).toEqual(estate.licenses.map(license => license.id).sort());
+    expect(branches.flatMap(branch => branch.backupNames).sort()).toEqual(estate.backups.map(backup => backup.name).sort());
+    for (const branch of branches) expect(branch.ticketFlow.map(row => row.day)).toEqual(estate.ticketFlow.map(row => row.day));
+    for (const [index, day] of estate.ticketFlow.entries()) {
+        expect(branches.reduce((sum, branch) => sum + branch.ticketFlow[index].opened, 0)).toBe(day.opened);
+        expect(branches.reduce((sum, branch) => sum + branch.ticketFlow[index].resolved, 0)).toBe(day.resolved);
+    }
+});
+
 test('matrix links reach all six sandboxes', async ({ page }) => {
     await page.goto('/systems/');
     const links = await page.locator('a.table-link').evaluateAll(items => items.map(item => item.href));

@@ -14,6 +14,7 @@ test('leave pricing, manager deduction, HR send-back, final review and reset', a
   await expect(value('Used')).toHaveText('40h');
   await expect(desk.getByText('Quoted hours · 16h')).toBeVisible();
   await expect(desk.getByText('Holiday excluded')).toBeVisible();
+  await expect(desk.getByText('Day-by-day chips [spec]')).toBeVisible();
   await expect(desk.getByText('Weekend excluded')).toBeVisible();
   await desk.getByLabel('Part of day').selectOption('am');
   await expect(desk.getByText('Quoted hours · 8h')).toBeVisible();
@@ -100,7 +101,7 @@ test('asSigned reads the original snapshot and masks both pay tiers for the plat
   await expect(panel).toContainText('$2,300 / mo');
   await expect(panel).toContainText('$2,450 / mo');
   await desk.getByRole('button', { name: 'Platform Admin' }).click();
-  await expect(panel.getByText('[ENCRYPTED — BLOCKED BY ROLE DENY-LIST]', { exact: true })).toHaveCount(2);
+  await expect(panel.getByText('🔒 Pay withheld for this role', { exact: true })).toHaveCount(2);
   await expect(panel).not.toContainText('$2,');
   await desk.getByRole('button', { name: 'HR Manager' }).click();
   await expect(panel).toContainText('$2,450 / mo');

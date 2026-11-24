@@ -1,0 +1,65 @@
+<section x-data="vaultKit" class="kit-panel">
+    <div class="kit-row">
+        <button @click="open('edit')">Edit schedule</button
+        ><button @click="open('reset')">Reset credentials</button
+        ><button data-note-trigger aria-controls="guard-note" @click="open('note')">Record decision</button>
+    </div>
+    <p role="status" x-text="message"></p>
+    <details id="schedule-policy"><summary>Scheduling rules</summary>Daily hours must be between 0 and 24.</details>
+    <dialog
+        id="guard-modal"
+        aria-labelledby="guard-title"
+        @cancel.prevent="cancel()"
+        @click.self="if(mode!=='edit')cancel()"
+        class="kit-panel m-auto max-sm:mb-0 max-sm:w-full"
+    >
+        <div>
+            <h3
+                id="guard-title"
+                x-text="mode==='edit'?'Edit schedule':mode==='reset'?'Reset credentials':'Decision note'"
+            ></h3>
+            <div x-show="mode==='edit'">
+                <label>Hours <input data-hours :disabled="pending" x-model="hours" /></label>
+                <fieldset :disabled="pending">
+                    <legend>Work days</legend>
+                    <template x-for="day in ['1','2','3']"
+                        ><label
+                            ><input
+                                type="checkbox"
+                                :checked="days.includes(day)"
+                                @change="toggle(day)" /><span x-text="'Day '+day"></span></label
+                    ></template>
+                </fieldset>
+                <label>Start time <input x-model="startTime" :disabled="pending"></label>
+                <label>Schedule attachment <input type="file" :disabled="pending" @change="stage($event.target.files)"></label>
+                <small>Attachments stay in this browser.</small>
+                <label><input type="checkbox" x-model="rejectNext" :disabled="pending">Reject next save</label>
+                <a href="#schedule-policy">Schedule policy</a>
+                <template x-if="error"><div role="alert"><span x-text="error"></span> <button :disabled="pending" @click="save()">Retry</button></div></template>
+                <p x-text="dirty?'Unsaved changes':'No changes'"></p>
+            </div>
+            <p x-show="mode==='reset'" class="kit-cell">Operator A · North Hub<br />Resetting replaces this account’s demo credentials.</p>
+            <label x-show="mode==='reset'"
+                >Type RESET to confirm <input autocomplete="off" x-model="word"
+            /></label>
+            <div class="kit-row" x-show="!discard">
+                <button data-cancel :disabled="pending" @click="cancel()">Cancel</button
+                ><button
+                    :disabled="mode==='edit'?(pending||!hours.trim()):mode==='reset'?word!=='RESET':!note.trim()"
+                    :data-loading="pending || undefined"
+                    @click="save()"
+                    x-text="mode==='edit'?'Save schedule':mode==='reset'?'Confirm reset':'Save decision'"
+                ></button>
+            </div>
+            <div x-show="discard" role="group" aria-label="Unsaved changes">
+                <p>Discard your schedule edits?</p>
+                <button @click="keepEditing()">Keep editing</button
+                ><button @click="close(true)">Discard changes</button>
+            </div>
+        </div>
+    </dialog>
+    <template x-teleport="body"><section id="guard-note" popover="auto" role="dialog" aria-label="Decision note" class="kit-panel">
+        <label>Required note <textarea rows="3" x-model="note" maxlength="240"></textarea></label><bdi x-text="note.length+'/240'"></bdi>
+        <div class="kit-row"><button @click="close()">Cancel</button><button :disabled="!note.trim()" @click="save()">Save decision</button></div>
+    </section></template>
+</section>

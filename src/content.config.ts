@@ -22,7 +22,7 @@ const systems = defineCollection({
 });
 
 const vault = defineCollection({
-  loader: glob({ pattern: "**/*.json", base: "./src/content/vault" }),
+  loader: glob({ pattern: "*/kit.json", base: "./src/content/vault", generateId: ({ entry }) => entry.split("/")[0] }),
   schema: z.object({
     order: z.number(),
     id: z.string(),
@@ -34,16 +34,15 @@ const vault = defineCollection({
       "Data Visualization",
       "Navigation & Shell",
     ]),
-    sourceSystem: z.string(),
+    tier: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
+    sourceIds: z.array(z.string().regex(/^(PT|IT|HR)-[0-9]{2}$/)).nonempty(),
+    sourceSystems: z.array(z.enum(["SYS-01", "SYS-02", "SYS-03", "Cross-System"])).nonempty(),
+    provenance: z.enum(["observed", "observed-plus-spec"]),
     summary: z.string(),
     supportsRtl: z.boolean().default(true),
     previewEngine: z.enum(["alpine", "react"]),
     interactionSpecs: z.array(z.string()),
-    codeAlpine: z.string(),
-    codeReact: z.string(),
-    codeLivewirePhp: z.string(),
-    codeLivewireBlade: z.string(),
-  }),
+  }).transform(data => ({ ...data, sourceSystem: data.sourceSystems.includes("Cross-System") ? "Cross-System" : data.sourceSystems.join(" + ") })),
 });
 
 const aiKit = defineCollection({

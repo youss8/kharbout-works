@@ -69,22 +69,22 @@ const index = items.map(({ data }) => ({id: data.id, kind: data.kind, category: 
 <style>
     .kit-grid { display:grid; grid-template-columns:minmax(15rem,19rem) minmax(0,1fr); align-items:start; gap:clamp(1rem,3vw,2.5rem); }
     .kit-register,.kit-detail article,.kit-empty { background:var(--bg-surface); border:1px solid var(--border-hairline); }
-    .kit-register { padding:1rem; border-top:3px solid var(--accent-primary); }
+    .kit-register { padding:1rem; border-block-start:3px solid var(--accent-primary); }
     .search-label, legend { font-size:.84rem; font-weight:600; }
     .search-label { display:grid; gap:.3rem; }
     input { width:100%; border:1px solid var(--border-strong); background:var(--bg-canvas); padding:.5rem; border-radius:3px; }
-    fieldset { margin-top:.85rem; }
-    .filter-list { display:flex; flex-wrap:wrap; gap:.3rem; margin-top:.3rem; }
+    fieldset { margin-block-start:.85rem; }
+    .filter-list { display:flex; flex-wrap:wrap; gap:.3rem; margin-block-start:.3rem; }
     button { border:1px solid var(--border-strong); border-radius:3px; padding:.26rem .45rem; font-size:.77rem; }
     button[aria-pressed="true"] { color:var(--accent-primary); border-color:var(--accent-primary); background:var(--accent-tint); }
     .count, small { color:var(--ink-secondary); font:.7rem/1.5 var(--font-mono); }
     .count { margin:1rem 0 .3rem; }
     nav { display:grid; }
-    nav a { display:block; padding:.55rem; border-top:1px solid var(--border-hairline); font-size:.87rem; line-height:1.35; font-weight:600; }
+    nav a { display:block; padding:.55rem; border-block-start:1px solid var(--border-hairline); font-size:.87rem; line-height:1.35; font-weight:600; }
     nav a[aria-current="true"] { border-inline-start:3px solid var(--accent-primary); color:var(--accent-primary); background:var(--accent-tint); }
-    small { display:block; margin-top:.15rem; }
+    small { display:block; margin-block-start:.15rem; }
     .kit-detail { min-width:0; }
     article,.kit-empty { padding:clamp(.8rem,2vw,1.7rem); }
-    .kit-empty h2 { margin-bottom:.65rem; }
+    .kit-empty h2 { margin-block-end:.65rem; }
     @media (max-width:760px) { .kit-grid { grid-template-columns:1fr; } nav { overflow:auto; max-height:14rem; } }
 </style>

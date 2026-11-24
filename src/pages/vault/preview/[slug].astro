@@ -1,43 +1,82 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { getCollection } from 'astro:content';
+import { readFileSync } from 'node:fs';
 import ReactExample from '../../../components/vault/ReactExample';
 import '@fontsource/plus-jakarta-sans/latin-400.css';
 import '@fontsource/plus-jakarta-sans/latin-600.css';
 import '@fontsource/jetbrains-mono/latin-500.css';
 import '../../../styles/tokens.css';
+import '../../../styles/vault-preview.css';
+interface Preview { id: string; title: string; previewEngine: string; codeAlpine: string; legacy?: boolean; provenance?: string }
 export async function getStaticPaths() {
-    return (await getCollection('vault')).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+    const legacy = import.meta.glob<Preview>('../../../content/vault/*.json', { eager: true, import: 'default' });
+    const items: Preview[] = (await getCollection('vault')).map(({ id, data }) => ({
+        id, title: data.title, previewEngine: data.previewEngine, provenance: data.provenance,
+        codeAlpine: readFileSync('src/content/vault/' + id + '/alpine.html', 'utf8'),
+    }));
+    return [...items, ...Object.values(legacy).map(entry => ({ ...entry, legacy: true }))].map(entry => ({params: {slug:entry.id}, props:{entry}}));
 }
-interface Props { entry: CollectionEntry<'vault'> }
-const { data } = Astro.props.entry;
+interface Props { entry: Preview }
+const { entry: data } = Astro.props;
+const sheets = import.meta.glob<string>('../../../content/vault/*/style.css', {eager:true, query:'?url', import:'default'});
+const sheet = sheets['../../../content/vault/' + data.id + '/style.css'];
 ---
 <!doctype html>
 <html lang="en" data-engine={data.previewEngine} data-theme="light"><head>
     <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
     <title>{data.title} · Live example</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    {sheet && <link rel="stylesheet" href={sheet} />}
     <script is:inline>
         const options = new URLSearchParams(location.search);
         const root = document.documentElement;
         if (['react','alpine'].includes(options.get('engine'))) root.dataset.engine = options.get('engine');
         root.dataset.theme = options.get('theme') === 'dark' ? 'dark' : 'light';
         root.dir = options.get('dir') === 'rtl' ? 'rtl' : 'ltr';
+        root.dataset.standalone = String(window === window.top);
     </script>
 </head><body class="example-body">
     <main aria-label={data.title}>
-        <template id="alpine-example"><Fragment set:html={data.codeAlpine} /></template>
+        <p class="preview-origin type-meta">{data.provenance === 'observed' ? 'Observed in Codebase' : 'Observed + Clean-Room [spec]'}</p>
+        <template id="alpine-example" data-kit={data.legacy ? undefined : data.id}><Fragment set:html={data.codeAlpine} /></template>
         <script is:inline>
             if (document.documentElement.dataset.engine === 'alpine') {
                 const host = document.getElementById('alpine-example');
-                host.after(host.content.cloneNode(true));
+                if (!host.dataset.kit) host.after(host.content.cloneNode(true));
             }
         </script>
         <ReactExample id={data.id} client:only="react" />
+        <script>
+            import Alpine from 'alpinejs';
+            const models = import.meta.glob<{default: () => object}>('../../../content/vault/*/model.ts');
+            const host = document.querySelector<HTMLTemplateElement>('#alpine-example')!;
+            if (host.dataset.kit && document.documentElement.dataset.engine === 'alpine') {
+                const load = models['../../../content/vault/' + host.dataset.kit + '/model.ts'];
+                const render = async () => {
+                    try {
+                        Alpine.data('vaultKit', (await load()).default);
+                        host.after(host.content.cloneNode(true));
+                    } catch {
+                        const error = document.createElement('p');
+                        error.className = 'error-card';
+                        error.setAttribute('role','alert');
+                        error.textContent = 'The interactive example could not load. ';
+                        const retry = document.createElement('button');
+                        retry.textContent = 'Retry';
+                        retry.onclick = () => { error.remove(); void render(); };
+                        error.append(retry); host.after(error);
+                    }
+                };
+                void render();
+            }
+        </script>
     </main>
 </body></html>
 <style is:global>
     .example-body { padding: clamp(.65rem,2vw,1.3rem); min-width: 0; background: var(--bg-surface); }
     .example-body main { container-type: inline-size; }
+    .preview-origin { color:var(--ink-secondary); margin-block-end:.8rem; }
+    [data-standalone="false"] .preview-origin { display:none; }
     .example-body :is(button,input,select,textarea) { max-width: 100%; }
     .example-body button:focus-visible { outline-offset: 1px; }
     .example-body dialog { margin: auto; }

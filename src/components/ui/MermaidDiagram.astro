@@ -9,6 +9,10 @@ const { source, label } = Astro.props;
             <label>Scale <select aria-label="Diagram scale"><option value="100">Fit width</option><option value="175">175%</option><option value="300">300%</option></select></label>
         </figcaption>
         <div class="diagram-window" role="region" aria-label={label} tabindex="0"><div class="drawing"></div></div>
+        <div class="diagram-error error-card" role="alert" hidden>
+            The diagram could not render. You can read its source below.
+            <button type="button">Retry diagram</button>
+        </div>
         <details><summary>Mermaid source</summary><pre><code>{source}</code></pre></details>
     </figure>
 </entity-diagram>
@@ -31,10 +35,14 @@ const { source, label } = Astro.props;
             const drawing = this.querySelector<HTMLElement>('.drawing')!;
             const source = this.querySelector('code')!.textContent!;
             const scale = this.querySelector('select')!;
+            const error = this.querySelector<HTMLElement>('.diagram-error')!;
             scale.addEventListener('change', () => drawing.style.width = scale.value + '%');
             let revision = 0;
             const render = async () => {
                 const version = ++revision;
+                drawing.dataset.loading = 'true';
+                drawing.setAttribute('aria-busy', 'true');
+                error.hidden = true;
                 try {
                     const engine = await loadEngine(this.dataset.library!);
                     const dark = document.documentElement.dataset.theme === 'dark';
@@ -54,11 +62,17 @@ const { source, label } = Astro.props;
                     }
                 } catch {
                     if (version === revision) {
-                        drawing.textContent = 'The diagram could not load. The complete source is available below.';
+                        error.hidden = false;
                         this.querySelector('details')!.open = true;
+                    }
+                } finally {
+                    if (version === revision) {
+                        delete drawing.dataset.loading;
+                        drawing.setAttribute('aria-busy', 'false');
                     }
                 }
             };
+            error.querySelector('button')!.addEventListener('click', render);
             const observer = new IntersectionObserver(entries => {
                 if (entries.some(entry => entry.isIntersecting)) {
                     observer.disconnect();
@@ -74,13 +88,15 @@ const { source, label } = Astro.props;
 <style>
     entity-diagram { display: block; min-width: 0; }
     figure { margin: 1.5rem 0; border: 1px solid var(--border-hairline); background: var(--bg-surface); }
-    figcaption { padding: .7rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .6rem; border-bottom: 1px solid var(--border-hairline); }
+    figcaption { padding: .7rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .6rem; border-block-end: 1px solid var(--border-hairline); }
     label,summary { font-size: .82rem; }
     select { padding: .3rem; border: 1px solid var(--border-strong); background: var(--bg-surface); border-radius: 3px; }
     .diagram-window { overflow: auto; max-height: 65vh; padding: .8rem; }
     .drawing { min-height: 9rem; }
     .drawing :global(svg) { display: block; width: 100%; max-width: none !important; height: auto; }
-    details { border-top: 1px solid var(--border-hairline); padding: .6rem 1rem; }
+    details { border-block-start: 1px solid var(--border-hairline); padding: .6rem 1rem; }
     summary { cursor: pointer; }
+    .diagram-error { padding: .8rem; border-inline-start: 3px solid var(--status-crit); }
+    .diagram-error button { text-decoration: underline; margin-inline-start: .5rem; }
     pre { max-height: 22rem; overflow: auto; font-size: .75rem; }
 </style>

@@ -168,8 +168,8 @@
   .cv-headline { font-size: 12pt; }
   .cv-contacts { padding-top: 1mm; font-size: 9.5pt; column-gap: 3mm; }
   .cv-sheet .cv-relocation { margin-top: 1mm; }
-  .cv-section { break-inside: avoid; display: block; margin-top: 2mm; padding-top: 2mm; border-top: 1px solid #d4d4d4; }
-  .cv-sheet h2 { font-size: 11pt; margin-bottom: 1mm; }
+  .cv-section { break-inside: avoid; display: block; margin-top: 1.5mm; padding-top: 1.25mm; border-top: 1px solid #d4d4d4; }
+  .cv-sheet h2 { font-size: 11pt; margin-bottom: .75mm; }
   .cv-sheet h3 { font-size: 10pt; margin: 0; }
   .cv-sheet .cv-section p + p { margin-top: .6mm; }
   .cv-sheet .cv-stack > div { display: block; padding: 0; border: 0; }

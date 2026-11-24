@@ -7,7 +7,7 @@
   "ownershipBadge": "3-Dev Team · Core Pre-RMS Contributor & Co-Architect",
   "ownershipPercent": "Core pre-RMS contributor",
   "teamSize": "3 developers",
-  "scopeNote": "Youssef co-architected the foundation and built core organization, employee, contract, leave and attendance modules. Recruitment (RMS) was a later team expansion. The audit totals describe the full platform.",
+  "scopeNote": "Youssef co-architected the pre-RMS HR core with two teammates. His work covered organization structure, employee profiles, contracts, leave and attendance. The audit totals describe the entire three-developer repository.",
   "realWorldScale": "~240 employees across five regional branches and 75–100 monthly active users. The move from paper reduced HR administrative workload by 75%+ and cross-department overhead by ~65%.",
   "stack": [
     "PHP 8.5",
@@ -104,7 +104,7 @@ import diagram from '../../data/diagrams/sys02.mmd?raw';
 
 <h2 id="architecture">Architectural approach</h2>
 
-A multi-branch, bilingual (LTR/RTL) Human Capital platform covering the full employee lifecycle—org structure, employee records, contracts and amendments, leave pricing, attendance, and offboarding—where every step is a state machine scoped to branch and reporting line, payroll-sensitive columns are encrypted under a dedicated key, and signed PDFs render directly from the same templates shown in the UI.
+The pre-RMS core follows employees from onboarding through changes in position, leave and attendance to offboarding. Branch and reporting line determine who can act. Pay tiers use a dedicated encryption key. Signed PDFs use the same templates as the bilingual interface.
 
 Server-driven TALL stack with dedicated Form objects and single-purpose Services (`LeaveRequestPricing`, `LeaveDecisionAuthority`, `ContractAmendmentService`, `MonthWorkflow`); trigger-keyed explicit state machines; shared branch/reporting-line scopes (`scopeInCity`, `scopeVisibleTo`) driving both UI dropdowns and validation; observer-maintained headcount counters under row locks; notification outbox + atomic delivery ledger; ordered nightly contract lifecycle chain (`apply amendments → deactivate → auto-renew → track renewals → deactivate departed staff`).
 
@@ -146,6 +146,8 @@ Live contract holds current terms while amendments store allow-listed before/aft
 
 Single stateless service powers preview, validation, pending reservations, approval deductions, and calendars. Passes weekend explicitly (zero global worker state), handles seniority accruals, same-calendar-year carryover from true predecessor (`COALESCE(terminated_at, end_date)`), preserves remaining days via `amendment_offset` when daily hours change, isolates overtime credits so recalculations never wipe them, and enforces probation caps & eligibility rules.
 
+**[observed]** The server returns the dates omitted from the charge in `quote.excludedDates`. **[spec]** The sandbox turns those dates into individual holiday and weekend chips so an employee can check the deduction.
+
 ### 3 · Dual Reporting Hierarchy & Concurrency Safety
 
 `Position` self-references twice (`direct_manager_id` solid line + `tech_manager_id` dotted line), driving org charts, manager visibility, leave authority escalation when a manager is on leave, and ~133 `lockForUpdate` sites with documented lock ordering (`request`, then `balance`).
@@ -178,5 +180,7 @@ Single stateless service powers preview, validation, pending reservations, appro
 - SHA-256 device agent keys + registered serial-only biometric ingest.
 
 ### Modules
+
+**Profile change requests.** **[observed]** An employee submits `proposed` field values for review. **[spec]** A clean-room side-by-side comparison pairs each proposed value with the current profile value. Contract amendments use a separate, observed before-snapshot for the signed terms.
 
 Employees (completeness, self-proposed profile changes, onboarding/renewal/offboarding journeys, probation reviews, critical-position alerts, dual-line org chart); Contracts (row-locked capacity guard, T-30/21/14/7 atomic expiry alerts, chunked auto-renewal, future-dated amendments, headless-Chrome file-based PDF rendering); Leave Management (pure `quote()`, eligibility rules, two-tier Manager → HR review with transactional send-back refund, team overlap warnings, stand-in nomination); Attendance (legacy Excel 5 binary parser, idempotent punch storage on `device_no + minute`, explicit human decision on 0/1-punch days with `DRAFT` watermark, `Confirm → Approve → Lock → Overtime-to-Leave Credit → Reopen`); Cross-Cutting (Unified Work Inbox, draggable 12-col lazy-mounted dashboard grid, notification outbox, Reverb chat).

@@ -1,0 +1,50 @@
+{
+  "b1": {
+    "assets": 512,
+    "loanIds": ["l1"],
+    "licenseIds": ["lic2"],
+    "backupNames": ["File server nightly"],
+    "failedCommands": 1,
+    "ticketFlow": [
+      { "day": "03-04", "opened": 4, "resolved": 3 },
+      { "day": "03-05", "opened": 5, "resolved": 4 },
+      { "day": "03-06", "opened": 2, "resolved": 4 },
+      { "day": "03-07", "opened": 2, "resolved": 2 },
+      { "day": "03-08", "opened": 1, "resolved": 2 },
+      { "day": "03-09", "opened": 5, "resolved": 3 },
+      { "day": "03-10", "opened": 2, "resolved": 1 }
+    ]
+  },
+  "b2": {
+    "assets": 430,
+    "loanIds": ["l2"],
+    "licenseIds": ["lic1"],
+    "backupNames": [],
+    "failedCommands": 1,
+    "ticketFlow": [
+      { "day": "03-04", "opened": 3, "resolved": 2 },
+      { "day": "03-05", "opened": 4, "resolved": 4 },
+      { "day": "03-06", "opened": 2, "resolved": 3 },
+      { "day": "03-07", "opened": 1, "resolved": 2 },
+      { "day": "03-08", "opened": 1, "resolved": 1 },
+      { "day": "03-09", "opened": 4, "resolved": 3 },
+      { "day": "03-10", "opened": 2, "resolved": 0 }
+    ]
+  },
+  "b3": {
+    "assets": 342,
+    "loanIds": ["l3"],
+    "licenseIds": [],
+    "backupNames": ["App DB hourly"],
+    "failedCommands": 0,
+    "ticketFlow": [
+      { "day": "03-04", "opened": 2, "resolved": 2 },
+      { "day": "03-05", "opened": 3, "resolved": 2 },
+      { "day": "03-06", "opened": 2, "resolved": 2 },
+      { "day": "03-07", "opened": 1, "resolved": 1 },
+      { "day": "03-08", "opened": 1, "resolved": 1 },
+      { "day": "03-09", "opened": 2, "resolved": 2 },
+      { "day": "03-10", "opened": 1, "resolved": 1 }
+    ]
+  }
+}

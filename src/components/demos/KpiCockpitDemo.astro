@@ -43,10 +43,10 @@
       <template x-if="current.measure === 'percentage'">
         <div class="method">
           <label>Rollup method<select x-model="method"><option value="pooled">Pooled ratio (correct)</option><option value="naive">Naive average (wrong)</option></select></label>
-          <output class="result-value" aria-live="polite" x-text="show(result.actual)"></output>
+          <output class="result-value" aria-live="polite" :aria-label="result.actual === null ? 'not set' : null"><bdi x-text="show(result.actual)"></bdi></output>
           <p x-show="method === 'pooled'" x-text="'Σ numerators ' + result.numerator + ' / Σ denominators ' + result.denominator"></p>
           <p x-show="method === 'naive'">Each reporting site receives equal weight.</p>
-          <p x-text="result.excluded + (result.excluded === 1 ? ' site excluded' : ' sites excluded') + ' · missing denominator'"></p>
+          <template x-for="note in exclusionNotes" :key="note"><p x-text="note"></p></template>
         </div>
       </template>
       <p x-show="current.cumulative" class="explain">Latest approved site readings at the reporting cutoff. Earlier snapshots are unavailable.</p>
@@ -54,7 +54,7 @@
       <div x-show="inspector === 'Matrix'">
         <div class="matrix-scroll" tabindex="0" role="region" aria-label="Monthly site returns">
           <table><caption>Monthly site returns</caption><thead><tr><th>Site</th><template x-for="m in displayedMonths" :key="m.key"><th x-text="m.name"></th></template></tr></thead>
-            <tbody><template x-for="t in targets" :key="t.site"><tr><th scope="row" x-text="siteName(t.site)"></th><template x-for="m in displayedMonths" :key="m.key"><td x-text="cell(t,m)"></td></template></tr></template></tbody>
+            <tbody><template x-for="t in targets" :key="t.site"><tr><th scope="row" x-text="siteName(t.site)"></th><template x-for="m in displayedMonths" :key="m.key"><td :aria-label="cell(t,m) === '—' ? 'not set' : null"><bdi x-text="cell(t,m)"></bdi></td></template></tr></template></tbody>
           </table>
         </div>
         <p class="explain" x-show="!targets.length">No targets match these filters.</p>
@@ -72,19 +72,19 @@
 <style>
   .kpi-demo { container-type: inline-size; }
   .demo-heading,.kpi-filters,.pending-toggle,.branch-label,.target-chips,.inspector-tabs { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
-  .demo-heading { justify-content: space-between; margin-bottom: .65rem; }
+  .demo-heading { justify-content: space-between; margin-block-end: .65rem; }
   .demo-heading p,.inspector > p:first-child,.cutoff,.branch-label small { color: var(--ink-secondary); font-size: .74rem; }
   .kpi-stats { display: grid; grid-template-columns: repeat(4,1fr); margin: 1rem 0; border: 1px solid var(--border-hairline); }
   .kpi-stats div { padding: .75rem; border-inline-end: 1px solid var(--border-hairline); }
   .kpi-stats div:last-child { border: 0; }.kpi-stats span,.kpi-filters label,.method label,.branch-label span > *, .result-value { display: block; }
   .kpi-stats strong,.result-value { font: 600 1.5rem/1.3 var(--font-mono); }
   .kpi-stats span,.target-chips small,.kpi-demo label,.kpi-demo table,.explain { font-size: .8rem; }
-  .kpi-filters { align-items: end; }.kpi-filters select,.method select { display: block; max-width: 100%; margin-top: .2rem; }.kpi-filters .pending-toggle { display: flex; padding-block: .5rem; }
+  .kpi-filters { align-items: end; }.kpi-filters select,.method select { display: block; max-width: 100%; margin-block-start: .2rem; }.kpi-filters .pending-toggle { display: flex; padding-block: .5rem; }
   .kpi-layout { display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); margin-block: 1rem; border: 1px solid var(--border-hairline); }
   .tree,.inspector { padding: clamp(.65rem,2cqw,1.1rem); min-width: 0; }.tree { border-inline-end: 1px solid var(--border-hairline); }.kpi-layout h4 { margin: 0; font-size: 1rem; font-weight: 700; }
   .branch { margin-inline-start: calc(var(--level) * .65rem); padding-block-start: .7rem; }.branch-label { flex-wrap: nowrap; align-items: start; }.branch-label strong { font-size: .85rem; }
   .branch-toggle { min-width: 1.75rem; min-height: 1.75rem; }.indicator { margin-block: .55rem; padding: .6rem; border: 1px solid var(--border-hairline); border-inline-start: 2px solid var(--border-hairline); }
-  .indicator.picked { border-inline-start-color: var(--accent-primary); }.indicator-name { display: block; text-align: start; margin-bottom: .35rem; }.reading { margin-top: .4rem; font-family: var(--font-mono); }
+  .indicator.picked { border-inline-start-color: var(--accent-primary); }.indicator-name { display: block; text-align: start; margin-block-end: .35rem; }.reading { margin-block-start: .4rem; font-family: var(--font-mono); }
   .track { height: .36rem; display: flex; background: var(--bg-subtle); margin-block: .4rem; }.track i { display: block; background: var(--accent-primary); }.track i.pending { background: var(--status-warn); opacity: .48; }
   .target-chips { gap: .25rem; }.target-chips small { padding: .05rem .25rem; border: 1px solid var(--border-hairline); font-family: var(--font-mono); font-size: .68rem; }
   .method { padding: .75rem; border-block: 1px solid var(--border-hairline); margin-block: .65rem; background: var(--bg-subtle); }.method p,.inspector li { font-size: .8rem; }.result-value { margin-block: .5rem; color: var(--accent-primary); }

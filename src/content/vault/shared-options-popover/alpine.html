@@ -1,0 +1,66 @@
+<section
+    x-data="vaultKit"
+    x-init="registerDirectory(Alpine)"
+    class="kit-panel"
+    x-on:keydown.escape.window="if (active >= 0) close()"
+>
+    <p role="status">
+        Rendered option buttons: <bdi x-text="count"></bdi> of 2,400 possible row options ·
+        Directory: 200
+    </p>
+    <ol class="kit-list">
+        <template x-for="(task,index) in tasks" :key="task"
+            ><li class="kit-row">
+                <strong x-text="task"></strong><span x-text="names(index)"></span>
+                <button
+                    :id="'assign-'+index"
+                    :aria-expanded="active === index"
+                    x-on:click="open(index,$el)"
+                >
+                    Assign
+                </button>
+            </li></template
+        >
+    </ol>
+    <template x-teleport="body"
+        ><div
+            x-show="active >= 0"
+            x-cloak
+            x-on:click.outside="if(active >= 0 && !$event.target.closest('[id^=assign-]')) close()"
+            class="kit-panel fixed z-20 overflow-auto bg-surface border border-strong p-3"
+            style="
+                width: min(320px, calc(100% - 16px));
+                max-height: min(340px, calc(100dvh - 16px));
+            "
+            :style="{insetBlockStart:top+'px',insetInlineStart:inlineStart+'px'}"
+            role="dialog"
+            aria-label="Assign people"
+        >
+            <div class="kit-row">
+                <label
+                    >Find an officer
+                    <input data-directory-search type="search" x-model="query" /></label
+                ><button x-on:click="close()">Close</button>
+            </div>
+            <template x-if="error"
+                ><p role="alert">
+                    <span x-text="error"></span>
+                    <button type="button" @click="fetchDirectory()">Retry directory</button>
+                </p></template
+            >
+            <p x-show="loading" aria-live="polite">Loading staff directory…</p>
+            <template x-if="active >= 0"
+                ><div class="kit-list" :aria-busy="loading" :data-loading="loading || null">
+                    <template x-for="person in options" :key="person.id"
+                        ><button
+                            data-assignee-option
+                            :aria-pressed="(assigned[active] || []).includes(person.id)"
+                            x-on:click="toggle(person.id)"
+                            x-text="((assigned[active] || []).includes(person.id) ? '✓ ' : '○ ') + person.name"
+                        ></button
+                    ></template></div
+            ></template>
+            <p x-show="!loading && !error && !options.length">No matching officers.</p>
+        </div></template
+    >
+</section>

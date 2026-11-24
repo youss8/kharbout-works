@@ -1,0 +1,20 @@
+{
+  "id": "patch-panel-estate-strip",
+  "order": 19,
+  "tier": 4,
+  "category": "Data Visualization",
+  "sourceSystems": [
+    "SYS-01"
+  ],
+  "provenance": "observed-plus-spec",
+  "title": "Branch endpoint patch panel",
+  "summary": "Scan 36 endpoints in branch-grouped pairs. The clean-room telemetry tooltip stays inside the viewport in either writing direction [spec].",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Hover or focus a port to read its last check-in and load.",
+    "Simulate a branch outage and restore a single agent."
+  ],
+  "sourceIds": [
+    "IT-26"
+  ]
+}

@@ -7,7 +7,7 @@ const { metrics } = Astro.props;
 <section class="evidence" aria-label="Aggregate codebase metrics">
   <dl>
     {metrics.map(({ value, label, note }) => (
-      <div title={note}><dt>{label}</dt><dd>{value}</dd></div>
+      <div title={note}><dt>{label}</dt><dd class="type-figure"><bdi>{value}</bdi></dd></div>
     ))}
   </dl>
   <p>Across three audited repositories. Totals include one solo system and two three-developer team platforms.</p>
@@ -17,7 +17,7 @@ const { metrics } = Astro.props;
   dl div { display: flex; flex-direction: column-reverse; align-items: flex-start; gap: .35rem; padding: clamp(.9rem, 2.1vw, 1.9rem); border-inline-end: 1px solid var(--border-hairline); }
   dl div:last-child { border: 0; }
   dt { color: var(--ink-secondary); font-size: .78rem; font-weight: 600; }
-  dd { font-family: var(--font-mono); font-size: clamp(1.7rem, 3vw, 2.65rem); letter-spacing: -.08em; font-weight: 500; margin: 0; line-height: 1.15; }
+  dd { margin: 0; }
   p { color: var(--ink-secondary); margin: .65rem 0 0; font-size: .71rem; }
   @media (max-width: 680px) { dl { grid-template-columns: repeat(2, minmax(0, 1fr)); } dl div:nth-child(2) { border-inline-end: 0; } dl div:nth-child(-n + 2) { border-block-end: 1px solid var(--border-hairline); } }
 </style>

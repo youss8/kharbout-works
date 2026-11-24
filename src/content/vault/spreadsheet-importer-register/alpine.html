@@ -1,0 +1,83 @@
+<section class="kit-panel" x-data="vaultKit">
+    <label>CSV to import<textarea rows="5" x-model="csv" @input="preview=[]"></textarea></label>
+    <div class="kit-row">
+        <button @click="parse()">Parse CSV</button
+        ><button @click="loadSample()">Load sample</button>
+    </div>
+    <template x-if="error"
+        ><p role="alert">
+            <span x-text="error"></span> <button @click="parse()">Retry</button>
+        </p></template
+    >
+    <ul aria-label="Import warnings">
+        <template x-for="(w,i) in warnings" :key="i"><li x-text="w"></li></template>
+    </ul>
+    <div x-show="preview.length">
+        <pre
+            class="whitespace-pre-wrap break-all"
+            x-text="JSON.stringify(preview.slice(0,50),null,2)"
+        ></pre>
+        <small x-text="preview.length+' parsed · first 50 shown'"></small
+        ><button @click="loadRows()">Load rows into register</button>
+    </div>
+    <label>Search register<input type="search" x-model="search" /></label>
+    <table class="w-full table-fixed break-words">
+        <caption>
+            Backup schedule · 5 January 2026, 12:00 UTC
+        </caption>
+        <thead>
+            <tr>
+                <template x-for="f in columns"><th scope="col" x-text="f.label"></th></template>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <template x-for="r in visible.slice(0,100)" :key="r.id"
+                ><tr :data-row-tone="rowTone(r).tone">
+                    <template x-for="f in columns"
+                        ><td>
+                            <bdi
+                                :aria-label="r[f.key]==null?'not set':null"
+                                x-text="r[f.key]??'—'"
+                            ></bdi
+                            ><template x-if="f.key==='name'"
+                                ><small
+                                    class="status-badge surface"
+                                    :data-tone="rowTone(r).tone"
+                                    x-text="rowTone(r).label"
+                                ></small
+                            ></template></td
+                    ></template>
+                    <td><button @click="edit(r)">Edit</button></td>
+                </tr></template
+            >
+        </tbody>
+    </table>
+    <small x-text="visible.length+' matches · up to 100 shown'"></small
+    ><button @click="exportCsv()">Export filtered CSV</button>
+    <form class="kit-panel" x-show="editing" @submit.prevent="save()">
+        <label><input type="checkbox" x-model="includeDetail" />Edit internal notes</label>
+        <template x-for="f in editable" :key="f.key"
+            ><label
+                ><span x-text="f.label"></span
+                ><template x-if="f.type==='textarea'">
+                    <textarea x-model="form[f.key]"></textarea></template
+                ><template x-if="f.type!=='textarea'"
+                    ><input
+                        :type="f.type??'text'"
+                        x-model="form[f.key]"
+                        :required="f.required" /></template></label
+        ></template>
+        <div class="kit-row">
+            <button>Save partial update</button
+            ><button type="button" @click="editing=0">Cancel</button>
+        </div>
+    </form>
+    <div x-show="payload">
+        <h4>Write payload</h4>
+        <pre class="whitespace-pre-wrap" x-text="payload"></pre>
+        <h4>Field diff [spec]</h4>
+        <pre class="whitespace-pre-wrap" x-text="diff"></pre>
+    </div>
+    <p role="status" x-text="notice"></p>
+</section>

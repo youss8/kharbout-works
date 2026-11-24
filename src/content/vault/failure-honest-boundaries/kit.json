@@ -1,0 +1,25 @@
+{
+  "id": "failure-honest-boundaries",
+  "order": 9,
+  "tier": 2,
+  "category": "Forms & Guards",
+  "sourceSystems": [
+    "Cross-System",
+    "SYS-01",
+    "SYS-02",
+    "SYS-03"
+  ],
+  "provenance": "observed",
+  "title": "Failure-honest queries and formula-safe CSV",
+  "summary": "Keep the last successful rows visible while a request runs, fails or retries.",
+  "previewEngine": "react",
+  "interactionSpecs": [
+    "Compare fast and slow requests, then recover a failed query.",
+    "Edit and download a bilingual formula-safe CSV."
+  ],
+  "sourceIds": [
+    "IT-12",
+    "IT-14",
+    "HR-08"
+  ]
+}

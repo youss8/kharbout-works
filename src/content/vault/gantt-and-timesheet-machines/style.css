@@ -1,0 +1,121 @@
+.kit-panel:has(.schedule-plot) {
+    grid-template-columns: minmax(0, 1fr);
+}
+.schedule-plot {
+    overflow-x: auto;
+    max-inline-size: 100%;
+    padding-block: 0.25rem;
+}
+.schedule-track {
+    position: relative;
+    min-block-size: 3rem;
+    display: grid;
+    align-items: center;
+}
+.schedule-track .weekend {
+    position: absolute;
+    inset-block: 0;
+    background: var(--bg-subtle);
+    border-inline-end: 1px solid var(--border-hairline);
+}
+.schedule-track .baseline {
+    position: absolute;
+    inset-block-end: 0.2rem;
+    border-block-end: 3px dashed var(--ink-muted);
+}
+.schedule-track .task {
+    position: relative;
+    grid-row: 1;
+    padding: 0.3rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    border: 1px solid var(--accent-primary);
+    background: var(--accent-tint);
+    color: var(--ink-primary);
+    touch-action: pan-y;
+    cursor: grab;
+    text-align: start;
+}
+.schedule-track .task[data-critical='true'] {
+    border-block-start: 3px solid var(--accent-primary);
+}
+.schedule-track .task[data-traced='false'] {
+    opacity: 0.55;
+}
+main:has(#alpine-example[data-kit]) .schedule-track .task[data-critical='true'] {
+    border-block-start: 3px solid var(--accent-primary);
+}
+main:has(#alpine-example[data-kit]) .schedule-track .task[data-traced='true'] {
+    outline: 1px solid var(--accent-primary);
+    outline-offset: -2px;
+}
+main:has(#alpine-example[data-kit]) .schedule-track .task[aria-pressed='true'] {
+    font-weight: 700;
+}
+.schedule-track .task:focus-visible {
+    outline-offset: 1px !important;
+}
+.schedule-track .slip {
+    position: absolute;
+    inset-block-end: 0.2rem;
+    border-block-end: 3px solid var(--status-warn);
+}
+.month-resolve {
+    display: grid;
+    gap: 0.4rem;
+}
+.month-resolve label {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+.schedule-key {
+    font-size: 0.8rem;
+}
+.funding-routes {
+    display: grid;
+    gap: 0.25rem;
+    list-style: none;
+    padding: 0;
+}
+.funding-routes li {
+    border-inline-start: 2px solid var(--border-hairline);
+    padding-inline-start: 0.5rem;
+}
+.funding-routes [data-traced='true'] {
+    border-color: var(--accent-primary);
+    background: var(--accent-tint);
+}
+.horizon {
+    position: relative;
+    block-size: 3.25rem;
+    min-inline-size: 0;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-strong);
+    cursor: grab;
+    touch-action: pan-y;
+}
+.horizon small,
+.horizon-bar,
+.horizon-window {
+    position: absolute;
+    pointer-events: none;
+}
+.horizon small {
+    font: 0.65rem var(--font-mono);
+    inset-block-start: 0.15rem;
+}
+.horizon-bar {
+    block-size: 0.22rem;
+    background: var(--ink-muted);
+}
+.horizon-bar[data-traced='true'] {
+    background: var(--accent-primary);
+}
+.horizon-window {
+    inset-block: 0;
+    border: 2px solid var(--accent-primary);
+    background: color-mix(in srgb, var(--accent-primary) 10%, transparent);
+}
