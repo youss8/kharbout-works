@@ -53,11 +53,11 @@ test('the architecture tabs switch ownership, metrics, and modeling challenges',
     const tabs = page.getByRole('tablist', { name: 'System architecture' });
     const panels = page.getByRole('tabpanel');
     const cases = [
-        { code: 'SYS-01', scope: /100% solo/i, scale: '47', challenge: /field.level changes/i },
-        { code: 'SYS-02', scope: /pre.rms/i, scale: '136', challenge: /leave quote/i },
         { code: 'SYS-03', scope: /80%/i, scale: '~98', challenge: /numerators and denominators/i },
+        { code: 'SYS-02', scope: /pre.rms/i, scale: '136', challenge: /leave quote/i },
     ];
-    await expect(tabs.getByRole('tab', { selected: true })).toHaveAccessibleName(/SYS-01/);
+    await expect(tabs.getByRole('tab', { selected: true })).toHaveAccessibleName(/SYS-03/);
+    await expect(tabs.getByRole('tab')).toHaveCount(2);
     for (const { code, scope, scale, challenge } of cases) {
         const tab = tabs.getByRole('tab', { name: new RegExp(code) });
         await tab.click();
@@ -68,8 +68,8 @@ test('the architecture tabs switch ownership, metrics, and modeling challenges',
         await expect(panels.getByText(scale, { exact: true })).toBeVisible();
         await expect(panels).toContainText(challenge);
     }
-    await tabs.getByRole('tab', { name: /SYS-03/ }).press('ArrowLeft');
-    await expect(tabs.getByRole('tab', { name: /SYS-02/ })).toBeFocused();
+    await tabs.getByRole('tab', { name: /SYS-02/ }).press('ArrowLeft');
+    await expect(tabs.getByRole('tab', { name: /SYS-03/ })).toBeFocused();
 });
 
 test('mobile navigation can be used and dismissed at 375px', async ({ page }) => {

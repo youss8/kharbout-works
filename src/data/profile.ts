@@ -9,7 +9,7 @@ export const profile = {
   brandName: "Youssef Operations Kit",
   headline: "Full-Stack Software Engineer & Systems Architect",
   subheadline:
-    "I build operational systems with TypeScript, React 19 and PostgreSQL, and with PHP 8.5, Laravel 13 and MySQL.",
+    "I design and build workflow software for portfolio tracking and HR, from data rules and approvals to the interfaces people use every day.",
   pillars: [
     {
       index: "01",
@@ -70,9 +70,9 @@ export const profile = {
       period: "Nov 2024 – Dec 2026",
       location: "Aleppo, Syria · ~150 Staff Countrywide (50 Local Hub · 50–60 Weekly Active Platform Users)",
       highlights: [
-        "IT Operations & Asset Helpdesk (100% Solo End-to-End): Architected and built a 47-table TypeScript/TanStack Start/React 19/Supabase Postgres platform (54 triggers, ~118 RLS policies, 12 config-driven registers, endpoint telemetry agent, AI copilot, and 11-tool OAuth MCP server) for ~900–1,000 hardware assets and licenses and 15–20 monthly IT requests. Architecture-verified and held from live fleet rollout.",
         "Multi-Entity Funding, Portfolio & KPI Analytics Platform (~80% Primary Architect & Builder, 3-dev team): Led workflow design, UI architecture, and core implementation across ~98 tables, 197 migrations, 175 Action classes, and 481 Pest test files—tracking full organizational history from 2018–present with PHP/SQL-synced pooled KPI ratios, non-mixing multi-currency tracking, and interactive Gantt/Sankey views.",
         "HR Lifecycle Platform (Core Contributor & Co-Architect, 3-dev team, Pre-RMS Core): Co-built the foundational architecture, employee directory, immutable asSigned() contract amendments, deterministic leave pricing engine, and attendance workflows serving ~240 employees and 75–100 monthly active users—replacing paper forms and manual notepad math to cut HR administrative workload by 75%+ and cross-department workflow overhead by ~65%.",
+        "IT Operations & Asset Helpdesk (Solo Side Project): Designed and built a TypeScript, React and PostgreSQL prototype for service requests, asset records and endpoint telemetry. Architecture-verified. Fleet rollout was held.",
       ],
     },
   ],

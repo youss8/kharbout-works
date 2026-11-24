@@ -62,7 +62,7 @@ const states = {
     red: { name: 'Off track', shape: 'solid', tone: 'crit', icon: '↓' },
 };
 const formatNumber = new Intl.NumberFormat('en', { maximumFractionDigits: 1 });
-const kpiCockpit = () => ({
+export const kpiCockpit = () => ({
     periods, sites: performance.sites, sponsors: performance.sponsors, asOf: performance.asOf,
     sponsor: '', site: '', period: 'YTD', includePending: false,
     selected: 'EMP-02', inspector: 'Matrix', method: 'pooled', collapsed: [],

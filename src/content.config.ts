@@ -18,6 +18,19 @@ const systems = defineCollection({
     keyMetrics: z.array(z.object({ label: z.string(), value: z.string() })),
     demoIds: z.array(z.string()),
     toughestProblemSummary: z.string(),
+    presentation: z.object({
+      headline: z.string(),
+      introduction: z.string(),
+      workflows: z.array(z.object({ id: z.string(), title: z.string(), task: z.string() })).nonempty(),
+      designed: z.array(z.string()).nonempty(),
+      built: z.array(z.string()).nonempty(),
+      decisions: z.array(z.object({
+        title: z.string(),
+        rationale: z.string(),
+        workflow: z.string(),
+        action: z.string(),
+      })).nonempty(),
+    }).optional(),
   }),
 });
 

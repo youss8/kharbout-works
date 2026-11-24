@@ -4,7 +4,8 @@ import BaseLayout from '../../components/layout/BaseLayout.astro';
 import StatusBadge from '../../components/ui/StatusBadge.astro';
 import { sandboxTitles, securitySummaries } from '../../data/sandbox-directory';
 import '../../styles/workbench.css';
-const systems = (await getCollection('systems')).sort((a, b) => a.data.order - b.data.order);
+const portfolioOrder: Record<string, number> = { 'SYS-03': 0, 'SYS-02': 1, 'SYS-01': 2 };
+const systems = (await getCollection('systems')).sort((a, b) => (portfolioOrder[a.data.code] ?? 3) - (portfolioOrder[b.data.code] ?? 3));
 const rows = [
     ['Ecosystem', (s: typeof systems[number]) => s.data.ecosystem],
     ['Direct ownership', (s: typeof systems[number]) => s.data.ownershipBadge],
@@ -16,10 +17,10 @@ const rows = [
 ---
 <BaseLayout title="Systems comparison">
     <div class="page-shell">
-        <header class="page-heading"><p class="section-id">01 / Systems</p><h1>Systems comparison</h1><p>Three enterprise platforms, their ownership boundaries, and six working demonstrations using synthetic data.</p></header>
+        <header class="page-heading"><p class="section-id">01 / Systems</p><h1>Systems comparison</h1><p>Compare the portfolio tracking and HR platforms, then explore the IT operations side project. All six demonstrations use synthetic data.</p></header>
         <div class="systems-matrix">
             <table><caption class="sr-only">Compare the three engineering case studies</caption>
-                <thead><tr><th scope="col">Engineering scope</th>{systems.map(s => <th scope="col"><StatusBadge label={s.data.code} shape="outline"/><h2><a href={'/systems/'+s.id+'/'}>{s.data.title}</a></h2></th>)}</tr></thead>
+                <thead><tr><th scope="col">Engineering scope</th>{systems.map(s => <th scope="col"><StatusBadge label={s.data.code === 'SYS-01' ? 'Side project' : s.data.code} shape="outline"/><h2><a href={'/systems/'+s.id+'/'}>{s.data.title}</a></h2></th>)}</tr></thead>
                 <tbody>{rows.map(([label, read]) => <tr><th scope="row">{label}</th>{systems.map(s => <td data-code={s.data.code}>{read(s)}</td>)}</tr>)}
                     <tr><th scope="row">Live sandboxes</th>{systems.map(s => <td data-code={s.data.code}>{s.data.demoIds.map(id => <a class="table-link" href={'/systems/'+s.id+'/#'+id}>{sandboxTitles[id]}</a>)}</td>)}</tr>
                 </tbody>

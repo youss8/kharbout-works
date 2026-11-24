@@ -21,6 +21,27 @@
     "attendance-amend"
   ],
   "toughestProblemSummary": "Signed contract terms remain reconstructible while working hours, pay tiers and leave balances change.",
+  "presentation": {
+    "headline": "HR Lifecycle Platform",
+    "introduction": "Quote leave against a site calendar, route decisions through a manager and HR, and confirm attendance after exceptions are reviewed.",
+    "workflows": [
+      { "id": "leave-engine", "title": "Leave approval", "task": "Price a request, then act as the manager or HR." },
+      { "id": "attendance-amend", "title": "Attendance & signed contracts", "task": "Resolve missing punches and compare current terms with signed terms." }
+    ],
+    "designed": [
+      "Co-designed the employee lifecycle and the branch and reporting-line rules that determine who can see records and act on them.",
+      "Defined how leave moves from a quote to manager approval and HR review, and how attendance moves from exceptions to a locked month."
+    ],
+    "built": [
+      "Worked on employee profiles, organizational structure and contract amendments that preserve the terms originally signed.",
+      "Implemented leave pricing and balance changes, attendance exception handling, and the approval steps that precede overtime credit."
+    ],
+    "decisions": [
+      { "title": "Use one quote from preview to approval", "rationale": "Site calendars, holidays and working hours affect the charge. One pricing service supplies the preview and the reservation. Approval uses the quoted hours, so a visible balance can be reconciled with the request.", "workflow": "leave-engine", "action": "Try the leave quote" },
+      { "title": "Preserve signed terms through amendments", "rationale": "Hours and terms change over time. Recording the original values when an amendment is applied lets HR reconstruct what was signed and compare it with the current contract.", "workflow": "attendance-amend", "action": "Open attendance and contracts" },
+      { "title": "Require a decision on missing punches", "rationale": "A partial punch record leaves attendance unresolved. The month stays in draft until someone reviews the exceptions. Confirmation, manager approval and HR lock happen before overtime becomes leave credit.", "workflow": "attendance-amend", "action": "Try the attendance review" }
+    ]
+  },
   "ecosystem": "PHP 8.5 / Laravel 13 / MySQL",
   "keyMetrics": [
     {
