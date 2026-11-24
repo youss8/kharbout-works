@@ -1,0 +1,1 @@
+.delivery-preview .kit-track{block-size:6px;border-radius:999px}.delivery-preview .kit-track[data-tone=warn]>i:first-child{background:var(--status-warn)}@media(prefers-reduced-motion:no-preference){.delivery-preview .kit-track>i{transition:inline-size var(--motion-duration) var(--motion-ease),width var(--motion-duration) var(--motion-ease)}}
