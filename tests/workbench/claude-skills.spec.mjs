@@ -1,5 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 import { expect, test } from '@playwright/test';
+import { adapterName, guideHeader } from '../../src/lib/claude-skill-exports.ts';
 
 const directory = '/claude-code-skills/';
 const dataDirectory = new URL('../../src/data/claude-skills/', import.meta.url);
@@ -9,6 +11,7 @@ const categories = await Promise.all(files.map(async file => ({
     guides: JSON.parse(await readFile(new URL(file, dataDirectory), 'utf8')),
 })));
 const guides = categories.flatMap(category => category.guides);
+const discovery = JSON.parse(await readFile(new URL('../claude-skill-discovery.json', dataDirectory), 'utf8'));
 const pathFor = slug => directory + slug + '/';
 
 test('directory cards and shared search index include every catalogue record', async ({ page, request }) => {
@@ -20,6 +23,7 @@ test('directory cards and shared search index include every catalogue record', a
 
     await page.goto(directory);
     await expect(page.getByRole('heading', { level: 3 })).toHaveCount(guides.length);
+    await expect(page.locator('[data-group] li').filter({ has: page.locator('.agent-tag', { hasText: /^Codex · / }) })).toHaveCount(guides.length);
     for (const { id, guides: group } of categories) {
         const section = page.locator('[data-group="' + id + '"]');
         const category = await section.getByRole('heading', { level: 2 }).innerText();
@@ -81,13 +85,33 @@ for (const { id, guides: group } of categories) {
                 await expect(section('How to use it').getByRole('listitem')).toHaveText(guide.steps);
                 await expect(section('Check the result').locator('p')).toHaveText(guide.check);
                 await expect(section('Example prompt').getByRole('blockquote')).toHaveText(guide.example);
+                const compatibility = section('Agent compatibility');
+                await expect(compatibility).toContainText('Codex');
+                const exportRoot = directory + 'download/' + guide.slug + '/';
+                const downloads = section('Download this guide');
+                const headerHash = createHash('sha256').update(guideHeader(guide)).digest('hex');
+                if (discovery.headers[adapterName(guide.slug)] === headerHash) {
+                    await expect(downloads.locator('.discovery')).toContainText('Codex ' + discovery.hosts.Codex);
+                } else {
+                    await expect(downloads.locator('.discovery')).toHaveCount(0);
+                }
+                for (const file of ['SKILL.md', 'guide.json', guide.slug + '.zip']) {
+                    await expect(downloads.locator('a[download][href="' + exportRoot + file + '"]')).toBeVisible();
+                }
+                await expect(downloads.locator('.publisher-links a').first()).toHaveAttribute('href', /^https:\/\//);
 
                 const details = page.getByRole('complementary', { name: 'Guide details' });
                 const links = details.locator('#guide-sources + ul a');
                 expect(await links.evaluateAll(anchors => anchors.map(anchor => anchor.getAttribute('href')))).toEqual(
                     [...new Set([guide.source, guide.upstream].filter(Boolean))]
                 );
-                await expect(details).toContainText('Planned.');
+                if (guide.exampleRun) {
+                    await expect(details).toContainText('Passed in ' + guide.exampleRun.agent + ' ' + guide.exampleRun.version);
+                    await details.getByText('See the actual output').click();
+                    await expect(details.locator('.observed li')).toHaveText(guide.exampleRun.messages);
+                } else {
+                    await expect(details).toContainText('Planned.');
+                }
                 const toolCheck = details.getByRole('region', { name: 'Tool verification' });
                 if (guide.toolCheck) {
                     await expect(toolCheck).toContainText(guide.toolCheck.result);
@@ -178,6 +202,35 @@ test('mobile RTL layout and keyboard search open both halves of Grill Me & Hando
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
 });
 
+test('Codex filter shows original skills and restores the selection from the URL', async ({ page }) => {
+    await page.goto(directory);
+    const agents = page.getByRole('combobox', { name: 'Agent for the original skill' });
+    await agents.selectOption('Codex');
+    await expect(page).toHaveURL(/agent=Codex/);
+    const visible = page.locator('[data-group] li:visible');
+    const count = await visible.count();
+    expect(count).toBeGreaterThan(0);
+    expect(count).toBeLessThan(guides.length);
+    await expect(visible.filter({ hasText: 'Superpowers' }).first()).toBeVisible();
+    await expect(visible.locator('.agent-tag').filter({ hasText: 'Codex · Guide only' })).toHaveCount(0);
+    await page.reload();
+    await expect(agents).toHaveValue('Codex');
+    await expect(page.locator('#count')).toHaveText(count + ' guides');
+    const tested = page.getByRole('checkbox', { name: 'Tested examples only' });
+    await tested.check();
+    await expect(visible).toHaveCount(guides.filter(guide => guide.exampleRun?.agent === 'Codex').length);
+    await expect(visible.filter({ hasText: 'UX Copy' })).toContainText('Codex · Example passed');
+    await agents.selectOption('Claude Code');
+    await expect(visible).toHaveCount(guides.filter(guide => guide.exampleRun?.agent === 'Claude Code').length);
+    await page.goBack();
+    await expect(tested).toBeChecked();
+    await expect(agents).toHaveValue('Codex');
+    await page.getByRole('button', { name: 'Clear filters' }).click();
+    await expect(agents).toHaveValue('');
+    await expect(tested).not.toBeChecked();
+    await expect(visible).toHaveCount(guides.length);
+});
+
 test.describe('static guides', () => {
     test.use({ javaScriptEnabled: false });
     test('homepage and category links work without JavaScript', async ({ page }) => {
@@ -190,5 +243,10 @@ test.describe('static guides', () => {
         await expect(page.getByRole('link', { name: 'CollectiveBrain · English' })).toHaveAttribute(
             'href', 'https://collectivebrain.de/en/skills/design-design-critique/'
         );
+        const [download] = await Promise.all([
+            page.waitForEvent('download'),
+            page.getByRole('link', { name: 'Guide ZIP', exact: true }).click(),
+        ]);
+        expect(download.suggestedFilename()).toBe('guide-design-design-critique.zip');
     });
 });

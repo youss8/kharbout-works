@@ -237,7 +237,8 @@ export const GET: APIRoute = async () => {
             summary: guide.description,
             href: skillPath(guide.slug),
             keywords: [guide.slug, guide.kind, guide.category, 'Claude Code skills', ...guide.aliases,
-                ...(guide.listing?.author ? [guide.listing.author] : []), ...(guide.listing?.platforms ?? [])],
+                ...(guide.listing?.author ? [guide.listing.author] : []),
+                ...guide.compatibility.filter(host => host.level !== 'guide').map(host => host.agent)],
         });
     }
     const index: CommandIndex = {

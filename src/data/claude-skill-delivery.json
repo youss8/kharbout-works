@@ -1,0 +1,858 @@
+{
+  "accessibility": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/addyosmani/web-quality-skills/archive/afa8da942115f2961fdbfa80807ea0b232ff6c00.zip",
+    "url": "https://raw.githubusercontent.com/addyosmani/web-quality-skills/afa8da942115f2961fdbfa80807ea0b232ff6c00/skills/accessibility/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/addyosmani/web-quality-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "agent-browser": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/vercel-labs/agent-browser/f0a98351ec920bd826b22c98dacf8414f04b9832/skills/agent-browser/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/vercel-labs/agent-browser",
+    "packageLabel": "Open full repository and setup"
+  },
+  "agent-skills": {
+    "method": "collection",
+    "url": "https://github.com/addyosmani/agent-skills",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/addyosmani/agent-skills/archive/refs/heads/main.zip",
+    "packageLabel": "Download full repository ZIP"
+  },
+  "ai-marketing-team": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/ai-marketing-team/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "algorithmic-art": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/algorithmic-art/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/algorithmic-art",
+    "packageLabel": "Open complete skill folder",
+    "note": "The templates referenced by the instructions are in the publisher’s skill folder."
+  },
+  "animation-vocabulary": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/emilkowalski/skills/archive/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c.zip",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/animation-vocabulary/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/emilkowalski/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "anthropic-brand-guidelines": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/brand-guidelines/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/brand-guidelines",
+    "packageLabel": "Open complete skill folder"
+  },
+  "anthropic-canvas-design": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/canvas-design/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/canvas-design",
+    "packageLabel": "Open complete skill folder",
+    "note": "The upstream folder includes the fonts used by the canvas workflow."
+  },
+  "anthropic-divi-edit": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/anthropic-divi-edit/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "anthropic-docx": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/docx/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/docx",
+    "packageLabel": "Open complete skill folder",
+    "note": "For Claude Code, keep the complete Word skill folder with its scripts and supporting files."
+  },
+  "anthropic-frontend-design": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/frontend-design/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/frontend-design",
+    "packageLabel": "Open complete skill folder"
+  },
+  "anthropic-pdf": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/pdf/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/pdf",
+    "packageLabel": "Open complete skill folder",
+    "note": "For Claude Code, keep the complete PDF skill folder with its form guides and scripts."
+  },
+  "anthropic-pptx": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/pptx/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/pptx",
+    "packageLabel": "Open complete skill folder",
+    "note": "For Claude Code, use the complete slide skill folder for its helpers and rendering instructions."
+  },
+  "anthropic-schedule": {
+    "method": "native",
+    "url": "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork",
+    "label": "Open Cowork scheduling help",
+    "note": "Use this workflow in Cowork."
+  },
+  "anthropic-setup-cowork": {
+    "method": "native",
+    "url": "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork",
+    "label": "Open Cowork setup",
+    "note": "Use this workflow in Cowork."
+  },
+  "anthropic-skill-creator": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/skill-creator/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/skill-creator",
+    "packageLabel": "Open complete skill folder",
+    "note": "The evaluation scripts and supporting materials live in the full skill folder."
+  },
+  "anthropic-xlsx": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/xlsx/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
+    "packageLabel": "Open complete skill folder",
+    "note": "For Claude Code, keep the spreadsheet skill folder together with its recalculation tools."
+  },
+  "apple-design": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/emilkowalski/skills/archive/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c.zip",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/apple-design/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/emilkowalski/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "azure-ai": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/microsoft/azure-skills/7847020998043c6231929b364c35393b7cdab270/skills/azure-ai/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/microsoft/azure-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "azure-storage": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/microsoft/azure-skills/7847020998043c6231929b364c35393b7cdab270/skills/azure-storage/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/microsoft/azure-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "azure-validate": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/microsoft/azure-skills/7847020998043c6231929b364c35393b7cdab270/skills/azure-validate/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/microsoft/azure-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "b2b-value-proposition-mapper": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/b2b-value-proposition-mapper/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "backlink-kampagne": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/backlink-kampagne/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "brand-serp-optimierung": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/brand-serp-optimierung/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "brand-voice-discover-brand": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/partner-built/brand-voice/skills/discover-brand/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/partner-built/brand-voice",
+    "packageLabel": "Open the complete plugin"
+  },
+  "brand-voice-enforcement": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/partner-built/brand-voice/skills/brand-voice-enforcement/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/partner-built/brand-voice",
+    "packageLabel": "Open the complete plugin"
+  },
+  "brand-voice-guideline-generation": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/partner-built/brand-voice/skills/guideline-generation/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/partner-built/brand-voice",
+    "packageLabel": "Open the complete plugin"
+  },
+  "brandkit": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/brandkit/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "caveman": {
+    "method": "collection",
+    "url": "https://github.com/juliusbrussee/caveman",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/JuliusBrussee/caveman/archive/refs/heads/main.zip",
+    "packageLabel": "Download full repository ZIP"
+  },
+  "claude-api": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/claude-api/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/claude-api",
+    "packageLabel": "Open complete skill folder",
+    "note": "The original instructions refer to language-specific references in the full package."
+  },
+  "code-review-and-quality": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/addyosmani/agent-skills/e997ac5b9a74eab332d5e9793bb38a38c8cfdd74/skills/code-review-and-quality/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/addyosmani/agent-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "code-simplifier": {
+    "method": "plugin",
+    "url": "https://claude.com/marketplace/plugins/code-simplifier",
+    "label": "Open official plugin setup"
+  },
+  "cowork-cowork-plugin-customizer": {
+    "method": "native",
+    "url": "https://support.claude.com/en/articles/13837440-use-plugins-in-claude",
+    "label": "Open Cowork plugin help",
+    "note": "Use this workflow in Cowork."
+  },
+  "cowork-create-cowork-plugin": {
+    "method": "native",
+    "url": "https://support.claude.com/en/articles/13837440-use-plugins-in-claude",
+    "label": "Open Cowork plugin help",
+    "note": "Use this workflow in Cowork."
+  },
+  "defuddle": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/obsidianmd/obsidian-skills/archive/b110b2f8e9eb1f287892f937050dfd40af862cbb.zip",
+    "url": "https://raw.githubusercontent.com/obsidianmd/obsidian-skills/b110b2f8e9eb1f287892f937050dfd40af862cbb/plugins/obsidian/skills/defuddle/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/obsidianmd/obsidian-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "design-accessibility-review": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/accessibility-review/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "design-design-critique": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/design-critique/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "design-design-handoff": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/design-handoff/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "design-design-system": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/design-system/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "design-research-synthesis": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/research-synthesis/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "design-user-research": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/user-research/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "design-ux-copy": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/design/skills/ux-copy/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design",
+    "packageLabel": "Open the complete plugin"
+  },
+  "doc-coauthoring": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/doc-coauthoring/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring",
+    "packageLabel": "Open complete skill folder"
+  },
+  "emil-design-eng": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/emilkowalski/skills/archive/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c.zip",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/emil-design-eng/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/emilkowalski/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "fastify-best-practices": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/mcollina/skills/c75d70dbfbe991d8cec42aeda0b64ff14fbb9ac7/skills/fastify/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/mcollina/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "figma-to-code": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/figma-to-code/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "find-skills": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/vercel-labs/skills/57217cf86ba38148a57af9e90d14a4c049558330/skills/find-skills/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/vercel-labs/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "founder-pitch-deck-coach": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/founder-pitch-deck-coach/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "github-actions-sparen": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/github-actions-sparen/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "google-ads-analyzer": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/google-ads-analyzer/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "google-agents-cli-adk-code": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/google/agents-cli/ea7a3c9003d11514c5ba5a46a7ceaffb333e5b76/skills/google-agents-cli-adk-code/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/google/agents-cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "google-agents-cli-deploy": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/google/agents-cli/ea7a3c9003d11514c5ba5a46a7ceaffb333e5b76/skills/google-agents-cli-deploy/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/google/agents-cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "google-agents-cli-publish": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/google/agents-cli/ea7a3c9003d11514c5ba5a46a7ceaffb333e5b76/skills/google-agents-cli-publish/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/google/agents-cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "google-agents-cli-workflow": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/google/agents-cli/ea7a3c9003d11514c5ba5a46a7ceaffb333e5b76/skills/google-agents-cli-workflow/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/google/agents-cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "grill-me": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/mattpocock/skills/archive/d65391149dbb5fe76478e76fa8d5122b2aa5a70e.zip",
+    "url": "https://raw.githubusercontent.com/mattpocock/skills/d65391149dbb5fe76478e76fa8d5122b2aa5a70e/skills/productivity/grill-me/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/mattpocock/skills",
+    "packageLabel": "Open full repository and setup",
+    "note": "Install Matt Pocock’s collection to include the grilling skill that this entry invokes."
+  },
+  "gws-drive": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/googleworkspace/cli/8e945eed02a8230af122ec6247cc218d28c1f1ce/skills/gws-drive/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/googleworkspace/cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "gws-gmail": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/googleworkspace/cli/8e945eed02a8230af122ec6247cc218d28c1f1ce/skills/gws-gmail/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/googleworkspace/cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "herdrdev-herdr": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/herdrdev/herdr/e8d7d9705a7a2c89cef4dd42079379f05685af87/skills/herdr/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/herdrdev/herdr",
+    "packageLabel": "Open full repository and setup"
+  },
+  "humanizer": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/blader/humanizer/archive/a32f24407364c74c812b43c15926d638bee1e072.zip",
+    "url": "https://raw.githubusercontent.com/blader/humanizer/a32f24407364c74c812b43c15926d638bee1e072/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/blader/humanizer",
+    "packageLabel": "Open full repository and setup"
+  },
+  "imagegen-frontend-mobile": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/imagegen-frontend-mobile/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "impeccable": {
+    "method": "installer",
+    "url": "https://github.com/pbakaus/impeccable",
+    "label": "Open the publisher’s installation guide",
+    "note": "Use the publisher’s installer to include the selected host’s skill files, hooks and subagents."
+  },
+  "improve-codebase-architecture": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/mattpocock/skills/archive/d65391149dbb5fe76478e76fa8d5122b2aa5a70e.zip",
+    "url": "https://raw.githubusercontent.com/mattpocock/skills/d65391149dbb5fe76478e76fa8d5122b2aa5a70e/skills/engineering/improve-codebase-architecture/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/mattpocock/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "indexierungs-audit": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/indexierungs-audit/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md",
+    "note": "Before installing the publisher’s v1.0 file, apply the YAML description correction in the first usage step."
+  },
+  "internal-comms": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/internal-comms/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/internal-comms",
+    "packageLabel": "Open complete skill folder"
+  },
+  "interne-verlinkung": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/interne-verlinkung/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "keyword-recherche-cluster": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/keyword-recherche-cluster/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "keyword-strategy-planner": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/keyword-strategy-planner/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "lark-event": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/larksuite/cli/c5fbf1a52df77d5cb9cac2b1501770b2fb9af7d2/skills/lark-event/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/larksuite/cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "lark-im": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/larksuite/cli/c5fbf1a52df77d5cb9cac2b1501770b2fb9af7d2/skills/lark-im/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/larksuite/cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "local-seo-audit": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/local-seo-audit/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "marketing-brand-review": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/brand-review/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "marketing-campaign-plan": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/campaign-plan/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "marketing-competitive-brief": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/competitive-brief/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "marketing-content-creation": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/content-creation/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "marketing-email-sequence": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/email-sequence/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "marketing-performance-report": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/performance-report/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "marketing-seo-audit": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/knowledge-work-plugins/archive/5e504ae11498f2b8daa30d86b7dab97b2ecd8092.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/knowledge-work-plugins/5e504ae11498f2b8daa30d86b7dab97b2ecd8092/marketing/skills/seo-audit/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing",
+    "packageLabel": "Open the complete plugin"
+  },
+  "mattpocock-handoff": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/mattpocock/skills/archive/d65391149dbb5fe76478e76fa8d5122b2aa5a70e.zip",
+    "url": "https://raw.githubusercontent.com/mattpocock/skills/d65391149dbb5fe76478e76fa8d5122b2aa5a70e/skills/productivity/handoff/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/mattpocock/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "mattpocock-skills": {
+    "method": "collection",
+    "url": "https://github.com/mattpocock/skills",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/mattpocock/skills/archive/refs/heads/main.zip",
+    "packageLabel": "Download full repository ZIP"
+  },
+  "mattpocock-tdd": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/mattpocock/skills/archive/d65391149dbb5fe76478e76fa8d5122b2aa5a70e.zip",
+    "url": "https://raw.githubusercontent.com/mattpocock/skills/d65391149dbb5fe76478e76fa8d5122b2aa5a70e/skills/engineering/tdd/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/mattpocock/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "mcp-builder": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/mcp-builder/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/mcp-builder",
+    "packageLabel": "Open complete skill folder",
+    "note": "Keep the reference guides and evaluation scripts with the original instructions."
+  },
+  "notion-ops-connector": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/notion-ops-connector/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "obsidian-bases": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/obsidianmd/obsidian-skills/archive/b110b2f8e9eb1f287892f937050dfd40af862cbb.zip",
+    "url": "https://raw.githubusercontent.com/obsidianmd/obsidian-skills/b110b2f8e9eb1f287892f937050dfd40af862cbb/plugins/obsidian/skills/obsidian-bases/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/obsidianmd/obsidian-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "obsidian-markdown": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/obsidianmd/obsidian-skills/archive/b110b2f8e9eb1f287892f937050dfd40af862cbb.zip",
+    "url": "https://raw.githubusercontent.com/obsidianmd/obsidian-skills/b110b2f8e9eb1f287892f937050dfd40af862cbb/plugins/obsidian/skills/obsidian-markdown/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/obsidianmd/obsidian-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "onpage-optimierung": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/onpage-optimierung/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "persona-workshop-facilitator": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/persona-workshop-facilitator/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "pick-ui-library": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/emilkowalski/skills/archive/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c.zip",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/pick-ui-library/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/emilkowalski/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "planetscale": {
+    "method": "collection",
+    "url": "https://github.com/planetscale/database-skills",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/planetscale/database-skills/archive/refs/heads/main.zip",
+    "packageLabel": "Download full repository ZIP",
+    "note": "Choose the engine-specific skills you need. PlanetScale’s optional Claude plugin connects to live databases."
+  },
+  "playwright-cli": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/microsoft/playwright-cli/dc5f4d5616ab5a28ded12fd7101a4d49bd59a820/skills/playwright-cli/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/microsoft/playwright-cli",
+    "packageLabel": "Open full repository and setup"
+  },
+  "ponytail": {
+    "method": "collection",
+    "url": "https://github.com/dietrichgebert/ponytail",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/DietrichGebert/ponytail/archive/refs/heads/main.zip",
+    "packageLabel": "Download full repository ZIP"
+  },
+  "rea": {
+    "method": "installer",
+    "url": "https://github.com/morluto/rea",
+    "label": "Read the REA documentation"
+  },
+  "review-animations": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/emilkowalski/skills/archive/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c.zip",
+    "url": "https://raw.githubusercontent.com/emilkowalski/skills/64eb3deb9a5fbfa041faf783e0bc3fd635872e9c/skills/review-animations/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/emilkowalski/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "sales-enablement-pack": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/sales-enablement-pack/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "schema-markup-generator": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/schema-markup-generator/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "search-console-analyse": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/search-console-analyse/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "security-and-hardening": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/security-and-hardening/",
+    "label": "Read the publisher’s guide"
+  },
+  "security-audit": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/security-audit/",
+    "label": "Read the publisher’s guide"
+  },
+  "seo-artikel-schreiben": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/seo-artikel-schreiben/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "seo-geo-aeo-audit": {
+    "method": "archive",
+    "url": "https://github.com/SNLabat/SEO-GEO-AEO-Skill/archive/refs/heads/main.zip",
+    "label": "Download publisher ZIP",
+    "note": "The publisher’s ZIP contains the skill named seo-geo-aeo. The listing also provides a compact version named seo-geo-aeo-audit."
+  },
+  "seo-strategie-roadmap": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/seo-strategie-roadmap/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "seo-wettbewerbsanalyse": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/seo-wettbewerbsanalyse/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "setup-matt-pocock-skills": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/mattpocock/skills/archive/d65391149dbb5fe76478e76fa8d5122b2aa5a70e.zip",
+    "url": "https://raw.githubusercontent.com/mattpocock/skills/d65391149dbb5fe76478e76fa8d5122b2aa5a70e/skills/engineering/setup-matt-pocock-skills/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/mattpocock/skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "shadcn": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/shadcn-ui/ui/055aa6b7837b1808456a24beb4c97a677864aa82/skills/shadcn/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/shadcn-ui/ui",
+    "packageLabel": "Open full repository and setup"
+  },
+  "slack-gif-creator": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/slack-gif-creator/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/slack-gif-creator",
+    "packageLabel": "Open complete skill folder",
+    "note": "Use the bundled drawing and GIF validation tools with the instruction file."
+  },
+  "spartan-ai-toolkit": {
+    "method": "collection",
+    "url": "https://github.com/c0x12c/ai-toolkit",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/c0x12c/ai-toolkit/archive/refs/heads/master.zip",
+    "packageLabel": "Download full repository ZIP"
+  },
+  "supabase": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/supabase/agent-skills/archive/c9be0e931b7930f7d02126d04774d904c381e7d7.zip",
+    "url": "https://raw.githubusercontent.com/supabase/agent-skills/c9be0e931b7930f7d02126d04774d904c381e7d7/skills/supabase/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/supabase/agent-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "supabase-postgres-best-practices": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/supabase/agent-skills/archive/c9be0e931b7930f7d02126d04774d904c381e7d7.zip",
+    "url": "https://raw.githubusercontent.com/supabase/agent-skills/c9be0e931b7930f7d02126d04774d904c381e7d7/skills/supabase-postgres-best-practices/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/supabase/agent-skills",
+    "packageLabel": "Open full repository and setup"
+  },
+  "superpowers": {
+    "method": "collection",
+    "url": "https://github.com/obra/superpowers",
+    "label": "Open the publisher’s collection",
+    "packageUrl": "https://github.com/obra/superpowers/archive/refs/heads/main.zip",
+    "packageLabel": "Download full repository ZIP"
+  },
+  "tailwind-design-system": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/wshobson/agents/c96b5f6552dba32e4492307493ee613581430715/plugins/frontend-mobile-development/skills/tailwind-design-system/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/wshobson/agents",
+    "packageLabel": "Open full repository and setup"
+  },
+  "task-observer": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/rebelytics/one-skill-to-rule-them-all/6325c8e477608942da2f98b7f3a0d625c722ee22/skills/task-observer/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/rebelytics/one-skill-to-rule-them-all",
+    "packageLabel": "Open full repository and setup"
+  },
+  "terrashark": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/LukasNiessen/terrashark/archive/21f2c18b912818b6a8e2b7bdbf25a275ecb894b1.zip",
+    "url": "https://raw.githubusercontent.com/LukasNiessen/terrashark/21f2c18b912818b6a8e2b7bdbf25a275ecb894b1/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/LukasNiessen/terrashark",
+    "packageLabel": "Open full repository and setup"
+  },
+  "theme-factory": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/theme-factory/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/theme-factory",
+    "packageLabel": "Open complete skill folder",
+    "note": "The publisher’s full folder includes the theme definitions and their preview."
+  },
+  "turborepo": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/vercel/turborepo/51d6ddfcbb35d7cc264ee9b6e0ef8f4f82fc23d1/skills/turborepo/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/vercel/turborepo",
+    "packageLabel": "Open full repository and setup"
+  },
+  "typescript-advanced-types": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/wshobson/agents/c96b5f6552dba32e4492307493ee613581430715/plugins/javascript-typescript/skills/typescript-advanced-types/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/wshobson/agents",
+    "packageLabel": "Open full repository and setup"
+  },
+  "ux-copy-refiner": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/ux-copy-refiner/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "ux-flow-wireframer": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/ux-flow-wireframer/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "ux-research-interview-kit": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/ux-research-interview-kit/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "vercel-react-best-practices": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/vercel-labs/agent-skills/archive/5a37a6329fbad3666c3207392a6a7c0110e92efb.zip",
+    "url": "https://raw.githubusercontent.com/vercel-labs/agent-skills/5a37a6329fbad3666c3207392a6a7c0110e92efb/skills/react-best-practices/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices",
+    "packageLabel": "Open complete skill folder",
+    "note": "Use the complete skill folder to include the individual React rules."
+  },
+  "vercel-web-design-guidelines": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/vercel-labs/agent-skills/archive/5a37a6329fbad3666c3207392a6a7c0110e92efb.zip",
+    "url": "https://raw.githubusercontent.com/vercel-labs/agent-skills/5a37a6329fbad3666c3207392a6a7c0110e92efb/skills/web-design-guidelines/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines",
+    "packageLabel": "Open complete skill folder"
+  },
+  "vopixsounds": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/skills/vopixsounds/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "webapp-testing": {
+    "method": "skill-file",
+    "repositoryZip": "https://github.com/anthropics/skills/archive/e4bb5d960d87126ff3b3a8af1a104b7db67560ba.zip",
+    "url": "https://raw.githubusercontent.com/anthropics/skills/e4bb5d960d87126ff3b3a8af1a104b7db67560ba/skills/webapp-testing/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/anthropics/skills/tree/main/skills/webapp-testing",
+    "packageLabel": "Open complete skill folder",
+    "note": "The upstream package includes the local server helper and example Playwright scripts."
+  },
+  "website-builder": {
+    "method": "skill-file",
+    "url": "https://collectivebrain.de/en/skills/website-builder/SKILL.md",
+    "label": "Open CollectiveBrain’s SKILL.md"
+  },
+  "workers-best-practices": {
+    "method": "skill-file",
+    "url": "https://raw.githubusercontent.com/cloudflare/skills/ff191de7d903788eceaf516a514ae7d3b56b924a/skills/workers-best-practices/SKILL.md",
+    "label": "Open original SKILL.md",
+    "packageUrl": "https://github.com/cloudflare/skills",
+    "packageLabel": "Open full repository and setup"
+  }
+}

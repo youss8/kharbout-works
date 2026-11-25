@@ -86,7 +86,20 @@
       "Request a few variants and a short explanation of where each might confuse the reader."
     ],
     "example": "Write three messages for a ticket kiosk when the selected seat has just sold. The visitor can choose another seat without losing the rest of the order. Keep each message under 90 characters.",
-    "check": "Count the characters, read the copy in the kiosk layout, and confirm each suggested next action is available."
+    "check": "Count the characters, read the copy in the kiosk layout, and confirm each suggested next action is available.",
+    "exampleRun": {
+      "agent": "Codex",
+      "version": "0.144.6",
+      "date": "2026-11-25",
+      "source": "https://collectivebrain.de/en/skills/design-ux-copy/SKILL.md",
+      "sourceSha256": "5ac2648a66bd4016c40a501a646eb468ee58db25a8a4a007b02a0d2d1f1aa15d",
+      "messages": [
+        "That seat just sold. Choose another—your order is still saved.",
+        "That seat’s gone, but your order isn’t. Pick another seat.",
+        "Just missed it! Pick a new seat—we’ve kept the rest of your order."
+      ],
+      "result": "Codex ran the kiosk prompt with the CollectiveBrain edition of UX Copy. The three messages measured 62, 58 and 66 characters. All three fit at 320 and 800 pixels. Choosing another seat preserved the other item, its quantity and its price."
+    }
   },
   {
     "slug": "design-research-synthesis",

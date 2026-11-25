@@ -118,11 +118,19 @@ def audit_references(files, failures):
     pages = {}
     links = []
     # Each guide can link to the external sources named in its own catalogue record.
-    skill_sources = {"claude-code-skills/index.html": {"https://code.claude.com/docs/en/skills"}}
+    skill_sources = {"claude-code-skills/index.html": {
+        "https://code.claude.com/docs/en/skills", "https://developers.openai.com/codex/skills",
+    }}
+    delivery = json.loads((ROOT / "src/data/claude-skill-delivery.json").read_text(encoding="utf-8"))
     for category in (ROOT / "src/data/claude-skills").glob("*.json"):
         for guide in json.loads(category.read_text(encoding="utf-8")):
             origin = f"claude-code-skills/{guide['slug']}/index.html"
-            skill_sources[origin] = {guide.get("source"), guide.get("upstream")} - {None}
+            package = delivery[guide["slug"]]
+            export = DIST / "claude-code-skills/download" / guide["slug"] / "guide.json"
+            record = json.loads(export.read_text(encoding="utf-8"))
+            skill_sources[origin] = {guide["source"], guide.get("upstream"), package["url"], package.get("repositoryZip"),
+                                     package.get("packageUrl"), guide.get("exampleRun", {}).get("source"),
+                                     record.get("formatFile"), *(item["source"] for item in record["compatibility"])} - {None}
     for name in files:
         file = ROOT / name
         kind = file.suffix.lower()

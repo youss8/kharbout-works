@@ -25,6 +25,12 @@ Open the [local workbench](http://localhost:4321). Browse the [systems](http://l
 
 The [Claude Code skills directory](http://localhost:4321/claude-code-skills/) groups guides by task. Search a skill name or alias, open its page and adapt the example prompt. Each guide lists its inputs, usage steps, source and a check for the result. Cowork features and standalone tools identify the environment they require. Prompts carry a **Planned** label until run in their intended assistant. Where a tool was exercised independently on a fixture, **Tool verification** gives the date and observed result. The [guide records](src/data/claude-skills/) also supply the workbench command search.
 
+Filter by agent to see recorded example runs, publisher support, directory listings and reviewed standard-format files. Select **Tested examples only** to see prompts completed in the selected agent. The [UX Copy example](http://localhost:4321/claude-code-skills/design-ux-copy/#example-status) includes the three messages returned by Codex and the kiosk checks they passed. **Guide only** means the agent can load the workbench instructions and the original tool has separate requirements.
+
+Each page offers a Markdown skill file, JSON record and ZIP containing both. Extract the guide folder into the project's `.agents/skills/` for Codex or `.claude/skills/` for Claude Code. The directory also offers a ZIP of every guide. Publisher links lead to the original files, repositories or native setup instructions, including any required tools and companion assets.
+
+The download panel records which agent versions discovered the extracted guide in a fresh project. A discovery label is shown only while its skill name and frontmatter match the [dated discovery records](src/data/claude-skill-discovery.json).
+
 ## Architecture
 
 Astro 5 builds static routes from four Zod-validated content collections. The service desk and estate monitor hydrate as React 19/TypeScript islands. Alpine 3 handles the HR, funding, toolkit and lab interactions. The six case-study fixtures and three Mermaid diagrams come directly from the master handoff. Runtime changes are local to the browser.
