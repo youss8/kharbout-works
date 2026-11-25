@@ -1,0 +1,16 @@
+{
+    "openai": "https://developers.openai.com/api/docs/guides/prompt-engineering",
+    "openai-reasoning": "https://developers.openai.com/api/docs/guides/reasoning-best-practices",
+    "claude": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "gemini": "https://aistudio.google.com/docs/prompting-strategies",
+    "deepseek": "https://api-docs.deepseek.com/guides/thinking_mode/",
+    "grok": "https://docs.x.ai/developers/model-capabilities/text/best-practices",
+    "mistral": "https://docs.mistral.ai/inference/prompting",
+    "llama": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/prompt_format.md",
+    "qwen": "https://qwen.readthedocs.io/en/latest/getting_started/quickstart.html",
+    "copilot": "https://support.microsoft.com/en-us/microsoft-365-copilot/get-started-writing-prompts-in-microsoft-365-copilot",
+    "github-copilot": "https://docs.github.com/en/copilot/concepts/prompting-and-context/prompt-engineering",
+    "codex": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+    "claude-code": "https://code.claude.com/docs/en/best-practices",
+    "perplexity": "https://docs.perplexity.ai/docs/agent-api/prompt-guide"
+}

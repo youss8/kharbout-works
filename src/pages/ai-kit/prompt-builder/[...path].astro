@@ -1,0 +1,251 @@
+---
+import { ArrowDown, ArrowLeft, ArrowRight, Clipboard, FileText, GitBranch, Languages, Layers, Star, Upload } from 'lucide-react';
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import ExportBar from '../../../components/toolkit/ExportBar.astro';
+import BuilderCloud from '../../../components/toolkit/BuilderCloud.astro';
+import BuilderAI from '../../../components/toolkit/BuilderAI.astro';
+import { promptBuilderEnabled } from '../../../lib/prompt-builder/release';
+import { maxFieldLength, maxPromptExtraLength, maxPromptLength } from '../../../lib/prompt-builder/model';
+import { modelProfiles } from '../../../lib/prompt-builder/profiles';
+import { presets, workflows } from '../../../lib/prompt-builder/workflows';
+import '../../../styles/prompt-builder.css';
+
+export function getStaticPaths() {
+    return promptBuilderEnabled() ? [{ params: { path: undefined } }] : [];
+}
+---
+<BaseLayout title="Prompt Builder" description="Build, edit, and reuse prompts for everyday work and software engineering in English or Arabic.">
+    <div class="prompt-builder" x-data="promptBuilder" x-bind:lang="locale" x-bind:dir="locale === 'ar' ? 'rtl' : 'ltr'" x-on:hashchange.window="cloud.followLink()">
+        <header class="builder-intro">
+            <a class="builder-back" href="/ai-kit/"><ArrowLeft size={17} className="directional-icon" aria-hidden="true"/><span x-text="t.kit">AI engineering toolkit</span></a>
+            <label class="builder-language">
+                <Languages size={19} aria-hidden="true"/>
+                <span class="sr-only" x-text="t.language">Interface language</span>
+                <select x-bind:value="locale" x-on:change="setLocale($event.target.value)">
+                    <option lang="en" value="en">English</option>
+                    <option lang="ar" value="ar">العربية</option>
+                </select>
+            </label>
+            <h1 x-text="t.title">Build a prompt</h1>
+            <p x-text="t.intro">Start with a task. Add what the assistant needs to know, then edit and export your prompt.</p>
+        </header>
+        <noscript><p class="builder-panel">Enable JavaScript to use the Prompt Builder. فعّل JavaScript لاستخدام منشئ الموجّهات.</p></noscript>
+        <div class="builder-app" x-cloak>
+            <section class="builder-panel builder-shared" aria-labelledby="builder-shared-heading" x-show="cloud.shared || cloud.sharedMissing || cloud.sharedError">
+                <h2 id="builder-shared-heading" x-text="t.snapshot"></h2>
+                <p x-show="cloud.sharedMissing" x-text="t.snapshotMissing" role="status"></p>
+                <p x-show="cloud.sharedError" x-text="cloud.available ? t.cloudError : t.cloudOff" role="status"></p>
+                <template x-if="cloud.shared">
+                    <div class="builder-stack">
+                        <h3 dir="auto" x-text="cloud.shared.title"></h3>
+                        <pre class="builder-text" dir="auto" x-text="cloud.shared.prompt"></pre>
+                        <button type="button" class="builder-button primary" x-on:click="copySnapshot()" x-text="t.copySnapshot"></button>
+                    </div>
+                </template>
+            </section>
+            <div class="builder-workspace">
+                <section class="builder-panel builder-form" aria-labelledby="builder-input-heading">
+                    <header class="builder-panel-head">
+                        <h2 id="builder-input-heading" tabindex="-1"><Layers size={21} aria-hidden="true"/><span x-text="t.workspace"></span></h2>
+                        <a class="builder-jump" href="#builder-output"><span x-text="t.jump"></span><ArrowDown size={16} aria-hidden="true"/></a>
+                    </header>
+                    <div class="builder-panel-body builder-stack">
+                        <div class="builder-workflow-row">
+                            <label>
+                                <span x-text="t.workflow"></span>
+                                <select id="builder-workflow" x-effect="$el.value = draft.workflowId" x-on:change="chooseWorkflow($event.target.value); $event.target.value = draft.workflowId">
+                                    <option value="blank" x-text="locale === 'ar' ? 'موجّه فارغ' : 'Blank prompt'">Blank prompt</option>
+                                    {(['everyday', 'engineering'] as const).map(group => (
+                                        <optgroup label={group} x-bind:label={`t.${group}`}>
+                                            {presets.filter(item => item.group === group).map(item => (
+                                                <option value={item.id} data-en={item.title.en} data-ar={item.title.ar} x-text="$el.dataset[locale]">{item.title.en}</option>
+                                            ))}
+                                        </optgroup>
+                                    ))}
+                                    {workflows.filter(item => item.group === 'internal' && item.id !== 'blank').map(item => (
+                                        <option value={item.id} data-en={item.title.en} data-ar={item.title.ar} x-bind:hidden="draft.workflowId !== $el.value" x-bind:disabled="draft.workflowId !== $el.value" x-text="$el.dataset[locale]">{item.title.en}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <button type="button" class="builder-button builder-icon" x-bind:aria-label="isFavorite ? t.unfavorite : t.favorite" x-bind:aria-pressed="isFavorite" x-on:click="toggleFavorite()"><Star size={19} aria-hidden="true"/></button>
+                        </div>
+                        <div class="builder-workflow-note">
+                            <p x-text="workflow.description[locale]"></p>
+                            <button type="button" class="builder-button" x-on:click="loadExample()" x-text="t.example"></button>
+                        </div>
+                        <div class="builder-stack builder-model">
+                            <label>
+                                <span x-text="t.model"></span>
+                                <select x-effect="$el.value = draft.preferences.profile" x-on:change="selectModel($event.target.value)">
+                                    {modelProfiles.map(item => (
+                                        <option value={item.id} x-text={item.id === 'universal' ? 't.anyModel' : undefined}>{item.title}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <p class="builder-muted" x-text="profile.guidance[locale]"></p>
+                            <details x-show="draft.preferences.profile !== 'universal'">
+                                <summary x-text="t.modelGuide"></summary>
+                                <div class="builder-stack builder-details">
+                                    <p class="builder-muted" x-text="profile.usage[locale]"></p>
+                                    {modelProfiles.filter(item => item.source).map(item => (
+                                        <a href={item.source} x-show={`draft.preferences.profile === '${item.id}'`} x-text="t.officialGuide">Official prompting guide</a>
+                                    ))}
+                                </div>
+                            </details>
+                        </div>
+                        <div x-show="library.favorites.length" class="builder-stack builder-shortcuts">
+                            <h3 x-text="t.favorites"></h3>
+                            <div class="builder-actions">
+                                <template x-for="id in library.favorites" x-bind:key="id">
+                                    <button type="button" class="builder-button" x-on:click="chooseWorkflow(id)" x-text="workflowTitle(id)"></button>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="builder-example" x-show="exampleLoaded">
+                            <strong x-text="t.exampleExpected"></strong>
+                            <span class="builder-tag" x-text="t.planned"></span>
+                            <ul><template x-for="check in workflow.checks" x-bind:key="check.en"><li x-text="check[locale]"></li></template></ul>
+                        </div>
+                        <template x-for="field in workflow.fields.filter(field => field.required)" x-bind:key="field.key + draftKey">
+                            <label class="builder-field">
+                                <span class="builder-field-label"><span x-text="field.label[locale]"></span><small x-text="t.required"></small></span>
+                                <small x-bind:id="'builder-hint-' + field.key" x-text="field.hint[locale]"></small>
+                                <textarea dir="auto" rows="3" maxlength={maxFieldLength} x-bind:aria-label="field.label[locale]" x-bind:aria-describedby="'builder-hint-' + field.key" aria-required="true" x-model="draft.values[field.key]"></textarea>
+                            </label>
+                        </template>
+                        <details x-show="workflow.fields.some(field => !field.required)">
+                            <summary x-text="t.optional"></summary>
+                            <div class="builder-stack builder-details">
+                                <template x-for="field in workflow.fields.filter(field => !field.required)" x-bind:key="field.key + draftKey">
+                                    <label class="builder-field">
+                                        <span x-text="field.label[locale]"></span>
+                                        <small x-bind:id="'builder-hint-' + field.key" x-text="field.hint[locale]"></small>
+                                        <textarea dir="auto" rows="3" maxlength={maxFieldLength} x-bind:aria-label="field.label[locale]" x-bind:aria-describedby="'builder-hint-' + field.key" x-model="draft.values[field.key]"></textarea>
+                                    </label>
+                                </template>
+                            </div>
+                        </details>
+                        <details>
+                            <summary x-text="t.preferences"></summary>
+                            <div class="builder-details builder-preferences">
+                                <label class="builder-audience"><span x-text="t.audiences"></span><input dir="auto" type="text" maxlength="500" x-model="draft.preferences.audience" /></label>
+                                <label><span x-text="t.tone"></span><select x-model="draft.preferences.tone"><template x-for="[id, label] in Object.entries(tones)" x-bind:key="id"><option x-bind:value="id" x-text="label[locale]"></option></template></select></label>
+                                <label><span x-text="t.format"></span><select x-model="draft.preferences.format"><template x-for="[id, label] in Object.entries(formats)" x-bind:key="id"><option x-bind:value="id" x-text="label[locale]"></option></template></select></label>
+                                <label><span x-text="t.target"></span><select x-model="draft.preferences.target"><option value="chat" x-text="t.chat"></option><option value="coding" x-text="t.coding"></option></select></label>
+                                <label><span x-text="t.outputLanguage"></span><select x-model="draft.preferences.outputLocale"><option value="en" lang="en">English</option><option value="ar" lang="ar">العربية</option></select></label>
+                                <label class="builder-audience"><span x-text="t.modelSources"></span><textarea dir="auto" rows="2" maxlength={maxPromptExtraLength} x-model="draft.preferences.sources"></textarea></label>
+                                <label class="builder-audience"><span x-text="t.modelCriteria"></span><textarea dir="auto" rows="2" maxlength={maxPromptExtraLength} x-model="draft.preferences.criteria"></textarea></label>
+                                <label class="builder-audience"><span x-text="t.modelExample"></span><textarea dir="auto" rows="2" maxlength={maxPromptExtraLength} x-bind:aria-describedby="invalidExample ? 'builder-example-error' : null" x-bind:aria-invalid="invalidExample ? 'true' : null" x-model="draft.preferences.example"></textarea></label>
+                                <p id="builder-example-error" class="builder-audience builder-message" role="status" x-show="invalidExample" x-text="t.invalidModelExample"></p>
+                            </div>
+                        </details>
+                    </div>
+                </section>
+
+                <section id="builder-output" class="builder-panel builder-output" aria-labelledby="builder-output-heading" tabindex="-1">
+                    <header class="builder-panel-head">
+                        <h2 id="builder-output-heading"><FileText size={21} aria-hidden="true"/><span x-text="t.prompt"></span></h2>
+                        <button type="button" class="builder-button" x-bind:aria-pressed="compare" x-on:click="compare = !compare" x-text="t.compare"></button>
+                    </header>
+                    <div class="builder-panel-body builder-stack">
+                        <div class="builder-missing" role="status" x-show="missing.length">
+                            <strong x-text="t.missing"></strong>
+                            <p x-text="missing.map(field => field.label[locale]).join(locale === 'ar' ? '، ' : ', ')"></p>
+                            <small x-text="t.missingHint"></small>
+                        </div>
+                        <p class="builder-muted" x-show="draft.preferences.profile !== 'universal' && profileHint && !invalidExample" x-text="profileHint"></p>
+                        <div class="builder-actions" role="group" x-bind:aria-label="t.prompt">
+                            {(['concise', 'detailed'] as const).map(mode => (
+                                <button type="button" class="builder-button builder-variant-toggle" x-bind:aria-pressed={`variant === '${mode}'`} x-on:click={`variant = '${mode}'`} x-text={`t.${mode}`}></button>
+                            ))}
+                        </div>
+                        <div id="builder-export">
+                            <ExportBar id="prompt-builder" kind="builder">
+                                <div class="builder-actions builder-export-actions">
+                                    <button type="button" class="builder-button primary" x-bind:disabled="!activeText.trim()" x-on:click="exportAction('copy')"><Clipboard size={17} aria-hidden="true"/><span x-text="t.copy"></span></button>
+                                    <button type="button" class="builder-button" x-bind:disabled="!activeText.trim()" x-on:click="exportAction('md')" x-bind:aria-label="t.markdown"><bdi>.md</bdi></button>
+                                    <button type="button" class="builder-button" x-bind:disabled="!activeText.trim()" x-on:click="exportAction('txt')" x-bind:aria-label="t.plainText"><bdi>.txt</bdi></button>
+                                    <button type="button" class="builder-button" x-on:click="exportAction('json', draft)" x-bind:aria-label="t.draftJson"><bdi>.json</bdi></button>
+                                </div>
+                            </ExportBar>
+                        </div>
+                        <div class="builder-variants" x-bind:class="{ 'builder-compare': compare }">
+                            {(['concise', 'detailed'] as const).map(mode => (
+                                <section class="builder-variant" x-show={`compare || variant === '${mode}'`} aria-labelledby={`builder-variant-${mode}`}>
+                                    <div class="builder-variant-head">
+                                        <h3 id={`builder-variant-${mode}`} x-text={`t.${mode}`}></h3>
+                                        <button type="button" id={`builder-edit-${mode}`} class="builder-button" x-show={`editor !== '${mode}'`} x-on:click={`editPrompt('${mode}')`} x-text="t.edit"></button>
+                                        <button type="button" class="builder-button" x-show={`editor === '${mode}'`} x-on:click={`finishEditing('${mode}')`} x-text="t.doneEditing"></button>
+                                    </div>
+                                    <p class="builder-muted" x-show={`draft.edits.${mode} !== undefined && draft.preferences.profile !== 'universal'`} x-text="t.editedProfile"></p>
+                                    <pre class="builder-text" data-variant={mode} dir="auto" tabindex="0" x-show={`editor !== '${mode}'`} x-text={`draft.edits.${mode} ?? (variant === '${mode}' ? activeText : compileVariant('${mode}'))`}></pre>
+                                    <textarea class="builder-text builder-editor" id={`builder-editor-${mode}`} dir="auto" rows="12" maxlength={maxPromptLength} x-show={`editor === '${mode}'`} x-model={`draft.edits.${mode}`} x-bind:aria-label={`t.editing + ' · ' + t.${mode}`}></textarea>
+                                    <div class="builder-variant-tools builder-actions">
+                                        <button type="button" class="builder-button" x-show={`compare && variant !== '${mode}'`} x-on:click={`variant = '${mode}'`} x-text="t.useVariant"></button>
+                                        <button type="button" class="builder-button" x-show={`draft.edits.${mode} !== undefined`} x-on:click={`regenerate('${mode}')`} x-text="t.regenerate"></button>
+                                    </div>
+                                </section>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="builder-panel" aria-labelledby="builder-chain-heading">
+                <header class="builder-panel-head"><h2 id="builder-chain-heading"><GitBranch size={20} aria-hidden="true"/><span x-text="t.chains"></span></h2></header>
+                <div class="builder-panel-body builder-stack">
+                    <div class="builder-actions">
+                        <template x-for="item in chains" x-bind:key="item.id">
+                            <button type="button" class="builder-button" x-bind:aria-pressed="chain?.id === item.id" x-on:click="startChain(item.id)" x-text="item.title[locale]"></button>
+                        </template>
+                    </div>
+                    <template x-if="chain">
+                        <div class="builder-stack">
+                            <p><strong x-text="chain.title[locale]"></strong> <span class="builder-muted" x-text="t.step + ' ' + (draft.chain.step + 1) + ' / ' + chain.steps.length"></span></p>
+                            <button type="button" class="builder-button" x-show="nextStep && !handoffOpen" x-on:click="prepareHandoff()" x-text="t.review"></button>
+                            <p class="builder-muted" x-show="!nextStep" x-text="t.finalStep"></p>
+                            <form class="builder-stack" x-show="handoffOpen" x-on:submit.prevent="continueChain()">
+                                <label class="builder-field">
+                                    <span x-text="t.handoff"></span><small x-text="t.handoffHelp"></small>
+                                    <textarea dir="auto" rows="6" required maxlength={maxFieldLength} x-model="handoff"></textarea>
+                                </label>
+                                <label class="builder-field" x-show="chain.id === 'bug-fix' && draft.chain.step === 0"><span x-text="t.goal"></span><input dir="auto" maxlength={maxFieldLength} x-model="goal"/></label>
+                                <div class="builder-actions">
+                                    <button type="submit" class="builder-button primary" x-bind:disabled="!handoff.trim()"><span x-text="t.next"></span><ArrowRight size={17} className="directional-icon" aria-hidden="true"/></button>
+                                    <button type="button" class="builder-button" x-on:click="handoffOpen = false" x-text="t.cancel"></button>
+                                </div>
+                            </form>
+                        </div>
+                    </template>
+                </div>
+            </section>
+
+            <section class="builder-panel" aria-labelledby="builder-library-heading">
+                <header class="builder-panel-head"><h2 id="builder-library-heading"><Layers size={20} aria-hidden="true"/><span x-text="t.library"></span></h2><span class="builder-tag" x-text="t.local"></span></header>
+                <div class="builder-panel-body builder-stack">
+                    <label class="builder-name"><span x-text="t.name"></span><input dir="auto" x-model="name" maxlength="120"/></label>
+                    <div class="builder-actions">
+                        <button type="button" class="builder-button primary" x-on:click="saveLocal('draft')" x-text="t.save"></button>
+                        <button type="button" class="builder-button" x-on:click="saveLocal('preset')" x-text="t.savePreset"></button>
+                        <button type="button" class="builder-button" x-on:click="$refs.importFile.click()"><Upload size={17} aria-hidden="true"/><span x-text="t.import"></span></button>
+                        <input type="file" hidden accept=".json,application/json" x-ref="importFile" x-on:change="importFile($event.target.files[0]); $event.target.value = ''" />
+                    </div>
+                    <p role="status" class="builder-message" x-show="status" x-text="t[status]"></p>
+                    <p class="builder-muted" x-show="!library.entries.length" x-text="t.noLocal"></p>
+                    <ul class="builder-list" x-show="library.entries.length">
+                        <template x-for="item in library.entries" x-bind:key="item.id">
+                            <li><span><strong dir="auto" x-text="item.name"></strong><small class="builder-muted" x-text="t[item.kind]"></small></span>
+                                <div class="builder-actions">
+                                    <button type="button" class="builder-button" x-on:click="openLocal(item)" x-text="t.open"></button>
+                                    <button type="button" class="builder-button" x-on:click="removeLocal(item.id)" x-text="t.delete"></button>
+                                </div>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </section>
+            <BuilderCloud />
+            <BuilderAI />
+        </div>
+    </div>
+</BaseLayout>

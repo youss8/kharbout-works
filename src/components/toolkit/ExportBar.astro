@@ -5,18 +5,20 @@ import { profile } from '../../data/profile';
 
 interface Props {
     id: string;
-    sourcePath: string;
-    kind: 'prompt' | 'template';
+    sourcePath?: string;
+    kind: 'prompt' | 'template' | 'builder';
     hasJson?: boolean;
 }
 const { id, sourcePath, kind, hasJson = true } = Astro.props;
 const sourceRef = import.meta.env.PUBLIC_SOURCE_REF || process.env.VERCEL_GIT_COMMIT_SHA || process.env.CF_PAGES_COMMIT_SHA || 'main';
 const repository = profile.contact.repoUrl;
-const sourceUrl = repository + '/blob/' + encodeURIComponent(sourceRef) + '/' + sourcePath.split('/').map(encodeURIComponent).join('/');
-const localUrl = '/raw/' + sourcePath.replace(/^src\/content\//, '');
+const sourceUrl = sourcePath && repository + '/blob/' + encodeURIComponent(sourceRef) + '/' + sourcePath.split('/').map(encodeURIComponent).join('/');
+const localUrl = sourcePath && '/raw/' + sourcePath.replace(/^src\/content\//, '');
 const prompt = kind === 'prompt';
+const builder = kind === 'builder';
 ---
 <asset-export data-name={id} aria-label="Export options">
+    {builder ? <slot /> :
     <div class="export-actions">
         {prompt
             ? <button type="button" x-on:click="$dispatch('asset-export', {action:'copy', text:compiled})"><Clipboard size={15} aria-hidden="true"/>Copy compiled prompt</button>
@@ -24,30 +26,34 @@ const prompt = kind === 'prompt';
         <button type="button" x-on:click="$dispatch('asset-export', {action:'copy', text:raw})"><Clipboard size={15} aria-hidden="true"/>{prompt ? 'Copy raw template' : 'Copy raw Markdown'}</button>
         <button type="button" x-on:click="$dispatch('asset-export', {action:'md', text:compiled})"><Download size={15} aria-hidden="true"/>Download .md</button>
         {hasJson && <button type="button" x-on:click="$dispatch('asset-export', {action:'json', text:jsonDownload})"><Download size={15} aria-hidden="true"/>Download .json</button>}
-        <a href={localUrl} target="_blank" rel="noopener"><FileText size={15} aria-hidden="true"/>View source file</a>
-        <a href={sourceUrl} target="_blank" rel="noopener"><GitHubMark size={15}/>View source on GitHub</a>
-    </div>
+        {localUrl && <a href={localUrl} target="_blank" rel="noopener"><FileText size={15} aria-hidden="true"/>View source file</a>}
+        {sourceUrl && <a href={sourceUrl} target="_blank" rel="noopener"><GitHubMark size={15}/>View source on GitHub</a>}
+    </div>}
     <p role="status" aria-live="polite"></p>
-    <label data-manual hidden>Text for manual copy<textarea readonly rows="4"></textarea></label>
+    <label data-manual hidden><span>{builder ? <span x-text="t.manualCopy"></span> : 'Text for manual copy'}</span><textarea dir="auto" readonly rows="4"></textarea></label>
 </asset-export>
 <script>
-    type ExportPayload = { action: 'copy' | 'md' | 'json'; text: unknown };
+    type ExportPayload = {
+        action: 'copy' | 'md' | 'txt' | 'json';
+        text: unknown;
+        messages?: { copied: string; manual: string; invalid: string; downloaded: string };
+    };
     class AssetExport extends HTMLElement {
         connectedCallback() {
             const feedback = this.querySelector<HTMLElement>('[role=status]')!;
             const manual = this.querySelector<HTMLLabelElement>('[data-manual]')!;
             const field = manual.querySelector('textarea')!;
-            const copy = async (value: string) => {
+            const copy = async (value: string, messages?: ExportPayload['messages']) => {
                 manual.hidden = true;
                 try {
                     await navigator.clipboard.writeText(value);
-                    feedback.textContent = 'Copied to clipboard.';
+                    feedback.textContent = messages?.copied ?? 'Copied to clipboard.';
                 } catch {
                     manual.hidden = false;
                     field.value = value;
                     field.focus();
                     field.select();
-                    feedback.textContent = 'Text selected. Press Ctrl+C or Cmd+C to copy.';
+                    feedback.textContent = messages?.manual ?? 'Text selected. Press Ctrl+C or Cmd+C to copy.';
                 }
             };
             this.querySelector('[data-copy-preview]')?.addEventListener('click', () => {
@@ -63,9 +69,9 @@ const prompt = kind === 'prompt';
                 void copy(lines.join('\n'));
             });
             this.addEventListener('asset-export', (event) => {
-                const { action, text } = (event as CustomEvent<ExportPayload>).detail;
-                if (action === 'copy' && typeof text === 'string') { void copy(text); return; }
-                if (action !== 'md' && action !== 'json') return;
+                const { action, text, messages } = (event as CustomEvent<ExportPayload>).detail;
+                if (action === 'copy' && typeof text === 'string') { void copy(text, messages); return; }
+                if (action !== 'md' && action !== 'json' && action !== 'txt') return;
                 manual.hidden = true;
                 let body: string;
                 if (action === 'json') {
@@ -74,14 +80,14 @@ const prompt = kind === 'prompt';
                         if (parsed === undefined) throw new Error();
                         body = JSON.stringify(parsed, null, 2) + '\n';
                     } catch {
-                        feedback.textContent = 'The JSON source could not be read.';
+                        feedback.textContent = messages?.invalid ?? 'The JSON source could not be read.';
                         return;
                     }
                 } else {
                     if (typeof text !== 'string') return;
                     body = text;
                 }
-                const mime = action === 'json' ? 'application/json' : 'text/markdown';
+                const mime = action === 'json' ? 'application/json' : action === 'txt' ? 'text/plain' : 'text/markdown';
                 const url = URL.createObjectURL(new Blob([body], { type: mime + ';charset=utf-8' }));
                 const link = document.createElement('a');
                 link.download = this.dataset.name + '.' + action;
@@ -90,7 +96,7 @@ const prompt = kind === 'prompt';
                 link.click();
                 link.remove();
                 window.setTimeout(() => URL.revokeObjectURL(url), 10_000);
-                feedback.textContent = 'Download prepared: ' + link.download;
+                feedback.textContent = (messages?.downloaded ?? 'Download prepared:') + ' ' + link.download;
             });
         }
     }

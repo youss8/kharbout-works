@@ -31,6 +31,10 @@ Each page offers a Markdown skill file, JSON record and ZIP containing both. Ext
 
 The download panel records which agent versions discovered the extracted guide in a fresh project. A discovery label is shown only while its skill name and frontmatter match the [dated discovery records](src/data/claude-skill-discovery.json).
 
+## Prompt Builder
+
+Open the [local Prompt Builder](http://localhost:4321/ai-kit/prompt-builder/) to build a prompt from scratch or start from an everyday or engineering workflow. Edit and export either variant, or save a draft on this device. The [setup and release guide](docs/prompt-builder.md) covers optional sign-in, sharing, AI runs, and staging verification.
+
 ## Architecture
 
 Astro 5 builds static routes from four Zod-validated content collections. The service desk and estate monitor hydrate as React 19/TypeScript islands. Alpine 3 handles the HR, funding, toolkit and lab interactions. The six case-study fixtures and three Mermaid diagrams come directly from the master handoff. Runtime changes are local to the browser.

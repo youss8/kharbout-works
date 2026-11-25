@@ -1,0 +1,76 @@
+---
+import { Sparkles } from 'lucide-react';
+import { maxFieldLength } from '../../lib/prompt-builder/model';
+---
+<section class="builder-panel" aria-labelledby="builder-ai-heading">
+    <header class="builder-panel-head"><h2 id="builder-ai-heading"><Sparkles size={20} aria-hidden="true"/><span x-text="t.ai"></span></h2></header>
+    <div class="builder-panel-body builder-stack">
+        <p class="builder-muted" x-text="cloud.available ? t.aiIntro : t.cloudOff"></p>
+        <p class="builder-muted" x-show="cloud.available" x-text="t.aiProvider"></p>
+        <a href="#builder-cloud-heading" x-show="cloud.available && !cloud.account" x-text="t.signIn"></a>
+        <template x-if="cloud.account">
+            <div class="builder-stack" x-bind:aria-busy="cloud.busy">
+                <p class="builder-message" role="status" x-show="aiStatus" x-text="t[aiStatus]"></p>
+                <label class="builder-field"><span x-text="t.aiNotes"></span><textarea dir="auto" rows="4" maxlength={maxFieldLength} x-model="aiNotes"></textarea></label>
+                <div class="builder-actions">
+                    <select x-bind:aria-label="t.runSlot" x-model.number="runSlot" x-bind:disabled="cloud.busy || Boolean(aiPending)">
+                        <option value="0" x-text="t.runA"></option>
+                        <option value="1" x-text="t.runB"></option>
+                    </select>
+                    <button type="button" class="builder-button" x-bind:disabled="!aiNotes.trim() || cloud.busy" x-on:click="prepareAI('suggest')" x-text="t.suggest"></button>
+                    <button type="button" class="builder-button primary" x-bind:disabled="!activeText.trim() || cloud.busy" x-on:click="prepareAI('run')" x-text="t.run"></button>
+                    <button type="button" class="builder-button" x-bind:disabled="!results[0] || !results[1] || cloud.busy" x-on:click="prepareAI('evaluate')" x-text="t.evaluate"></button>
+                </div>
+                <div class="builder-stack builder-example" x-show="aiPending">
+                    <h3 x-text="t.aiReview"></h3>
+                    <p x-text="t.aiTransfer"></p>
+                    <pre class="builder-text" dir="auto" x-text="aiTransferText"></pre>
+                    <div class="builder-actions">
+                        <button type="button" class="builder-button primary" x-bind:disabled="cloud.busy" x-on:click="sendAI()" x-text="t.aiApprove"></button>
+                        <button type="button" class="builder-button" x-on:click="aiPending = null" x-text="t.cancel"></button>
+                    </div>
+                </div>
+                <div class="builder-stack builder-example" x-show="suggestions.length">
+                    <h3 x-text="t.suggestion"></h3>
+                    <template x-for="item in suggestions" x-bind:key="item.key">
+                        <div class="builder-stack">
+                            <label class="builder-check"><input type="checkbox" x-model="item.selected"/><strong x-text="item.label"></strong></label>
+                            <textarea dir="auto" rows="2" maxlength={maxFieldLength} x-bind:aria-label="item.label" x-model="item.value"></textarea>
+                        </div>
+                    </template>
+                    <button type="button" class="builder-button" x-bind:disabled="!suggestions.some(item => item.selected)" x-on:click="applySuggestions()" x-text="t.apply"></button>
+                </div>
+                <div class="builder-run-grid" x-show="results[0] || results[1]">
+                    {[0, 1].map(index => (
+                        <template x-if={`results[${index}]`}>
+                            <section class="builder-stack builder-example">
+                                <h3 x-text={index === 0 ? 't.runA' : 't.runB'}></h3>
+                                <details><summary x-text="t.prompt"></summary><pre class="builder-text" dir="auto" x-text={`results[${index}].prompt`}></pre></details>
+                                <pre class="builder-text" dir="auto" x-text={`results[${index}].result`}></pre>
+                                <button type="button" class="builder-button" x-on:click={`saveRun(${index})`} x-bind:disabled={`draft.runs.some(run => run.prompt === results[${index}].prompt && run.result === results[${index}].result)`} x-text="t.saveRun"></button>
+                            </section>
+                        </template>
+                    ))}
+                </div>
+                <ul class="builder-list" x-show="evaluation.length">
+                    <template x-for="item in evaluation" x-bind:key="item.index">
+                        <li><div class="builder-stack"><strong x-text="workflow.checks[item.index]?.[locale]"></strong>
+                            <p dir="auto" x-text="item.explanation"></p>
+                            <p><span x-text="t.runA + ' · ' + t[item.a ? 'checkPass' : 'checkFail']"></span> <span x-text="t.runB + ' · ' + t[item.b ? 'checkPass' : 'checkFail']"></span></p>
+                        </div></li>
+                    </template>
+                </ul>
+            </div>
+        </template>
+        <div class="builder-stack" x-show="draft.runs.length">
+            <h3 x-text="t.savedRuns"></h3>
+            <template x-for="(item, index) in draft.runs" x-bind:key="index">
+                <section class="builder-stack builder-example">
+                    <details><summary x-text="t.prompt"></summary><pre class="builder-text" dir="auto" x-text="item.prompt"></pre></details>
+                    <pre class="builder-text" dir="auto" x-text="item.result"></pre>
+                    <button type="button" class="builder-button" x-on:click="draft.runs.splice(index, 1)" x-text="t.forgetRun"></button>
+                </section>
+            </template>
+        </div>
+    </div>
+</section>

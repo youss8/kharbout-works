@@ -2,25 +2,14 @@
 import type { CollectionEntry } from 'astro:content';
 import StatusBadge from '../ui/StatusBadge.astro';
 import ExportBar from './ExportBar.astro';
+import { parsePromptTemplate } from '../../lib/prompt-template';
 
 interface Props { item: CollectionEntry<'ai-kit'> }
 const { item } = Astro.props;
 const { data } = item;
 const raw = (item.body ?? '').trim();
 const variables = Object.fromEntries(data.variables.map(v => [v.key, v.defaultValue]));
-const segments: { key?: string; text: string }[] = [];
-let cursor = 0;
-const used = new Set<string>();
-for (const match of raw.matchAll(/\{\{([A-Z][A-Z0-9_]*)\}\}/g)) {
-    const key = match[1];
-    if (!Object.hasOwn(variables, key)) throw new Error(item.id + ': undeclared prompt variable ' + key);
-    if (match.index > cursor) segments.push({ text: raw.slice(cursor, match.index) });
-    segments.push({ key, text: match[0] });
-    used.add(key);
-    cursor = match.index + match[0].length;
-}
-if (raw.length > cursor) segments.push({ text: raw.slice(cursor) });
-if (data.variables.length !== used.size) throw new Error(item.id + ': unused or duplicate prompt variable');
+const segments = parsePromptTemplate(raw, data.variables.map(variable => variable.key), item.id);
 const prompt = { id: data.id, title: data.title, kind: data.kind, category: data.category, raw, values: variables, segments };
 ---
 <div class="compiler" data-prompt={JSON.stringify(prompt)}

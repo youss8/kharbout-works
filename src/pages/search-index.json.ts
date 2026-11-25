@@ -7,6 +7,8 @@ import { profile } from '../data/profile';
 import { labProjects } from '../data/lab';
 import { sandboxTitles } from '../data/sandbox-directory';
 import { skillGuides, skillPath } from '../data/claude-skills';
+import { promptBuilderEnabled } from '../lib/prompt-builder/release';
+import { builderPath, presets as promptPresets } from '../lib/prompt-builder/workflows';
 
 const pages = [
     [
@@ -134,6 +136,20 @@ export const GET: APIRoute = async () => {
         href,
         keywords: pageAliases[href],
     }));
+    if (promptBuilderEnabled()) {
+        entries.push({
+            group: 'pages', kind: 'Page', title: 'Prompt Builder', href: builderPath,
+            summary: 'Build, edit, and export a prompt in English or Arabic.',
+            keywords: ['prompt generator', 'build a prompt', 'منشئ الموجّهات', 'مولّد الأوامر'],
+        });
+        for (const preset of promptPresets) {
+            entries.push({
+                group: 'assets', kind: 'Prompt', title: preset.title.en, summary: preset.description.en,
+                href: builderPath + '?workflow=' + preset.id,
+                keywords: [preset.id, preset.title.ar, preset.description.ar, 'prompt builder'],
+            });
+        }
+    }
     const byCode = new Map<string, string>();
     const bySandbox = new Map<string, string>();
     for (const project of labProjects) {

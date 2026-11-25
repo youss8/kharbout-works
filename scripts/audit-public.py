@@ -118,9 +118,11 @@ def audit_references(files, failures):
     pages = {}
     links = []
     # Each guide can link to the external sources named in its own catalogue record.
-    skill_sources = {"claude-code-skills/index.html": {
+    declared_sources = {"claude-code-skills/index.html": {
         "https://code.claude.com/docs/en/skills", "https://developers.openai.com/codex/skills",
     }}
+    profile_sources = ROOT / "src/lib/prompt-builder/profile-sources.json"
+    declared_sources["ai-kit/prompt-builder/index.html"] = set(json.loads(profile_sources.read_text(encoding="utf-8")).values())
     delivery = json.loads((ROOT / "src/data/claude-skill-delivery.json").read_text(encoding="utf-8"))
     for category in (ROOT / "src/data/claude-skills").glob("*.json"):
         for guide in json.loads(category.read_text(encoding="utf-8")):
@@ -128,7 +130,7 @@ def audit_references(files, failures):
             package = delivery[guide["slug"]]
             export = DIST / "claude-code-skills/download" / guide["slug"] / "guide.json"
             record = json.loads(export.read_text(encoding="utf-8"))
-            skill_sources[origin] = {guide["source"], guide.get("upstream"), package["url"], package.get("repositoryZip"),
+            declared_sources[origin] = {guide["source"], guide.get("upstream"), package["url"], package.get("repositoryZip"),
                                      package.get("packageUrl"), guide.get("exampleRun", {}).get("source"),
                                      record.get("formatFile"), *(item["source"] for item in record["compatibility"])} - {None}
     for name in files:
@@ -158,7 +160,7 @@ def audit_references(files, failures):
             continue
         if url.netloc != "workbench.invalid" or url.scheme != "https":
             declared_source = (url.scheme == "https" and not url.username and not url.password
-                               and value in skill_sources.get(origin, ()))
+                               and value in declared_sources.get(origin, ()))
             if tag != "a" or not (approved_contact(url) or declared_source):
                 failures.add(f"{origin} ({tag}: unapproved external destination)")
             continue
