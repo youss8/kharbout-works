@@ -1,0 +1,143 @@
+---
+import { Cloud } from 'lucide-react';
+---
+<section class="builder-panel" aria-labelledby="builder-cloud-heading">
+    <header class="builder-panel-head"><h2 id="builder-cloud-heading" tabindex="-1"><Cloud size={20} aria-hidden="true"/><span x-text="t.account"></span></h2></header>
+    <div class="builder-panel-body builder-stack">
+        <p class="builder-muted" x-show="!cloud.available" x-text="t.cloudOff"></p>
+        <p class="builder-muted" role="status" x-show="cloud.available && !cloud.ready" x-text="cloudMessage || t.working"></p>
+        <template x-if="cloud.available && cloud.ready">
+            <div class="builder-stack" x-bind:aria-busy="cloud.busy">
+                <p class="builder-muted" x-show="!cloud.account" x-text="t.cloudIntro"></p>
+                <p class="builder-message" x-show="!cloud.account && cloud.inviteToken" x-text="t.invitation"></p>
+                <p class="builder-message" role="status" x-show="cloudMessage" x-text="cloudMessage"></p>
+                <form class="builder-inline-form" x-show="!cloud.account" x-on:submit.prevent="cloud.requestCode()">
+                    <label><span x-text="t.email"></span><input type="email" autocomplete="email" required maxlength="255" dir="ltr" x-model="cloud.email" x-bind:readonly="cloud.codeSent"/></label>
+                    <button type="submit" class="builder-button primary" x-bind:disabled="cloud.busy" x-text="cloud.codeSent ? t.resendCode : t.sendCode"></button>
+                </form>
+                <form class="builder-inline-form" x-show="!cloud.account && cloud.codeSent" x-on:submit.prevent="cloud.confirmCode()">
+                    <label><span x-text="t.code"></span><input type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6,10}" maxlength="10" required dir="ltr" x-model="cloud.code"/></label>
+                    <button type="submit" class="builder-button primary" x-bind:disabled="cloud.busy" x-text="t.signIn"></button>
+                    <button type="button" class="builder-button" x-on:click="cloud.codeSent = false; cloud.code = ''; cloud.status = ''" x-text="t.cancel"></button>
+                </form>
+                <template x-if="cloud.account">
+                    <div class="builder-stack">
+                        <div class="builder-workflow-note">
+                            <strong dir="auto" x-text="cloud.account.email"></strong>
+                            <div class="builder-actions">
+                                <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.refresh()" x-text="t.refresh"></button>
+                                <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.signOut()" x-text="t.signOut"></button>
+                            </div>
+                        </div>
+                        <div class="builder-example builder-stack" x-show="cloud.inviteToken">
+                            <strong x-text="t.invitation"></strong>
+                            <button type="button" class="builder-button primary" x-bind:disabled="cloud.busy" x-on:click="cloud.acceptInvite()" x-text="t.acceptInvite"></button>
+                        </div>
+                        <div class="builder-inline-form">
+                            <label><span x-text="t.savedIn"></span><select x-model="cloud.selectedFolder" x-bind:disabled="Boolean(cloud.current) && !cloud.conflict">
+                                <option value="" x-text="t.personal"></option>
+                                <template x-for="folder in cloud.folders.filter(folder => cloud.canWrite(folder.id))" x-bind:key="folder.id"><option x-bind:value="folder.id" x-text="folder.name"></option></template>
+                            </select></label>
+                            <button type="button" class="builder-button primary" x-bind:disabled="cloud.busy || !cloud.canWrite(cloud.current?.folder_id) || cloud.conflict" x-on:click="saveCloud()" x-text="t.sync"></button>
+                            <button type="button" class="builder-button" x-show="cloud.current" x-bind:disabled="cloud.busy" x-on:click="saveCloud(true)" x-text="t.syncCopy"></button>
+                            <button type="button" class="builder-button" x-show="cloud.conflict" x-bind:disabled="cloud.busy" x-on:click="reloadCloud()" x-text="t.reload"></button>
+                        </div>
+                        <p class="builder-muted" x-show="cloud.selectedFolder" x-text="t.folderContents"></p>
+                        <div class="builder-stack" x-show="cloud.drafts.length">
+                            <h3 x-text="t.draft"></h3>
+                            <ul class="builder-list">
+                                <template x-for="item in cloud.drafts" x-bind:key="item.id">
+                                    <li><span><strong dir="auto" x-text="item.name"></strong><small class="builder-muted" dir="auto" x-text="cloud.folders.find(folder => folder.id === item.folder_id)?.name || t.personal"></small></span>
+                                        <div class="builder-actions">
+                                            <button type="button" class="builder-button" x-on:click="openCloud(item)" x-text="t.open"></button>
+                                            <button type="button" class="builder-button danger" x-show="(item.created_by === cloud.account.id && cloud.canWrite(item.folder_id)) || cloud.folders.some(folder => folder.id === item.folder_id && folder.owner_id === cloud.account.id)" x-bind:disabled="cloud.busy" x-on:click="window.confirm(t.confirmDelete) && cloud.remove(item.id)" x-text="t.delete"></button>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                        <div class="builder-stack" x-show="cloud.current">
+                            <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.showVersions()" x-text="t.versions"></button>
+                            <ul class="builder-list" x-show="cloud.versions.length">
+                                <template x-for="item in cloud.versions" x-bind:key="item.revision">
+                                    <li><span dir="auto" x-text="'#' + item.revision + ' · ' + new Date(item.created_at).toLocaleString(locale)"></span>
+                                        <button type="button" class="builder-button" x-on:click="restoreVersion(item)" x-text="t.restore"></button>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                        <div class="builder-stack builder-separator">
+                            <h3 x-text="t.folders"></h3>
+                            <form class="builder-inline-form" x-on:submit.prevent="cloud.createFolder()">
+                                <label><span x-text="t.newFolder"></span><input dir="auto" required maxlength="120" x-model="cloud.folderName"/></label>
+                                <button type="submit" class="builder-button" x-bind:disabled="cloud.busy" x-text="t.createFolder"></button>
+                            </form>
+                            <ul class="builder-list" x-show="cloud.folders.length">
+                                <template x-for="folder in cloud.folders" x-bind:key="folder.id">
+                                    <li><span><strong dir="auto" x-text="folder.name"></strong><small class="builder-muted" x-text="t[folder.owner_id === cloud.account.id ? 'owner' : (cloud.memberships.find(item => item.folder_id === folder.id)?.role || 'viewer')]"></small></span>
+                                        <div class="builder-actions" x-show="folder.owner_id === cloud.account.id">
+                                            <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.showMembers(folder.id)" x-text="t.manage"></button>
+                                            <button type="button" class="builder-button danger" x-bind:disabled="cloud.busy" x-on:click="window.confirm(t.confirmFolderDelete) && cloud.deleteFolder(folder.id)" x-text="t.delete"></button>
+                                        </div>
+                                    </li>
+                                </template>
+                            </ul>
+                            <div class="builder-stack builder-example" x-show="cloud.manageFolder">
+                                <div class="builder-workflow-note"><h3 dir="auto" x-text="cloud.folders.find(folder => folder.id === cloud.manageFolder)?.name"></h3>
+                                    <button type="button" class="builder-button" x-on:click="cloud.manageFolder = ''; cloud.inviteLink = ''" x-text="t.close"></button>
+                                </div>
+                                <ul class="builder-list" x-show="cloud.members.length">
+                                    <template x-for="member in cloud.members" x-bind:key="member.user_id">
+                                        <li><strong dir="auto" x-text="member.display_email"></strong>
+                                            <div class="builder-actions">
+                                                <select x-bind:aria-label="member.display_email" x-effect="$el.value = member.role" x-bind:disabled="cloud.busy" x-on:change="cloud.setMember(member.user_id, $event.target.value)">
+                                                    <option value="viewer" x-text="t.viewer"></option><option value="editor" x-text="t.editor"></option>
+                                                </select>
+                                                <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.setMember(member.user_id, null)" x-text="t.removeMember"></button>
+                                            </div>
+                                        </li>
+                                    </template>
+                                </ul>
+                                <div class="builder-actions">
+                                    <select x-bind:aria-label="t.invitation" x-model="cloud.inviteRole"><option value="viewer" x-text="t.viewer"></option><option value="editor" x-text="t.editor"></option></select>
+                                    <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.invite()" x-text="t.invite"></button>
+                                </div>
+                                <label x-show="cloud.inviteLink"><span x-text="t.inviteHint"></span><input x-bind:value="cloud.inviteLink" x-on:focus="$el.select()" readonly dir="ltr"/></label>
+                            </div>
+                        </div>
+                        <div class="builder-stack builder-separator">
+                            <h3 x-text="t.share"></h3>
+                            <button type="button" class="builder-button" x-bind:disabled="!activeText.trim() || cloud.busy" x-on:click="previewShare()" x-text="t.share"></button>
+                            <template x-if="cloud.sharePreview">
+                                <div class="builder-stack builder-example">
+                                    <p x-text="t.shareHint"></p>
+                                    <strong dir="auto" x-text="cloud.sharePreview.title"></strong>
+                                    <pre class="builder-text" dir="auto" x-text="cloud.sharePreview.prompt"></pre>
+                                    <div class="builder-actions">
+                                        <button type="button" class="builder-button primary" x-bind:disabled="cloud.busy" x-on:click="cloud.publish()" x-text="t.publish"></button>
+                                        <button type="button" class="builder-button" x-on:click="cloud.sharePreview = null" x-text="t.cancel"></button>
+                                    </div>
+                                </div>
+                            </template>
+                            <label x-show="cloud.shareLink"><span x-text="t.link"></span><input x-bind:value="cloud.shareLink" x-on:focus="$el.select()" readonly dir="ltr"/></label>
+                            <div class="builder-stack" x-show="cloud.shares.length">
+                                <h3 x-text="t.shares"></h3>
+                                <ul class="builder-list">
+                                    <template x-for="item in cloud.shares" x-bind:key="item.id">
+                                        <li><span><strong dir="auto" x-text="item.title"></strong><small class="builder-muted" x-text="new Date(item.expires_at).toLocaleString(locale)"></small></span>
+                                            <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.revoke(item.id)" x-text="t.revoke"></button>
+                                        </li>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="builder-actions builder-separator">
+                            <button type="button" class="builder-button" x-bind:disabled="cloud.busy" x-on:click="cloud.exportData().then(data => data && exportAction('json', data))" x-text="t.accountExport"></button>
+                            <button type="button" class="builder-button danger" x-bind:disabled="cloud.busy" x-on:click="window.confirm(t.deleteAccountConfirm) && cloud.deleteAccount()" x-text="t.deleteAccount"></button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </div>
+</section>

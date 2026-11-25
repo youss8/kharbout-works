@@ -1,4 +1,4 @@
-import { z } from 'astro:content';
+import { z } from 'astro/zod';
 import { createHash } from 'node:crypto';
 import deliveryRecords from './claude-skill-delivery.json';
 import discoveryReport from './claude-skill-discovery.json';
@@ -6,8 +6,8 @@ import { portableSkillHosts, portableSkillSlugs, publisherCompatibility, publish
 import { adapterName, guideHeader } from '../lib/claude-skill-exports';
 
 const text = z.string().trim().min(1);
-const sourceUrl = z.string().url().startsWith('https://');
-const delivery = z.record(z.object({
+const sourceUrl = z.url().startsWith('https://');
+const delivery = z.record(z.string(), z.object({
     method: z.enum(['skill-file', 'collection', 'plugin', 'native', 'archive', 'installer']),
     label: text, url: sourceUrl, note: text.optional(),
     packageUrl: sourceUrl.optional(), packageLabel: text.optional(), repositoryZip: sourceUrl.optional(),
