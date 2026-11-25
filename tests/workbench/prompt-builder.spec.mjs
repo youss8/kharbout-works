@@ -162,3 +162,18 @@ test('claims an example run only for a profile with a completed benchmark pair',
     await page.getByRole('combobox', { name: 'Target model or assistant' }).selectOption('gemini');
     await expect(page.getByText('Example planned')).toBeVisible();
 });
+
+test('matches benchmark evidence to the language of the loaded example and answer', async ({ page }) => {
+    await page.goto(route + '?workflow=draft-email&model=codex');
+    await button(page, 'Load example').click();
+    await expect(page.getByText('Example run recorded · gpt-5.6-sol')).toBeVisible();
+
+    await page.getByRole('combobox', { name: 'Interface language' }).selectOption('ar');
+    await page.getByText('تفضيلات الرد', { exact: true }).click();
+    await page.getByRole('combobox', { name: 'لغة الرد' }).selectOption('ar');
+    await expect(page.getByText('المثال مخطّط له')).toBeVisible();
+
+    page.once('dialog', dialog => dialog.accept());
+    await button(page, 'حمّل المثال').click();
+    await expect(page.getByText('تم تسجيل تجربة المثال · gpt-5.6-sol')).toBeVisible();
+});

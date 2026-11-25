@@ -29,7 +29,7 @@ function createWorkspace() {
         variant: 'concise' as Variant,
         editor: null as Variant | null,
         compare: false,
-        exampleLoaded: false,
+        exampleLocale: null as Locale | null,
         handoffOpen: false,
         handoff: '',
         goal: '',
@@ -51,7 +51,7 @@ function createWorkspace() {
         get profile() { return modelProfile(this.draft.preferences.profile); },
         get exampleRun() {
             const { profile, outputLocale } = this.draft.preferences;
-            if (this.locale !== outputLocale) return;
+            if (this.exampleLocale !== outputLocale) return;
             return exampleRuns.runs.find(run => run.profile === profile && run.locale === outputLocale &&
                 run.results.some(result => result.workflow === this.draft.workflowId));
         },
@@ -117,7 +117,7 @@ function createWorkspace() {
             this.draft = draft;
             this.baseline = JSON.stringify(draft);
             this.editor = null;
-            this.exampleLoaded = false;
+            this.exampleLocale = null;
             this.handoffOpen = false;
             this.aiPending = null;
             this.aiNotes = '';
@@ -178,7 +178,7 @@ function createWorkspace() {
             this.draft.values = Object.fromEntries(this.workflow.fields.map(field => [field.key, field.example[this.locale]]));
             this.draft.edits = {};
             this.editor = null;
-            this.exampleLoaded = true;
+            this.exampleLocale = this.locale;
         },
         prepareHandoff() {
             this.handoff = handoffContext(this.draft).slice(0, maxFieldLength);

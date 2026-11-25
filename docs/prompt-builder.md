@@ -48,15 +48,17 @@ Generate the eight benchmark pairs with `node scripts/prompt-builder-eval.mjs`. 
 
 ## Recorded benchmark results
 
-On 25 November 2026, the plain request and builder prompt for each English fixture were submitted separately to the same assistant with the same source facts. GPT-5.6 Sol scored the completed pairs against the shared rubric and each workflow's checks, with answer order alternated between fixtures. Each score is the number of checks met in this run.
+On 25 November 2026, the plain request and builder prompt for each fixture were submitted separately to the same assistant with the same source facts. GPT-5.6 Sol scored the completed pairs against the shared rubric and each workflow's checks, with answer order alternated between fixtures. Each score is the number of checks met in this run.
 
-| Profile and model | Completed pairs | Plain request | Builder prompt |
-| --- | ---: | ---: | ---: |
-| Codex · GPT-5.6 Sol | 8 of 8 | 47 / 49 | 49 / 49 |
-| Qwen · Qwen3 8B via Ollama | 8 of 8 | 40 / 49 | 46 / 49 |
-| Claude Code · Claude Haiku 4.5 | 2 of 8 | 12 / 12 | 11 / 12 |
+| Profile and model | Language | Completed pairs | Plain request | Builder prompt |
+| --- | --- | ---: | ---: | ---: |
+| Codex · GPT-5.6 Sol | English | 8 of 8 | 47 / 49 | 49 / 49 |
+| Qwen · Qwen3 8B via Ollama | English | 8 of 8 | 40 / 49 | 46 / 49 |
+| Claude Code · Claude Haiku 4.5 | English | 2 of 8 | 12 / 12 | 11 / 12 |
+| Codex · GPT-5.6 Sol | Arabic | 8 of 8 | 39 / 49 | 49 / 49 |
+| Qwen · Qwen3 8B via Ollama | Arabic | 8 of 8 | 39 / 49 | 36 / 49 |
 
-Claude Code completed both comparisons for drafting an email and summarizing notes. The configured provider rejected the remaining pairs because available credits were insufficient. The builder displays the recorded model for the completed English examples. [Per-workflow scores](../src/lib/prompt-builder/example-runs.json)
+The Qwen run used the local 8B checkpoint with thinking disabled. In Arabic, its builder answers scored lower for summarizing notes, drafting meeting follow-up, and reviewing a pull request. These are single runs with the detailed variant. Claude Code completed the email and note-summary pairs before the configured provider returned a credit limit. The builder displays the recorded model for completed examples when the loaded example and answer use the same language. [Per-workflow scores](../src/lib/prompt-builder/example-runs.json)
 
 ## Production monitoring
 
