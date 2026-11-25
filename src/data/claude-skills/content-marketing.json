@@ -1,0 +1,733 @@
+[
+  {
+    "slug": "marketing-campaign-plan",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Campaign Plan",
+    "aliases": [
+      "campaign brief"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-campaign-plan/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/campaign-plan",
+    "kind": "Skill",
+    "description": "Turn a launch goal into a channel plan, weekly calendar and measurement plan that fit the team's budget.",
+    "requirements": "Bring the offer, target audience, launch window, spending limit, team availability and one measurable goal.",
+    "steps": [
+      "Set the audience and the action that counts as success before allocating work.",
+      "Ask for a weekly calendar with an owner, channel, cost and dependency for each deliverable."
+    ],
+    "example": "Plan a 12-week launch for our repair café's booking tool. We have $600, one volunteer editor and room for 40 bookings. Show when each email and poster is due.",
+    "check": "Add up the channel budgets and check that each launch asset has an owner and enough lead time."
+  },
+  {
+    "slug": "marketing-content-creation",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Content Creation",
+    "aliases": [
+      "channel copy"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-content-creation/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/content-creation",
+    "kind": "Skill",
+    "description": "Develop a draft for a particular channel, with a hook, level of detail and call to action that suit its readers.",
+    "requirements": "Supply an approved brief, the audience, source facts, intended channel and a sample of the team's voice.",
+    "steps": [
+      "Pick the format and the one action a reader should take.",
+      "Ask for a first draft, then flag unsupported claims and revise the opening for the chosen channel."
+    ],
+    "example": "Turn our attached opening-day notes into a 150-word newsletter for tool-library members. Use the stated Saturday hours and end with a link to reserve a workbench.",
+    "check": "Compare every date and product claim with the notes. Check that the reader can find the next action after one read."
+  },
+  {
+    "slug": "marketing-email-sequence",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Email Sequence",
+    "aliases": [
+      "drip campaign"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-email-sequence/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/email-sequence",
+    "kind": "Skill",
+    "description": "Draft a series of emails and specify who enters it, how long to wait, and which event moves a reader to another branch or ends the sequence.",
+    "requirements": "Bring an audience definition, offer, email goal, available trigger events and any approved copy or links.",
+    "steps": [
+      "Choose a trigger and exit condition that the mailing platform can actually detect.",
+      "Request the copy and timing for each message, including the branch for someone who has already taken the desired action."
+    ],
+    "example": "Draft three emails for makers who joined our workshop waitlist. Start at sign-up, stop at booking, and give each email one reason to reserve a seat.",
+    "check": "Trace one subscriber who books immediately and one who never books. Verify both paths, the wait times and the final exit."
+  },
+  {
+    "slug": "marketing-seo-audit",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "SEO Audit",
+    "aliases": [
+      "search engine optimization audit"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-seo-audit/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/seo-audit",
+    "kind": "Skill",
+    "description": "Review search visibility across content, page structure and technical signals, then prioritize the work by likely value and effort.",
+    "requirements": "Provide the site, target market, key pages and any crawl or Search Console exports. Supply competitor URLs for comparisons.",
+    "steps": [
+      "Have Claude record evidence at the affected URL for each issue it can inspect.",
+      "Group findings by urgency and effort, with a proposed fix and a way to measure it."
+    ],
+    "example": "Audit the supplied crawl of our instrument-rental site. Which three fixes should a part-time editor and one developer tackle first to help people find rental terms?",
+    "check": "Open a sample of the cited pages, reproduce the observations and identify which findings still need traffic or crawl data."
+  },
+  {
+    "slug": "seo-geo-aeo-audit",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-05-22",
+      "platforms": [
+        "Claude Desktop",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "SNLabat"
+    },
+    "name": "SEO / GEO / AEO Website Audit",
+    "aliases": [
+      "seo-geo-aeo",
+      "generative engine optimization",
+      "answer engine optimization"
+    ],
+    "source": "https://collectivebrain.de/en/skills/seo-geo-aeo-audit/",
+    "kind": "Skill",
+    "description": "Assess how a site supports search indexing, citation by generative search and extraction of direct answers. Deliver the findings as Word and PDF reports.",
+    "requirements": "Use Claude Desktop or Cowork with document export available. The publisher’s ZIP registers the skill as seo-geo-aeo. Provide a public site or page captures, representative URLs and audience questions.",
+    "steps": [
+      "Agree on the page sample and language, then examine search signals, entity information and the clarity of answers to likely questions.",
+      "Request separate findings for each visibility layer, with evidence and prioritized changes."
+    ],
+    "example": "Review the six attached pages of our rainwater guide. Show where search engines can identify the publisher and where a reader can find a direct answer about tank sizing. Prepare Word and PDF reports.",
+    "check": "Open both reports and check that scores cite page evidence and that any claimed appearance in search results has an observed example."
+  },
+  {
+    "slug": "marketing-competitive-brief",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Competitive Brief",
+    "aliases": [
+      "competitive positioning"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-competitive-brief/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/competitive-brief",
+    "kind": "Skill",
+    "description": "Compare the promises, language, visual choices and pricing signals on a small set of competing sites to find a credible position for your offer.",
+    "requirements": "Bring your positioning, target buyer and public pages or dated captures from up to five competitors.",
+    "steps": [
+      "Collect an example of each competitor's promise, proof, visual style and pricing language.",
+      "Ask for a comparison matrix and positioning options your own evidence can support."
+    ],
+    "example": "Compare the three supplied maker-space brochures against our evening-access offer. Identify a claim we can support and one common phrase we should drop.",
+    "check": "Check each comparison against the source brochure and confirm your preferred claim describes an actual feature."
+  },
+  {
+    "slug": "marketing-performance-report",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Performance Report",
+    "aliases": [
+      "marketing reporting"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-performance-report/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/performance-report",
+    "kind": "Skill",
+    "description": "Explain campaign results against targets, separate measured changes from possible causes, and choose what to test next.",
+    "requirements": "Supply comparable time periods, channel metrics, targets, metric definitions and notes about campaign changes.",
+    "steps": [
+      "Reconcile the totals and flag missing figures before comparing channels or periods.",
+      "Request an executive summary and dated follow-up actions for the biggest changes."
+    ],
+    "example": "Using the attached April and May newsletter exports, explain why bookings per delivered email changed. Label hypotheses and give our editor one test for June.",
+    "check": "Recalculate the booking rate from raw counts. Check that the periods use the same denominator and that the proposed test follows from the data."
+  },
+  {
+    "slug": "ai-marketing-team",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner"
+    },
+    "name": "AI Marketing Team",
+    "aliases": [
+      "simulated marketing team"
+    ],
+    "source": "https://collectivebrain.de/en/skills/ai-marketing-team/",
+    "kind": "Skill",
+    "description": "Ask a strategist, copywriter and analyst to challenge the same campaign idea, then bring their decisions into a single brief.",
+    "requirements": "Provide the offer, audience, objective, channels, budget and deadline.",
+    "steps": [
+      "Ask the strategist to choose an audience, the writer to draft messages and the analyst to design a measurement plan.",
+      "Have the roles challenge one another and resolve a disagreement with an inexpensive test."
+    ],
+    "example": "Our mobile pottery studio has $300 to fill an evening class. Have the three roles debate gift buyers versus returning students, then draft one campaign and the test that would change their choice.",
+    "check": "Find the explicit disagreement, the decision it changed and the metric that would justify switching approaches."
+  },
+  {
+    "slug": "keyword-strategy-planner",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Keyword Strategy Planner",
+    "aliases": [
+      "keyword CSV planner"
+    ],
+    "source": "https://collectivebrain.de/en/skills/keyword-strategy-planner/",
+    "kind": "Skill",
+    "description": "Turn a keyword export into a prioritized set of pages, each built around a search intent and a distinct primary term.",
+    "requirements": "Provide a keyword CSV, existing URLs and business priorities. Include volume, position or difficulty only where measured.",
+    "steps": [
+      "Normalize the columns and remove duplicates while retaining a count of excluded terms.",
+      "Group remaining terms by intent, assign a page format and explain the publishing order."
+    ],
+    "example": "Cluster the attached terms for our bicycle repair school. Assign one primary term and a page type to each group, and leave missing search-volume cells blank.",
+    "check": "Trace sample keywords back to the CSV. Confirm two proposed pages do not compete for the same primary term."
+  },
+  {
+    "slug": "ux-copy-refiner",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner"
+    },
+    "name": "UX Copy Refiner",
+    "aliases": [
+      "form microcopy"
+    ],
+    "source": "https://collectivebrain.de/en/skills/ux-copy-refiner/",
+    "kind": "Skill",
+    "description": "Improve existing labels, buttons, helper text and errors so a reader can predict an action or recover from a mistake.",
+    "requirements": "Provide the current strings in flow order, screenshots or character limits, the intended action and the product glossary.",
+    "steps": [
+      "Identify each string's location and the state in which it appears.",
+      "Request a before-and-after table with the reason for each change and the recovery action for every error."
+    ],
+    "example": "Refine our locker-reservation form. The button says 'Proceed' and the error says 'Invalid'. Users pick a locker and a four-digit pickup code. Show replacements and keep buttons below 22 characters.",
+    "check": "Walk through a successful reservation and an invalid code using the proposed strings. Confirm the instructions match what the form accepts."
+  },
+  {
+    "slug": "sales-enablement-pack",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Sales Enablement Pack",
+    "aliases": [
+      "sales battlecards"
+    ],
+    "source": "https://collectivebrain.de/en/skills/sales-enablement-pack/",
+    "kind": "Skill",
+    "description": "Turn product evidence and recurring sales questions into a one-page pitch, competitive talking points and replies to objections.",
+    "requirements": "Bring the intended buyer, approved features, evidence for claims, competitor facts and objections from sales calls.",
+    "steps": [
+      "Choose the deal stage and list the questions the buyer must answer at that stage.",
+      "Request a one-pager, a comparison card and short objection responses using the approved material."
+    ],
+    "example": "Build a pack for a library director evaluating our room scheduler. Use the attached feature sheet and answer the questions about double bookings, training and exports.",
+    "check": "Ask a salesperson to locate and substantiate each answer during a practice call. Mark any competitor claim that still needs a source."
+  },
+  {
+    "slug": "doc-coauthoring",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-22",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Doc Co-Authoring Workflow",
+    "aliases": [
+      "doc-coauthoring",
+      "document co-authoring"
+    ],
+    "source": "https://collectivebrain.de/en/skills/doc-coauthoring/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring",
+    "kind": "Skill",
+    "description": "Write a decision document with Claude in stages, then give a fresh reader the draft to find gaps that the authors overlook.",
+    "requirements": "Provide the audience, the decision or task, relevant background, constraints and an existing template if you have one.",
+    "steps": [
+      "Answer context questions and agree on an outline. Draft the hardest section first, then refine each section with the author.",
+      "Give the finished draft and a reader question to a fresh session or colleague. Revise any passage that requires private context."
+    ],
+    "example": "Co-author a proposal to move the theatre's prop inventory from paper to a shared register. Start by asking what the stage manager needs to decide. Test the final draft with a reader unfamiliar with rehearsals.",
+    "check": "Ask the fresh reader to explain the decision, owner and first step using the document alone. Record where they had to guess."
+  },
+  {
+    "slug": "internal-comms",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-22",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Interne Kommunikation",
+    "aliases": [
+      "internal-comms",
+      "Internal Communications"
+    ],
+    "source": "https://collectivebrain.de/en/skills/internal-comms/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/internal-comms",
+    "kind": "Skill",
+    "description": "Shape verified team notes into a status update, leadership memo, incident recap, FAQ or internal newsletter for a named audience.",
+    "requirements": "Bring the team name, reporting period, intended readers and dated facts. Supply the organization's preferred format if available.",
+    "steps": [
+      "Choose a format and sort the material into the sections readers expect.",
+      "Draft the update, identifying next actions, responsible people and any decision the reader needs to make."
+    ],
+    "example": "Turn the attached venue move notes into a weekly progress, plans and problems update for theatre volunteers. Highlight the lighting team's decision due on Friday.",
+    "check": "Ask an uninvolved teammate to identify what changed, who acts next and when. Confirm names, dates and numbers against the notes."
+  },
+  {
+    "slug": "seo-strategie-roadmap",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "SEO Strategy: 90-Day Roadmap",
+    "aliases": [
+      "quarterly SEO roadmap"
+    ],
+    "source": "https://collectivebrain.de/en/skills/seo-strategie-roadmap/",
+    "kind": "Skill",
+    "description": "Convert a backlog of search improvements into a quarter of work by scoring impact, confidence and ease against the team's capacity.",
+    "requirements": "Bring your business goal, current organic traffic, existing initiatives, available hours and any Search Console or crawl data.",
+    "steps": [
+      "Score each candidate with an explanation of the evidence and uncertainty behind it.",
+      "Choose three priorities, schedule them within capacity and record the work to defer this quarter."
+    ],
+    "example": "Plan 90 days of SEO for our repair directory. We have four editor hours a week and one developer day a month. Use the supplied backlog to choose three priorities and explain what waits.",
+    "check": "Total the hours by week and role. Check that every scheduled item has an owner, a target page and a measurable outcome."
+  },
+  {
+    "slug": "keyword-recherche-cluster",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Collective Brain"
+    },
+    "name": "Keyword Research with Topic Clusters",
+    "aliases": [
+      "topic cluster research"
+    ],
+    "source": "https://collectivebrain.de/en/skills/keyword-recherche-cluster/",
+    "kind": "Skill",
+    "description": "Research achievable search themes and organize them into pillar pages and supporting articles that match the site's existing coverage.",
+    "requirements": "Provide the domain, audience, offering, existing rankings and a keyword export or access to public search results.",
+    "steps": [
+      "Check which results currently satisfy each query and compare their depth with the site's own material.",
+      "Group attainable keywords by intent and show the links between pillar and supporting pages."
+    ],
+    "example": "Use the supplied pages and search results to plan topic clusters for our small bookbinding school. Choose a pillar for each cluster and explain why its supporting topics fit a beginner audience.",
+    "check": "Open a sampled search result for each intent. Identify which proposed pages already exist and which demand estimates have evidence."
+  },
+  {
+    "slug": "search-console-analyse",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "Search Console Analysis: Find Quick Wins",
+    "aliases": [
+      "Google Search Console",
+      "GSC quick wins"
+    ],
+    "source": "https://collectivebrain.de/en/skills/search-console-analyse/",
+    "kind": "Skill",
+    "description": "Use page and query performance to spot declining clicks, weak click-through rates, overlapping URLs and pages close to stronger positions.",
+    "requirements": "Export comparable periods from Google Search Console, ideally successive 90-day windows. Include dates, queries, pages, clicks, impressions and average position at the appropriate grain.",
+    "steps": [
+      "Establish a baseline for each period and compare changes in clicks and impressions alongside click-through rate.",
+      "Select a few affected URLs, explain the evidence for each opportunity and choose a follow-up action."
+    ],
+    "example": "Analyze our two page-and-query exports for the community trail guide. List pages losing clicks despite similar impressions, with the query and first change you would test.",
+    "check": "Recalculate click-through rate from clicks and impressions. Confirm each recommended URL appears in the export and each comparison uses matching filters."
+  },
+  {
+    "slug": "seo-wettbewerbsanalyse",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "SEO Competitive Analysis",
+    "aliases": [
+      "SEO competitor content gap"
+    ],
+    "source": "https://collectivebrain.de/en/skills/seo-wettbewerbsanalyse/",
+    "kind": "Skill",
+    "description": "Compare your pages with competitors ranking for a particular search theme and identify content gaps that deserve an editorial brief.",
+    "requirements": "Provide your own domain, a topic, two to four competitors and search results or page access for that market.",
+    "steps": [
+      "Inspect competing page formats, questions answered, evidence and positioning for the target queries.",
+      "Map gaps to existing or proposed pages and choose the first three briefs to commission."
+    ],
+    "example": "Compare our seed-saving guides with the three supplied nursery guides. Which questions do they answer that we miss, and which three pages should our editor work on first?",
+    "check": "For each gap, open both the competitor evidence and your closest page. Verify whether the right response is an update or a new page."
+  },
+  {
+    "slug": "seo-artikel-schreiben",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Collective Brain"
+    },
+    "name": "Write SEO Articles",
+    "aliases": [
+      "SEO article writing"
+    ],
+    "source": "https://collectivebrain.de/en/skills/seo-artikel-schreiben/",
+    "kind": "Skill",
+    "description": "Draft an article around the reader's search intent, including a title, search snippet, useful headings and relevant internal links.",
+    "requirements": "Supply the main query, audience, business goal, sources, existing pages to link and examples of the site's voice. Public search access or supplied results support intent research.",
+    "steps": [
+      "Examine the ranking page formats and agree on a question the article will answer better.",
+      "Request an outline and grounded draft with metadata, relevant FAQs and internal links drawn from the site."
+    ],
+    "example": "Draft a guide to storing library board games for volunteer coordinators. Use the supplied care manual, our two existing guides and the search-result sample. Include a title and a useful opening answer.",
+    "check": "Check each care instruction against the manual, open the internal links and read the introduction as someone seeking the answer immediately."
+  },
+  {
+    "slug": "onpage-optimierung",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Collective Brain"
+    },
+    "name": "On-Page Optimisation for Existing Pages",
+    "aliases": [
+      "on-page optimization"
+    ],
+    "source": "https://collectivebrain.de/en/skills/onpage-optimierung/",
+    "kind": "Skill",
+    "description": "Improve one existing page's title, metadata, heading structure and opening answer using the target query and the current content.",
+    "requirements": "Bring the affected URL or page text, primary keyword, ranking examples and measured performance if available.",
+    "steps": [
+      "Compare the intent of the current page with the pages people find for the same query.",
+      "Ask for exact replacement text, content gaps and relevant internal links ordered by priority."
+    ],
+    "example": "Improve our existing wheelchair rental FAQ for the query 'wheelchair rental deposit'. Use the attached policy and page capture. Rewrite the title, heading and first paragraph without changing the deposit terms.",
+    "check": "Compare the proposed answer with the policy, check that it appears early on the page and preview the revised title and snippet together."
+  },
+  {
+    "slug": "interne-verlinkung",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "Plan Internal Linking",
+    "aliases": [
+      "internal links",
+      "site architecture"
+    ],
+    "source": "https://collectivebrain.de/en/skills/interne-verlinkung/",
+    "kind": "Skill",
+    "description": "Find pages with few incoming links and disconnected topic clusters, then specify the source page, target, anchor and placement of each useful link.",
+    "requirements": "Provide a sitemap or page inventory, a crawl with outgoing links, priority destinations and the topics covered by each page.",
+    "steps": [
+      "Map existing links and flag important destinations that readers cannot readily reach.",
+      "Request suitable linking passages from related pages and exact anchor wording for each edit."
+    ],
+    "example": "Use our makerspace crawl to connect induction guides to their booking pages. Show the source paragraph and anchor text for each proposed link.",
+    "check": "Open each source and target, confirm the anchor describes the destination and recrawl edited pages to check that priority pages gained incoming links."
+  },
+  {
+    "slug": "backlink-kampagne",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Advanced",
+      "author": "Collective Brain"
+    },
+    "name": "Set Up a Backlink Campaign",
+    "aliases": [
+      "editorial outreach"
+    ],
+    "source": "https://collectivebrain.de/en/skills/backlink-kampagne/",
+    "kind": "Skill",
+    "description": "Plan editorial outreach around a resource worth citing, select relevant publishers and draft messages that explain the benefit to their readers.",
+    "requirements": "Bring a linkable asset, audience, comparable sites, existing mentions or referring-domain data, and a weekly outreach budget.",
+    "steps": [
+      "Match the asset to verified resource lists, unlinked mentions or other relevant editorial opportunities.",
+      "Rank the prospects by fit and effort and draft personalized outreach for review."
+    ],
+    "example": "Our map shows step-free public rehearsal spaces. With two outreach hours a week, use the supplied arts directories to identify three relevant editors and draft a short note for each.",
+    "check": "Visit each proposed placement, check that its readers need the resource, and verify any claim in the draft before sending it."
+  },
+  {
+    "slug": "indexierungs-audit",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Advanced",
+      "author": "Collective Brain"
+    },
+    "name": "Indexing Audit",
+    "aliases": [
+      "index coverage audit"
+    ],
+    "source": "https://collectivebrain.de/en/skills/indexierungs-audit/",
+    "kind": "Skill",
+    "description": "Compare intended search visibility with sitemap, indexing and crawl evidence, then identify pages to keep, consolidate, exclude or investigate.",
+    "requirements": "Provide the sitemap, robots.txt, a Search Console indexing export, page directives and a list of the URLs the business expects to appear.",
+    "steps": [
+      "Before installing the v1.0 download, replace the value of its YAML description field with the sentence “Compare intended search visibility with sitemap and indexing evidence.” Keep the field name and both header delimiters. The original description contains an unquoted colon that prevents the file from loading.",
+      "Classify sampled URLs by intended use and compare that with their observed status and canonical destination.",
+      "For each discrepancy, propose the appropriate change and explain how to verify the resulting crawler behavior."
+    ],
+    "example": "Audit our workshop calendar with the attached indexing export. Booking pages should be findable, and print duplicates should point to the main page. Flag conflicts and suggest fixes for review.",
+    "check": "Inspect the response, canonical and indexing directives for a sample in each group. Confirm a crawler can read any proposed noindex directive."
+  },
+  {
+    "slug": "schema-markup-generator",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "Generate Schema Markup",
+    "aliases": [
+      "JSON-LD",
+      "structured data"
+    ],
+    "source": "https://collectivebrain.de/en/skills/schema-markup-generator/",
+    "kind": "Skill",
+    "description": "Choose an appropriate structured-data type for a page and draft JSON-LD whose properties match facts visible to readers.",
+    "requirements": "Provide the page or rendered copy, its canonical URL, the entity being described and verified properties such as a venue or event date.",
+    "steps": [
+      "Choose a type that reflects the page's main subject and map its fields to visible evidence.",
+      "Generate the JSON-LD and identify unresolved fields and the applicable validation tool."
+    ],
+    "example": "Create Event JSON-LD for our public print fair using the attached event page. The venue and opening time are confirmed. Flag the missing end time and leave out unsupported prices.",
+    "check": "Parse the JSON, compare every field with the page, and use a schema validator or Google's Rich Results Test for a supported rich-result type."
+  },
+  {
+    "slug": "brand-serp-optimierung",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "Optimize Your Brand SERP",
+    "aliases": [
+      "brand search results"
+    ],
+    "source": "https://collectivebrain.de/en/skills/brand-serp-optimierung/",
+    "kind": "Skill",
+    "description": "Inventory what appears for a brand name and prioritize updates to owned pages, profiles and inconsistent public references.",
+    "requirements": "Bring the exact brand name, market, official URLs and dated search captures or access to current results.",
+    "steps": [
+      "Record the result type, owner and message of each visible item for the chosen query and market.",
+      "Select changes that clarify the brand's identity and assign ownership of each update."
+    ],
+    "example": "Review our supplied mobile search results for 'Ember Kite Studio'. Map which listings we control and prioritize fixes for the outdated address and duplicate profile.",
+    "check": "Compare the inventory with the dated capture, verify ownership of each profile and repeat the same query after the edits have been indexed."
+  },
+  {
+    "slug": "local-seo-audit",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-08-28",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Collective Brain"
+    },
+    "name": "Local SEO Audit",
+    "aliases": [
+      "Google Business Profile",
+      "local search"
+    ],
+    "source": "https://collectivebrain.de/en/skills/local-seo-audit/",
+    "kind": "Skill",
+    "description": "Review a local business's profile, directory listings, reviews, location pages and nearby competitors to prioritize fixes for a particular market.",
+    "requirements": "Provide the business name, address, phone number, service area, website, Google Business Profile and local listings or dated captures.",
+    "steps": [
+      "Compare public contact details and services across the profile, key directories and the actual location page.",
+      "Prioritize five fixes for the specific location and outline a way to request genuine customer feedback."
+    ],
+    "example": "Audit Fern Bench Repairs using these fictional profile and directory captures. Find conflicting Saturday hours and suggest the first five updates for the shop manager.",
+    "check": "Trace each finding to a listing, confirm contact details with the business and recheck corrected listings from a customer's device."
+  },
+  {
+    "slug": "defuddle",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Defuddle CLI 0.19.13 extracted the field-day recap. The saved Markdown retained the four headings in order, four paragraphs and the figure caption. A separate check found the original URL and confirmed the page navigation, cookie banner and footer were excluded."
+    },
+    "listing": {
+      "updated": "2026-11-23",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "obsidianmd"
+    },
+    "name": "Defuddle",
+    "aliases": [
+      "web page to Markdown"
+    ],
+    "source": "https://collectivebrain.de/en/skills/defuddle/",
+    "upstream": "https://github.com/obsidianmd/obsidian-skills/tree/main/plugins/obsidian/skills/defuddle",
+    "kind": "Skill",
+    "description": "Extract an article's main text and metadata from a web page into Markdown for research notes or further editing.",
+    "requirements": "Use the Defuddle command-line tool with an accessible article URL. Pick an output location if the result should become a file.",
+    "steps": [
+      "Identify the source article and request Markdown, optionally with the title or source URL alongside it.",
+      "Inspect the extracted text and correct any lost table, caption or code formatting that matters to the task."
+    ],
+    "example": "Use Defuddle on our published field-day recap and save the cleaned article as field-day.md. Keep the heading order and include its original URL for attribution.",
+    "check": "Compare the first and last paragraphs with the article, inspect headings and captions, and confirm navigation and cookie banners were removed."
+  }
+]

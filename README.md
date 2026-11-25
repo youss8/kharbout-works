@@ -21,6 +21,10 @@ Open the [local workbench](http://localhost:4321). Browse the [systems](http://l
 | HR Lifecycle Platform | Core contributor and co-architect on the three-developer pre-RMS team | Leave approval desk and attendance month with signed-contract reconstruction |
 | Funding, Portfolio & KPI Analytics | Primary architect and full-stack builder of approximately 80% on a three-developer team | Pooled KPI ratios and funding flow with agreement health |
 
+## Claude Code skills
+
+The [Claude Code skills directory](http://localhost:4321/claude-code-skills/) groups guides by task. Search a skill name or alias, open its page and adapt the example prompt. Each guide lists its inputs, usage steps, source and a check for the result. Cowork features and standalone tools identify the environment they require. Prompts carry a **Planned** label until run in their intended assistant. Where a tool was exercised independently on a fixture, **Tool verification** gives the date and observed result. The [guide records](src/data/claude-skills/) also supply the workbench command search.
+
 ## Architecture
 
 Astro 5 builds static routes from four Zod-validated content collections. The service desk and estate monitor hydrate as React 19/TypeScript islands. Alpine 3 handles the HR, funding, toolkit and lab interactions. The six case-study fixtures and three Mermaid diagrams come directly from the master handoff. Runtime changes are local to the browser.

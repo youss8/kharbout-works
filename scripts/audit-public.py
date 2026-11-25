@@ -117,6 +117,12 @@ def approved_contact(url):
 def audit_references(files, failures):
     pages = {}
     links = []
+    # Each guide can link to the external sources named in its own catalogue record.
+    skill_sources = {"claude-code-skills/index.html": {"https://code.claude.com/docs/en/skills"}}
+    for category in (ROOT / "src/data/claude-skills").glob("*.json"):
+        for guide in json.loads(category.read_text(encoding="utf-8")):
+            origin = f"claude-code-skills/{guide['slug']}/index.html"
+            skill_sources[origin] = {guide.get("source"), guide.get("upstream")} - {None}
     for name in files:
         file = ROOT / name
         kind = file.suffix.lower()
@@ -143,7 +149,9 @@ def audit_references(files, failures):
         if url.scheme == "data" and tag in ("img", "source", "link"):
             continue
         if url.netloc != "workbench.invalid" or url.scheme != "https":
-            if tag != "a" or not approved_contact(url):
+            declared_source = (url.scheme == "https" and not url.username and not url.password
+                               and value in skill_sources.get(origin, ()))
+            if tag != "a" or not (approved_contact(url) or declared_source):
                 failures.add(f"{origin} ({tag}: unapproved external destination)")
             continue
         target = (DIST / unquote(url.path).lstrip("/")).resolve()

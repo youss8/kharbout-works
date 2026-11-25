@@ -1,0 +1,341 @@
+[
+  {
+    "slug": "anthropic-skill-creator",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Advanced",
+      "author": "Anthropic"
+    },
+    "name": "Skill Creator",
+    "aliases": [
+      "skill-creator"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-skill-creator/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/skill-creator",
+    "kind": "Skill",
+    "description": "Turns a recurring task into a Claude skill and tests whether its instructions trigger on the right requests.",
+    "requirements": "A worked example, the expected output, and sample requests that should and should not activate the skill.",
+    "steps": [
+      "Describe the repeated decision or transformation. Ask Skill Creator to draft the skill description and instructions.",
+      "Give it fresh examples to evaluate with and without the skill. Revise the instructions where the outputs diverge from your expectations."
+    ],
+    "example": "Build a skill that converts our fictional repair notes into release notes. Keep ticket IDs, group changes by audience, and test it on these three notes plus an unrelated meeting invite.",
+    "check": "Check that each ticket ID survives, the expected headings appear, and an unrelated request does not trigger the skill."
+  },
+  {
+    "slug": "cowork-create-cowork-plugin",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Cowork"
+      ],
+      "level": "Advanced",
+      "author": "Anthropic"
+    },
+    "name": "Create Cowork Plugin",
+    "aliases": [
+      "create-cowork-plugin"
+    ],
+    "source": "https://collectivebrain.de/en/skills/cowork-create-cowork-plugin/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins",
+    "kind": "Cowork skill",
+    "description": "Packages a team workflow as a Cowork plugin that can contain skills, commands and connector configuration.",
+    "requirements": "Cowork with its plugin creation capability, one repeatable workflow and a list of the tools that workflow needs.",
+    "steps": [
+      "In Cowork, state the audience, one task and an example result. Identify the inputs that can come from files or connectors.",
+      "Ask for the plugin package, then load it in a test workspace and try its first workflow."
+    ],
+    "example": "Create a Cowork plugin for the North Pier library. It should turn a supplied shift log into a three-bullet librarian handover with one unresolved item.",
+    "check": "Open the package in Cowork and run it on a fictional shift log. Compare the unresolved item to the source log."
+  },
+  {
+    "slug": "cowork-cowork-plugin-customizer",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Customize Cowork Plugin",
+    "aliases": [
+      "cowork-plugin-customizer"
+    ],
+    "source": "https://collectivebrain.de/en/skills/cowork-cowork-plugin-customizer/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/blob/main/cowork-plugin-management/skills/cowork-plugin-customizer/SKILL.md",
+    "kind": "Cowork skill",
+    "description": "Adapts an existing Cowork plugin to a team’s tools, field names and working conventions.",
+    "requirements": "The Cowork desktop app must have access to the installed plugin directory. Supply the plugin name and the desired change.",
+    "steps": [
+      "Name the plugin and the command, connector or template you want to change. Provide an example from your workflow.",
+      "Review the mapped placeholders or scoped edits, load the updated plugin, and try the affected command."
+    ],
+    "example": "Customize our standup plugin in Cowork. Our board calls blocked tickets “Waiting” and the report should group them by next owner. Use this sample board export.",
+    "check": "Run the same sample before and after customization. The Waiting group should show the next owner for each ticket."
+  },
+  {
+    "slug": "anthropic-schedule",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Schedule Tasks",
+    "aliases": [
+      "schedule"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-schedule/",
+    "upstream": "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork",
+    "kind": "Cowork feature",
+    "description": "Sets up recurring Cowork tasks with a defined cadence, input and destination for each run.",
+    "requirements": "A Cowork environment with scheduling enabled, an input file available to scheduled sessions, and the time zone for the schedule.",
+    "steps": [
+      "In Cowork, give the exact recurrence, time zone, source and output location. Specify what an empty run should produce.",
+      "Review the displayed next run and try the task on a small sample before relying on its recurring output."
+    ],
+    "example": "Every Friday at 09:00 Europe/Berlin, read the sample maintenance register saved to this workspace and return a dated briefing of open repairs. When none are open, write “No outstanding repairs.”",
+    "check": "Confirm the time zone and next run in the schedule. Check the resulting briefing against the open rows for that date."
+  },
+  {
+    "slug": "anthropic-setup-cowork",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Setup Cowork",
+    "aliases": [
+      "setup-cowork"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-setup-cowork/",
+    "upstream": "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork",
+    "kind": "Cowork skill",
+    "description": "Guides a new Cowork user through choosing plugins, connecting tools and completing a first task for their role.",
+    "requirements": "Access to Cowork and a concrete role, first task and set of tools the team uses.",
+    "steps": [
+      "Start in Cowork and describe a typical workday. Ask which plugin or connector the first task needs.",
+      "Configure the chosen integration and run one small task using a sample file or a designated test folder."
+    ],
+    "example": "Set up Cowork for a volunteer coordinator. My first task is to summarize the attached roster by day and flag unfilled shifts. Start with the local roster.",
+    "check": "Count the vacant shifts in the original roster and match them to the summary produced in the configured workspace."
+  },
+  {
+    "slug": "google-ads-analyzer",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Google Ads Performance Analyzer",
+    "aliases": [
+      "google-ads-analyzer"
+    ],
+    "source": "https://collectivebrain.de/en/skills/google-ads-analyzer/",
+    "upstream": "https://collectivebrain.de/skills/google-ads-analyzer/",
+    "kind": "Skill",
+    "description": "Summarizes exported Google Ads performance by campaign and builds pivot tables to investigate changes in cost or conversions.",
+    "requirements": "A Google Ads CSV export with the date range, campaign names, costs, clicks and the conversion metric you use.",
+    "steps": [
+      "Attach the export and define the reporting period, currency and conversion action. Ask to group results by campaign.",
+      "Review spend and conversion totals, then ask which campaigns warrant a closer look and why."
+    ],
+    "example": "Compare these two months for the fictional Birch Paper account. Show spend, conversions and cost per conversion by campaign. Keep campaigns with zero conversions visible.",
+    "check": "Reconcile total spend and conversions to the CSV. Check that aggregate cost per conversion uses total cost divided by total conversions."
+  },
+  {
+    "slug": "vopixsounds",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner",
+      "author": "Vopix"
+    },
+    "name": "VopixSounds",
+    "aliases": [
+      "vopixsounds"
+    ],
+    "source": "https://collectivebrain.de/en/skills/vopixsounds/",
+    "upstream": "https://collectivebrain.de/skills/vopixsounds/",
+    "kind": "Skill",
+    "description": "Configures different system sounds for Claude Code attention notifications and the end of a turn.",
+    "requirements": "A local Claude Code installation whose settings you can edit and a working sound player on your operating system.",
+    "steps": [
+      "Name your operating system and choose distinct sounds for the Notification and Stop hooks. Ask to preserve existing hooks.",
+      "Review the settings changes and try each sound with a short local task."
+    ],
+    "example": "Set up VopixSounds on my Windows development machine. Use a short sound for a completed turn and a different one when Claude is waiting for input. Keep my existing formatter hook.",
+    "check": "Confirm both sounds play, each event triggers the intended sound, and the existing hook still runs."
+  },
+  {
+    "slug": "claude-api",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-22",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Claude API Referenz",
+    "aliases": [
+      "claude-api",
+      "Claude API Reference"
+    ],
+    "source": "https://collectivebrain.de/en/skills/claude-api/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/claude-api",
+    "kind": "Reference skill",
+    "description": "Helps implement and debug Anthropic SDK integrations, including streaming, tool calls, token use and model configuration.",
+    "requirements": "Your programming language, installed SDK version and an example request. Live calls require an Anthropic API credential in the application environment.",
+    "steps": [
+      "Show the relevant call or desired response. Ask for a minimal implementation using the documented API and your SDK version.",
+      "Try a short sample request and inspect how your application handles completion and errors."
+    ],
+    "example": "Show how our TypeScript notebook app can stream a one-sentence summary of a fictional entry. Read the API key from the server environment and handle an interrupted stream.",
+    "check": "For the same entry, verify the UI collects streamed text once and reports an interrupted request without showing duplicate text."
+  },
+  {
+    "slug": "mcp-builder",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "A separate MCP SDK client connected over local stdio and inspected both read-only tools and their schemas. Title search returned the matching book or an empty list. ID lookup returned the book for WH-001 and a distinct not-found result for WH-999."
+    },
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-22",
+      "platforms": [
+        "Claude Code",
+        "Claude Desktop",
+        "Cowork"
+      ],
+      "level": "Advanced",
+      "author": "Anthropic"
+    },
+    "name": "MCP Builder",
+    "aliases": [
+      "mcp-builder",
+      "Model Context Protocol builder"
+    ],
+    "source": "https://collectivebrain.de/en/skills/mcp-builder/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/mcp-builder",
+    "kind": "Skill",
+    "description": "Designs and implements an MCP server that exposes an API through typed, documented tools for an assistant.",
+    "requirements": "API documentation or a fixture service, a Python or TypeScript environment, and an MCP client for exercising the tools.",
+    "steps": [
+      "Pick one user task and map it to tool inputs, responses and expected errors. Choose the SDK for your runtime.",
+      "Implement the tools and connect a test client. Try representative requests including an empty result."
+    ],
+    "example": "Build a read-only TypeScript MCP server for this fictional book inventory fixture. Expose title search and lookup by catalogue ID, with a useful response for an unknown ID.",
+    "check": "Inspect the advertised schemas in an MCP client and confirm a known title, an empty search and an unknown ID all return distinguishable results."
+  },
+  {
+    "slug": "task-observer",
+    "listing": {
+      "version": "v3.8.0",
+      "updated": "2026-10-26",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Eoghan Henn"
+    },
+    "name": "Task Observer",
+    "aliases": [
+      "task-observer"
+    ],
+    "source": "https://collectivebrain.de/en/skills/task-observer/",
+    "upstream": "https://www.rebelytics.com/task-observer/",
+    "kind": "Skill",
+    "description": "Records recurring corrections during work and turns them into candidate improvements to an existing skill or ideas for a new one.",
+    "requirements": "A session containing an actual workflow, an example correction, and the relevant skill instructions if one already exists.",
+    "steps": [
+      "Ask the observer to record repeated corrections during the task. At review time, ask for the observations and supporting examples.",
+      "Select a proposed change and test the revised instructions on a fresh input."
+    ],
+    "example": "Review our last two inventory summaries. I had to ask for item counts beside every category both times. Log that pattern and propose one change to the summary skill.",
+    "check": "Confirm the suggestion cites the repeated correction, then compare category counts in a new summary with its input table."
+  },
+  {
+    "slug": "find-skills",
+    "listing": {
+      "updated": "2026-11-01",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "vercel-labs"
+    },
+    "name": "Find Skills",
+    "aliases": [
+      "find-skills"
+    ],
+    "source": "https://collectivebrain.de/en/skills/find-skills/",
+    "upstream": "https://github.com/vercel-labs/skills",
+    "kind": "Skill",
+    "description": "Searches the agent-skills ecosystem for installable workflows and reports candidates with their source and installation details.",
+    "requirements": "Access to the skills directory or Skills CLI, plus a short description of the task and the host that should run it.",
+    "steps": [
+      "Describe the task with concrete search terms and ask for candidates with their publishers and setup requirements.",
+      "Inspect the candidate’s instructions and dependencies before selecting an installation scope."
+    ],
+    "example": "Find a Claude Code skill for checking accessible names in React dialogs. Show the source repository and explain what I would need to run its example in this project.",
+    "check": "Open the reported source and check that its instructions cover dialog accessible names and support your intended host."
+  },
+  {
+    "slug": "azure-ai",
+    "listing": {
+      "version": "v1.2.3",
+      "updated": "2026-11-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "microsoft"
+    },
+    "name": "Azure AI",
+    "aliases": [
+      "azure-ai"
+    ],
+    "source": "https://collectivebrain.de/en/skills/azure-ai/",
+    "upstream": "https://github.com/microsoft/azure-skills",
+    "kind": "Skill",
+    "description": "Guides development with Azure AI services including Search, Speech and Document Intelligence, with SDK patterns and service-specific diagnostics.",
+    "requirements": "The target service and SDK language. Querying live resources requires an Azure identity with suitable access and an available Azure tool or SDK.",
+    "steps": [
+      "Identify the service and input. For search, share the index fields and the query you expect to succeed.",
+      "Ask for the smallest matching service call and inspect its response against a known document or transcript."
+    ],
+    "example": "Use Azure AI Search with the staging museum index. Show how to query the title field for “Glass Garden” in Python and print the matching catalogue IDs.",
+    "check": "Compare the result IDs with the known staging records and confirm that an unrelated phrase returns the expected empty result."
+  }
+]

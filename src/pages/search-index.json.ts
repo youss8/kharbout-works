@@ -6,6 +6,7 @@ import { siteName } from '../data/brand';
 import { profile } from '../data/profile';
 import { labProjects } from '../data/lab';
 import { sandboxTitles } from '../data/sandbox-directory';
+import { skillGuides, skillPath } from '../data/claude-skills';
 
 const pages = [
     [
@@ -34,6 +35,7 @@ const pages = [
         'Architecture, planning, operations and technical handovers.',
     ],
     ['/lab/', 'R&D lab', 'Four interactive personal prototypes.'],
+    ['/claude-code-skills/', 'Claude Code skills', 'Browse skill guides, example prompts and setup instructions by task.'],
     [
         '/cv/',
         'Interactive CV',
@@ -47,6 +49,7 @@ const pageAliases: Record<string, string[]> = {
     '/ai-kit/': ['الذكاء الاصطناعي', 'أدوات هندسية', 'قوالب الأوامر'],
     '/templates/': ['نماذج التشغيل', 'القوالب', 'التسليم الفني'],
     '/lab/': ['المختبر', 'تجارب ونماذج أولية'],
+    '/claude-code-skills/': ['Claude skills directory', 'مهارات كلود', 'دليل المهارات'],
     '/cv/': ['السيرة الذاتية', 'السيرة المهنية', 'طباعة'],
 };
 const sourceAliases: Record<string, string[]> = {
@@ -224,6 +227,17 @@ export const GET: APIRoute = async () => {
             summary: data.summary,
             href: '/templates/#' + data.id,
             keywords: [id, data.category, ...data.formats],
+        });
+    }
+    for (const guide of skillGuides) {
+        entries.push({
+            group: 'assets',
+            kind: 'Skill guide',
+            title: guide.name,
+            summary: guide.description,
+            href: skillPath(guide.slug),
+            keywords: [guide.slug, guide.kind, guide.category, 'Claude Code skills', ...guide.aliases,
+                ...(guide.listing?.author ? [guide.listing.author] : []), ...(guide.listing?.platforms ?? [])],
         });
     }
     const index: CommandIndex = {

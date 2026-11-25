@@ -12,6 +12,7 @@ const sections = [
   ["04", "Templates", "templates"],
   ["05", "Lab", "lab"],
   ["06", "CV", "cv"],
+  ["07", "Skills", "claude-code-skills"],
 ].map(([index, label, slug]) => ({
   index, label, slug,
   href: slug === "cv" || builtPages[`/src/pages/${slug}/index.astro`] ? `/${slug}/` : `/#directory-${slug}`,

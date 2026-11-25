@@ -1,0 +1,189 @@
+[
+  {
+    "slug": "vercel-react-best-practices",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "Vercel Labs"
+    },
+    "name": "Vercel React Best Practices",
+    "aliases": [
+      "vercel-react-best-practices",
+      "react-best-practices"
+    ],
+    "source": "https://collectivebrain.de/en/skills/vercel-react-best-practices/",
+    "upstream": "https://github.com/vercel-labs/agent-skills/tree/main/skills/react-best-practices",
+    "kind": "Skill",
+    "description": "Reviews React and Next.js code for performance costs such as sequential requests, unnecessarily large client bundles, and repeated rendering.",
+    "requirements": "A React project, the route or diff to review, and ideally a performance trace or bundle report for comparison.",
+    "steps": [
+      "Identify the framework version, rendering model, and a repeatable slow interaction.",
+      "Ask the skill to rank findings by impact and propose a targeted change. Measure again using the original scenario."
+    ],
+    "example": "Review the React route that shows our rowing-club fixture list. The race schedule and weather summary load in succession. Identify which requests are independent and show a change that preserves the error states.",
+    "check": "Inspect the before-and-after network timing and test a failure in each request independently. Check that a weather error still leaves the schedule visible."
+  },
+  {
+    "slug": "website-builder",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Advanced"
+    },
+    "name": "Website Builder (Landing Page Component System)",
+    "aliases": [
+      "website-builder"
+    ],
+    "source": "https://collectivebrain.de/en/skills/website-builder/",
+    "upstream": "https://collectivebrain.de/skills/website-builder/",
+    "kind": "Skill",
+    "description": "Assembles a campaign landing page from an existing component library and can save it as a WordPress draft for editorial review.",
+    "requirements": "An offer, audience, conversion goal, and block library. Creating the draft needs a WordPress connection with draft-editing permissions.",
+    "steps": [
+      "Inventory the available blocks and select the sections needed to explain the offer and support the conversion.",
+      "Request copy and a draft page using those blocks. Check the preview link, mobile layout, and form destination."
+    ],
+    "example": "Create a WordPress draft for our Saturday pottery taster. Use the studio’s class hero, instructor card, and booking blocks. The only booking action should point to the taster signup form.",
+    "check": "Confirm the page status is Draft and the booking link leads to the intended form from the mobile preview."
+  },
+  {
+    "slug": "ux-research-interview-kit",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner"
+    },
+    "name": "UX Research Interview Kit",
+    "aliases": [
+      "ux-research-interview-kit"
+    ],
+    "source": "https://collectivebrain.de/en/skills/ux-research-interview-kit/",
+    "upstream": "https://collectivebrain.de/skills/ux-research-interview-kit/",
+    "kind": "Skill",
+    "description": "Produces an interview screener, a timed question guide, a note-taking template, and a way to compare observations across interviews.",
+    "requirements": "A decision to inform, participant segment, session length, and any constraints on recruitment or recording.",
+    "steps": [
+      "State what the interviews should help decide and who has relevant recent experience.",
+      "Request behavioral questions and follow-ups, with space to record direct speech separately from interpretation. Pilot the sequence once."
+    ],
+    "example": "Prepare a 30-minute interview kit for people who booked a community bus in the last month. We need to understand how they selected a pickup point and what they did when their first choice was unavailable.",
+    "check": "Check that each core question asks about an actual occasion and that the session fits the time limit with room for follow-ups."
+  },
+  {
+    "slug": "persona-workshop-facilitator",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Persona Workshop Facilitator",
+    "aliases": [
+      "persona-workshop-facilitator"
+    ],
+    "source": "https://collectivebrain.de/en/skills/persona-workshop-facilitator/",
+    "upstream": "https://collectivebrain.de/skills/persona-workshop-facilitator/",
+    "kind": "Skill",
+    "description": "Builds B2B personas from observed buying decisions and work patterns, with evidence and validation questions for each proposed segment.",
+    "requirements": "Anonymized interviews, CRM records or win/loss notes, source IDs, and the business decision the personas will inform.",
+    "steps": [
+      "Provide diverse records, identifying repeat observations from the same customer.",
+      "Ask for personas grouped by role in the buying decision and the job to accomplish. Mark thin evidence as a hypothesis for the workshop."
+    ],
+    "example": "Use these twelve labeled sales-call summaries to prepare a workshop for a greenhouse scheduling product. Distinguish day-to-day users from purchase approvers only where the records support it.",
+    "check": "Pick one attribute per persona and trace it to a source. Test whether each persona changes a concrete messaging or product decision."
+  },
+  {
+    "slug": "b2b-value-proposition-mapper",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner"
+    },
+    "name": "B2B Value Proposition Mapper",
+    "aliases": [
+      "b2b-value-proposition-mapper"
+    ],
+    "source": "https://collectivebrain.de/en/skills/b2b-value-proposition-mapper/",
+    "upstream": "https://collectivebrain.de/skills/b2b-value-proposition-mapper/",
+    "kind": "Skill",
+    "description": "Connects a buyer’s problem to a product capability, an outcome, and supporting evidence that sales or product teams can substantiate.",
+    "requirements": "A buyer profile, customer observations, product capabilities, and available evidence such as a demo, quote, or measured result.",
+    "steps": [
+      "Describe the buyer’s current alternative and the cost of the problem in their own terms.",
+      "Request a ranked map of claims, evidence, and gaps. Select a headline only after checking that its proof supports the wording."
+    ],
+    "example": "Map our workshop booking software to the concerns in these three fleet-manager interviews. Use the attached demo to support capabilities and mark any time-savings claims that still need measurement.",
+    "check": "Trace every headline promise to the corresponding capability and proof. Ensure any numerical claim appears in the supplied evidence."
+  },
+  {
+    "slug": "founder-pitch-deck-coach",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Founder Pitch Deck Coach",
+    "aliases": [
+      "founder-pitch-deck-coach"
+    ],
+    "source": "https://collectivebrain.de/en/skills/founder-pitch-deck-coach/",
+    "upstream": "https://collectivebrain.de/skills/founder-pitch-deck-coach/",
+    "kind": "Skill",
+    "description": "Shapes a pitch into a sequence of defensible claims, with one job per slide, a suggested visual, and a clear ask at the end.",
+    "requirements": "A deck or outline, audience, speaking time, desired decision, and sources for any numbers or traction claims.",
+    "steps": [
+      "Identify the audience and what they should decide after the presentation.",
+      "Request a headline outline, a visual for each claim, and likely objections. Rehearse it against the time limit."
+    ],
+    "example": "Coach a six-minute seed pitch for a rehearsal-room booking startup. Reorder the attached slides around the pilot evidence, put detailed operations in the appendix, and flag unsupported claims.",
+    "check": "Read only the slide titles to see whether they tell the story. Time a rehearsal and verify the final ask and all quoted metrics."
+  },
+  {
+    "slug": "github-actions-sparen",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-14",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Collective Brain"
+    },
+    "name": "GitHub Actions: Minuten sparen",
+    "aliases": [
+      "github-actions-sparen",
+      "Save GitHub Actions minutes"
+    ],
+    "source": "https://collectivebrain.de/en/skills/github-actions-sparen/",
+    "upstream": "https://collectivebrain.de/skills/github-actions-sparen/",
+    "kind": "Skill",
+    "description": "Finds avoidable GitHub Actions runner time in CI and deployment workflows, such as repeated builds, stale runs, and jobs triggered by unrelated changes.",
+    "requirements": "Workflow YAML and representative recent run durations, plus the checks and release events that must continue to run.",
+    "steps": [
+      "Identify expensive jobs and which kinds of change really need each one. Compare repeated work across runs.",
+      "Request targeted changes such as canceling superseded preview runs or reusing a build artifact. Keep protected-branch and release checks covered."
+    ],
+    "example": "Review our static-site workflow and these five Actions timing reports. A README edit currently triggers two preview builds. Suggest a minimal change and explain which checks still run before release.",
+    "check": "Compare runner minutes on equivalent changes and confirm required checks complete for a documentation change, a source change, and a release."
+  }
+]
