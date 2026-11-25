@@ -103,7 +103,7 @@ export function getStaticPaths() {
                         </div>
                         <div class="builder-example" x-show="exampleLoaded">
                             <strong x-text="t.exampleExpected"></strong>
-                            <span class="builder-tag" x-text="t.planned"></span>
+                            <span class="builder-tag" x-text="exampleRun ? t.exampleTested + ' · ' + exampleRun.model : t.planned"></span>
                             <ul><template x-for="check in workflow.checks" x-bind:key="check.en"><li x-text="check[locale]"></li></template></ul>
                         </div>
                         <template x-for="field in workflow.fields.filter(field => field.required)" x-bind:key="field.key + draftKey">

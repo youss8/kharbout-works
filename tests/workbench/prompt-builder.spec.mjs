@@ -154,3 +154,11 @@ test('model selection changes structure, explains the rules, and preserves edite
     await expect(target).toHaveValue('gemini');
     await expect(prompt(page)).toContainText('{"title":"Filters"}');
 });
+
+test('claims an example run only for a profile with a completed benchmark pair', async ({ page }) => {
+    await page.goto(route + '?workflow=draft-email&model=claude-code');
+    await button(page, 'Load example').click();
+    await expect(page.getByText('Example run recorded · claude-haiku-4-5-20251001')).toBeVisible();
+    await page.getByRole('combobox', { name: 'Target model or assistant' }).selectOption('gemini');
+    await expect(page.getByText('Example planned')).toBeVisible();
+});

@@ -12,6 +12,7 @@ export const copy = {
     workspace: l('Prompt workspace', 'مساحة إعداد الموجّه'),
     example: l('Load example', 'حمّل المثال'),
     planned: l('Example planned', 'المثال مخطّط له'),
+    exampleTested: l('Example run recorded', 'تم تسجيل تجربة المثال'),
     exampleExpected: l('Expected result', 'النتيجة المتوقعة'),
     required: l('Required', 'مطلوب'),
     optional: l('Optional context', 'سياق اختياري'),

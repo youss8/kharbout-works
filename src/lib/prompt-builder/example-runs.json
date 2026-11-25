@@ -1,0 +1,135 @@
+{
+    "date": "2026-11-25",
+    "judge": "GPT-5.6 Sol in Codex",
+    "runs": [
+        {
+            "profile": "codex",
+            "model": "gpt-5.6-sol",
+            "locale": "en",
+            "results": [
+                {
+                    "workflow": "draft-email",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "summarize-notes",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "study-plan",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "meeting-follow-up",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "bug-to-spec",
+                    "checks": 7,
+                    "plain": 7,
+                    "builder": 7
+                },
+                {
+                    "workflow": "review-pull-request",
+                    "checks": 6,
+                    "plain": 5,
+                    "builder": 6
+                },
+                {
+                    "workflow": "implementation-brief",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "handover",
+                    "checks": 6,
+                    "plain": 5,
+                    "builder": 6
+                }
+            ]
+        },
+        {
+            "profile": "qwen",
+            "model": "qwen3:8b",
+            "locale": "en",
+            "results": [
+                {
+                    "workflow": "draft-email",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "summarize-notes",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                },
+                {
+                    "workflow": "study-plan",
+                    "checks": 6,
+                    "plain": 5,
+                    "builder": 6
+                },
+                {
+                    "workflow": "meeting-follow-up",
+                    "checks": 6,
+                    "plain": 5,
+                    "builder": 6
+                },
+                {
+                    "workflow": "bug-to-spec",
+                    "checks": 7,
+                    "plain": 6,
+                    "builder": 5
+                },
+                {
+                    "workflow": "review-pull-request",
+                    "checks": 6,
+                    "plain": 5,
+                    "builder": 6
+                },
+                {
+                    "workflow": "implementation-brief",
+                    "checks": 6,
+                    "plain": 4,
+                    "builder": 6
+                },
+                {
+                    "workflow": "handover",
+                    "checks": 6,
+                    "plain": 3,
+                    "builder": 5
+                }
+            ]
+        },
+        {
+            "profile": "claude-code",
+            "model": "claude-haiku-4-5-20251001",
+            "locale": "en",
+            "results": [
+                {
+                    "workflow": "draft-email",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 5
+                },
+                {
+                    "workflow": "summarize-notes",
+                    "checks": 6,
+                    "plain": 6,
+                    "builder": 6
+                }
+            ]
+        }
+    ]
+}

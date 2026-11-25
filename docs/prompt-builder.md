@@ -25,6 +25,8 @@ Follow these stages in private and enable the public route, links, and search en
 
 ## Cloud setup
 
+Use a Vercel Preview deployment protected with Vercel Authentication for private review. Give that preview its own Supabase project and environment values. Configure production separately after the staging checks pass. [Vercel Deployment Protection](https://vercel.com/docs/deployment-protection) · [Supabase environment setup](https://supabase.com/docs/guides/deployment)
+
 1. Create separate Supabase projects for staging and production. Apply the migrations in `supabase/migrations` and deploy the `prompt-ai` and `prompt-account` Edge Functions with JWT verification enabled.
 2. Set `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the Astro build environment. Cloud controls stay unavailable when either value is missing.
 3. Set `PROMPT_BUILDER_ORIGINS` on the Edge Functions to a comma-separated list of exact web origins. Set `OPENAI_API_KEY` as an Edge Function secret. Set the Supabase Auth site URL to the deployment, configure custom SMTP, set code expiry to 600 seconds, and use the email code template in `supabase/templates`. [Supabase SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp)
@@ -42,7 +44,21 @@ npm run test:workbench -- tests/workbench/prompt-builder.spec.mjs tests/workbenc
 
 Run `tests/database/prompt-builder.sql` in a local Supabase database after applying the migrations. Its fixtures run in a transaction and are rolled back. For browser testing with simulated cloud responses, serve Astro on loopback with `PUBLIC_SUPABASE_URL=https://prompt-test.supabase.co` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_test`, then run `tests/workbench/prompt-builder-cloud.spec.mjs` with `PLAYWRIGHT_PROMPT_CLOUD=1` and `PLAYWRIGHT_WORKBENCH_URL` set to the local server.
 
-Generate the eight benchmark pairs with `node scripts/prompt-builder-eval.mjs`. Add `--ar` for Arabic. With a staging provider key in the environment, add `--run` to send the fictional examples, collect both answers and score them against the same criteria. Save the JSON report with the staging release notes and review the scores against the answers. The examples remain **Planned** until the intended provider run is recorded.
+Generate the eight benchmark pairs with `node scripts/prompt-builder-eval.mjs`. Add `--ar` for Arabic. With a staging provider key in the environment, add `--run` to send the fictional examples, collect both answers and score them against the same criteria. Save the JSON report with the staging release notes and review the scores against the answers. A worked example stays **Planned** for its selected profile and language until a completed pair is recorded.
+
+## Recorded benchmark results
+
+On 25 November 2026, the plain request and builder prompt for each English fixture were submitted separately to the same assistant with the same source facts. GPT-5.6 Sol scored the completed pairs against the shared rubric and each workflow's checks, with answer order alternated between fixtures. Each score is the number of checks met in this run.
+
+| Profile and model | Completed pairs | Plain request | Builder prompt |
+| --- | ---: | ---: | ---: |
+| Codex · GPT-5.6 Sol | 8 of 8 | 47 / 49 | 49 / 49 |
+| Qwen · Qwen3 8B via Ollama | 8 of 8 | 40 / 49 | 46 / 49 |
+| Claude Code · Claude Haiku 4.5 | 2 of 8 | 12 / 12 | 11 / 12 |
+
+Claude Code completed both comparisons for drafting an email and summarizing notes. The configured provider rejected the remaining pairs because available credits were insufficient. The builder displays the recorded model for the completed English examples. [Per-workflow scores](../src/lib/prompt-builder/example-runs.json)
+
+## Production monitoring
 
 After launch, use the following query to review event counts, latency, and usage. Its input contains timing, outcome, and cost metadata.
 

@@ -2,6 +2,7 @@ import type Alpine from 'alpinejs';
 import { cloudMessages, cloudState } from './cloud-state';
 import type { AIReply, AIRequest, CloudDraft, Version } from './cloud';
 import { copy } from './copy';
+import exampleRuns from './example-runs.json';
 import {
     advanceChain, compilePrompt, formats, handoffContext, invalidResponseExample, maxFieldLength, maxImportBytes, maxSavedRuns,
     newDraft, readDraft, tones, visiblePrompt, type Draft, type Variant,
@@ -48,6 +49,12 @@ function createWorkspace() {
         get t() { return translations[this.locale]; },
         get workflow() { return findWorkflow(this.draft.workflowId)!; },
         get profile() { return modelProfile(this.draft.preferences.profile); },
+        get exampleRun() {
+            const { profile, outputLocale } = this.draft.preferences;
+            if (this.locale !== outputLocale) return;
+            return exampleRuns.runs.find(run => run.profile === profile && run.locale === outputLocale &&
+                run.results.some(result => result.workflow === this.draft.workflowId));
+        },
         get invalidExample() { return invalidResponseExample(this.draft.preferences); },
         get profileHint() {
             const preferences = this.draft.preferences;
