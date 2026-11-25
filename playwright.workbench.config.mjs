@@ -15,7 +15,7 @@ export default defineConfig({
         launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE },
     },
     webServer: runningURL ? undefined : {
-        command: 'node ./node_modules/astro/astro.js preview --host 127.0.0.1 --port 4339',
+        command: 'npm run preview -- --host 127.0.0.1 --port 4339',
         url: baseURL,
         reuseExistingServer: false,
     },
