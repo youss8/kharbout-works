@@ -172,8 +172,10 @@ test('Arabic, keyboard layout and typo matches lead to the same indexed destinat
         if (query !== 'retrns')
             await expect(first.locator('bdi[lang=ar] .ask-match').first()).toBeVisible();
     }
-    await assets.getByRole('option').first().click();
-    await expect(page).toHaveURL(/\/vault\/#bilingual-ask-palette$/);
+    await Promise.all([
+        page.waitForURL(/\/vault\/#bilingual-ask-palette$/, { waitUntil: 'load' }),
+        assets.getByRole('option').first().click(),
+    ]);
     await page.keyboard.press('Control+k');
     await expect(assets.getByRole('option').first()).toContainText('Bilingual Ask Palette');
 });
