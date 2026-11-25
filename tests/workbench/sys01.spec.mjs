@@ -79,6 +79,7 @@ test("back restores a linked inline row and relaxes conflicting filters", async 
 });
 
 test("mobile selection remains touchable and pending search keeps the previous requests", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-03-10T10:00:00Z") });
   await page.setViewportSize({ width: 375, height: 830 });
   await page.goto(path + "#service-desk");
   const desk = page.locator("[data-service-desk]");
@@ -96,8 +97,7 @@ test("mobile selection remains touchable and pending search keeps the previous r
   await table.getByLabel("Select request 1043").uncheck();
   expect(await selectAll.evaluate(input => input.indeterminate)).toBe(true);
 
-  await page.clock.install({ time: new Date("2026-03-10T10:00:00Z") });
-  await page.clock.pauseAt(new Date("2026-03-10T10:00:02Z"));
+  await page.clock.pauseAt(new Date("2026-03-10T11:00:00Z"));
   await desk.getByLabel("Search requests").fill("printer");
   await expect(table).toHaveAttribute("aria-busy", "true");
   await expect(table).toHaveAttribute("data-loading", "true");
@@ -105,6 +105,7 @@ test("mobile selection remains touchable and pending search keeps the previous r
   await expect(rows).toHaveCount(7);
   await page.clock.runFor(299);
   await expect(rows).toHaveCount(7);
+  await page.clock.runFor(1);
   await page.clock.resume();
   await expect(rows).toHaveCount(1);
   await expect(table).toHaveAttribute("aria-busy", "false");
