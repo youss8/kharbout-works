@@ -1,0 +1,311 @@
+[
+  {
+    "slug": "anthropic-pdf",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "pypdf assembled a cover and program pages 2–4 into one four-page PDF. Independent text extraction matched all four source pages in order. The last heading was “Evening handover”."
+    },
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "PDF Workflows",
+    "aliases": [
+      "PDF"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-pdf/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/pdf",
+    "kind": "Skill",
+    "description": "Reads and transforms PDF files. Typical jobs include extracting text or tables, combining pages, and using OCR to read scanned documents.",
+    "requirements": "Supply the PDFs and the page order or extraction rules. The example uses Python and pypdf to assemble pages. pdfplumber can extract text and tables. Scanned pages need an OCR engine such as Tesseract.",
+    "steps": [
+      "Give the files and describe the output, naming any pages to keep or exclude. Identify scanned pages if known.",
+      "Ask the skill to perform the operation on a new output file and inspect both the page sequence and the resulting text or data."
+    ],
+    "example": "Combine cover.pdf with pages 2–4 of the attached fair program and save volunteer-brief.pdf. Keep the cover first and tell me the heading on the last page.",
+    "check": "Open the four-page result, compare the first and last pages to the inputs, and confirm text remains selectable where the source had a text layer."
+  },
+  {
+    "slug": "anthropic-docx",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Microsoft Word paginated the induction guide into two pages, recognized both section headings, and kept all six checklist rows together. Its PDF export showed footer page numbers 1 and 2."
+    },
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Word Document Creation",
+    "aliases": [
+      "DOCX",
+      "Word"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-docx/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/docx",
+    "kind": "Skill",
+    "description": "Creates and edits Word documents with editable headings, lists, tables, page furniture, and other structured layout features.",
+    "requirements": "Provide a brief or an existing .docx and identify the styles to preserve. The creation workflow uses Node.js and the docx package. Pandoc can extract text for review. Open the result in Word or LibreOffice Writer to check pagination.",
+    "steps": [
+      "Provide the content hierarchy and any template, paper size, or editing constraints.",
+      "Request a new .docx or specific edits to a copy. Inspect the page layout and editability in a Word-compatible application."
+    ],
+    "example": "Make a two-page volunteer induction guide from the attached outline. Use real heading styles, a shift checklist, and a footer with page numbers. Save it as an editable Word file.",
+    "check": "Open the document, use the navigation pane to jump between headings, and check for split checklist rows or missing page numbers."
+  },
+  {
+    "slug": "anthropic-xlsx",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Excel recalculated the stocktake. Increasing a count by two changed the row variance from 1 to 3 and its shelf total from 0 to 2. The other shelf stayed at −2 and Excel reported no formula errors."
+    },
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Excel Spreadsheets",
+    "aliases": [
+      "XLSX",
+      "Excel"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-xlsx/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
+    "kind": "Skill",
+    "description": "Builds or revises Excel workbooks with structured data, formulas, formatting, and charts that respond to changed inputs.",
+    "requirements": "Provide a workbook or table with column meanings and units. The skill uses Python and openpyxl for formulas and formatting. Its recalculation helper uses LibreOffice. Open the result in Excel to inspect Excel-specific formulas.",
+    "steps": [
+      "Define inputs, formulas, expected totals, and treatment of blank values before asking for the workbook.",
+      "Ask for separate input and summary areas with formulas for derived values. Recalculate and try a known change."
+    ],
+    "example": "Create an .xlsx stocktake from the attached parts list. Each row needs counted quantity, expected quantity, and a formula for variance. Summarize the variance by shelf.",
+    "check": "Change a counted quantity by two, recalculate, and confirm the row and shelf totals both change by two with no formula errors."
+  },
+  {
+    "slug": "anthropic-pptx",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "PowerPoint opened and rendered four slides. Slide 2 contained an editable chart with the original departure counts (8 and 6 versus 10 and 7), plus the timetable assumption in its speaker notes."
+    },
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "PowerPoint Presentations",
+    "aliases": [
+      "PPTX",
+      "PowerPoint"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-pptx/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/pptx",
+    "kind": "Skill",
+    "description": "Creates and edits PowerPoint slide decks from outlines, notes, or existing presentations, with layouts suited to the audience and source material.",
+    "requirements": "Provide an outline, audience, speaking time, source data, and any template. The new-deck workflow uses Node.js and PptxGenJS. LibreOffice can render slides for a visual check, and PowerPoint can check the presentation and speaker notes.",
+    "steps": [
+      "Describe the story and identify the evidence or visual for each major point.",
+      "Request an editable .pptx and specify any presenter notes. Render all slides and inspect them in presentation view."
+    ],
+    "example": "Create a four-slide briefing for a fictional ferry operator from the attached timetable comparison. Use one editable comparison chart and put the assumptions into speaker notes.",
+    "check": "Open the deck in presentation mode, compare the chart values to the input, and check that the notes are attached to the correct slide."
+  },
+  {
+    "slug": "notion-ops-connector",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Notion Ops Connector",
+    "aliases": [
+      "notion-ops-connector"
+    ],
+    "source": "https://collectivebrain.de/en/skills/notion-ops-connector/",
+    "upstream": "https://collectivebrain.de/skills/notion-ops-connector/",
+    "kind": "Skill",
+    "description": "Reads and updates Notion databases while respecting their property types and checking for existing records before creating new ones.",
+    "requirements": "A Notion integration or MCP connection with access to the selected database and appropriate permissions. Supply its link and a stable key for identifying records.",
+    "steps": [
+      "Inspect the database schema and filter to the relevant records before preparing changes.",
+      "Match each input to the unique key, request the intended update or creation, and review the changed page links."
+    ],
+    "example": "In the connected rehearsal database, apply these three revised session dates using Session ID to match the rows. Leave unrelated properties alone and list any ID that has no match.",
+    "check": "Reopen each matched page and compare its date to the input. Confirm the database row count stayed the same for this update-only job."
+  },
+  {
+    "slug": "obsidian-markdown",
+    "listing": {
+      "updated": "2026-11-02",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "kepano"
+    },
+    "name": "Obsidian Markdown",
+    "aliases": [
+      "obsidian-markdown"
+    ],
+    "source": "https://collectivebrain.de/en/skills/obsidian-markdown/",
+    "upstream": "https://github.com/obsidianmd/obsidian-skills/tree/main/plugins/obsidian/skills/obsidian-markdown",
+    "kind": "Skill",
+    "description": "Writes notes using Obsidian’s Markdown extensions, including wikilinks, embeds, callouts, tags, and YAML properties.",
+    "requirements": "An Obsidian vault or example notes and the actual names or paths of notes and attachments you want to reference.",
+    "steps": [
+      "Give the note’s purpose, folder, property conventions, and target links.",
+      "Request a note with the needed Obsidian syntax and open it inside the vault to inspect links and embeds."
+    ],
+    "example": "Create an Obsidian note for the Harbor Walk field trip. Link the existing Weather Log and Route Map notes, embed pier-plan.png, and use a callout for tide-dependent stops.",
+    "check": "Open the note in reading view, follow both wikilinks, and confirm the image, properties, and callout render correctly."
+  },
+  {
+    "slug": "obsidian-bases",
+    "listing": {
+      "updated": "2026-11-04",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "kepano"
+    },
+    "name": "Obsidian Bases",
+    "aliases": [
+      "obsidian-bases",
+      ".base"
+    ],
+    "source": "https://collectivebrain.de/en/skills/obsidian-bases/",
+    "upstream": "https://github.com/obsidianmd/obsidian-skills/tree/main/plugins/obsidian/skills/obsidian-bases",
+    "kind": "Skill",
+    "description": "Creates or edits .base files that present vault notes as filtered views with columns, formulas, sort orders, and summaries.",
+    "requirements": "An Obsidian vault with Bases enabled and sample notes showing the exact property names and types.",
+    "steps": [
+      "Show representative notes and define which ones belong in the view, including how to handle missing properties.",
+      "Request a .base file with the desired views and formula columns. Open it against the sample notes and inspect the included rows."
+    ],
+    "example": "Create a Base for my seed library. Show only notes tagged seed-lot, group by plant family, and calculate which packets are past their sow-by date. Handle notes with no date explicitly.",
+    "check": "Check the view against one expired, one future, one undated, and one unrelated note. Verify each appears in the intended group or is filtered out."
+  },
+  {
+    "slug": "lark-im",
+    "listing": {
+      "version": "v1.0.0",
+      "updated": "2026-11-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "larksuite"
+    },
+    "name": "lark-im",
+    "aliases": [
+      "Lark IM",
+      "Feishu messaging"
+    ],
+    "source": "https://collectivebrain.de/en/skills/lark-im/",
+    "upstream": "https://github.com/larksuite/cli/tree/main/skills/lark-im",
+    "kind": "Skill",
+    "description": "Uses the Lark CLI’s messaging capabilities to find conversations, read threads, and work with messages or attachments in a Lark workspace.",
+    "requirements": "The Lark CLI set up for the workspace, an authenticated identity with access to the relevant chats, and the chat name or message ID.",
+    "steps": [
+      "Identify the chat and time window, then retrieve the relevant thread. Confirm which identity and chat the result belongs to.",
+      "Ask for the specific message operation or summary. Use exact message IDs if similar threads have the same title."
+    ],
+    "example": "Read this week’s messages in the test channel Stage Crew and summarize costume pickup changes. Include the message references beside each new pickup time.",
+    "check": "Open the cited messages in Lark and check their dates, thread context, and pickup times against the summary."
+  },
+  {
+    "slug": "gws-gmail",
+    "listing": {
+      "version": "v0.22.5",
+      "updated": "2026-11-16",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "googleworkspace"
+    },
+    "name": "gws-gmail",
+    "aliases": [
+      "GWS Gmail",
+      "Google Workspace CLI Gmail"
+    ],
+    "source": "https://collectivebrain.de/en/skills/gws-gmail/",
+    "upstream": "https://github.com/googleworkspace/cli",
+    "kind": "Skill",
+    "description": "Works with Gmail messages, labels, and threads through the Google Workspace CLI, including reading unread mail and preparing replies.",
+    "requirements": "The gws CLI, a configured Google account, Gmail API access, and the appropriate OAuth permissions for the requested action.",
+    "steps": [
+      "Choose the mailbox and narrow the query by sender, subject, label, or date.",
+      "Request the operation and specify whether to summarize, draft, or send. For threaded work, confirm the original conversation."
+    ],
+    "example": "Find the latest message with the subject ‘Stage lighting delivery’ in my props-test mailbox. Draft a reply in that thread asking for the loading bay arrival time and show me the draft.",
+    "check": "Open the draft in Gmail, check its recipient and subject, and confirm it belongs to the expected thread."
+  },
+  {
+    "slug": "gws-drive",
+    "listing": {
+      "version": "v0.22.5",
+      "updated": "2026-11-19",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "googleworkspace"
+    },
+    "name": "Gws Drive",
+    "aliases": [
+      "gws-drive",
+      "Google Workspace CLI Drive"
+    ],
+    "source": "https://collectivebrain.de/en/skills/gws-drive/",
+    "upstream": "https://github.com/googleworkspace/cli",
+    "kind": "Skill",
+    "description": "Uses the Google Workspace CLI to find, copy, upload, or export Drive files and work with shared-drive resources.",
+    "requirements": "The gws CLI authenticated to an account with Drive API access and the permissions required for the particular file or shared drive.",
+    "steps": [
+      "Scope the task to the right folder or shared drive and identify the target by file ID if names repeat.",
+      "Specify the action, exported format, and destination. Request the source file reference and resulting path or file link."
+    ],
+    "example": "Find ‘Gallery opening checklist’ inside the Exhibitions test folder and export the Google Doc as a PDF. Use the version in that folder even if another file shares its title.",
+    "check": "Confirm the source file ID and folder, then open the PDF and check that its final checklist item matches the Google Doc."
+  }
+]

@@ -1,0 +1,172 @@
+[
+  {
+    "slug": "brand-voice-enforcement",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Brand Voice Enforcement",
+    "aliases": [
+      "brand-voice-enforcement"
+    ],
+    "source": "https://collectivebrain.de/en/skills/brand-voice-enforcement/",
+    "upstream": "https://collectivebrain.de/skills/brand-voice-enforcement/",
+    "kind": "Skill",
+    "description": "Applies a team’s existing voice guide to a new draft, with attention to terminology, sentence style, and how tone shifts across channels.",
+    "requirements": "The approved voice guide, preferred and restricted terms, a content brief, and the intended channel.",
+    "steps": [
+      "Provide the current guide and a representative example alongside the draft or brief.",
+      "Request copy for the intended reader and a short explanation of any places the brief conflicts with the guide."
+    ],
+    "example": "Rewrite this missed-pickup notice using the guide for Elm Basket, our fictional grocery co-op. Keep the collection window unchanged and use the same name for the pickup desk as the app.",
+    "check": "Compare the final text with the approved terms and confirm the time, location, and required customer action match the original notice."
+  },
+  {
+    "slug": "brand-voice-guideline-generation",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Brand Voice Guidelines Generator",
+    "aliases": [
+      "brand-voice-guideline-generation"
+    ],
+    "source": "https://collectivebrain.de/en/skills/brand-voice-guideline-generation/",
+    "upstream": "https://collectivebrain.de/skills/brand-voice-guideline-generation/",
+    "kind": "Skill",
+    "description": "Infers a working voice guide from approved writing, including preferred words, sentence patterns, example rewrites, and points the team still needs to decide.",
+    "requirements": "Several representative pieces of approved content, their audience and channel, and examples the team considers off-brand.",
+    "steps": [
+      "Label the samples by context and identify which ones best represent the voice.",
+      "Request a guide with evidence for each rule, contrasting examples, and questions where the samples disagree."
+    ],
+    "example": "Derive a one-page voice guide from our six museum newsletters and three donor letters. Show how the same announcement should sound in each channel and flag any conflicting preferences.",
+    "check": "Give a writer a new announcement and the guide. Check whether their draft follows the documented choices without copying the source samples."
+  },
+  {
+    "slug": "brand-voice-discover-brand",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Discover Brand Materials",
+    "aliases": [
+      "brand-voice-discover-brand"
+    ],
+    "source": "https://collectivebrain.de/en/skills/brand-voice-discover-brand/",
+    "upstream": "https://collectivebrain.de/skills/brand-voice-discover-brand/",
+    "kind": "Skill",
+    "description": "Inventories approved brand materials across connected workspaces and helps identify the most current guidance for voice, visual identity, and positioning.",
+    "requirements": "Read access to the relevant folders or workspace connectors, a brand name, and the scope of the search.",
+    "steps": [
+      "Specify the collections to search and any brand aliases or campaign names.",
+      "Ask for a categorized inventory with original links, owners or dates when available, and unresolved conflicts between versions."
+    ],
+    "example": "Find North Pier Press brand materials in the shared Marketing Drive folder and its connected wiki. Identify our latest logo pack and voice guide and surface older files that editors might confuse with them.",
+    "check": "Open the top references and check their owners, revision history, and approval status before designating a canonical guide."
+  },
+  {
+    "slug": "marketing-brand-review",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Brand Review",
+    "aliases": [
+      "marketing-brand-review"
+    ],
+    "source": "https://collectivebrain.de/en/skills/marketing-brand-review/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/marketing/skills/brand-review",
+    "kind": "Skill",
+    "description": "Checks finished marketing copy against the agreed brand voice and messaging pillars, with the offending passage and a suggested replacement for each deviation.",
+    "requirements": "The draft, approved style guide and messaging pillars, the channel, and the intended audience.",
+    "steps": [
+      "Share the content and the specific guidance that governs it.",
+      "Request a prioritized review with the rule, quoted passage, and replacement. Decide which edits to accept and rerun the review."
+    ],
+    "example": "Review this partnership email against our urban orchard brand guide. Highlight unsupported superlatives, inconsistent names for volunteers, and any text that conflicts with our stated audience.",
+    "check": "Trace each proposed correction to a guide rule and reread the accepted edits in the context of the entire email."
+  },
+  {
+    "slug": "anthropic-brand-guidelines",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Anthropic Brand Application",
+    "aliases": [
+      "brand-guidelines",
+      "anthropic-brand-guidelines"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-brand-guidelines/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/brand-guidelines",
+    "kind": "Skill",
+    "description": "Applies Anthropic’s published visual palette and typographic conventions to an artifact where that identity is appropriate.",
+    "requirements": "An editable artifact, the Anthropic brand-guidelines skill, and suitable fonts or the fallbacks supplied by the skill.",
+    "steps": [
+      "Identify the artifact and the parts that need brand styling, such as slide titles, diagrams, and accents.",
+      "Apply the prescribed palette and text styles, then render the artifact in its delivery format."
+    ],
+    "example": "Style this internal reference slide on Anthropic’s developer tools using the Anthropic Brand Application skill. Preserve the sample diagram labels and check the fallback heading font.",
+    "check": "Compare the colors and typography with the skill’s reference, then inspect the rendered slide for contrast and line wrapping."
+  },
+  {
+    "slug": "brandkit",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "Brandkit",
+    "aliases": [
+      "brandkit",
+      "brand board"
+    ],
+    "source": "https://collectivebrain.de/en/skills/brandkit/",
+    "upstream": "https://collectivebrain.de/skills/brandkit/",
+    "kind": "Skill",
+    "description": "Builds a single visual brand board connecting a positioning statement to a palette, type system, logo directions, and sample applications.",
+    "requirements": "The brand name, audience, category, visual constraints, and several attributes describing its intended character.",
+    "steps": [
+      "Share the brief and ask for a small number of directions tied to the positioning.",
+      "Choose a direction and request a board with labeled color roles, font choices, and examples at real usage sizes."
+    ],
+    "example": "Build a brand board for Tide Table, a small coastal cookery school. The identity should feel practical and welcoming. Show it on a course card, an apron label, and a square profile image.",
+    "check": "Check small-size logo legibility, color values and contrast, and whether the same typography can work across all three applications."
+  }
+]

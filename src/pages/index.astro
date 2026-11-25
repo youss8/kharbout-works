@@ -5,6 +5,7 @@ import { leaveDesk } from "../components/demos/hr-alpine.js";
 import { kpiCockpit } from "../components/demos/portfolio-alpine.js";
 import BaseLayout from "../components/layout/BaseLayout.astro";
 import { siteName } from "../data/brand";
+import { skillGuides } from "../data/claude-skills";
 import { profile } from "../data/profile";
 
 const builtPages = import.meta.glob("/src/pages/**/*.{astro,ts}");
@@ -54,6 +55,7 @@ const directory = [
   { path: "systems", name: "System sandboxes", count: "06", detail: "Explore business workflows, architecture and working demos.", icon: Network },
   { path: "vault", name: "Component vault", count: "20", detail: "Explore four tiers of reusable operational interfaces.", icon: Layers3 },
   { path: "ai-kit", name: "AI engineering toolkit", count: "11", detail: "Compile and export Gems, skills and workflows.", icon: Braces },
+  { path: "claude-code-skills", name: "Claude Code skills", count: String(skillGuides.length), detail: "Find a skill by task, copy its example and check the result.", icon: FileStack },
   { path: "templates", name: "Operations templates", count: "05", detail: "Download architecture, planning and handover documents.", icon: FileStack },
   { path: "lab", name: "R&D lab", count: "04", detail: "Try independent product and interaction prototypes.", icon: FlaskConical },
 ];

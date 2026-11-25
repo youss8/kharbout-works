@@ -1,0 +1,852 @@
+[
+  {
+    "slug": "security-audit",
+    "listing": {
+      "updated": "2026-11-01",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "cloudflare"
+    },
+    "name": "Security Audit",
+    "aliases": [
+      "security-audit",
+      "Cloudflare security audit"
+    ],
+    "source": "https://collectivebrain.de/en/skills/security-audit/",
+    "upstream": "https://github.com/cloudflare/security-audit-skill",
+    "kind": "Skill",
+    "description": "Reviews application source for security defects and records the evidence, impact and remediation for each finding.",
+    "requirements": "A codebase you maintain, a defined review scope, and the intended trust or access rules.",
+    "steps": [
+      "Name the files, operation and trust boundary. Ask for a defensive review of the code path from entry point to data access.",
+      "Request findings with file references, the affected assumption and a proposed correction. Mark areas the code cannot establish."
+    ],
+    "example": "Review the generated invoice download handler in this sample app. The signed-in customer should only receive invoices belonging to their account. Cite the authorization check and suggest a fix if it is missing.",
+    "check": "Trace the reported path through the actual handler and query. Verify that the corrected code applies the account constraint before reading the record."
+  },
+  {
+    "slug": "superpowers",
+    "listing": {
+      "updated": "2026-11-03",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "obra"
+    },
+    "name": "Superpowers",
+    "aliases": [
+      "superpowers",
+      "obra/superpowers"
+    ],
+    "source": "https://collectivebrain.de/en/skills/superpowers/",
+    "upstream": "https://github.com/obra/superpowers",
+    "kind": "Collection",
+    "description": "Provides coordinated engineering workflows for clarifying requirements, planning, test-driven development, debugging and review.",
+    "requirements": "A coding project, a concrete outcome and a way to run its tests. Install the collection using its publisher’s instructions for Claude Code.",
+    "steps": [
+      "Describe one user-visible behavior and work through the design questions. Agree on a testable scope.",
+      "Use the implementation plan to build one behavior at a time, then review the diff and test results against the agreed design."
+    ],
+    "example": "Use Superpowers to design an undo action for a fictional reading list. Work out what happens when a title is restored twice, then plan and test the behavior.",
+    "check": "Run the reading-list tests and verify that one undo restores one entry in its original position."
+  },
+  {
+    "slug": "google-agents-cli-adk-code",
+    "listing": {
+      "version": "v1.12.0",
+      "updated": "2026-11-04",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "google"
+    },
+    "name": "Google Agents CLI ADK Code",
+    "aliases": [
+      "google-agents-cli-adk-code",
+      "Google ADK"
+    ],
+    "source": "https://collectivebrain.de/en/skills/google-agents-cli-adk-code/",
+    "upstream": "https://github.com/google/agents-cli",
+    "kind": "Skill",
+    "description": "Looks up Google Agent Development Kit patterns for implementing agents, tools, callbacks and state in Python or Go.",
+    "requirements": "Google agents-cli, an initialized ADK project and a description of the behavior you want to add.",
+    "steps": [
+      "Have the skill inspect the project metadata and choose the reference for its language.",
+      "Define the tool inputs and result shape, then call the tool locally with a sample fixture through the ADK project."
+    ],
+    "example": "Add a Python ADK tool to our demo gallery guide that returns opening hours from this JSON fixture. Explain where registration belongs in the existing agent.",
+    "check": "Ask for the hours of one listed gallery and one unknown gallery. Check the answers against the fixture and the defined missing-result behavior."
+  },
+  {
+    "slug": "agent-browser",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Agent Browser 0.44.0 filtered the fixture to two short stories and opened the first. The resulting heading was “Three Ferries at Dawn” and its cover caption matched the original library record."
+    },
+    "listing": {
+      "updated": "2026-11-05",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "vercel-labs"
+    },
+    "name": "Agent Browser",
+    "aliases": [
+      "agent-browser",
+      "Vercel Agent Browser"
+    ],
+    "source": "https://collectivebrain.de/en/skills/agent-browser/",
+    "upstream": "https://github.com/vercel-labs/agent-browser",
+    "kind": "CLI skill",
+    "description": "Controls a browser from the command line to exercise UI flows, inspect page structure and capture evidence.",
+    "requirements": "The agent-browser CLI, a supported browser installed for it, and a reachable application URL.",
+    "steps": [
+      "Open a test page and inspect its current interactive elements. Identify controls by their name or snapshot reference.",
+      "Complete a short flow, refresh the snapshot after navigation and save evidence of the resulting state."
+    ],
+    "example": "Use Agent Browser on the local library demo. Filter to short stories, open the first result, and capture the selected book’s title and cover caption.",
+    "check": "Compare the selected list item with the title on its detail page and confirm the evidence shows the final selection."
+  },
+  {
+    "slug": "mattpocock-tdd",
+    "listing": {
+      "updated": "2026-11-06",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "mattpocock"
+    },
+    "name": "TDD",
+    "aliases": [
+      "tdd",
+      "test-driven development",
+      "Matt Pocock TDD"
+    ],
+    "source": "https://collectivebrain.de/en/skills/mattpocock-tdd/",
+    "upstream": "https://github.com/mattpocock/skills",
+    "kind": "Skill",
+    "description": "Builds a change through short cycles of failing and passing tests written against observable behavior.",
+    "requirements": "The project’s test runner, an accessible public interface and one acceptance criterion.",
+    "steps": [
+      "Write one test through the public interface and confirm that it fails for the expected reason.",
+      "Make the smallest passing change, then refactor with the test still green before adding the next behavior."
+    ],
+    "example": "Use TDD for a reservation expiry rule. A booking held at 10:00 for 15 minutes should be released at 10:15. Keep the test at the reservation-service boundary.",
+    "check": "Run the new test against the old and new behavior, then run the surrounding suite to catch regressions."
+  },
+  {
+    "slug": "setup-matt-pocock-skills",
+    "listing": {
+      "updated": "2026-11-07",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "mattpocock"
+    },
+    "name": "Setup Matt Pocock Skills",
+    "aliases": [
+      "setup-matt-pocock-skills"
+    ],
+    "source": "https://collectivebrain.de/en/skills/setup-matt-pocock-skills/",
+    "upstream": "https://github.com/mattpocock/skills",
+    "kind": "Skill",
+    "description": "Configures a repository’s issue tracker, triage vocabulary and documentation locations for Matt Pocock’s engineering workflows.",
+    "requirements": "A repository and decisions about the tracker, label names, glossary and architecture records. A remote tracker may need its authenticated CLI.",
+    "steps": [
+      "Run the setup workflow in the repository. Supply its existing conventions or choose local Markdown tracking.",
+      "Review the generated agent instructions and referenced paths against the repository layout."
+    ],
+    "example": "Configure this sample repository to keep issues in local Markdown. Use our existing glossary and document where architecture decisions belong.",
+    "check": "Follow the generated instructions to locate a sample issue, glossary entry and architecture decision. Check that each path resolves."
+  },
+  {
+    "slug": "caveman",
+    "listing": {
+      "updated": "2026-11-07",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "juliusbrussee"
+    },
+    "name": "Caveman",
+    "aliases": [
+      "caveman"
+    ],
+    "source": "https://collectivebrain.de/en/skills/caveman/",
+    "upstream": "https://github.com/juliusbrussee/caveman",
+    "kind": "Collection",
+    "description": "Offers terse response styles and tools for compressing frequently loaded context while preserving technical facts.",
+    "requirements": "Claude Code and a sample output to shorten. File-compression features also require the publisher’s companion scripts and Python.",
+    "steps": [
+      "Choose a compression level and specify which facts, commands and errors must remain verbatim.",
+      "Apply the style to a small review or status report and compare it with the original before using it more broadly."
+    ],
+    "example": "Rewrite the attached fictional CI report in Caveman style. Keep the failing test name, the exact error, who owns the fix, and the next command.",
+    "check": "Compare the rewritten report with the original and verify that all four requested details are intact."
+  },
+  {
+    "slug": "typescript-advanced-types",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "TypeScript 5.8.3 compiled the event listeners in strict mode and inferred the correct payload for each event. A separate listener with the wrong payload failed compilation with the expected TS2345 diagnostic."
+    },
+    "listing": {
+      "updated": "2026-11-08",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "wshobson"
+    },
+    "name": "TypeScript Advanced Types",
+    "aliases": [
+      "typescript-advanced-types"
+    ],
+    "source": "https://collectivebrain.de/en/skills/typescript-advanced-types/",
+    "upstream": "https://github.com/wshobson/agents",
+    "kind": "Skill",
+    "description": "Models relationships between inputs and outputs using TypeScript generics, conditional types, mapped types and other type-system features.",
+    "requirements": "A TypeScript project, its compiler settings and examples of calls that should compile or fail.",
+    "steps": [
+      "Show the current types and representative callers. State exactly which input determines each result type.",
+      "Ask for the simplest type expressing that relationship and compile examples of both valid and invalid calls."
+    ],
+    "example": "Type our fictitious event map so registering a listener for “bookingCreated” receives a booking ID and “roomClosed” receives a room ID. Preserve inference at the call site.",
+    "check": "Run the project type check. Confirm valid listeners infer their payloads and a type-test fixture rejects a mismatched payload."
+  },
+  {
+    "slug": "herdrdev-herdr",
+    "listing": {
+      "updated": "2026-11-08",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Advanced",
+      "author": "herdrdev"
+    },
+    "name": "Herdr",
+    "aliases": [
+      "herdr",
+      "herdrdev/herdr"
+    ],
+    "source": "https://collectivebrain.de/en/skills/herdrdev-herdr/",
+    "upstream": "https://github.com/herdrdev/herdr",
+    "kind": "CLI skill",
+    "description": "Lets Claude inspect and coordinate terminal panes, running tasks and agents inside a Herdr workspace.",
+    "requirements": "A running Herdr installation with Claude in a managed pane. The skill checks the Herdr environment before controlling the session.",
+    "steps": [
+      "Explicitly name Herdr and ask it to list panes in your current workspace. Identify the relevant pane by its ID and task.",
+      "Ask for the recent output or state of that pane, or start a named local task in a separate pane."
+    ],
+    "example": "Use Herdr to find the pane running the sample frontend tests. Summarize the latest failure and give me the pane ID so I can open it.",
+    "check": "Switch to the returned pane and confirm the displayed error and test name match the summary."
+  },
+  {
+    "slug": "google-agents-cli-deploy",
+    "listing": {
+      "version": "v1.13.0",
+      "updated": "2026-11-09",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Advanced",
+      "author": "google"
+    },
+    "name": "Google Agents CLI Deploy",
+    "aliases": [
+      "google-agents-cli-deploy"
+    ],
+    "source": "https://collectivebrain.de/en/skills/google-agents-cli-deploy/",
+    "upstream": "https://github.com/google/agents-cli",
+    "kind": "Skill",
+    "description": "Prepares and deploys an agent to a supported Google Cloud runtime, with guidance for staging, service accounts and rollback.",
+    "requirements": "An agents-cli project, test and evaluation results, a Google Cloud project and deployment permissions for the chosen target.",
+    "steps": [
+      "Choose the staging target and explain its runtime, credentials, configuration and expected resource changes.",
+      "Review the evaluation results and deployment plan. After an authorized staging deployment, send a sample request and inspect the logs."
+    ],
+    "example": "Prepare a staging deployment plan for the fictional Field Notes agent on Cloud Run. List the required project settings, evaluation results and rollback steps for our review.",
+    "check": "Match the proposed target and identity to the staging project. For a deployment, verify its revision and response to a known test input."
+  },
+  {
+    "slug": "playwright-cli",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Microsoft Playwright CLI operated the RSVP controls in Chrome. One seat cost $18.50, two cost $37.00, and removing a seat restored $18.50. The final screenshot matched the initial one pixel for pixel."
+    },
+    "listing": {
+      "updated": "2026-11-09",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "microsoft"
+    },
+    "name": "playwright-cli",
+    "aliases": [
+      "Playwright CLI"
+    ],
+    "source": "https://collectivebrain.de/en/skills/playwright-cli/",
+    "upstream": "https://github.com/microsoft/playwright-cli",
+    "kind": "CLI skill",
+    "description": "Uses Playwright’s command-line browser sessions to inspect pages, exercise controls and diagnose failures in browser tests.",
+    "requirements": "The playwright-cli executable, its supported browser, and a local app or reproducible test URL.",
+    "steps": [
+      "Open the page and capture a fresh snapshot. Use its element references to perform the interaction.",
+      "Inspect the resulting state or capture a screenshot. For a failing test, use the supported debug session for your installed version."
+    ],
+    "example": "Use playwright-cli on the local RSVP demo. Select two seats, return to one, and inspect whether the summary returns to the original price.",
+    "check": "Verify the displayed quantity and price at each step, then compare the final screenshot with the one-seat starting state."
+  },
+  {
+    "slug": "ponytail",
+    "listing": {
+      "updated": "2026-11-10",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "dietrichgebert"
+    },
+    "name": "Ponytail",
+    "aliases": [
+      "ponytail"
+    ],
+    "source": "https://collectivebrain.de/en/skills/ponytail/",
+    "upstream": "https://github.com/dietrichgebert/ponytail",
+    "kind": "Collection",
+    "description": "Keeps implementation changes small and provides review workflows for identifying unnecessary code, bugs and deferred cleanup.",
+    "requirements": "A working tree or diff, a concrete behavior to preserve and the project’s verification command.",
+    "steps": [
+      "Choose whether to implement a change or review an existing diff. State the exact user-visible requirement.",
+      "Ask for the smallest complete change or a ranked review with evidence. Check any proposed removal against current callers."
+    ],
+    "example": "Review the diff for the fictional meal picker with Ponytail. Flag abstractions introduced just to format one label and show whether the simpler implementation preserves empty selections.",
+    "check": "Run the empty and populated selection cases and compare the label and resulting diff with the stated requirement."
+  },
+  {
+    "slug": "turborepo",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Six local Turborepo 2.11.13 builds reproduced the stale storefront CSS and verified the fix. Adding the upstream build dependency made a token change rebuild the library and storefront. The independent staff app stayed cached, and the rebuilt CSS contained the new color."
+    },
+    "listing": {
+      "updated": "2026-11-10",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "vercel"
+    },
+    "name": "Turborepo",
+    "aliases": [
+      "turborepo",
+      "turbo"
+    ],
+    "source": "https://collectivebrain.de/en/skills/turborepo/",
+    "upstream": "https://github.com/vercel/turborepo",
+    "kind": "Skill",
+    "description": "Uses Turborepo’s version-matched guidance to set up task dependencies, caching and selective builds in a monorepo.",
+    "requirements": "A workspace with package manifests, a lockfile, turbo configuration and the command or CI job in question.",
+    "steps": [
+      "Identify the installed turbo version and trace the target task through its dependencies, inputs and outputs.",
+      "Run the affected task twice, then change one declared input and observe which packages rebuild."
+    ],
+    "example": "Our fictional monorepo has a UI library and two apps. Diagnose why editing a design token leaves the storefront build cached. Use the installed turbo version.",
+    "check": "An unchanged second build should use cache. After the token changes, the affected app should rebuild with the new token in its output."
+  },
+  {
+    "slug": "google-agents-cli-publish",
+    "listing": {
+      "version": "v1.13.0",
+      "updated": "2026-11-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "google"
+    },
+    "name": "Google Agents CLI Publish",
+    "aliases": [
+      "google-agents-cli-publish"
+    ],
+    "source": "https://collectivebrain.de/en/skills/google-agents-cli-publish/",
+    "upstream": "https://github.com/google/agents-cli/blob/main/skills/google-agents-cli-publish/SKILL.md",
+    "kind": "Skill",
+    "description": "Registers an already deployed agent with a Gemini Enterprise application so an intended audience can discover and use it.",
+    "requirements": "A supported deployed agent, agents-cli, destination application details and registration permissions for the Google Cloud project.",
+    "steps": [
+      "Identify the deployed agent and the target application. Check the region, display name and identity configuration.",
+      "Review the proposed registration details, then use a test account in the intended audience to locate the published agent."
+    ],
+    "example": "Prepare registration of our staging museum guide in the staff Gemini Enterprise app. Show which deployment and application IDs will be used and draft a clear display name.",
+    "check": "Match the registration to the intended deployed agent and test discovery and a fixture question with an eligible staff account."
+  },
+  {
+    "slug": "supabase-postgres-best-practices",
+    "listing": {
+      "version": "v1.1.1",
+      "updated": "2026-11-13",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "supabase"
+    },
+    "name": "Supabase Postgres Best Practices",
+    "aliases": [
+      "supabase-postgres-best-practices",
+      "PostgreSQL"
+    ],
+    "source": "https://collectivebrain.de/en/skills/supabase-postgres-best-practices/",
+    "upstream": "https://supabase.com/docs/guides/ai-tools/ai-skills",
+    "kind": "Skill",
+    "description": "Applies Supabase’s PostgreSQL guidance to schema choices, indexing, query plans, data access policies and migrations.",
+    "requirements": "A Postgres schema or query, its workload and representative test data. For performance work, include a plan from a suitable test environment.",
+    "steps": [
+      "Provide the slow query, table definitions, existing indexes and representative row counts. Ask which part of the plan dominates the cost.",
+      "Compare a proposed change on the same data and verify that returned rows and ordering stay correct."
+    ],
+    "example": "Review the reading-room query that lists a member’s latest 20 loans, ordered by checkout date. Use this schema and staging plan to assess whether a composite index would help.",
+    "check": "Compare the original and revised query plans on the same fixture, and confirm both return the same 20 loan IDs in order."
+  },
+  {
+    "slug": "accessibility",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-11-13",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "addyosmani"
+    },
+    "name": "Accessibility",
+    "aliases": [
+      "accessibility",
+      "WCAG 2.2",
+      "web-quality-skills"
+    ],
+    "source": "https://collectivebrain.de/en/skills/accessibility/",
+    "upstream": "https://github.com/addyosmani/web-quality-skills",
+    "kind": "Skill",
+    "description": "Reviews web implementation against accessibility criteria and helps fix barriers in semantics, keyboard interaction, focus and contrast.",
+    "requirements": "Relevant page or component code and a working page for keyboard, assistive technology and visual checks.",
+    "steps": [
+      "Choose one user journey and name the WCAG target. Ask for findings tied to an element, observed behavior and success criterion.",
+      "Make the changes, repeat the journey with a keyboard and inspect accessible names and status announcements."
+    ],
+    "example": "Review our fictional events filter against WCAG 2.2 AA. A keyboard user should be able to set a date, clear the filter and hear the updated result count.",
+    "check": "Complete the entire flow with the keyboard and a screen reader. Verify the result count is announced once and focus remains usable."
+  },
+  {
+    "slug": "fastify-best-practices",
+    "listing": {
+      "updated": "2026-11-15",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "mcollina"
+    },
+    "name": "Fastify Best Practices",
+    "aliases": [
+      "fastify-best-practices"
+    ],
+    "source": "https://collectivebrain.de/en/skills/fastify-best-practices/",
+    "upstream": "https://github.com/mcollina/skills",
+    "kind": "Skill",
+    "description": "Guides Fastify route, schema, plugin and lifecycle design for Node.js services.",
+    "requirements": "An existing Fastify app or scaffold, its installed version, and the expected request and response contract.",
+    "steps": [
+      "Share a route contract and show the plugin that owns it. Ask for validation and a response schema appropriate to that scope.",
+      "Exercise the route through Fastify’s injection API with valid and invalid requests. Inspect status codes and serialized output."
+    ],
+    "example": "Add a sample Fastify endpoint that accepts a shelf code and returns the public book count. Reject an empty shelf code and return only the count field.",
+    "check": "Verify a valid shelf produces the expected count, the empty code receives a client error, and internal fields never appear in the response."
+  },
+  {
+    "slug": "improve-codebase-architecture",
+    "listing": {
+      "updated": "2026-11-16",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "mattpocock"
+    },
+    "name": "Improve Codebase Architecture",
+    "aliases": [
+      "improve-codebase-architecture",
+      "Matt Pocock architecture"
+    ],
+    "source": "https://collectivebrain.de/en/skills/improve-codebase-architecture/",
+    "upstream": "https://github.com/mattpocock/skills",
+    "kind": "Skill",
+    "description": "Identifies shallow modules and proposes deeper boundaries that reduce how much a caller needs to know about the implementation.",
+    "requirements": "A repository, its domain vocabulary and access to the codebase-design, grilling and domain-modeling companions used by the workflow.",
+    "steps": [
+      "Ask for candidate boundaries and inspect the visual report. Pick one candidate whose complexity affects a real caller.",
+      "Work through its responsibilities, dependencies and public contract. Capture decisions and choose tests for the behavior that must survive the refactor."
+    ],
+    "example": "Inspect the fictional ticket-pricing package. We currently change three modules to add one fare rule. Identify a boundary that would let a caller request a quote without knowing each rule.",
+    "check": "Trace a normal and discounted quote through the proposed boundary. Confirm its caller can describe both using the domain vocabulary and existing tests."
+  },
+  {
+    "slug": "mattpocock-handoff",
+    "listing": {
+      "updated": "2026-11-17",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "mattpocock"
+    },
+    "name": "Handoff",
+    "aliases": [
+      "handoff",
+      "Matt Pocock Handoff"
+    ],
+    "source": "https://collectivebrain.de/en/skills/mattpocock-handoff/",
+    "upstream": "https://github.com/mattpocock/skills/blob/main/skills/productivity/handoff/SKILL.md",
+    "related": [
+      "grill-me"
+    ],
+    "kind": "Skill",
+    "description": "Writes a handoff from the current conversation so a fresh session can continue with the decisions, evidence and outstanding work it needs.",
+    "requirements": "A conversation with useful state, permission to write to the OS temporary directory, and a clear goal for the next session.",
+    "steps": [
+      "Explicitly invoke /handoff and state what the next session should accomplish. Identify decisions or test results it must retain.",
+      "Give the resulting temporary file path to the next session and have it read the handoff before resuming."
+    ],
+    "example": "/handoff Prepare the next session to finish the fictional borrowing form. Capture the agreed due-date rule, the failing timezone test and the files already edited.",
+    "check": "Open the handoff and ask a fresh session to name the due-date rule, the failing test and the next action using that file alone."
+  },
+  {
+    "slug": "google-agents-cli-workflow",
+    "listing": {
+      "version": "v1.15.0",
+      "updated": "2026-11-18",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "google"
+    },
+    "name": "Google Agents Cli Workflow",
+    "aliases": [
+      "google-agents-cli-workflow",
+      "Google Agents CLI Workflow"
+    ],
+    "source": "https://collectivebrain.de/en/skills/google-agents-cli-workflow/",
+    "upstream": "https://github.com/google/agents-cli",
+    "kind": "Skill",
+    "description": "Coordinates an ADK agent project across requirements, scaffolding, implementation, evaluation and release using the Google agents-cli skills.",
+    "requirements": "A compatible agents-cli installation, a target language and user task. Cloud phases require the corresponding Google Cloud configuration.",
+    "steps": [
+      "Describe the intended users, capabilities, runtime and limits. Agree on the written specification and representative evaluation cases.",
+      "Use the appropriate specialist skill for each phase, starting with a local scaffold and evaluation before any cloud rollout."
+    ],
+    "example": "Plan an ADK agent that answers visitor questions from a fictional aquarium timetable. Agree on how it handles missing events and define three local evaluation cases before scaffolding.",
+    "check": "Trace each stated behavior to an evaluation case. Check that the missing-event case is distinguishable from a scheduled event."
+  },
+  {
+    "slug": "code-review-and-quality",
+    "listing": {
+      "updated": "2026-11-18",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "addyosmani"
+    },
+    "name": "Code Review And Quality",
+    "aliases": [
+      "code-review-and-quality"
+    ],
+    "source": "https://collectivebrain.de/en/skills/code-review-and-quality/",
+    "upstream": "https://github.com/addyosmani/agent-skills",
+    "kind": "Skill",
+    "description": "Reviews a proposed change against its requirements and identifies specific correctness, clarity, design and test issues before merge.",
+    "requirements": "A diff, the purpose of the change and the test results or acceptance criteria available to the reviewer.",
+    "steps": [
+      "Provide the change and its expected behavior. Ask for findings tied to a specific line, affected case and suggested revision.",
+      "Review the highest-impact finding first and confirm the proposed correction with a focused test or inspection."
+    ],
+    "example": "Review our fictional desk-booking diff. Cancelling a reservation should return one seat, including after a repeated click. Identify the most significant issue and the smallest test that would catch it.",
+    "check": "Compare the finding to the actual diff. The proposed test should distinguish a duplicate cancellation from two different reservations."
+  },
+  {
+    "slug": "azure-validate",
+    "listing": {
+      "version": "v1.2.5",
+      "updated": "2026-11-20",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "microsoft"
+    },
+    "name": "Azure Validate",
+    "aliases": [
+      "azure-validate"
+    ],
+    "source": "https://collectivebrain.de/en/skills/azure-validate/",
+    "upstream": "https://github.com/microsoft/azure-skills",
+    "kind": "Skill",
+    "description": "Checks an approved Azure deployment plan against configuration, infrastructure definitions, identity permissions and platform prerequisites.",
+    "requirements": "An approved plan from azure-prepare, the project’s infrastructure files, and an authenticated Azure CLI or azd session with access to the target.",
+    "steps": [
+      "Point the skill to the approved plan and name the intended subscription and environment. Run the validation flow appropriate to the project.",
+      "Read each failed check, correct its underlying configuration or permissions, then rerun validation and inspect the plan status."
+    ],
+    "example": "Validate the approved Bicep plan for our staging exhibit service. Report missing parameters and any managed identity role that the plan requires. Leave deployment for a separate step.",
+    "check": "Check that the report names the intended subscription and that the corrected plan reaches Validated before it is used for deployment."
+  },
+  {
+    "slug": "tailwind-design-system",
+    "listing": {
+      "updated": "2026-11-20",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "wshobson"
+    },
+    "name": "Tailwind Design System",
+    "aliases": [
+      "tailwind-design-system",
+      "Tailwind CSS v4"
+    ],
+    "source": "https://collectivebrain.de/en/skills/tailwind-design-system/",
+    "upstream": "https://github.com/wshobson/agents",
+    "kind": "Skill",
+    "description": "Builds reusable Tailwind v4 components from shared CSS tokens, with explicit variants, responsive layouts and theme states.",
+    "requirements": "A Tailwind CSS v4 project and representative components, existing design tokens and state requirements. The source examples use React and TypeScript.",
+    "steps": [
+      "Choose a repeated UI element and inventory its states, colors and spacing. Map repeated values to CSS theme tokens.",
+      "Build the variants against the existing theme and render them at multiple widths, in light and dark modes."
+    ],
+    "example": "Unify the status chips in our fictional returns desk. Use Tailwind v4 tokens for pending, accepted and rejected states, with text labels that remain clear in dark mode.",
+    "check": "Render all three statuses in both themes at a narrow width. Check readable contrast and that each state remains identifiable by its text."
+  },
+  {
+    "slug": "azure-storage",
+    "listing": {
+      "version": "v1.2.2",
+      "updated": "2026-11-21",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "microsoft"
+    },
+    "name": "Azure Storage",
+    "aliases": [
+      "azure-storage"
+    ],
+    "source": "https://collectivebrain.de/en/skills/azure-storage/",
+    "upstream": "https://github.com/microsoft/azure-skills",
+    "kind": "Skill",
+    "description": "Helps choose and operate Azure storage services, including inspecting blob containers, choosing access tiers and using SDKs or Azure tooling.",
+    "requirements": "A named storage account and container, an identity with appropriate data permissions, and Azure MCP or an Azure CLI/SDK setup.",
+    "steps": [
+      "Specify the storage operation, account, container and access scope. For a listing, provide the desired prefix and metadata fields.",
+      "Inspect a small sample and compare the result with the expected blob names, sizes or access tiers."
+    ],
+    "example": "List blobs under demo-posters/ in our staging media container. Show their sizes and current tiers, then explain which access pattern would make a cooler tier worth considering.",
+    "check": "Compare two reported names, sizes and tiers with the container inventory. Check the tier advice against how often those sample files are read."
+  },
+  {
+    "slug": "pick-ui-library",
+    "listing": {
+      "updated": "2026-11-21",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "emilkowalski"
+    },
+    "name": "Pick Ui Library",
+    "aliases": [
+      "pick-ui-library",
+      "Pick UI Library"
+    ],
+    "source": "https://collectivebrain.de/en/skills/pick-ui-library/",
+    "upstream": "https://github.com/emilkowalski/skills",
+    "kind": "Skill",
+    "description": "Matches a specific frontend interaction to one library from Emil Kowalski’s curated list and considers whether the dependency is already present.",
+    "requirements": "A frontend requirement, your framework and the project’s package manifest. Invoke this skill explicitly.",
+    "steps": [
+      "State the interaction and constraints. Supply the manifest and request one matching choice from the curated list.",
+      "Check the suggested library’s fit against a minimal version of the interaction and review any added dependency."
+    ],
+    "example": "Use Pick Ui Library for touch-friendly bottom drawers in our fictional map app. The drawer needs a drag handle, a close control and keyboard support. Check our package manifest first.",
+    "check": "Compare the recommendation with the manifest and test opening and dismissing a minimal drawer on touch and keyboard."
+  },
+  {
+    "slug": "lark-event",
+    "listing": {
+      "version": "v1.0.0",
+      "updated": "2026-11-22",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Advanced",
+      "author": "larksuite"
+    },
+    "name": "Lark Event",
+    "aliases": [
+      "lark-event",
+      "Feishu events"
+    ],
+    "source": "https://collectivebrain.de/en/skills/lark-event/",
+    "upstream": "https://github.com/larksuite/cli",
+    "kind": "CLI skill",
+    "description": "Subscribes to Lark or Feishu events through lark-cli and reads each event as one JSON object in a newline-delimited stream.",
+    "requirements": "A configured Lark CLI identity and an app or bot with the event subscriptions and scopes required by the event you choose.",
+    "steps": [
+      "List supported event keys and inspect the schema for the event you need. Choose the minimum fields for your workflow.",
+      "Start a bounded subscription in a test workspace. Generate one matching event and inspect the resulting JSON line."
+    ],
+    "example": "In our Lark test workspace, observe one new reaction on a demo message. Return only the event type and message ID and stop after the first matching event.",
+    "check": "Add a reaction to the test message and compare the streamed message ID with the original. Verify the subscription ends at the requested limit."
+  },
+  {
+    "slug": "supabase",
+    "listing": {
+      "version": "v0.1.2",
+      "updated": "2026-11-23",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "supabase"
+    },
+    "name": "Supabase",
+    "aliases": [
+      "supabase",
+      "Supabase platform"
+    ],
+    "source": "https://collectivebrain.de/en/skills/supabase/",
+    "upstream": "https://supabase.com/docs/guides/ai-tools/ai-skills",
+    "kind": "Skill",
+    "description": "Provides product-specific guidance for Supabase features including Auth, Storage, Realtime, Edge Functions and their client integrations.",
+    "requirements": "The Supabase feature involved, the relevant client version, and a local or staging project with fixture data for runtime checks.",
+    "steps": [
+      "Describe the user journey and share the relevant client code and sanitized error. Identify the service and environment involved.",
+      "Follow the service-specific guidance and verify the resulting behavior in a test project with representative accounts or data."
+    ],
+    "example": "In our fictional reading app, diagnose why a signed-in tester returns to the login screen after refreshing the saved-books page. Review the SSR client and cookie handling.",
+    "check": "Refresh the page as the tester and confirm the session persists. Sign out, reload, and confirm the page returns to its signed-out state."
+  },
+  {
+    "slug": "security-and-hardening",
+    "listing": {
+      "updated": "2026-11-24",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "addyosmani"
+    },
+    "name": "Security And Hardening",
+    "aliases": [
+      "security-and-hardening"
+    ],
+    "source": "https://collectivebrain.de/en/skills/security-and-hardening/",
+    "upstream": "https://github.com/addyosmani/agent-skills",
+    "kind": "Skill",
+    "description": "Applies secure-by-default implementation practices to application boundaries, including validation, least privilege and sensitive-data handling.",
+    "requirements": "The application code and configuration, an expected permission model, and the data that should remain private.",
+    "steps": [
+      "Choose a narrow boundary such as logging or a form handler. Describe the expected data exposure and review the implementation against it.",
+      "Apply focused corrections and inspect representative outputs and configuration to confirm the intended protection."
+    ],
+    "example": "Review logging in this generated demo booking service. Keep request IDs and status codes useful to support staff while removing customer emails and session tokens from structured logs.",
+    "check": "Run the normal booking flow with fictional values. Inspect the log output for the request ID and status code and confirm both sensitive fields are absent."
+  },
+  {
+    "slug": "workers-best-practices",
+    "listing": {
+      "updated": "2026-11-25",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "cloudflare"
+    },
+    "name": "Workers Best Practices",
+    "aliases": [
+      "workers-best-practices",
+      "Cloudflare Workers"
+    ],
+    "source": "https://collectivebrain.de/en/skills/workers-best-practices/",
+    "upstream": "https://github.com/cloudflare/skills/tree/main/skills/workers-best-practices",
+    "kind": "Skill",
+    "description": "Reviews Cloudflare Workers implementation and configuration for runtime concerns such as streaming, bindings, asynchronous work and request-scoped state.",
+    "requirements": "A Workers project, its Wrangler configuration, the Worker entry point and a local test or preview environment.",
+    "steps": [
+      "Identify the request handler and bindings it uses. Ask for a review of lifecycle, shared state and response handling for the target workload.",
+      "Make one focused change and verify its behavior in the local Workers runtime with representative requests."
+    ],
+    "example": "Review our fictional poster-download Worker. It buffers an entire poster before returning it. Show how to stream the stored object while preserving its content type and missing-file behavior.",
+    "check": "Request a sample poster and a missing key locally. Compare content type, bytes and status codes with the fixture expectations."
+  }
+]

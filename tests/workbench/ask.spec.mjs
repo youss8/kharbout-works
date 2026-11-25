@@ -27,7 +27,8 @@ test('command index covers each public collection and resolves internal anchors'
     expect(response.ok()).toBe(true);
     const { entries, intents } = await response.json();
     const count = (kind) => entries.filter((entry) => entry.kind === kind).length;
-    expect(count('Page')).toBe(7);
+    expect(count('Page')).toBe(8);
+    expect(count('Skill guide')).toBe(123);
     expect(count('Sandbox')).toBe(6);
     expect(count('Prototype')).toBe(4);
     expect(count('Vault')).toBe(20);
@@ -171,8 +172,10 @@ test('Arabic, keyboard layout and typo matches lead to the same indexed destinat
         if (query !== 'retrns')
             await expect(first.locator('bdi[lang=ar] .ask-match').first()).toBeVisible();
     }
-    await assets.getByRole('option').first().click();
-    await expect(page).toHaveURL(/\/vault\/#bilingual-ask-palette$/);
+    await Promise.all([
+        page.waitForURL(/\/vault\/#bilingual-ask-palette$/, { waitUntil: 'load' }),
+        assets.getByRole('option').first().click(),
+    ]);
     await expect(page.locator('#ask-query')).toHaveAttribute('aria-expanded', 'false');
     await page.keyboard.press('Control+k');
     await expect(search(page)).toBeFocused();

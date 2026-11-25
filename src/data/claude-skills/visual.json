@@ -1,0 +1,115 @@
+[
+  {
+    "slug": "anthropic-canvas-design",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Canvas Design",
+    "aliases": [
+      "canvas-design"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-canvas-design/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/canvas-design",
+    "kind": "Skill",
+    "description": "Creates original static artwork such as posters or covers as PNG or PDF, using a visual concept to guide composition, texture, and typography.",
+    "requirements": "The artifact size, intended viewing distance, exact text, output format, and any artwork that may be incorporated.",
+    "steps": [
+      "Describe the idea the viewer should take away and the practical limits of the design.",
+      "Request an original composition in the target dimensions. Render or export it and review the visual at its final size."
+    ],
+    "example": "Design an A4 poster for a fictional night-bird count. The poster must say ‘Night Chorus’, ‘14 June’, and ‘Meet at Willow Gate’. Use layered silhouettes to convey listening after dark and deliver a print PDF.",
+    "check": "Open the PDF, check the page size, verify all three text strings, and inspect the smallest lettering at print size."
+  },
+  {
+    "slug": "anthropic-divi-edit",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate"
+    },
+    "name": "DIVI WordPress Editing",
+    "aliases": [
+      "anthropic-divi-edit",
+      "Divi Builder"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-divi-edit/",
+    "upstream": "https://collectivebrain.de/skills/anthropic-divi-edit/",
+    "kind": "Skill",
+    "description": "Guides edits to WordPress sites built with Divi, including module changes, template adjustments, performance work, and migration planning.",
+    "requirements": "The Divi version, the page or template to change, a staging copy or exported layout, and access appropriate to the task.",
+    "steps": [
+      "Identify whether the change belongs to an individual module, a shared template, or a child theme. Save a copy of the affected layout.",
+      "Apply the change in staging and inspect other pages that inherit the same shared element."
+    ],
+    "example": "On our staging Divi site, change the summer course page to show the enrollment module before testimonials on phones. Keep the desktop order and list any changes to shared templates.",
+    "check": "Inspect the updated page in Divi Builder and the front end at both widths, then open a second page using the same template."
+  },
+  {
+    "slug": "imagegen-frontend-mobile",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner"
+    },
+    "name": "imagegen-frontend-mobile",
+    "aliases": [
+      "mobile screen mockups"
+    ],
+    "source": "https://collectivebrain.de/en/skills/imagegen-frontend-mobile/",
+    "upstream": "https://collectivebrain.de/skills/imagegen-frontend-mobile/",
+    "kind": "Skill",
+    "description": "Uses image generation to visualize mobile app screens from a product brief, producing mockups for pitches and product discussions.",
+    "requirements": "An image-generation capability, target device or aspect ratio, screen content, and reference assets the project can use.",
+    "steps": [
+      "Specify the user task, platform, screen hierarchy, and exactly which text must appear.",
+      "Generate a reference screen, inspect it at phone size, and carry the approved visual direction into subsequent states."
+    ],
+    "example": "Generate two portrait mockups for a bike locker app. Show a locker selection screen and a reservation confirmation, using the same header, type scale, and small map legend in both.",
+    "check": "Check the screen dimensions, labels, and continuity between screens. Read the mockups at actual display size before presenting them."
+  },
+  {
+    "slug": "algorithmic-art",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-06-22",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Algorithmic Art",
+    "aliases": [
+      "algorithmic-art",
+      "p5.js"
+    ],
+    "source": "https://collectivebrain.de/en/skills/algorithmic-art/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/algorithmic-art",
+    "kind": "Skill",
+    "description": "Creates generative art in p5.js, with a short artistic premise, adjustable parameters, and a random seed that can reproduce a composition.",
+    "requirements": "A visual idea, the parameters worth exploring, and a browser able to run the generated viewer and load its p5.js dependency.",
+    "steps": [
+      "Describe the visual system in terms of forces, geometry, rhythm, or repetition.",
+      "Request the algorithm and viewer with controls for a few meaningful parameters and a seed. Explore a variation and return to the original seed."
+    ],
+    "example": "Build a p5.js study of tidal channels branching across sand. Let me vary branch density and flow direction, and make seed 247 recover the same starting image.",
+    "check": "Reload the viewer with seed 247 and the same settings, compare the result, then adjust a single parameter to verify that the change is visible."
+  }
+]

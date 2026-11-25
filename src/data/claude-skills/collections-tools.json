@@ -1,0 +1,218 @@
+[
+  {
+    "slug": "webapp-testing",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Anthropic’s server helper and Python Playwright ran the keyboard-only lost-property scenario twice. Both runs opened “Blue willow umbrella” from the filtered list. Deliberately changing the expected heading made the assertion fail and saved a screenshot."
+    },
+    "name": "Webapp Testing",
+    "aliases": [
+      "webapp-testing",
+      "Web Application Testing"
+    ],
+    "source": "https://github.com/anthropics/skills/tree/main/skills/webapp-testing",
+    "kind": "Skill",
+    "description": "Use Playwright to exercise a local web app as a visitor would, inspect browser messages and collect evidence of a failing interaction.",
+    "requirements": "Provide the local app URL or its start command, test data and the expected user journey. The skill uses Python, Playwright and an installed browser.",
+    "steps": [
+      "Start the app or give Claude its documented startup command. Identify the initial page and a stable way to locate the controls.",
+      "Describe the actions and expected result, then ask for a Playwright check and a screenshot or console output if it fails."
+    ],
+    "example": "Use webapp-testing on our local lost-property demo. Filter by 'Umbrellas', open the first result with the keyboard and check that its name matches the details heading. Keep a screenshot if the check fails.",
+    "check": "Run the check against the same fixture again. Confirm it asserts the displayed result and fails when the expected heading is deliberately changed in the test."
+  },
+  {
+    "slug": "slack-gif-creator",
+    "toolCheck": {
+      "date": "2026-11-25",
+      "result": "Anthropic’s GIF builder and validator produced a 128 × 128 stamp emoji. It ran for two seconds, contained 20 frames and occupied 7,938 bytes. Browser playback showed the stamp landing and lifting over two loops. Slack workspace acceptance was outside this check."
+    },
+    "name": "Slack GIF Creator",
+    "aliases": [
+      "slack-gif-creator"
+    ],
+    "source": "https://github.com/anthropics/skills/tree/main/skills/slack-gif-creator",
+    "kind": "Skill",
+    "description": "Build a short animated GIF for a Slack message or custom emoji, with control over motion, palette and file size.",
+    "requirements": "Describe the subject, motion and intended Slack use. The upstream utilities use Python with Pillow, imageio and NumPy.",
+    "steps": [
+      "Choose emoji or message size and describe the action at its start, middle and end.",
+      "Ask Claude to render a loop, check it with the skill's validator and adjust the frame count or palette if the file is too large."
+    ],
+    "example": "Make a looping Slack emoji of a blue library stamp landing on a cream card and lifting again. Use a 128-by-128 canvas, a plain background and a two-second loop.",
+    "check": "Preview the GIF at emoji size, watch two complete loops, and compare its dimensions and byte size with the intended workspace's upload requirements."
+  },
+  {
+    "slug": "spartan-ai-toolkit",
+    "name": "Spartan AI Toolkit",
+    "aliases": [
+      "spartan-ai-toolkit",
+      "c0x12c/ai-toolkit"
+    ],
+    "source": "https://github.com/c0x12c/ai-toolkit",
+    "kind": "Collection",
+    "description": "A collection of engineering workflows, rules and specialist skills for taking a feature or bug through planning, tests and review.",
+    "requirements": "Use a supported coding agent in your project. The Claude Code project installer uses Node.js and npm. Bring the repository's stack and its normal test command.",
+    "steps": [
+      "Follow the publisher's local installation guide, choose Claude Code and initialize the rules for your repository with /spartan:init-rules.",
+      "Select the workflow that fits the job. For a bug, give /spartan:debug a reproducible symptom, an expected result and the affected area."
+    ],
+    "example": "/spartan:debug In our event seating demo, changing a row from three seats to one leaves two removed seats in the total. Start with a failing test and show the correction for review.",
+    "check": "Run the regression test before and after the change and inspect the diff for unrelated edits."
+  },
+  {
+    "slug": "mattpocock-skills",
+    "name": "mattpocock/skills",
+    "aliases": [
+      "Matt Pocock Skills",
+      "Skills for Real Engineers"
+    ],
+    "source": "https://github.com/mattpocock/skills",
+    "kind": "Collection",
+    "description": "Matt Pocock's set of engineering and productivity skills for sharpening a design, diagnosing behavior, writing tests and transferring work between sessions.",
+    "requirements": "Use Claude Code with the collection installed and open the repository you will work in. Project conventions and the chosen issue tracker inform setup.",
+    "steps": [
+      "Use the publisher's Claude Code plugin instructions and run the collection's setup skill to describe how your project handles issues and documentation.",
+      "Pick a specific member for the next task, such as Grill Me for undecided requirements or Handoff to brief a fresh session."
+    ],
+    "example": "Use Grill Me from Matt Pocock's collection to examine our idea for recurring room reservations. Ask about overlaps and skipped dates before we write the first ticket.",
+    "check": "Compare the selected skill with its description in the collection. Verify that its result records the project's actual terms and decisions.",
+    "related": [
+      "mattpocock-tdd",
+      "mattpocock-handoff",
+      "grill-me",
+      "setup-matt-pocock-skills"
+    ]
+  },
+  {
+    "slug": "planetscale",
+    "name": "PlanetScale",
+    "aliases": [
+      "planetscale",
+      "PlanetScale database skills",
+      "planetscale/database-skills"
+    ],
+    "source": "https://github.com/planetscale/database-skills",
+    "upstream": "https://github.com/planetscale/claude-plugin",
+    "kind": "Collection",
+    "description": "PlanetScale publishes skills for MySQL, Postgres, Vitess and Neki. Its Claude plugin bundles those engine guides with PlanetScale operations skills and a connector for inspecting live databases.",
+    "requirements": "For an offline review, provide the engine, schema, relevant query and an execution plan if available. Live inspection through the optional connector requires a PlanetScale account with access to the target branch.",
+    "steps": [
+      "Use the database-skills repository to install the collection and select the skill for your engine. For live evidence, the Claude plugin also provides the PlanetScale MCP connection.",
+      "Ask for an index review using the supplied schema and plan, or name the organization and branch to inspect through the connector."
+    ],
+    "example": "Use PlanetScale's MySQL skill to review the attached bookings schema and EXPLAIN output. Which existing index could support filtering reservations by room and date? Cite the column order and explain what the plan shows.",
+    "check": "Confirm the engine, branch, indexed columns and column order against the actual schema. Validate the suggestion against a representative query plan."
+  },
+  {
+    "slug": "code-simplifier",
+    "name": "Code Simplifier",
+    "aliases": [
+      "code-simplifier"
+    ],
+    "source": "https://github.com/anthropics/claude-plugins-official/tree/main/plugins/code-simplifier",
+    "kind": "Plugin",
+    "description": "Anthropic's code-simplifier agent reviews recently changed code for unnecessary complexity and improves readability while preserving observable behavior.",
+    "requirements": "Install the code-simplifier plugin in Claude Code. Bring a diff or named files, the project's coding conventions and checks for the affected behavior.",
+    "steps": [
+      "Give the agent the recent changes or narrow the scope to specific functions.",
+      "Ask it to preserve the interface and error paths while explaining any control flow or duplication it simplifies."
+    ],
+    "example": "Run code-simplifier on the changed function that groups volunteer shifts. Preserve the order of equal start times and the empty-input result. Show the diff and run the existing shift tests.",
+    "check": "Compare the public inputs, outputs and errors before and after the diff. Run the relevant tests, including the tie and empty cases."
+  },
+  {
+    "slug": "terrashark",
+    "name": "TerraShark",
+    "aliases": [
+      "terrashark",
+      "Terraform skill"
+    ],
+    "source": "https://github.com/LukasNiessen/terrashark",
+    "kind": "Skill",
+    "description": "Review or write Terraform and OpenTofu configurations with guidance on module boundaries, provider assumptions and likely failure modes.",
+    "requirements": "Bring the infrastructure files, tool and provider versions, and the intended environment. Use an initialized test workspace if checking validation or a plan.",
+    "steps": [
+      "Install TerraShark using its Claude Code setup and describe the intended change together with the existing module and version constraints.",
+      "Request a minimal proposal with assumptions, likely failure modes, validation and rollback considerations."
+    ],
+    "example": "Use TerraShark to review our training module for lab storage buckets. We want a consistent naming variable across two environments. Explain whether the change would rename an existing resource and how to spot that in a plan.",
+    "check": "Validate the configuration and read the plan in a test workspace. Confirm every resource replacement or deletion is accounted for."
+  },
+  {
+    "slug": "humanizer",
+    "name": "Humanizer",
+    "aliases": [
+      "humanizer",
+      "blader/humanizer"
+    ],
+    "source": "https://github.com/blader/humanizer",
+    "kind": "Skill",
+    "description": "Edit generic or inflated prose into ordinary language while keeping facts, qualifications and the author's point intact.",
+    "requirements": "Supply the draft, intended reader and any facts or phrases that must survive. A writing sample can help establish the desired voice.",
+    "steps": [
+      "Give /humanizer the draft and identify the audience and details that carry meaning.",
+      "Read the edited version beside the original and restore any nuance lost when repetitive or vague language was removed."
+    ],
+    "example": "Use /humanizer on this notice for the repair café: 'We are thrilled to embark on a transformative new chapter of extended availability.' The factual change is that Thursday closing moves from 6 pm to 8 pm on 4 June. Keep that detail.",
+    "check": "Read the result aloud, compare every fact against the original and confirm no invented quote, personal anecdote or product claim slipped in."
+  },
+  {
+    "slug": "grill-me",
+    "name": "Grill Me",
+    "aliases": [
+      "grill-me",
+      "Grill Me & Handoff"
+    ],
+    "source": "https://github.com/mattpocock/skills/tree/main/skills/productivity/grill-me",
+    "upstream": "https://github.com/mattpocock/skills/blob/main/skills/productivity/grilling/SKILL.md",
+    "kind": "Skill",
+    "description": "Matt Pocock's interview skill surfaces unresolved decisions in a plan before implementation. Its companion Handoff skill can carry those decisions into another session.",
+    "requirements": "Load Matt Pocock's skills in Claude Code and bring a draft plan, constraints and access to repository context that can answer questions.",
+    "steps": [
+      "Invoke Grill Me explicitly with your plan. Answer each round of independent design questions so the next round can explore the choices that depend on them.",
+      "Confirm the decisions and outstanding questions. When ready to switch sessions, invoke Handoff with the next task."
+    ],
+    "example": "/grill-me We want members to renew borrowed board games online. Walk me through the policy decisions in rounds, including what should happen when someone else has already joined the waiting list.",
+    "check": "Walk through a normal renewal and a queued reservation using the decisions. The receiving engineer should be able to identify the next test and any remaining policy question.",
+    "related": [
+      "mattpocock-handoff"
+    ]
+  },
+  {
+    "slug": "agent-skills",
+    "name": "Agent Skills",
+    "aliases": [
+      "Addy Osmani",
+      "addyosmani/agent-skills"
+    ],
+    "source": "https://github.com/addyosmani/agent-skills",
+    "kind": "Collection",
+    "description": "Addy Osmani's engineering collection groups skills around defining a feature, planning work, implementing it, testing, reviewing and shipping.",
+    "requirements": "In Claude Code, enter /plugin marketplace add addyosmani/agent-skills, then /plugin install agent-skills@addy-agent-skills. Open the project that will receive the feature and bring its existing constraints.",
+    "steps": [
+      "Use the documented /spec workflow to turn the request into a specification with boundaries and acceptance criteria.",
+      "After reviewing that specification, use the planning workflow to divide it into independently verifiable tasks."
+    ],
+    "example": "/spec Our walking club needs a printable meetup roster. Organizers must see confirmed walkers and emergency-contact availability. Define the minimum release, privacy constraints and a way to test the printout.",
+    "check": "For every planned task, find an acceptance criterion from the reviewed specification and a test or observation that would prove it."
+  },
+  {
+    "slug": "rea",
+    "name": "REA",
+    "aliases": [
+      "Reverse Engineer Anything",
+      "morluto/rea"
+    ],
+    "source": "https://github.com/morluto/rea",
+    "kind": "Skill and MCP server",
+    "description": "Reverse Engineer Anything helps explain how an existing application works using evidence from the program. Here, a maintainer uses its findings on a user-visible feature to write a migration manual.",
+    "requirements": "Use the REA skill and its MCP server with your own application in a test environment. Provide a feature question and any existing user manual, screenshots or sample data.",
+    "steps": [
+      "Pick one user-visible feature, describe the scenario with sample data and supply the corresponding manual pages or recordings.",
+      "Ask for a behavioral description with evidence for each observation and an explicit list of unanswered questions."
+    ],
+    "example": "Document the refund flow in our test ticket kiosk. Use the sample group booking and its recorded walkthrough to explain what a cashier sees after refunding one seat. Cite the visible evidence for each step and flag any behavior the recording leaves open.",
+    "check": "Have a maintainer walk through the description against the supplied evidence. Mark unobserved states and disputed behavior for follow-up."
+  }
+]

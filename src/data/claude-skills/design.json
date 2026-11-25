@@ -1,0 +1,519 @@
+[
+  {
+    "slug": "design-design-critique",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Design Critique",
+    "aliases": [
+      "design-critique"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-design-critique/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/design-critique",
+    "kind": "Skill",
+    "description": "Reviews a screen through the task a visitor came to complete. Findings explain how hierarchy, affordances, or inconsistent patterns help or get in the way.",
+    "requirements": "A mockup, screenshot, or working screen, the intended audience, and the action visitors should take.",
+    "steps": [
+      "Show the screen in context and say whether it is an early exploration or a near-final design.",
+      "Request prioritized observations tied to visible elements, with a concrete change for each issue."
+    ],
+    "example": "Critique this bike-share checkout for a first-time rider. Where would someone look to see the amount due before unlocking a bike? Identify the two changes that would help most.",
+    "check": "Find each cited element on the screen and check that the proposed revision makes the rider’s next decision clearer."
+  },
+  {
+    "slug": "design-accessibility-review",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Accessibility Review (WCAG 2.1 AA)",
+    "aliases": [
+      "accessibility-review",
+      "WCAG"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-accessibility-review/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/accessibility-review",
+    "kind": "Skill",
+    "description": "Examines a design or running interface against WCAG 2.1 Level A and AA criteria. The report identifies barriers and the hands-on checks still needed.",
+    "requirements": "Screens or component code for a defined user journey. A working preview is needed to test focus, keyboard interaction, and assistive technology.",
+    "steps": [
+      "Describe the journey, supported devices, and states to review. Include validation failures as well as the successful path.",
+      "Request findings by criterion with reproduction steps, evidence, and a suggested fix. Mark anything the material cannot establish as untested."
+    ],
+    "example": "Review this library reservation form against WCAG 2.1 AA. Walk through finding a branch, submitting an empty date, correcting it, and confirming the reservation using a keyboard.",
+    "check": "Repeat the journey with a keyboard and screen reader. Check that errors identify the field and that focus reaches the confirmation."
+  },
+  {
+    "slug": "design-ux-copy",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "UX Copy",
+    "aliases": [
+      "design-ux-copy",
+      "microcopy"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-ux-copy/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/ux-copy",
+    "kind": "Skill",
+    "description": "Writes short interface text for decisions, errors, empty states, and calls to action. Variants let a team compare tone while keeping the action clear.",
+    "requirements": "The surrounding UI, what just happened, what the person can do next, and any length or vocabulary limits.",
+    "steps": [
+      "Name the component, the person reading it, and the exact system behavior behind the text.",
+      "Request a few variants and a short explanation of where each might confuse the reader."
+    ],
+    "example": "Write three messages for a ticket kiosk when the selected seat has just sold. The visitor can choose another seat without losing the rest of the order. Keep each message under 90 characters.",
+    "check": "Count the characters, read the copy in the kiosk layout, and confirm each suggested next action is available.",
+    "exampleRun": {
+      "agent": "Codex",
+      "version": "0.144.6",
+      "date": "2026-11-25",
+      "source": "https://collectivebrain.de/en/skills/design-ux-copy/SKILL.md",
+      "sourceSha256": "5ac2648a66bd4016c40a501a646eb468ee58db25a8a4a007b02a0d2d1f1aa15d",
+      "messages": [
+        "That seat just sold. Choose another—your order is still saved.",
+        "That seat’s gone, but your order isn’t. Pick another seat.",
+        "Just missed it! Pick a new seat—we’ve kept the rest of your order."
+      ],
+      "result": "Codex ran the kiosk prompt with the CollectiveBrain edition of UX Copy. The three messages measured 62, 58 and 66 characters. All three fit at 320 and 800 pixels. Choosing another seat preserved the other item, its quantity and its price."
+    }
+  },
+  {
+    "slug": "design-research-synthesis",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "User Research Synthesis",
+    "aliases": [
+      "research-synthesis"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-research-synthesis/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/research-synthesis",
+    "kind": "Skill",
+    "description": "Groups observations from interviews, surveys, or support tickets into themes and turns those themes into testable product questions.",
+    "requirements": "Anonymized notes with stable source IDs and the product decision the analysis will inform.",
+    "steps": [
+      "Provide records with participant or ticket IDs and mark direct quotations distinctly.",
+      "Request themes with evidence, opposing observations, and the next experiment or question for each."
+    ],
+    "example": "Synthesize the attached interviews R1–R6 about reserving practice rooms. Which steps make students abandon a booking? Show the supporting quotes and one way to test each explanation.",
+    "check": "Trace each quotation to its record. Check that several comments from one participant have not been counted as independent support."
+  },
+  {
+    "slug": "design-design-handoff",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Anthropic"
+    },
+    "name": "Design Handoff Spec",
+    "aliases": [
+      "design-handoff"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-design-handoff/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/design-handoff",
+    "kind": "Skill",
+    "description": "Turns an approved design into an engineering brief covering component states, tokens, breakpoints, keyboard behavior, and edge cases.",
+    "requirements": "Approved frames or screenshots, existing component names, and any interaction notes or token definitions.",
+    "steps": [
+      "Identify the flow and provide its desktop and mobile states alongside the design system.",
+      "Ask for a build specification that names existing components, describes behavior, and lists decisions still missing from the design."
+    ],
+    "example": "Prepare a handoff for the attached equipment checkout drawer. Include available, reserved, and overdue equipment, long item names, and focus after the drawer closes.",
+    "check": "Have a developer trace each state from the spec to a frame or explicit design decision. Resolve open questions before implementation."
+  },
+  {
+    "slug": "design-design-system",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Advanced",
+      "author": "Anthropic"
+    },
+    "name": "Design System Audit & Extend",
+    "aliases": [
+      "design-system"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-design-system/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/design-system",
+    "kind": "Skill",
+    "description": "Finds drift across tokens and components, then describes the smallest extension that handles a recurring design need.",
+    "requirements": "A component inventory, token definitions, and representative screens or source files.",
+    "steps": [
+      "Choose audit, documentation, or extension work and specify the components in scope.",
+      "Ask for repeated hardcoded values, duplicate variants, and missing interaction states. Map proposed changes to the components that need them."
+    ],
+    "example": "Audit the badges and labels in this trail-maintenance dashboard. Can we represent a temporary closure using the existing status tokens? Propose a variant only if the current set cannot express it.",
+    "check": "Compare each proposed token or variant against the inventory and render it beside existing states in the same context."
+  },
+  {
+    "slug": "design-user-research",
+    "listing": {
+      "version": "v1.0",
+      "updated": "2026-04-12",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "User Research Planning",
+    "aliases": [
+      "design-user-research",
+      "user-research"
+    ],
+    "source": "https://collectivebrain.de/en/skills/design-user-research/",
+    "upstream": "https://github.com/anthropics/knowledge-work-plugins/tree/main/design/skills/user-research",
+    "kind": "Skill",
+    "description": "Builds a research plan around a decision, including recruitment, a suitable method, the session script, and observable success criteria.",
+    "requirements": "The decision, participant population, available time and budget, and any prototype or service to study.",
+    "steps": [
+      "Explain the competing product choices and what evidence could distinguish them.",
+      "Request a method, recruitment criteria, neutral tasks, and a time budget. Pilot the guide before recruiting the full sample."
+    ],
+    "example": "Plan a one-week study to decide whether returning tool-library members need a reservation calendar. We can schedule four 30-minute sessions. Include screening questions and the decision the evidence can support.",
+    "check": "Run the script once with a colleague, time it, and map each question to the decision it informs."
+  },
+  {
+    "slug": "anthropic-frontend-design",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Anthropic Frontend Design",
+    "aliases": [
+      "frontend-design"
+    ],
+    "source": "https://collectivebrain.de/en/skills/anthropic-frontend-design/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/frontend-design",
+    "kind": "Skill",
+    "description": "Creates a working web interface with a deliberate visual direction, from typography and spacing to how the layout adapts to its content.",
+    "requirements": "A frontend project or requested output format, the page’s audience, real copy or representative data, and any brand constraints.",
+    "steps": [
+      "Specify the route or component, supported screens, and the user action the design must support.",
+      "Ask for an implementation in the project’s existing stack, then inspect the rendered page with short and long content."
+    ],
+    "example": "Build the festival timetable in the current Astro project. Give the performance times and venues a clear reading order, show schedule changes, and make the day selector usable on a phone.",
+    "check": "Run the page locally, select another day with the keyboard, and inspect long performance names at narrow and wide widths."
+  },
+  {
+    "slug": "vercel-web-design-guidelines",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "Vercel Labs"
+    },
+    "name": "Vercel Web Design Guidelines",
+    "aliases": [
+      "web-design-guidelines"
+    ],
+    "source": "https://collectivebrain.de/en/skills/vercel-web-design-guidelines/",
+    "upstream": "https://github.com/vercel-labs/agent-skills/tree/main/skills/web-design-guidelines",
+    "kind": "Skill",
+    "description": "Reviews a web interface against Vercel’s interface guidelines and turns findings about interaction, layout, forms, and accessibility into specific code changes.",
+    "requirements": "UI source files or a preview with representative states, plus the route and task to inspect.",
+    "steps": [
+      "Select a small flow and point to its components. Use the current guidelines linked by the skill.",
+      "Ask for file-level findings and suggested fixes, then check affected behavior in the rendered interface."
+    ],
+    "example": "Review the seat-selection and confirmation components against Vercel’s web design guidelines. Pay particular attention to focus after a sold-out seat error and to the mobile form labels.",
+    "check": "Navigate the flow by keyboard, trigger that error, and verify each reported issue at its cited component."
+  },
+  {
+    "slug": "figma-to-code",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Intermediate",
+      "author": "Collective Brain"
+    },
+    "name": "Figma to Code",
+    "aliases": [
+      "figma-to-code"
+    ],
+    "source": "https://collectivebrain.de/en/skills/figma-to-code/",
+    "upstream": "https://collectivebrain.de/skills/figma-to-code/",
+    "kind": "Skill",
+    "description": "Translates Figma frames into responsive HTML/CSS or React, mapping repeated structures to the project’s components and design tokens.",
+    "requirements": "A readable Figma frame or exported screens, target framework, fonts and assets, and the relevant design tokens.",
+    "steps": [
+      "Share the frame or export with its intended viewport and any interactive states that a static image omits.",
+      "Request implementation with semantic elements and existing components. Identify values that require design confirmation."
+    ],
+    "example": "Implement the attached Figma frame for a canoe rental card in our React project. Reuse PriceTag and BookingButton. Treat the phone and tablet exports as the responsive references.",
+    "check": "Compare both rendered widths with the matching frames and test whether the booking button works using the keyboard."
+  },
+  {
+    "slug": "theme-factory",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code",
+        "Cowork"
+      ],
+      "level": "Beginner",
+      "author": "Anthropic"
+    },
+    "name": "Theme Factory",
+    "aliases": [
+      "theme-factory"
+    ],
+    "source": "https://collectivebrain.de/en/skills/theme-factory/",
+    "upstream": "https://github.com/anthropics/skills/tree/main/skills/theme-factory",
+    "kind": "Skill",
+    "description": "Applies a coordinated palette and type pairing to an existing artifact or develops a custom theme for a particular audience.",
+    "requirements": "An editable artifact and a chosen theme or a brief with brand colors, tone, and font restrictions.",
+    "steps": [
+      "Identify the target artifact and choose a palette from the skill’s theme samples, or supply a short custom brief.",
+      "Apply the theme to a representative page or slide before extending it to the full artifact."
+    ],
+    "example": "Create a dusk-inspired theme for this five-slide neighborhood observatory deck. Keep the star chart legible on a projector and show me the title slide and the densest chart first.",
+    "check": "Confirm the same semantic color is used for the same series throughout, and inspect titles, labels, and callouts at presentation size."
+  },
+  {
+    "slug": "ux-flow-wireframer",
+    "listing": {
+      "version": "v2.0",
+      "updated": "2026-06-11",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Beginner"
+    },
+    "name": "UX Flow & Wireframer",
+    "aliases": [
+      "ux-flow-wireframer"
+    ],
+    "source": "https://collectivebrain.de/en/skills/ux-flow-wireframer/",
+    "upstream": "https://collectivebrain.de/skills/ux-flow-wireframer/",
+    "kind": "Skill",
+    "description": "Sketches screen-by-screen user journeys and low-fidelity wireframes so a team can inspect decisions, forks, and recovery paths before styling.",
+    "requirements": "A user, an entry point, the intended outcome, and any business conditions that change the path.",
+    "steps": [
+      "Describe the starting state and a measurable end state, including what happens if a prerequisite is missing.",
+      "Request a flow diagram and simple layouts with a primary action for each screen. Trace cancellation, back navigation, and validation errors."
+    ],
+    "example": "Wireframe a volunteer shift swap on a phone. Show the journey from an emailed invitation to confirming the swap, including an expired invitation and a full shift.",
+    "check": "Walk every branch from the first screen. Each should end in a clear result or offer a way to recover."
+  },
+  {
+    "slug": "impeccable",
+    "listing": {
+      "version": "v4.8.0",
+      "updated": "2026-10-30",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "Paul Bakaus"
+    },
+    "name": "Impeccable",
+    "aliases": [
+      "impeccable"
+    ],
+    "source": "https://collectivebrain.de/en/skills/impeccable/",
+    "upstream": "https://github.com/pbakaus/impeccable",
+    "kind": "Skill",
+    "description": "Helps improve an interface through targeted design critique and revisions informed by the product’s users and its visual system.",
+    "requirements": "The relevant UI source or local preview and the project’s product and design context. Existing PRODUCT.md and DESIGN.md files can supply that context.",
+    "steps": [
+      "Describe the audience and surface, then request a critique focused on one design problem.",
+      "Choose a finding and ask for a focused revision, using the existing visual language. Inspect the changed screen alongside the original."
+    ],
+    "example": "Use Impeccable to critique the hierarchy of our ceramics class list. Our booking desk needs to see dates and remaining places first. Revise one row using the existing type and color tokens.",
+    "check": "Compare the original and revised list using the same classes. Check that a nearly full class can be spotted at a glance on a phone."
+  },
+  {
+    "slug": "emil-design-eng",
+    "listing": {
+      "updated": "2026-11-03",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "emilkowalski"
+    },
+    "name": "Emil Design Eng",
+    "aliases": [
+      "emil-design-eng"
+    ],
+    "source": "https://collectivebrain.de/en/skills/emil-design-eng/",
+    "upstream": "https://github.com/emilkowalski/skills",
+    "kind": "Skill",
+    "description": "Uses Emil Kowalski’s design-engineering guidance to tune transitions and decide when an interaction benefits from motion.",
+    "requirements": "The component or recording, its trigger, frequency of use, and the animation library if the code uses one.",
+    "steps": [
+      "Explain how the user initiates the interaction and whether they can reverse or interrupt it.",
+      "Ask whether motion helps, then request the smallest adjustment to duration, easing, or transform that improves the interaction."
+    ],
+    "example": "Review the sort menu in this shift planner. It opens hundreds of times per day at the dispatch desk. Tune the entrance so it feels immediate and explain the choice.",
+    "check": "Open and close the menu rapidly with mouse and keyboard, then repeat with reduced motion enabled."
+  },
+  {
+    "slug": "review-animations",
+    "listing": {
+      "updated": "2026-11-05",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "emilkowalski"
+    },
+    "name": "Review Animations",
+    "aliases": [
+      "review-animations"
+    ],
+    "source": "https://collectivebrain.de/en/skills/review-animations/",
+    "upstream": "https://github.com/emilkowalski/skills",
+    "kind": "Skill",
+    "description": "Reviews motion code against an animation reference and produces a decision supported by concrete findings and proposed edits.",
+    "requirements": "A motion-related diff or component code, trigger and usage frequency, and a preview for testing fixes.",
+    "steps": [
+      "Supply the changed transitions and describe how often people encounter them and what they should communicate.",
+      "Request a verdict and a table linking each finding to its code, suggested change, and rationale."
+    ],
+    "example": "Review the attached diff for an inventory drawer. Assess its easing, interrupted close, and reduced-motion rule. Mark which changes block approval and give the replacement properties.",
+    "check": "Apply the blocking changes in a preview and repeat the same gestures, including a reversal halfway through closing."
+  },
+  {
+    "slug": "shadcn",
+    "listing": {
+      "updated": "2026-11-06",
+      "platforms": [
+        "Claude Code"
+      ],
+      "level": "Intermediate",
+      "author": "shadcn"
+    },
+    "name": "shadcn",
+    "aliases": [
+      "shadcn/ui"
+    ],
+    "source": "https://collectivebrain.de/en/skills/shadcn/",
+    "upstream": "https://github.com/shadcn-ui/ui",
+    "kind": "Skill",
+    "description": "Helps find, compose, and modify shadcn/ui components while respecting a project’s registry configuration, styling, and component structure.",
+    "requirements": "A compatible frontend project. For an existing setup, provide components.json, the component directory, and its theme tokens.",
+    "steps": [
+      "Identify the desired control and check which primitives, aliases, and presets the project already uses.",
+      "Ask the skill to compose an existing or registry component with local conventions. Exercise its interaction in the running project."
+    ],
+    "example": "Add an assignee combobox to the work order form using this project’s shadcn/ui components. Display the current assignee and let a keyboard user clear it.",
+    "check": "Tab into the field, search, select, and clear an assignee. Confirm the form value matches the visible selection."
+  },
+  {
+    "slug": "apple-design",
+    "listing": {
+      "updated": "2026-11-11",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Intermediate",
+      "author": "emilkowalski"
+    },
+    "name": "Apple Design",
+    "aliases": [
+      "apple-design"
+    ],
+    "source": "https://collectivebrain.de/en/skills/apple-design/",
+    "upstream": "https://github.com/emilkowalski/skills",
+    "kind": "Skill",
+    "description": "Explains Apple-style gesture motion, including interruptible springs, release velocity, and settling an element at a snap point.",
+    "requirements": "The gesture component, its current motion code, supported input devices, and the intended resting positions.",
+    "steps": [
+      "Describe the drag, release, and reversal behavior and identify where the moving object visually jumps.",
+      "Ask how to carry the release velocity into the spring and choose a landing point. Apply the change in a touch-capable preview."
+    ],
+    "example": "The bottom sheet in our venue guide jumps when I catch it during a closing animation. Review the drag handler and show how it can continue from its current height.",
+    "check": "Catch the sheet at several heights and flick it in both directions. Its next movement should begin at the visible position."
+  },
+  {
+    "slug": "animation-vocabulary",
+    "listing": {
+      "updated": "2026-11-17",
+      "platforms": [
+        "Claude Code",
+        "Cowork",
+        "Claude Desktop"
+      ],
+      "level": "Beginner",
+      "author": "emilkowalski"
+    },
+    "name": "Animation Vocabulary",
+    "aliases": [
+      "animation-vocabulary"
+    ],
+    "source": "https://collectivebrain.de/en/skills/animation-vocabulary/",
+    "upstream": "https://github.com/emilkowalski/skills",
+    "kind": "Skill",
+    "description": "Identifies the established motion-design term for an observed effect so designers and developers can discuss the same behavior precisely.",
+    "requirements": "A short plain-language description or accessible reference showing what moves, in what order, and in response to what.",
+    "steps": [
+      "Describe the movement without guessing its name. Mention timing, direction, and what starts it.",
+      "Ask for the closest term and a brief distinguishing feature if multiple terms could fit."
+    ],
+    "example": "What do we call it when five search results slide upward one after another, each starting slightly after the previous one? Give me a term I can use in a handoff.",
+    "check": "Check that the term captures the delayed sequence as well as any separate movement of each row."
+  }
+]

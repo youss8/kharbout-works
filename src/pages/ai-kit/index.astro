@@ -16,7 +16,7 @@ const index = items.map(({ data }) => ({id: data.id, kind: data.kind, category: 
 <BaseLayout title="AI engineering toolkit" description="Compile and download reusable architecture, code review and operations prompts.">
     <div class="page-shell">
         <header class="page-heading"><p class="section-id">03 / AI Kit</p><h1>AI engineering toolkit</h1>
-            <p>Choose a Gem, coding skill or workflow. Set its inputs, inspect the compiled prompt and take it into your engineering tools.</p></header>
+            <p>Choose a Gem, coding skill or workflow. Set its inputs, inspect the compiled prompt and take it into your engineering tools. <a class="skills-link" href="/claude-code-skills/">Browse Claude Code skills</a></p></header>
         <div class="kit-grid" data-index={JSON.stringify(index)} x-data={String.raw`{
             items: JSON.parse($el.dataset.index), kind: '', category: '', query: '', active: '',
             get matches() {
@@ -67,6 +67,7 @@ const index = items.map(({ data }) => ({id: data.id, kind: data.kind, category: 
     </div>
 </BaseLayout>
 <style>
+    .skills-link { color:var(--accent-primary); text-decoration:underline; text-underline-offset:.2em; }
     .kit-grid { display:grid; grid-template-columns:minmax(15rem,19rem) minmax(0,1fr); align-items:start; gap:clamp(1rem,3vw,2.5rem); }
     .kit-register,.kit-detail article,.kit-empty { background:var(--bg-surface); border:1px solid var(--border-hairline); }
     .kit-register { padding:1rem; border-block-start:3px solid var(--accent-primary); }
