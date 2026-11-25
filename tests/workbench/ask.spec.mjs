@@ -176,7 +176,9 @@ test('Arabic, keyboard layout and typo matches lead to the same indexed destinat
         page.waitForURL(/\/vault\/#bilingual-ask-palette$/, { waitUntil: 'load' }),
         assets.getByRole('option').first().click(),
     ]);
+    await expect(page.locator('#ask-query')).toHaveAttribute('aria-expanded', 'false');
     await page.keyboard.press('Control+k');
+    await expect(search(page)).toBeFocused();
     await expect(assets.getByRole('option').first()).toContainText('Bilingual Ask Palette');
 });
 
