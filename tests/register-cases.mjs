@@ -17,6 +17,12 @@ import {
 } from '../src/lib/kernels/sla.ts';
 
 const hour = 3_600_000;
+test('register enforces field-specific minimums and preserves zero', () => {
+    const fields = [{ key: 'interval', type: 'number', min: 0 }, { key: 'change', type: 'number' }];
+    assert.throws(() => parseRegisterCsv('interval,change\n-3,1', fields), /interval must be 0 or greater/);
+    const { rows } = parseRegisterCsv('interval,change\n0,-2\n0.5,3', fields);
+    assert.deepEqual(rows.map(row => [row.interval, row.change]), [[0, -2], [0.5, 3]]);
+});
 const ticket = { created_at: 0, sla_due_at: 4 * hour, status: 'Open', priority: 'High' };
 
 test('SLA elapsed has a 2% floor, a 100% ceiling and respects the resolution instant', () => {

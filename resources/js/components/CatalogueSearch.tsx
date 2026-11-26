@@ -1,6 +1,6 @@
 import { router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
-import SearchDialog from '../../../kit/components/search-dialog/SearchDialog';
+import SearchDialog, { isSearchShortcut } from '../../../kit/components/search-dialog/SearchDialog';
 import type { SearchResult } from '../../../kit/components/search-dialog/SearchDialog';
 import { carryCatalogueFilters } from '../catalogue';
 import type { CatalogueEntry } from '../catalogue';
@@ -31,19 +31,7 @@ export default function CatalogueSearch({ vault }: { vault?: VaultSearch }) {
 
     useEffect(() => {
         function shortcut(event: KeyboardEvent) {
-            // An Arabic keyboard sends ن at the physical K position.
-            const matchesK =
-                event.key.toLowerCase() === 'k' ||
-                (event.code === 'KeyK' && /^\p{Script=Arabic}$/u.test(event.key));
-            if (
-                event.defaultPrevented ||
-                event.isComposing ||
-                event.altKey ||
-                event.shiftKey ||
-                !(event.ctrlKey || event.metaKey) ||
-                !matchesK
-            )
-                return;
+            if (!isSearchShortcut(event)) return;
             event.preventDefault();
             if (event.repeat || document.querySelector('dialog:modal')) return;
             if (document.activeElement === document.body) {

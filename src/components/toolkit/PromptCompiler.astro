@@ -4,57 +4,185 @@ import StatusBadge from '../ui/StatusBadge.astro';
 import ExportBar from './ExportBar.astro';
 import { parsePromptTemplate } from '../../lib/prompt-template';
 
-interface Props { item: CollectionEntry<'ai-kit'> }
+interface Props {
+    item: CollectionEntry<'ai-kit'>;
+}
 const { item } = Astro.props;
 const { data } = item;
 const raw = (item.body ?? '').trim();
-const variables = Object.fromEntries(data.variables.map(v => [v.key, v.defaultValue]));
-const segments = parsePromptTemplate(raw, data.variables.map(variable => variable.key), item.id);
-const prompt = { id: data.id, title: data.title, kind: data.kind, category: data.category, raw, values: variables, segments };
+const variables = Object.fromEntries(data.variables.map((v) => [v.key, v.defaultValue]));
+const segments = parsePromptTemplate(
+    raw,
+    data.variables.map((variable) => variable.key),
+    item.id,
+);
+const prompt = {
+    id: data.id,
+    title: data.title,
+    kind: data.kind,
+    category: data.category,
+    raw,
+    values: variables,
+    segments,
+};
 ---
-<div class="compiler" data-prompt={JSON.stringify(prompt)}
+
+<div
+    class="compiler"
+    data-prompt={JSON.stringify(prompt)}
     x-data="{
       ...JSON.parse($el.dataset.prompt),
       get compiled() { return this.segments.map(part => part.key ? this.values[part.key] : part.text).join('') },
       get jsonDownload() { return { id: this.id, title: this.title, kind: this.kind, category: this.category, variables: { ...this.values }, raw: this.raw, compiled: this.compiled } }
-    }">
+    }"
+>
     <div class="compiler-head">
-        <p class="section-id">{data.kind} / {data.category}</p>
+        <p class="section-id">
+            {data.kind} / {data.category}
+        </p>
         <h2>{data.title}</h2>
         <p>{data.summary}</p>
-        {data.isStarterPlaceholder && <StatusBadge label="Starter Blueprint · Replace in src/content/ai-kit/" shape="dashed" />}
-        <dl><div><dt>Works with</dt><dd>{data.compatibility.join(' · ')}</dd></div>
-            <div><dt>Context budget</dt><dd>{data.tokenNotes}</dd></div></dl>
-        {data.workflowSteps && <ol aria-label="Workflow steps">{data.workflowSteps.map(step => <li>{step}</li>)}</ol>}
+        {data.isStarterPlaceholder && (
+            <StatusBadge
+                label="Starter Blueprint · Replace in src/content/ai-kit/"
+                shape="dashed"
+            />
+        )}
+        <dl>
+            <div>
+                <dt>Works with</dt>
+                <dd>{data.compatibility.join(' · ')}</dd>
+            </div>
+            <div>
+                <dt>Context budget</dt>
+                <dd>{data.tokenNotes}</dd>
+            </div>
+        </dl>
+        {data.workflowSteps && (
+            <ol aria-label="Workflow steps">
+                {data.workflowSteps.map((step) => (
+                    <li>{step}</li>
+                ))}
+            </ol>
+        )}
     </div>
-    <fieldset class="variable-fields"><legend>Prompt variables</legend>
-        {data.variables.map(variable => <label for={data.id + '-' + variable.key}>
-            <span>{variable.label} <small>{variable.key}</small></span>
-            <textarea id={data.id + '-' + variable.key} rows="2" placeholder={variable.placeholder}
-                x-model={`values['${variable.key}']`}>{variable.defaultValue}</textarea>
-        </label>)}
+    <fieldset class="variable-fields" x-cloak>
+        <legend>Prompt variables</legend>
+        {data.variables.map((variable) => (
+            <label for={data.id + '-' + variable.key}>
+                <span>
+                    {variable.label} <small>{variable.key}</small>
+                </span>
+                <textarea
+                    id={data.id + '-' + variable.key}
+                    rows="2"
+                    placeholder={variable.placeholder}
+                    x-model={`values['${variable.key}']`}
+                >{variable.defaultValue}</textarea>
+            </label>
+        ))}
     </fieldset>
     <section class="preview" aria-labelledby={data.id + '-compiled'}>
         <h3 id={data.id + '-compiled'}>Compiled prompt</h3>
-        <pre tabindex="0" aria-label="Compiled prompt text"><code>{segments.map(part => part.key ? <mark x-text={`values['${part.key}']`}>{variables[part.key]}</mark> : part.text)}</code></pre>
+        <pre
+            tabindex="0"
+            aria-label="Compiled prompt text"
+        ><code>{segments.map(part => part.key ? <mark x-text={`values['${part.key}']`}>{variables[part.key]}</mark> : part.text)}</code></pre>
     </section>
     <ExportBar id={data.id} sourcePath={'src/content/ai-kit/' + data.id + '.md'} kind="prompt" />
 </div>
 <style>
-    .compiler { display:grid; gap:1.3rem; min-width:0; }
-    .compiler-head h2 { font-size:clamp(1.6rem,3.1vw,2.65rem); font-weight:600; margin-block:.55rem; }
-    .compiler-head > p:not(.section-id) { color:var(--ink-secondary); margin-block-end:.7rem; }
-    .compiler-head dl { margin-block-start:1rem; font-size:.82rem; }
-    .compiler-head dl > div { display:grid; grid-template-columns:minmax(6rem, .7fr) 3fr; gap:.5rem; border-block-start:1px solid var(--border-hairline); padding:.45rem 0; }
-    dt { font-weight:600; }
-    dd, small { color:var(--ink-secondary); }
-    ol { display:grid; gap:.25rem; list-style:decimal; margin:.5rem 0 0; padding-inline-start:1.2rem; font-size:.84rem; }
-    .variable-fields { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,13rem),1fr)); gap:.6rem; min-width:0; }
-    legend,.preview h3 { font-size:.95rem; font-weight:700; margin-block-end:.55rem; }
-    label { display:grid; gap:.3rem; align-content:start; font-size:.85rem; font-weight:600; }
-    small { display:block; font: .67rem/1.4 var(--font-mono); }
-    textarea { width:100%; min-height:4.15rem; resize:vertical; border:1px solid var(--border-strong); border-radius:3px; background:var(--bg-canvas); padding:.45rem .55rem; font-size:.82rem; font-weight:400; }
-    .preview { min-width:0; }
-    pre { white-space:pre-wrap; overflow-wrap:anywhere; max-height:26rem; overflow:auto; border:1px solid var(--border-hairline); border-inline-start:3px solid var(--accent-primary); padding:.9rem; background:var(--bg-canvas); font:.8rem/1.65 var(--font-mono); }
-    mark { color:var(--accent-primary); background:var(--accent-tint); font-weight:600; }
+    .compiler {
+        display: grid;
+        gap: 1.3rem;
+        min-width: 0;
+    }
+    .compiler-head h2 {
+        font-size: clamp(1.6rem, 3.1vw, 2.65rem);
+        font-weight: 600;
+        margin-block: 0.55rem;
+    }
+    .compiler-head > p:not(.section-id) {
+        color: var(--ink-secondary);
+        margin-block-end: 0.7rem;
+    }
+    .compiler-head dl {
+        margin-block-start: 1rem;
+        font-size: 0.82rem;
+    }
+    .compiler-head dl > div {
+        display: grid;
+        grid-template-columns: minmax(6rem, 0.7fr) 3fr;
+        gap: 0.5rem;
+        border-block-start: 1px solid var(--border-hairline);
+        padding: 0.45rem 0;
+    }
+    dt {
+        font-weight: 600;
+    }
+    dd,
+    small {
+        color: var(--ink-secondary);
+    }
+    ol {
+        display: grid;
+        gap: 0.25rem;
+        list-style: decimal;
+        margin: 0.5rem 0 0;
+        padding-inline-start: 1.2rem;
+        font-size: 0.84rem;
+    }
+    .variable-fields {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+        gap: 0.6rem;
+        min-width: 0;
+    }
+    legend,
+    .preview h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        margin-block-end: 0.55rem;
+    }
+    label {
+        display: grid;
+        gap: 0.3rem;
+        align-content: start;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    small {
+        display: block;
+        font: 0.67rem/1.4 var(--font-mono);
+    }
+    textarea {
+        width: 100%;
+        min-height: 4.15rem;
+        resize: vertical;
+        border: 1px solid var(--border-strong);
+        border-radius: 3px;
+        background: var(--bg-canvas);
+        padding: 0.45rem 0.55rem;
+        font-size: 0.82rem;
+        font-weight: 400;
+    }
+    .preview {
+        min-width: 0;
+    }
+    pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        max-height: 26rem;
+        overflow: auto;
+        border: 1px solid var(--border-hairline);
+        border-inline-start: 3px solid var(--accent-primary);
+        padding: 0.9rem;
+        background: var(--bg-canvas);
+        font: 0.8rem/1.65 var(--font-mono);
+    }
+    mark {
+        color: var(--accent-primary);
+        background: var(--accent-tint);
+        font-weight: 600;
+    }
 </style>

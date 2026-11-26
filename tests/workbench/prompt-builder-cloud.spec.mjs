@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 import { newDraft } from '../../src/lib/prompt-builder/model.ts';
 
 test.skip(!process.env.PLAYWRIGHT_PROMPT_CLOUD, 'Run with the documented local cloud test environment.');
@@ -27,6 +28,94 @@ async function signIn(cloud, account = user) {
     await cloud.getByRole('button', { name: 'Sign in', exact: true }).click();
     await expect(cloud.getByText(account.email)).toBeVisible();
 }
+
+test('share previews follow the active draft, expired snapshots can be removed and offline sign-out clears this device', async ({ page, context }) => {
+    const payload = newDraft();
+    payload.values.TASK = 'Fictional cloud agenda';
+    const draft = { id: 'd1', name: 'Fixture A', revision: 1, folder_id: null, created_by: user.id, payload };
+    let expired = { id: 's1', title: 'Expired fixture', prompt: 'Archived plain text', expires_at: '2000-01-01T00:00:00Z' };
+    let aiCalls = 0;
+    await context.route('https://prompt-test.supabase.co/**', request => {
+        const url = new URL(request.request().url());
+        const json = value => response(request, value);
+        if (request.request().method() === 'OPTIONS') return json({});
+        if (url.pathname.endsWith('/otp')) return json({});
+        if (url.pathname.endsWith('/verify')) return json(session(user));
+        if (url.pathname.endsWith('/logout')) return request.abort('internetdisconnected');
+        if (url.pathname.endsWith('/prompt_drafts')) return json(url.searchParams.has('id') ? draft : [draft]);
+        if (url.pathname.endsWith('/prompt_versions')) return json([{ revision: 1, name: draft.name, payload }]);
+        if (url.pathname.endsWith('/prompt_shares')) return json(expired && !url.searchParams.has('expires_at') ? [expired] : []);
+        if (url.pathname.endsWith('/revoke_prompt_snapshot')) { expired = null; return json(null); }
+        if (url.pathname.endsWith('/prompt-ai')) aiCalls++;
+        return json([]);
+    });
+    await page.goto(route);
+    const cloud = page.getByRole('region', { name: 'Cloud library' });
+    await signIn(cloud);
+    const open = cloud.getByRole('listitem').filter({ hasText: 'Fixture A' }).getByRole('button', { name: 'Open' });
+    await open.click();
+    await cloud.getByRole('button', { name: 'Share snapshot' }).click();
+    await expect(cloud.locator('pre')).toContainText('Fictional cloud agenda');
+    await page.getByRole('combobox', { name: 'Workflow', exact: true }).selectOption('handover');
+    await expect(cloud.getByRole('button', { name: 'Create read-only link' })).toBeHidden();
+    const field = page.getByRole('textbox', { name: 'Current state', exact: true });
+    await field.fill('界'.repeat(8000));
+    await page.getByRole('button', { name: 'Run current prompt', exact: true }).click();
+    await expect(page.getByText(/exceeds 24,000 UTF-8 bytes/)).toBeVisible();
+    const workbench = page.getByRole('region', { name: 'AI workbench' });
+    await workbench.getByRole('textbox').first().fill('"'.repeat(7800));
+    await workbench.getByRole('button', { name: /suggest/i }).click();
+    await expect(workbench.getByText(/exceeds 26,000 UTF-8 bytes/)).toBeVisible();
+    expect(aiCalls).toBe(0);
+    const pending = page.waitForEvent('download');
+    await cloud.getByRole('button', { name: 'Download cloud data' }).click();
+    const accountBackup = JSON.parse(await readFile(await (await pending).path()));
+    expect(accountBackup.shares[0].prompt).toBe('Archived plain text');
+    expect(accountBackup.histories[0].versions[0].payload.values.TASK).toBe(payload.values.TASK);
+    const expiredItem = cloud.getByRole('listitem').filter({ hasText: 'Expired fixture' });
+    await expect(expiredItem).toContainText(/Expired ·/);
+    await expiredItem.getByRole('button').click();
+    await expect(expiredItem).toBeHidden();
+    page.once('dialog', dialog => dialog.accept());
+    await open.click();
+    await expect(page.getByRole('textbox', { name: 'Task', exact: true })).toHaveValue(payload.values.TASK);
+    await cloud.getByRole('button', { name: 'Sign out' }).click();
+    await expect(cloud.getByRole('textbox', { name: 'Email address' })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Task', exact: true })).toHaveValue('');
+    await page.reload();
+    await expect(cloud.getByRole('textbox', { name: 'Email address' })).toBeVisible();
+});
+
+test('an unreadable legacy revision can be downloaded and restored from history', async ({ page, context }) => {
+    const legacy = { version: 1, historical: 'Keep this original fixture' };
+    const valid = newDraft();
+    valid.values.TASK = 'Known working version';
+    const row = { id: 'old', name: 'Legacy draft', revision: 2, folder_id: null, created_by: user.id };
+    await context.route('https://prompt-test.supabase.co/**', request => {
+        const url = new URL(request.request().url());
+        const json = value => response(request, value);
+        if (request.request().method() === 'OPTIONS') return json({});
+        if (url.pathname.endsWith('/otp')) return json({});
+        if (url.pathname.endsWith('/verify')) return json(session(user));
+        if (url.pathname.endsWith('/prompt_drafts')) return json(url.searchParams.has('id') ? { ...row, payload: legacy } : [row]);
+        if (url.pathname.endsWith('/prompt_versions')) {
+            const version = { revision: 1, name: row.name, created_at: '2026-11-24T10:00:00Z' };
+            return json(url.searchParams.has('revision') ? { ...version, payload: valid } : [version]);
+        }
+        return json([]);
+    });
+    await page.goto(route);
+    const cloud = page.getByRole('region', { name: 'Cloud library' });
+    await signIn(cloud);
+    await cloud.getByRole('button', { name: 'Open', exact: true }).click();
+    await expect(cloud.getByRole('button', { name: 'Save to cloud', exact: true })).toBeDisabled();
+    const pending = page.waitForEvent('download');
+    await cloud.getByRole('button', { name: 'Download original JSON' }).click();
+    expect(JSON.parse(await readFile(await (await pending).path()))).toEqual(legacy);
+    await cloud.getByRole('button', { name: 'Load this version' }).click();
+    await expect(page.getByRole('textbox', { name: 'Task', exact: true })).toHaveValue(valid.values.TASK);
+    await expect(cloud.getByRole('button', { name: 'Save to cloud', exact: true })).toBeEnabled();
+});
 
 test('sign in, resolve a version conflict, preview a share, and review AI requests', async ({ page, context, browser }) => {
     const ai = [];

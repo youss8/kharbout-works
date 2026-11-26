@@ -1,5 +1,5 @@
 import { adminClient, endpoint, verifiedUser } from '../_shared/http.ts';
-import { maximumChargeMicros, providerRequest, readOutput, readRequest, requestByteLimit } from './contract.ts';
+import { jsonBytes, maximumChargeMicros, providerByteLimit, providerRequest, readOutput, readRequest, requestByteLimit } from './contract.ts';
 import { reconcileUsage } from './reconciliation.ts';
 
 class RequestTooLarge extends Error {}
@@ -47,7 +47,7 @@ Deno.serve(endpoint(async (request, reply) => {
     const input = readRequest(raw);
     if (!input) return reply({ error: 'ai_error' }, 400);
     const provider = providerRequest(input);
-    if (new TextEncoder().encode(JSON.stringify(provider)).byteLength > requestByteLimit + 2_000) {
+    if (jsonBytes(provider) > providerByteLimit) {
         return reply({ error: 'ai_length' }, 413);
     }
     const admin = adminClient();

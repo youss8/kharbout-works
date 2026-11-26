@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ComponentProps } from 'react';
-import SearchDialog from './SearchDialog';
+import SearchDialog, { isSearchShortcut } from './SearchDialog';
 import type { SearchResult } from './SearchDialog';
 
 type ExampleProps = {
@@ -32,16 +32,9 @@ export default function Example({
         if (!ownsShortcut) return;
 
         function handleShortcut(event: KeyboardEvent) {
-            if (
-                (event.ctrlKey || event.metaKey) &&
-                !event.altKey &&
-                !event.shiftKey &&
-                !event.isComposing &&
-                !event.defaultPrevented &&
-                event.key.toLowerCase() === 'k'
-            ) {
+            if (isSearchShortcut(event)) {
                 event.preventDefault();
-                setOpen(true);
+                if (!event.repeat) setOpen(true);
             }
         }
 

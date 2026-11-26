@@ -36,7 +36,7 @@
                     @if($field['type']==='textarea')
                         <textarea wire:model="form.values.{{ $key }}"></textarea>
                     @else
-                        <input type="{{ $field['type'] }}" wire:model="form.values.{{ $key }}" @required(!empty($field['required']))>
+                        <input type="{{ $field['type'] }}" @if(isset($field['min'])) min="{{ $field['min'] }}" @endif @if($field['type'] === 'number') step="any" @endif wire:model="form.values.{{ $key }}" @required(!empty($field['required']))>
                     @endif
                 </label>
                 @error('form.values.'.$key)<p role="alert">{{ $message }}</p>@enderror

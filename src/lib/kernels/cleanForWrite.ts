@@ -3,6 +3,7 @@ export interface RegisterField {
     label?: string;
     aliases?: readonly string[];
     type?: string;
+    min?: number;
     required?: boolean;
     detail?: boolean;
 }

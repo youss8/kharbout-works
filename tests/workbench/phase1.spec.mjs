@@ -86,6 +86,34 @@ test('the architecture tabs switch ownership, metrics, and modeling challenges',
     await expect(tabs.getByRole('tab', { name: /SYS-03/ })).toBeFocused();
 });
 
+test('mobile search keeps its visible label and shortcut at 320px', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 740 });
+    await page.goto('/');
+    const search = page.getByRole('button', { name: 'Open command search' });
+    await expect(search.getByText('Search', { exact: true })).toBeVisible();
+    await expect(search).toHaveAttribute('aria-keyshortcuts', 'Control+K Meta+K');
+    await page.keyboard.press('Control+k');
+    await expect(page.getByRole('combobox')).toBeFocused();
+});
+
+test('mobile navigation works with scripts turned off', async ({ browser }, info) => {
+    const page = await browser.newPage({
+        baseURL: info.project.use.baseURL,
+        javaScriptEnabled: false,
+        viewport: { width: 320, height: 740 },
+    });
+    try {
+        await page.goto('/templates/');
+        await page.locator('noscript summary').filter({ hasText: 'Navigation' }).click();
+        const links = page.getByRole('navigation', { name: 'Mobile navigation' });
+        await expect(links.getByRole('link')).toHaveCount(7);
+        await links.getByRole('link', { name: 'Vault' }).click();
+        await expect(page).toHaveURL(/\/vault\/$/);
+    } finally {
+        await page.close();
+    }
+});
+
 test('mobile navigation can be used and dismissed at 375px', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');

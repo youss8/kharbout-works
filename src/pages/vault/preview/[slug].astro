@@ -1,87 +1,171 @@
 ---
 import { getCollection } from 'astro:content';
 import { readFileSync } from 'node:fs';
-import ReactExample from '../../../components/vault/ReactExample';
 import '@fontsource/plus-jakarta-sans/latin-400.css';
 import '@fontsource/plus-jakarta-sans/latin-600.css';
 import '@fontsource/jetbrains-mono/latin-500.css';
 import '../../../styles/tokens.css';
 import '../../../styles/vault-preview.css';
-interface Preview { id: string; title: string; previewEngine: string; codeAlpine: string; legacy?: boolean; provenance?: string }
+interface Preview {
+    id: string;
+    title: string;
+    previewEngine: string;
+    codeAlpine: string;
+    legacy?: boolean;
+    provenance?: string;
+}
 export async function getStaticPaths() {
-    const legacy = import.meta.glob<Preview>('../../../content/vault/*.json', { eager: true, import: 'default' });
+    const legacy = import.meta.glob<Preview>('../../../content/vault/*.json', {
+        eager: true,
+        import: 'default',
+    });
     const items: Preview[] = (await getCollection('vault')).map(({ id, data }) => ({
-        id, title: data.title, previewEngine: data.previewEngine, provenance: data.provenance,
+        id,
+        title: data.title,
+        previewEngine: data.previewEngine,
+        provenance: data.provenance,
         codeAlpine: readFileSync('src/content/vault/' + id + '/alpine.html', 'utf8'),
     }));
-    return [...items, ...Object.values(legacy).map(entry => ({ ...entry, legacy: true }))].map(entry => ({params: {slug:entry.id}, props:{entry}}));
+    return [...items, ...Object.values(legacy).map((entry) => ({ ...entry, legacy: true }))].map(
+        (entry) => ({ params: { slug: entry.id }, props: { entry } }),
+    );
 }
-interface Props { entry: Preview }
+interface Props {
+    entry: Preview;
+}
 const { entry: data } = Astro.props;
-const sheets = import.meta.glob<string>('../../../content/vault/*/style.css', {eager:true, query:'?url', import:'default'});
+const sheets = import.meta.glob<string>('../../../content/vault/*/style.css', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+});
 const sheet = sheets['../../../content/vault/' + data.id + '/style.css'];
+const hasPreferences = ['flush-row-desk-grid', 'saved-views-sticky-filters'].includes(data.id);
 ---
+
 <!doctype html>
-<html lang="en" data-engine={data.previewEngine} data-theme="light"><head>
-    <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta name="robots" content="noindex"/>
-    <title>{data.title} · Live example</title>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
-    {sheet && <link rel="stylesheet" href={sheet} />}
-    <script is:inline>
-        const options = new URLSearchParams(location.search);
-        const root = document.documentElement;
-        if (['react','alpine'].includes(options.get('engine'))) root.dataset.engine = options.get('engine');
-        root.dataset.theme = options.get('theme') === 'dark' ? 'dark' : 'light';
-        root.dir = options.get('dir') === 'rtl' ? 'rtl' : 'ltr';
-        root.dataset.standalone = String(window === window.top);
-    </script>
-</head><body class="example-body">
-    <main aria-label={data.title}>
-        <p class="preview-origin type-meta">{data.provenance === 'observed' ? 'Observed in Codebase' : 'Observed + Clean-Room [spec]'}</p>
-        <template id="alpine-example" data-kit={data.legacy ? undefined : data.id}><Fragment set:html={data.codeAlpine} /></template>
+<html lang="en" data-engine={data.previewEngine} data-theme="light">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="robots" content="noindex" />
+        <title>{data.title} · Live example</title>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        {sheet && <link rel="stylesheet" href={sheet} />}
         <script is:inline>
-            if (document.documentElement.dataset.engine === 'alpine') {
-                const host = document.getElementById('alpine-example');
-                if (!host.dataset.kit) host.after(host.content.cloneNode(true));
-            }
+            const options = new URLSearchParams(location.search);
+            const root = document.documentElement;
+            if (['react', 'alpine'].includes(options.get('engine')))
+                root.dataset.engine = options.get('engine');
+            root.dataset.theme = options.get('theme') === 'dark' ? 'dark' : 'light';
+            root.dir = options.get('dir') === 'rtl' ? 'rtl' : 'ltr';
+            root.dataset.standalone = String(window === window.top);
+            root.dataset.opaque = String(window.origin === 'null');
         </script>
-        <ReactExample id={data.id} client:only="react" />
-        <script>
-            import Alpine from 'alpinejs';
-            const models = import.meta.glob<{default: () => object}>('../../../content/vault/*/model.ts');
-            const host = document.querySelector<HTMLTemplateElement>('#alpine-example')!;
-            if (document.documentElement.dataset.engine === 'alpine') {
-                Object.assign(window, { Alpine });
-                Alpine.start();
-            }
-            if (host.dataset.kit && document.documentElement.dataset.engine === 'alpine') {
-                const load = models['../../../content/vault/' + host.dataset.kit + '/model.ts'];
-                const render = async () => {
+    </head>
+    <body class="example-body">
+        <main aria-label={data.title}>
+            <h1 class="preview-title">{data.title}</h1>
+            <p class="preview-origin type-meta">
+                {data.provenance === 'observed'
+                    ? 'Observed in Codebase'
+                    : 'Observed + Clean-Room [spec]'}
+            </p>
+            {hasPreferences && (
+                <p class="preview-storage-note">
+                    Changes in this standalone preview last for this visit.
+                    <a href={'/vault/#' + data.id}>Open the Vault preview to save preferences</a>.
+                </p>
+            )}
+            <template
+                id="alpine-example"
+                data-id={data.id}
+                data-kit={data.legacy ? undefined : data.id}
+            >
+                <Fragment set:html={data.codeAlpine} />
+            </template>
+            <div id="react-example" hidden></div>
+            <script>
+                import { connectPreview } from '../../../lib/vault-preview-frame';
+                const models = import.meta.glob<{ default: () => object }>(
+                    '/src/content/vault/*/model.ts',
+                );
+                const host = document.querySelector<HTMLTemplateElement>('#alpine-example')!;
+                const react = document.querySelector<HTMLElement>('#react-example')!;
+                async function render() {
                     try {
-                        Alpine.data('vaultKit', (await load()).default);
+                        if (document.documentElement.dataset.engine === 'react') {
+                            if (import.meta.env.DEV) await import('@vitejs/plugin-react/preamble');
+                            const { mountReactExample } =
+                                await import('../../../components/vault/ReactExample');
+                            react.hidden = false;
+                            mountReactExample(react, host.dataset.id!);
+                            return;
+                        }
+                        const { default: Alpine } = await import('alpinejs');
+                        if (host.dataset.kit) {
+                            const load =
+                                models['/src/content/vault/' + host.dataset.kit + '/model.ts'];
+                            Alpine.data('vaultKit', (await load()).default);
+                        }
                         host.after(host.content.cloneNode(true));
-                    } catch {
+                        Object.assign(window, { Alpine });
+                        Alpine.start();
+                    } catch (cause) {
+                        if (import.meta.env.DEV) console.error(cause);
                         const error = document.createElement('p');
                         error.className = 'error-card';
-                        error.setAttribute('role','alert');
+                        error.setAttribute('role', 'alert');
                         error.textContent = 'The interactive example could not load. ';
                         const retry = document.createElement('button');
                         retry.textContent = 'Retry';
-                        retry.onclick = () => { error.remove(); void render(); };
-                        error.append(retry); host.after(error);
+                        retry.onclick = () => {
+                            error.remove();
+                            void render();
+                        };
+                        error.append(retry);
+                        host.after(error);
                     }
-                };
-                void render();
-            }
-        </script>
-    </main>
-</body></html>
+                }
+                void connectPreview().then(render);
+            </script>
+        </main>
+    </body>
+</html>
 <style is:global>
-    .example-body { padding: clamp(.65rem,2vw,1.3rem); min-width: 0; background: var(--bg-surface); }
-    .example-body main { container-type: inline-size; }
-    .preview-origin { color:var(--ink-secondary); margin-block-end:.8rem; }
-    [data-standalone="false"] .preview-origin { display:none; }
-    .example-body :is(button,input,select,textarea) { max-width: 100%; }
-    .example-body button:focus-visible { outline-offset: 1px; }
-    .example-body dialog { margin: auto; }
+    .example-body {
+        padding: clamp(0.65rem, 2vw, 1.3rem);
+        min-width: 0;
+        background: var(--bg-surface);
+    }
+    .example-body main {
+        container-type: inline-size;
+    }
+    .preview-origin {
+        color: var(--ink-secondary);
+        margin-block-end: 0.8rem;
+    }
+    .preview-title {
+        margin-block-end: 0.5rem;
+        font-size: clamp(1.35rem, 4vw, 2rem);
+    }
+    [data-standalone='false'] :is(.preview-title, .preview-origin) {
+        display: none;
+    }
+    .preview-storage-note {
+        display: none;
+    }
+    [data-standalone='true'][data-opaque='true'] .preview-storage-note {
+        display: block;
+        margin-block-end: 0.8rem;
+    }
+    .example-body :is(button, input, select, textarea) {
+        max-width: 100%;
+    }
+    .example-body button:focus-visible {
+        outline-offset: 1px;
+    }
+    .example-body dialog {
+        margin: auto;
+    }
 </style>

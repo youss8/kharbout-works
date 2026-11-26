@@ -8,6 +8,9 @@ import vaultPreviews from './scripts/vault-previews.mjs';
 
 // Both applications share this checkout. Only portfolio assets belong in the static export.
 const staticFiles = new URL('./.astro/workbench-public/', import.meta.url);
+const sandboxCors = {
+    origin: ['null', /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/],
+};
 mkdirSync(staticFiles, { recursive: true });
 for (const name of ['favicon.svg', 'robots.txt', 'photo.jpg']) {
     const source = new URL('./public/' + name, import.meta.url);
@@ -21,7 +24,12 @@ export default defineConfig({
     output: 'static',
     publicDir: fileURLToPath(staticFiles),
     integrations: [vaultPreviews(), react(), mdx()],
-    vite: { configFile: false, plugins: [tailwind()] },
+    vite: {
+        configFile: false,
+        plugins: [tailwind()],
+        // Preview modules are public assets loaded by the Vault's opaque sandbox.
+        preview: { cors: sandboxCors },
+    },
     markdown: { shikiConfig: { themes: { light: 'github-light', dark: 'github-dark-dimmed' } } },
     devToolbar: { enabled: false },
 });

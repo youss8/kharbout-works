@@ -61,6 +61,32 @@ test('all five entries filter by category, resolve their deep link, and export t
     expect(errors).toEqual([]);
 });
 
+test('Back restores the first template when returning to the unfragmented directory', async ({ page }) => {
+    await page.goto('/templates/');
+    await page.getByRole('navigation', { name: 'Template directory' }).getByRole('link').nth(2).click();
+    await expect(page.locator('article:visible')).toHaveAttribute('id', '03-state-machine-permission-matrix');
+    await page.goBack();
+    await expect(page.locator('article:visible')).toHaveAttribute('id', '01-system-architecture-spec');
+});
+
+test.describe('static readers', () => {
+    test.use({ javaScriptEnabled: false });
+    for (const [route, label, count] of [['templates', 'Template directory', 5], ['ai-kit', 'Toolkit entries', 11]]) {
+        test(route + ' opens every entry and source without client scripts', async ({ page }) => {
+            await page.goto('/' + route + '/');
+            const links = page.getByRole('navigation', { name: label }).getByRole('link');
+            await expect(links).toHaveCount(count);
+            for (const link of await links.all()) {
+                const id = (await link.getAttribute('href')).slice(1);
+                const target = page.locator(`article[id="${id}"]`);
+                await link.click();
+                await expect(target.getByRole('heading', { level: 2 }).first()).toBeVisible();
+                await expect(target.getByRole('link', { name: 'View source file' })).toBeVisible();
+            }
+        });
+    }
+});
+
 test('permission matrix JSON download matches the schema tab and the example references declared states', async ({ page }) => {
     const id = '03-state-machine-permission-matrix';
     await page.goto('/templates/#' + id);

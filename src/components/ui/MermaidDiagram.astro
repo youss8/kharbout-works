@@ -1,35 +1,74 @@
 ---
 import { createHash } from 'node:crypto';
 
-interface Props { source: string; label: string }
+interface Props {
+    source: string;
+    label: string;
+}
 const { source, label } = Astro.props;
-const originals = import.meta.glob<string>('../../data/diagrams/*.mmd', { eager: true, query: '?raw', import: 'default' });
-const assets = import.meta.glob<string>('../../data/diagrams/rendered/*.svg', { eager: true, query: '?url', import: 'default' });
-const renders = import.meta.glob<string>('../../data/diagrams/rendered/*.svg', { eager: true, query: '?raw', import: 'default' });
+const originals = import.meta.glob<string>('../../data/diagrams/*.mmd', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+});
+const assets = import.meta.glob<string>('../../data/diagrams/rendered/*.svg', {
+    eager: true,
+    query: '?url',
+    import: 'default',
+});
+const renders = import.meta.glob<string>('../../data/diagrams/rendered/*.svg', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+});
 const normalized = (text: string) => text.replaceAll('\r\n', '\n');
-const match = Object.entries(originals).find(([, diagram]) => normalized(diagram) === normalized(source));
+const match = Object.entries(originals).find(
+    ([, diagram]) => normalized(diagram) === normalized(source),
+);
 if (!match) throw new Error('No diagram source matches ' + label);
 const id = match[0].split('/').at(-1)!.slice(0, -4);
 const digest = createHash('sha256').update(normalized(source)).digest('hex');
-const images = ['light', 'dark'].map(theme => {
+const images = ['light', 'dark'].map((theme) => {
     const key = '../../data/diagrams/rendered/' + id + '-' + theme + '.svg';
     if (!renders[key]?.startsWith('<!-- Mermaid source SHA-256 ' + digest + ' -->')) {
-        throw new Error('Run node scripts/render-system-diagrams.mjs to refresh ' + id + ' (' + theme + ')');
+        throw new Error(
+            'Run node scripts/render-system-diagrams.mjs to refresh ' + id + ' (' + theme + ')',
+        );
     }
     return { theme, src: assets[key] };
 });
 ---
+
 <entity-diagram>
     <figure aria-label={label}>
-        <figcaption><strong>Entity relationship diagram</strong>
-            <label hidden>Scale <select aria-label="Diagram scale"><option value="100">Fit width</option><option value="175">175%</option><option value="300">300%</option></select></label>
+        <figcaption>
+            <strong>Entity relationship diagram</strong>
+            <label hidden>
+                Scale{' '}
+                <select aria-label="Diagram scale">
+                    <option value="100">Fit width</option>
+                    <option value="175">175%</option>
+                    <option value="300">300%</option>
+                </select>
+            </label>
         </figcaption>
         <div class="diagram-window" role="region" aria-label={label} tabindex="0">
             <div class="drawing">
-                {images.map(({ theme, src }) => <img src={src} alt={label} loading="lazy" decoding="async" data-diagram-theme={theme} />)}
+                {images.map(({ theme, src }) => (
+                    <img
+                        src={src}
+                        alt={label}
+                        loading="lazy"
+                        decoding="async"
+                        data-diagram-theme={theme}
+                    />
+                ))}
             </div>
         </div>
-        <details><summary>Mermaid source</summary><pre><code>{source}</code></pre></details>
+        <details>
+            <summary>Mermaid source</summary>
+            <pre><code>{source}</code></pre>
+        </details>
     </figure>
 </entity-diagram>
 <script>
@@ -37,24 +76,68 @@ const images = ['light', 'dark'].map(theme => {
         connectedCallback() {
             const drawing = this.querySelector<HTMLElement>('.drawing')!;
             const scale = this.querySelector('select')!;
-            scale.addEventListener('change', () => drawing.style.width = scale.value + '%');
+            scale.addEventListener('change', () => (drawing.style.width = scale.value + '%'));
             this.querySelector('label')!.hidden = false;
         }
     }
     customElements.define('entity-diagram', EntityDiagram);
 </script>
 <style>
-    entity-diagram { display: block; min-width: 0; }
-    figure { margin: 1.5rem 0; border: 1px solid var(--border-hairline); background: var(--bg-surface); }
-    figcaption { padding: .7rem 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .6rem; border-block-end: 1px solid var(--border-hairline); }
-    label,summary { font-size: .82rem; }
-    select { padding: .3rem; border: 1px solid var(--border-strong); background: var(--bg-surface); border-radius: 3px; }
-    .diagram-window { overflow: auto; max-height: 65vh; padding: .8rem; }
-    .drawing img { display: block; width: 100%; height: auto; }
-    .drawing [data-diagram-theme="dark"],
-    :global([data-theme="dark"]) .drawing [data-diagram-theme="light"] { display: none; }
-    :global([data-theme="dark"]) .drawing [data-diagram-theme="dark"] { display: block; }
-    details { border-block-start: 1px solid var(--border-hairline); padding: .6rem 1rem; }
-    summary { cursor: pointer; }
-    pre { max-height: 22rem; overflow: auto; font-size: .75rem; }
+    entity-diagram {
+        display: block;
+        min-width: 0;
+    }
+    figure {
+        margin: 1.5rem 0;
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    figcaption {
+        padding: 0.7rem 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        border-block-end: 1px solid var(--border-hairline);
+    }
+    label,
+    summary {
+        font-size: 0.82rem;
+    }
+    select {
+        padding: 0.3rem;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-surface);
+        border-radius: 3px;
+    }
+    .diagram-window {
+        overflow: auto;
+        max-height: 65vh;
+        padding: 0.8rem;
+    }
+    .drawing img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+    .drawing [data-diagram-theme='dark'],
+    :global([data-theme='dark']) .drawing [data-diagram-theme='light'] {
+        display: none;
+    }
+    :global([data-theme='dark']) .drawing [data-diagram-theme='dark'] {
+        display: block;
+    }
+    details {
+        border-block-start: 1px solid var(--border-hairline);
+        padding: 0.6rem 1rem;
+    }
+    summary {
+        cursor: pointer;
+    }
+    pre {
+        max-height: 22rem;
+        overflow: auto;
+        font-size: 0.75rem;
+    }
 </style>

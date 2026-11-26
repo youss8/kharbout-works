@@ -1,13 +1,50 @@
-<div class="lab-demo" x-data="habitTracker" x-on:storage.window="syncHistory($event)" x-on:visibilitychange.document="scheduleMidnight()">
-    <div class="lab-head"><label>Habit<select x-model="active"><template x-for="name in names"><option x-text="name" x-bind:value="name"></option></template></select></label>
-        <p class="lab-result" aria-live="polite"><span x-text="streak"></span>-day streak</p></div>
+<div
+    class="lab-demo"
+    x-data="habitTracker"
+    x-on:storage.window="syncHistory($event)"
+    x-on:visibilitychange.document="scheduleMidnight()"
+>
+    <div class="lab-head">
+        <label>
+            Habit
+            <select x-model="active">
+                <template x-for="name in names">
+                    <option x-text="name" x-bind:value="name"></option>
+                </template>
+            </select>
+        </label>
+        <p class="lab-result" aria-live="polite">
+            <span x-text="streak"></span>-day streak
+        </p>
+    </div>
     <p class="demo-label" x-text="days[0]+' — '+days[27]"></p>
     <div class="heatmap" aria-label="28-day check-in calendar">
-        <template x-for="key in days" x-bind:key="key"><button type="button" x-on:click="toggle(key)" x-bind:aria-label="'Check in for '+key" x-bind:aria-pressed="checked.includes(key)" x-bind:title="key">
-            <span x-text="key.slice(-2)"></span><span aria-hidden="true" x-text="checked.includes(key) ? '✓' : '·'"></span>
-        </button></template>
+        <template x-for="key in days" x-bind:key="key">
+            <button
+                type="button"
+                x-on:click="toggle(key)"
+                x-bind:aria-label="'Check in for '+key"
+                x-bind:aria-pressed="checked.includes(key)"
+                x-bind:title="key"
+            >
+                <span x-text="key.slice(-2)"></span>
+                <span aria-hidden="true" x-text="checked.includes(key) ? '✓' : '·'"></span>
+            </button>
+        </template>
     </div>
-    <div class="choices"><button x-on:click="moveDays(-28)">Earlier days</button><button x-on:click="moveDays(28)" x-bind:disabled="offset === 0">Later days</button>
-        <button class="lab-primary" x-on:click="toggleToday()" x-text="checked.includes(todayKey) ? 'Undo today’s check-in' : 'Check in today'"></button></div>
-    <p class="lab-note" x-text="localOnly ? 'Storage is unavailable. Check-ins last for this page visit.' : 'Check-ins are saved in this browser.'"></p>
+    <div class="choices">
+        <button x-on:click="moveDays(-28)">Earlier days</button>
+        <button x-on:click="moveDays(28)" x-bind:disabled="offset === 0">
+            Later days
+        </button>
+        <button
+            class="lab-primary"
+            x-on:click="toggleToday()"
+            x-text="checked.includes(todayKey) ? 'Undo today’s check-in' : 'Check in today'"
+        ></button>
+    </div>
+    <p
+        class="lab-note"
+        x-text="localOnly ? 'Storage is unavailable. Check-ins last for this page visit.' : 'Check-ins are saved in this browser.'"
+    ></p>
 </div>

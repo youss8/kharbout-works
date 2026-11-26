@@ -61,6 +61,10 @@ test('a visitor discovers the dialog, downloads it and uses the extracted readin
             'The Lantern Atlas',
         );
         await expect(opener).toBeFocused();
+        await opener.dispatchEvent('keydown', { key: 'ن', code: 'KeyK', ctrlKey: true });
+        await expect(search).toBeFocused();
+        await search.press('Escape');
+        await expect(opener).toBeFocused();
         await page.keyboard.press('Control+k');
         await search.fill('zzz');
         await expect(page.getByRole('dialog').getByRole('status')).toContainText('No results');

@@ -15,14 +15,19 @@
             @endforeach
         </ul>
     @elseif (isset($page['props']['entries']))
-        <h1>Kharbout Works catalogue</h1>
-        <ul>
-            @foreach ($page['props']['entries'] as $entry)
-                <li>
-                    <h2><a href="{{ $entry['href'] }}">{{ $entry['title'] }}</a></h2>
-                    <p>{{ $entry['summary'] }}</p>
-                </li>
-            @endforeach
-        </ul>
+        <h1 id="catalogue">Kharbout Works catalogue</h1>
+        @if ($fallbackEntries === [])
+            <h2>No matching entries</h2>
+            <a href="{{ route('catalogue.index', [], false) }}#catalogue">Clear filters</a>
+        @else
+            <ul>
+                @foreach ($fallbackEntries as $entry)
+                    <li>
+                        <h2><a href="{{ $entry['href'] }}">{{ $entry['title'] }}</a></h2>
+                        <p>{{ $entry['summary'] }}</p>
+                    </li>
+                @endforeach
+            </ul>
+        @endif
     @endisset
 </main>

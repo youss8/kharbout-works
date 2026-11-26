@@ -135,6 +135,8 @@ export default function Example() {
                             ) : (
                                 <input
                                     type={f.type ?? 'text'}
+                                    min={f.min}
+                                    step={f.type === 'number' ? 'any' : undefined}
                                     required={f.required}
                                     value={m.form[f.key]}
                                     onChange={(e) =>

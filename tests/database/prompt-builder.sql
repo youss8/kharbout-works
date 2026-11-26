@@ -20,6 +20,14 @@ begin
 end
 $$;
 
+create function pg_temp.draft_fixture(answer text default '') returns jsonb
+language sql immutable as $$
+    select jsonb_build_object('version',1,'workflowVersion',1,'workflowId','blank',
+        'values',jsonb_build_object('TASK',answer),'preferences',
+        '{"audience":"","tone":"neutral","format":"default","outputLocale":"en","target":"chat"}'::jsonb,
+        'edits','{}'::jsonb,'runs','[]'::jsonb,'chain','null'::jsonb)
+$$;
+
 insert into auth.users (id, email, email_confirmed_at) values
     ('a0000000-0000-4000-8000-000000000001', 'prompt-owner@example.test', now()),
     ('a0000000-0000-4000-8000-000000000002', 'prompt-editor@example.test', now()),
@@ -31,8 +39,27 @@ select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000001
 select set_config('test.folder', public.create_prompt_folder('Fictional team')::text, true);
 select set_config('test.editor_token', public.invite_to_prompt_folder(current_setting('test.folder')::uuid, 'editor'), true);
 select set_config('test.viewer_token', public.invite_to_prompt_folder(current_setting('test.folder')::uuid, 'viewer'), true);
-select set_config('test.draft', public.save_prompt_draft(null, 0, current_setting('test.folder')::uuid, 'Shared draft', '{"version":1,"test":"shared"}')->>'id', true);
-select set_config('test.private', public.save_prompt_draft(null, 0, null, 'Private', '{"version":1}')->>'id', true);
+select set_config('test.draft', public.save_prompt_draft(null, 0, current_setting('test.folder')::uuid, 'Shared draft', pg_temp.draft_fixture('shared'))->>'id', true);
+select set_config('test.private', public.save_prompt_draft(null, 0, null, 'Private', pg_temp.draft_fixture())->>'id', true);
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(current_setting('test.private')::uuid,1,null,'Invalid','{"version":1}')$$,
+    'prompt_invalid');
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(null,0,null,'SQL null',null)$$, 'prompt_invalid');
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(null,0,null,'JSON null','null')$$, 'prompt_invalid');
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(null,0,null,'Invalid',pg_temp.draft_fixture() || '{"workflowId":"unknown"}')$$,
+    'prompt_invalid');
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(null,0,null,'Invalid',pg_temp.draft_fixture() || '{"chain":{"id":"bug-fix","step":0}}')$$,
+    'prompt_invalid');
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(null,0,null,'Invalid',pg_temp.draft_fixture(repeat('😀',4001)))$$,
+    'prompt_invalid');
+select pg_temp.check_true(
+    (select revision = 1 and name = 'Private' from public.prompt_drafts where id=current_setting('test.private')::uuid),
+    'invalid updates leave the working revision intact');
 select set_config('test.share_token', public.publish_prompt_snapshot('Shared title', 'Public snapshot only'), true);
 select set_config('test.share', (select id::text from public.prompt_shares where title = 'Shared title'), true);
 
@@ -40,28 +67,28 @@ select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000004
 select pg_temp.check_true(not exists(select 1 from public.prompt_drafts where id in
     (current_setting('test.draft')::uuid, current_setting('test.private')::uuid)), 'outsiders cannot read private or shared drafts');
 select pg_temp.check_error(
-    $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Intrusion', '{"version":1}')$$,
+    $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Intrusion', pg_temp.draft_fixture())$$,
     'prompt_forbidden');
 
 select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000002', true);
 select public.accept_prompt_folder_invite(current_setting('test.editor_token'));
 select pg_temp.check_error($$select public.accept_prompt_folder_invite(current_setting('test.editor_token'))$$, 'prompt_invite_invalid');
 select pg_temp.check_true(
-    (public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Shared draft', '{"version":1,"test":"revised"}')->>'revision') = '2',
+    (public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Shared draft', pg_temp.draft_fixture('revised'))->>'revision') = '2',
     'editors can create a new revision');
 select pg_temp.check_error(
-    $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Shared draft', '{"version":1}')$$,
+    $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Shared draft', pg_temp.draft_fixture())$$,
     'prompt_conflict');
 select pg_temp.check_true((select count(*) from public.prompt_versions where draft_id = current_setting('test.draft')::uuid) = 2, 'history has both versions');
-select set_config('test.editor_draft', public.save_prompt_draft(null, 0, current_setting('test.folder')::uuid, 'Editor draft', '{"version":1}')->>'id', true);
-select public.save_prompt_draft(current_setting('test.editor_draft')::uuid, 1, current_setting('test.folder')::uuid, 'Editor revision', '{"version":1}');
+select set_config('test.editor_draft', public.save_prompt_draft(null, 0, current_setting('test.folder')::uuid, 'Editor draft', pg_temp.draft_fixture())->>'id', true);
+select public.save_prompt_draft(current_setting('test.editor_draft')::uuid, 1, current_setting('test.folder')::uuid, 'Editor revision', pg_temp.draft_fixture());
 
 select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000003', true);
 select public.accept_prompt_folder_invite(current_setting('test.viewer_token'));
 select pg_temp.check_true(exists(select 1 from public.prompt_drafts where id = current_setting('test.draft')::uuid), 'viewers can read shared drafts');
 select pg_temp.check_error($$select public.list_prompt_folder_members(current_setting('test.folder')::uuid)$$, 'prompt_forbidden');
 select pg_temp.check_error(
-    $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 2, current_setting('test.folder')::uuid, 'Shared draft', '{"version":1}')$$,
+    $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 2, current_setting('test.folder')::uuid, 'Shared draft', pg_temp.draft_fixture())$$,
     'prompt_forbidden');
 
 set local role anon;
@@ -148,5 +175,23 @@ select pg_temp.check_true(public.prompt_folder_role(current_setting('test.folder
 select pg_temp.check_true(
     (select count(*) from public.prompt_versions where draft_id = current_setting('test.editor_draft')::uuid) = 2,
     'editor reads both revisions after the former owner leaves');
+
+-- Fill the remaining folder history budget with a compressible legacy row.
+set local role none;
+insert into public.prompt_versions(draft_id,revision,name,payload)
+select current_setting('test.editor_draft')::uuid,100,'Budget fixture',
+    to_jsonb(repeat('x',(32*1024*1024 - 128 - length('Budget fixture') - 2 - sum(v.history_bytes))::integer))
+from public.prompt_versions v join public.prompt_drafts d on d.id=v.draft_id
+where d.folder_id=current_setting('test.folder')::uuid;
+set local role authenticated;
+select pg_temp.check_error(
+    $$select public.save_prompt_draft(current_setting('test.editor_draft')::uuid,2,current_setting('test.folder')::uuid,'After ceiling',pg_temp.draft_fixture('new'))$$,
+    'prompt_storage_limit');
+select pg_temp.check_true(
+    (select revision = 2 and name = 'Editor revision' from public.prompt_drafts where id=current_setting('test.editor_draft')::uuid),
+    'quota rejection rolls back the entire save');
+select pg_temp.check_true(
+    (public.save_prompt_draft(null,0,null,'Personal still works',pg_temp.draft_fixture())->>'revision') = '1',
+    'a full folder does not block a personal save');
 
 rollback;

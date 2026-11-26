@@ -1,8 +1,23 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
 import './search-dialog.css';
 
 export type SearchResult = { id: string; title: string; description: string };
+
+export function isSearchShortcut(event: KeyboardEvent) {
+    // The Arabic layout sends ن at the physical K position.
+    const matchesK =
+        event.key.toLowerCase() === 'k' ||
+        (event.code === 'KeyK' && /^\p{Script=Arabic}$/u.test(event.key));
+    return (
+        matchesK &&
+        (event.ctrlKey || event.metaKey) &&
+        !event.defaultPrevented &&
+        !event.isComposing &&
+        !event.altKey &&
+        !event.shiftKey
+    );
+}
 
 const defaultLabels = {
     title: 'Search',
@@ -60,7 +75,7 @@ function OpenSearchDialog({
         onSelect(result);
     }
 
-    function navigate(event: KeyboardEvent<HTMLInputElement>) {
+    function navigate(event: ReactKeyboardEvent<HTMLInputElement>) {
         if (event.nativeEvent.isComposing || !results.length) return;
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();

@@ -1,11 +1,36 @@
 <div class="lab-demo" x-data="{ version: 'Revised', agenda: false }">
-    <fieldset><legend>Workshop landing page study</legend><div class="choices">{['Original','Revised'].map(label => <button x-bind:aria-pressed={`version === '${label}'`} x-on:click={`version = '${label}'`}>{label}</button>)}</div></fieldset>
+    <fieldset>
+        <legend>Workshop landing page study</legend>
+        <div class="choices">
+            {['Original', 'Revised'].map((label) => (
+                <button
+                    x-bind:aria-pressed={`version === '${label}'`}
+                    x-on:click={`version = '${label}'`}
+                >
+                    {label}
+                </button>
+            ))}
+        </div>
+    </fieldset>
     <div class="landing-sample" x-bind:data-variant="version">
         <span class="demo-label">Design workshop · 90 minutes</span>
-        <h4>Sketch a clearer service desk</h4>
+        <h3>Sketch a clearer service desk</h3>
         <p>Turn a crowded ticket queue into a screen where the next decision is easy to find.</p>
-        <button class="lab-primary" x-on:click="agenda = !agenda" x-bind:aria-expanded="agenda" aria-controls="workshop-agenda" x-text="agenda ? 'Hide agenda' : 'View agenda'"></button>
-        <ol id="workshop-agenda" x-show="agenda" x-cloak><li>15 min · Map the decision</li><li>45 min · Sketch the queue</li><li>30 min · Test with a keyboard</li></ol>
+        <button
+            class="lab-primary"
+            x-on:click="agenda = !agenda"
+            x-bind:aria-expanded="agenda"
+            aria-controls="workshop-agenda"
+            x-text="agenda ? 'Hide agenda' : 'View agenda'"
+        ></button>
+        <ol id="workshop-agenda" x-show="agenda" x-cloak>
+            <li>15 min · Map the decision</li>
+            <li>45 min · Sketch the queue</li>
+            <li>30 min · Test with a keyboard</li>
+        </ol>
     </div>
-    <p class="lab-note" x-text="version === 'Revised' ? 'The revised grid groups the time commitment, headline and agenda action.' : 'The original spreads the same brief across centered, equally weighted elements.'"></p>
+    <p
+        class="lab-note"
+        x-text="version === 'Revised' ? 'The revised grid groups the time commitment, headline and agenda action.' : 'The original spreads the same brief across centered, equally weighted elements.'"
+    ></p>
 </div>

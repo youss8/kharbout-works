@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
@@ -24,11 +26,14 @@ jobs:
           cache: npm
       - run: composer install --prefer-dist --no-interaction
       - run: composer validate --strict
+      - run: composer audit --locked --no-dev
       - run: cp .env.example .env
       - run: php artisan key:generate
       - run: npm ci
       - run: npm run lint
       - run: npm run format:check
+        env:
+          FORMAT_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before }}
       - run: npm test
         env:
           VAULT_FORBIDDEN_TERMS: ${{ secrets.VAULT_FORBIDDEN_TERMS }}
@@ -40,7 +45,7 @@ jobs:
       - run: composer analyse
       - run: composer test
       - run: npm run test:kit
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - run: npm run test:workbench
       - name: Exercise the Vault examples on Laravel 13 and Livewire 4
@@ -55,6 +60,7 @@ jobs:
           php tests/workbench/verify-tier4-contracts.php
           npx playwright test --config tests/workbench/livewire.playwright.config.mjs
       - run: npm run test:browser
+      - run: npm run test:smoke:browsers
 
   prompt-builder:
     name: Prompt Builder cloud contracts

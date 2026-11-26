@@ -21,6 +21,17 @@ test.describe('vault without client scripts', () => {
     });
 });
 
+test('standalone kit source has a title and copies one complete file', async ({ context, page }) => {
+    await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+    await page.goto('/vault/source/status-tone-vocabulary/alpine/');
+    await expect(page).toHaveTitle(/Alpine source/);
+    const file = page.locator('.source-file').first();
+    const original = await file.locator('pre code').textContent();
+    await file.getByRole('button', { name: 'Copy file' }).press('Enter');
+    await expect(page.locator('[data-source-reader] .feedback')).toHaveText('Source copied.');
+    expect((await page.evaluate(() => navigator.clipboard.readText())).replaceAll('\r\n', '\n')).toBe(original);
+});
+
 test('a filtered kit URL opens the active kit and back restores the previous selection', async ({ browser, page }) => {
     await page.goto('/vault/#spreadsheet-importer-register');
     await expect(page.locator('#spreadsheet-importer-register')).toBeVisible();
@@ -84,6 +95,49 @@ test('an original extraction ID opens its curated example in either implementati
         await expect(frame.locator('html')).toHaveAttribute('dir','rtl');
         await expect(frame.getByRole('button', {name:'Open file preview'})).toBeVisible();
     }
+});
+
+test('each preview fetches only the chosen engine', async ({ page }) => {
+    const scripts = new Set();
+    page.on('request', (request) => {
+        if (request.resourceType() === 'script') scripts.add(new URL(request.url()).pathname);
+    });
+    const path = '/vault/preview/status-tone-vocabulary/';
+    await page.goto(path + '?engine=alpine');
+    await expect(page.getByLabel('Place in-progress work on hold')).toBeVisible();
+    expect([...scripts].some((file) => /ReactExample|react-dom|jsx-runtime/.test(file))).toBe(false);
+    scripts.clear();
+    await page.goto(path + '?engine=react');
+    await expect(page.getByLabel('Place in-progress work on hold')).toBeVisible();
+    expect([...scripts].some((file) => /ReactExample/.test(file))).toBe(true);
+    expect([...scripts].some((file) => /alpine/i.test(file))).toBe(false);
+});
+
+test('embedded preview isolates browser storage and keeps its own saved layout', async ({ page }) => {
+    await page.goto('/vault/#flush-row-desk-grid');
+    const kit = page.locator('#flush-row-desk-grid');
+    const preview = kit.frameLocator('iframe');
+    await expect(kit.locator('iframe')).toHaveAttribute('sandbox', /allow-scripts/);
+    await expect(kit.locator('iframe')).not.toHaveAttribute('sandbox', /allow-same-origin/);
+    await expect(preview.getByRole('button', { name: 'Customize grid' })).toBeVisible();
+    expect(await preview.locator('html').evaluate(() => {
+        try {
+            localStorage.getItem('qa-example-preference');
+            return false;
+        } catch (error) {
+            return error instanceof DOMException && error.name === 'SecurityError';
+        }
+    })).toBe(true);
+    await preview.getByRole('button', { name: 'Customize grid' }).click();
+    await preview.getByRole('button', { name: 'Grow Monthly returns' }).click();
+    await preview.getByRole('button', { name: 'Done' }).click();
+    await expect.poll(() => page.evaluate(() => localStorage.getItem('vault.operations-desk.v1'))).toContain('8');
+    await page.reload();
+    await expect(preview.locator('[data-grid-panel]').first()).toContainText('8/12');
+    await kit.getByRole('button', { name: 'Dark', exact: true }).click();
+    await kit.getByRole('button', { name: 'RTL', exact: true }).click();
+    await expect(preview.locator('html')).toHaveAttribute('data-theme', 'dark');
+    await expect(preview.locator('html')).toHaveAttribute('dir', 'rtl');
 });
 test('vault filters and empty state work at 375 pixels', async ({ page }) => {
     expect(items.map(item=>item.order)).toEqual(Array.from({length:20},(_,i)=>i+1));

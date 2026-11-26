@@ -51,6 +51,8 @@ return static function (string $slug, array $snapshot): void {
     }
 
     if ($slug === 'spreadsheet-importer-register') {
+        $html = $step('parse', [], ['csv' => "Job,Interval\nWeekly backup,-3"])['html'];
+        $check(str_contains($html, 'Interval (h) must be 0 or greater.') && ! str_contains($html, 'Load rows into register'), 'Negative interval was accepted');
         foreach (['Job,Job', 'Job,Job Name', 'Job,Ｊｏｂ Ｎａｍｅ'] as $headers) {
             $html = $step('parse', [], ['csv' => "$headers\nFirst,Second"])['html'];
             $check(str_contains($html, 'More than one column maps to') && ! str_contains($html, 'Load rows into register'), 'Duplicate mapped header was accepted');

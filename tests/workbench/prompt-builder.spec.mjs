@@ -1,9 +1,42 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
+import { newDraft, readDraft } from '../../src/lib/prompt-builder/model.ts';
 
 const route = '/ai-kit/prompt-builder/';
 const prompt = (page, variant = 'concise') => page.locator('pre[data-variant=' + variant + ']');
 const button = (page, name) => page.getByRole('button', { name, exact: true });
+
+test('the builder restores its own large multilingual backup and protects unsaved navigation', async ({ page }) => {
+    await page.goto(route);
+    const seed = newDraft('handover');
+    for (const key of ['RECIPIENT', 'NEXT', 'BLOCKERS']) seed.values[key] = '界'.repeat(8000);
+    seed.edits = { concise: '界'.repeat(40000), detailed: '界'.repeat(40000) };
+    seed.runs = Array.from({ length: 4 }, (_, i) => ({ prompt: '界'.repeat(6900) + i, result: 'OK' }));
+    const input = page.locator('input[type=file]');
+    await input.setInputFiles({ name: 'Backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(seed)) });
+    const state = page.getByRole('textbox', { name: 'Current state', exact: true });
+    await state.fill('界'.repeat(8000));
+    const dialog = page.waitForEvent('dialog');
+    const navigation = page.getByRole('link', { name: 'AI engineering toolkit', exact: true }).click({ noWaitAfter: true });
+    const leave = await dialog;
+    expect(leave.type()).toBe('beforeunload');
+    await leave.dismiss();
+    await navigation;
+    await expect(state).toHaveValue('界'.repeat(8000));
+    const pending = page.waitForEvent('download');
+    await button(page, 'Download draft JSON (.json)').click();
+    const bytes = await readFile(await (await pending).path());
+    expect(bytes.length).toBeGreaterThan(400000);
+    const exported = JSON.parse(bytes);
+    expect(readDraft(exported)).toEqual(exported);
+    page.once('dialog', dialog => dialog.accept());
+    await input.setInputFiles({ name: 'Recovered.json', mimeType: 'application/json', buffer: bytes });
+    await expect(page.getByRole('textbox', { name: 'Draft name' })).toHaveValue('Recovered');
+    await expect(state).toHaveValue(exported.values.STATUS);
+    await page.reload();
+    await page.getByRole('listitem').filter({ hasText: 'Recovered' }).getByRole('button', { name: 'Open' }).click();
+    await expect(state).toHaveValue(exported.values.STATUS);
+});
 
 test('find a preset from search and preserve literal content in previews, edits, and exports', async ({ page, context }) => {
     const errors = [];
@@ -33,7 +66,7 @@ test('find a preset from search and preserve literal content in previews, edits,
     expect(await prompt(page).textContent()).toBe(edit);
     await button(page, 'Copy prompt').click();
     await expect.poll(async () => (await page.evaluate(() => navigator.clipboard.readText())).replaceAll('\r\n', '\n')).toBe(edit);
-    for (const [label, extension] of [['Download Markdown', 'md'], ['Download plain text', 'txt']]) {
+    for (const [label, extension] of [['Download Markdown (.md)', 'md'], ['Download plain text (.txt)', 'txt']]) {
         const pending = page.waitForEvent('download');
         await button(page, label).click();
         const download = await pending;
@@ -73,7 +106,7 @@ test('imports a new draft, restores the device library on reload, and confirms e
     await expect(page.getByRole('combobox', { name: 'Workflow', exact: true })).toHaveValue('verification-checklist');
 
     const pending = page.waitForEvent('download');
-    await button(page, 'Download draft JSON').click();
+    await button(page, 'Download draft JSON (.json)').click();
     const file = await pending;
     const input = page.locator('input[type=file]');
     await input.setInputFiles({ name: 'Imported.json', mimeType: 'application/json', buffer: await readFile(await file.path()) });

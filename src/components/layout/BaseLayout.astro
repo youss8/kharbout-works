@@ -12,17 +12,24 @@ import Footer from './Footer.astro';
 import CommandAskBar from './CommandAskBar.astro';
 import { siteName } from '../../data/brand';
 import { profile } from '../../data/profile';
-interface Props { title: string; description?: string }
+interface Props {
+    title: string;
+    description?: string;
+}
 const { title, description = profile.subheadline } = Astro.props;
 ---
+
 <!doctype html>
 <html lang="en" data-theme="light">
     <head>
         <meta charset="utf-8" />
         <script is:inline>
             try {
-                if (localStorage.getItem('yok-theme') === 'dark') document.documentElement.dataset.theme = 'dark';
-            } catch { /* Light is the default when storage is unavailable. */ }
+                if (localStorage.getItem('yok-theme') === 'dark')
+                    document.documentElement.dataset.theme = 'dark';
+            } catch {
+                /* Light is the default when storage is unavailable. */
+            }
         </script>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content={description} />
@@ -30,9 +37,13 @@ const { title, description = profile.subheadline } = Astro.props;
         <title>{title} · {siteName}</title>
     </head>
     <body>
-        <a class="skip-link no-print" href="#main-content">Skip to content</a>
+        <a class="skip-link no-print" href="#main-content">
+            Skip to content
+        </a>
         <TopNav />
-        <main id="main-content" tabindex="-1"><slot /></main>
+        <main id="main-content" tabindex="-1">
+            <slot />
+        </main>
         <Footer />
         <CommandAskBar />
     </body>

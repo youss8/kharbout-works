@@ -63,6 +63,10 @@ for (const engine of ['react', 'alpine']) {
         engine + ' importer emits row warnings, preserves hidden fields, and exports CSV',
         async ({ page }) => {
             await page.goto(url('spreadsheet-importer-register'));
+            await page.getByLabel('CSV to import').fill('Job,Interval\nWeekly backup,-3');
+            await page.getByRole('button', { name: 'Parse CSV' }).click();
+            await expect(page.getByRole('alert')).toContainText('Interval (h) must be 0 or greater.');
+            await expect(page.getByRole('button', { name: 'Load rows into register' })).toHaveCount(0);
             await page.getByLabel('CSV to import').fill('Job,Job Name,Interval\nFirst,Second,24');
             await page.getByRole('button', { name: 'Parse CSV' }).click();
             await expect(page.getByRole('alert')).toContainText(/more than one column maps to "Backup job"/i);

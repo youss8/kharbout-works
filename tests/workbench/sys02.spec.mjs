@@ -62,9 +62,9 @@ test('timesheet gates, self-approval guard, one-time credit and revocation', asy
   const action = (name) => desk.getByRole('button', { name, exact: true });
   await expect(desk.getByText('DRAFT', { exact: true }).first()).toBeVisible();
   await expect(action('Employee confirm')).toBeDisabled();
-  await action('Resolve 2026-11-03').click();
+  await action('Resolve punches for 2026-11-03').click();
   await desk.getByRole('dialog').getByRole('button', { name: 'Worked Full (8h)' }).click();
-  await action('Resolve 2026-11-09').click();
+  await action('Resolve punches for 2026-11-09').click();
   await desk.getByRole('dialog').getByRole('button', { name: 'Half Day (4h)' }).click();
   await expect(desk.locator('.hr-watermark')).toBeHidden();
   await action('Employee confirm').click();

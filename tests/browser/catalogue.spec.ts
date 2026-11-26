@@ -101,6 +101,25 @@ test('the entry Back link restores the query, category and results', async ({ pa
 test.describe('HTML fallback', () => {
     test.use({ javaScriptEnabled: false });
 
+    test('shared filters survive fallback navigation and empty results offer recovery', async ({
+        page,
+    }) => {
+        await page.goto('/?q=url&category=utilities#catalogue');
+        const results = page.getByRole('main').getByRole('heading', { level: 2 });
+        await expect(results).toHaveText(['Shareable URL filters']);
+        await page.getByRole('link', { name: 'Shareable URL filters' }).click();
+        await page.getByRole('link', { name: 'Back to catalogue' }).click();
+        await expect(results).toHaveText(['Shareable URL filters']);
+        await page.goto('/?q=Tastatursteuerung');
+        await expect(results).toHaveText(['Keyboard search dialog']);
+        await page.goto('/?category=utilities&category=pages');
+        await expect(results).toHaveText(['Shareable URL filters']);
+        await page.goto('/?q=neveranentry');
+        await expect(results).toHaveText(['No matching entries']);
+        await page.getByRole('link', { name: 'Clear filters' }).click();
+        await expect(results).toHaveCount(7);
+    });
+
     test('visitors can browse entries and download source without JavaScript', async ({ page }) => {
         await page.goto('/');
         await expect(page.getByRole('heading', { level: 1 })).toHaveText(

@@ -4,40 +4,137 @@ import BaseLayout from '../../components/layout/BaseLayout.astro';
 import CodeTabs from '../../components/ui/CodeTabs.astro';
 import '../../styles/workbench.css';
 import { supersededBy } from '../../data/vault-legacy';
-const items = (await getCollection('vault')).sort((a,b) => a.data.order-b.data.order);
-const categories = [...new Set(items.map(item => item.data.category))];
-const tiers = ['T1 Primitives','T2 Controls & Guards','T3 Workflows','T4 Flagship Engines'];
-const sources = [['SYS-01','SYS-01 IT'],['SYS-02','SYS-02 HR'],['SYS-03','SYS-03 PT'],['Cross-System','Cross-System']];
+const items = (await getCollection('vault')).sort((a, b) => a.data.order - b.data.order);
+const categories = [...new Set(items.map((item) => item.data.category))];
+const tiers = ['T1 Primitives', 'T2 Controls & Guards', 'T3 Workflows', 'T4 Flagship Engines'];
+const sources = [
+    ['SYS-01', 'SYS-01 IT'],
+    ['SYS-02', 'SYS-02 HR'],
+    ['SYS-03', 'SYS-03 PT'],
+    ['Cross-System', 'Cross-System'],
+];
 ---
+
 <BaseLayout title="Dual-stack component vault">
-    <div class="page-shell"><header class="page-heading"><p class="section-id">02 / Vault</p><h1>Component vault</h1><p>Explore 20 kits curated from 97 source components across Project Tracking (44), IT Helpdesk (28) and HR Core (25).</p></header>
+    <div class="page-shell">
+        <header class="page-heading">
+            <p class="section-id">02 / Vault</p>
+            <h1>Component vault</h1>
+            <p>
+                Explore 20 kits curated from 97 source components across Project Tracking (44), IT
+                Helpdesk (28) and HR Core (25).
+            </p>
+        </header>
         <component-vault data-aliases={JSON.stringify(supersededBy)}>
             <aside class="vault-register">
                 <div class="vault-filters" hidden>
-                <label>Search patterns<input type="search" placeholder="Name, behavior or system" /></label>
-                <fieldset><legend>Complexity tier</legend><div class="pills">{['All',...tiers].map((label,i) => <button type="button" data-tier-filter={i ? String(i) : ''} aria-pressed={!i?'true':'false'}>{label}</button>)}</div></fieldset>
-                <label>Source system<select data-source-filter><option value="">All sources</option>{sources.map(([key,label]) => <option value={key}>{label}</option>)}</select></label>
-                <fieldset><legend>Category</legend><div class="pills">{['', ...categories].map(category => <button type="button" data-category-filter={category} aria-pressed={category === '' ? 'true' : 'false'}>{category || 'All'}</button>)}</div></fieldset>
+                    <label>
+                        Search patterns
+                        <input type="search" placeholder="Name, behavior or system" />
+                    </label>
+                    <fieldset>
+                        <legend>Complexity tier</legend>
+                        <div class="pills">
+                            {['All', ...tiers].map((label, i) => (
+                                <button
+                                    type="button"
+                                    data-tier-filter={i ? String(i) : ''}
+                                    aria-pressed={!i ? 'true' : 'false'}
+                                >
+                                    {label}
+                                </button>
+                            ))}
+                        </div>
+                    </fieldset>
+                    <label>
+                        Source system
+                        <select data-source-filter>
+                            <option value="">All sources</option>
+                            {sources.map(([key, label]) => (
+                                <option value={key}>{label}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <fieldset>
+                        <legend>Category</legend>
+                        <div class="pills">
+                            {['', ...categories].map((category) => (
+                                <button
+                                    type="button"
+                                    data-category-filter={category}
+                                    aria-pressed={category === '' ? 'true' : 'false'}
+                                >
+                                    {category || 'All'}
+                                </button>
+                            ))}
+                        </div>
+                    </fieldset>
                 </div>
                 <nav aria-label="Component patterns">
-                    {items.map(item => <a href={'#'+item.id} data-id={item.id} data-tier={item.data.tier} data-sources={item.data.sourceSystems.join(' ')} data-category={item.data.category} data-keywords={[item.id,item.data.title,item.data.category,item.data.sourceSystem,item.data.summary,...item.data.sourceIds,...item.data.interactionSpecs].join(' ').toLowerCase()}>
-                        <span>{item.data.title}</span><small>T{item.data.tier} · {item.data.sourceSystem}</small></a>)}
+                    {items.map((item) => (
+                        <a
+                            href={'#' + item.id}
+                            data-id={item.id}
+                            data-tier={item.data.tier}
+                            data-sources={item.data.sourceSystems.join(' ')}
+                            data-category={item.data.category}
+                            data-keywords={[
+                                item.id,
+                                item.data.title,
+                                item.data.category,
+                                item.data.sourceSystem,
+                                item.data.summary,
+                                ...item.data.sourceIds,
+                                ...item.data.interactionSpecs,
+                            ]
+                                .join(' ')
+                                .toLowerCase()}
+                        >
+                            <span>{item.data.title}</span>
+                            <small>
+                                T{item.data.tier} · {item.data.sourceSystem}
+                            </small>
+                        </a>
+                    ))}
                 </nav>
             </aside>
             <div class="vault-detail">
-                <p role="status" class="empty" hidden>No matching patterns. <button type="button" data-clear>Clear filters</button></p>
-                {items.map(item => <article id={item.id}>
-                    <p class="section-id">T{item.data.tier} / {item.data.sourceSystem} / {item.data.category}</p><h2>{item.data.title}</h2><p>{item.data.summary}</p>
-                    <span class="provenance">{item.data.provenance === 'observed' ? 'Observed in Codebase' : 'Observed + Clean-Room [spec]'}</span>
-                    <p class="evidence">Source entries · {item.data.sourceIds.join(" · ")}</p>
-                    <div class="interactive" hidden><CodeTabs item={item}/></div>
-                    <div class="static-source">
-                        <a href={'/vault/source/'+item.id+'/alpine/'}>Alpine source</a>
-                        <a href={'/vault/source/'+item.id+'/react/'}>React source</a>
-                        <a href={'/vault/source/'+item.id+'/livewire/'}>Livewire source</a>
-                    </div>
-                    {Object.entries(supersededBy).filter(([,id]) => id === item.id).map(([old]) => <a class="earlier" href={'/vault/preview/'+old+'/'}>Earlier example · {old.replaceAll('-',' ')}</a>)}
-                </article>)}
+                <p role="status" class="empty" hidden>
+                    No matching patterns.{' '}
+                    <button type="button" data-clear>
+                        Clear filters
+                    </button>
+                </p>
+                {items.map((item) => (
+                    <article id={item.id}>
+                        <p class="section-id">
+                            T{item.data.tier} / {item.data.sourceSystem} / {item.data.category}
+                        </p>
+                        <h2>{item.data.title}</h2>
+                        <p>{item.data.summary}</p>
+                        <span class="provenance">
+                            {item.data.provenance === 'observed'
+                                ? 'Observed in Codebase'
+                                : 'Observed + Clean-Room [spec]'}
+                        </span>
+                        <p class="evidence">Source entries · {item.data.sourceIds.join(' · ')}</p>
+                        <div class="interactive" hidden>
+                            <CodeTabs item={item} />
+                        </div>
+                        <div class="static-source">
+                            <a href={'/vault/source/' + item.id + '/alpine/'}>Alpine source</a>
+                            <a href={'/vault/source/' + item.id + '/react/'}>React source</a>
+                            <a href={'/vault/source/' + item.id + '/livewire/'}>Livewire source</a>
+                        </div>
+                        {Object.entries(supersededBy)
+                            .filter(([, id]) => id === item.id)
+                            .map(([old]) => (
+                                <a class="earlier" href={'/vault/preview/' + old + '/'}>
+                                    Earlier example · {old.replaceAll('-', ' ')}
+                                </a>
+                            ))}
+                    </article>
+                ))}
             </div>
         </component-vault>
     </div>
@@ -51,12 +148,18 @@ const sources = [['SYS-01','SYS-01 IT'],['SYS-02','SYS-02 HR'],['SYS-03','SYS-03
             const pills = [...this.querySelectorAll<HTMLButtonElement>('[data-category-filter]')];
             const tiers = [...this.querySelectorAll<HTMLButtonElement>('[data-tier-filter]')];
             const source = this.querySelector<HTMLSelectElement>('[data-source-filter]')!;
-            const aliases: Record<string,string> = JSON.parse(this.dataset.aliases!);
+            const aliases: Record<string, string> = JSON.parse(this.dataset.aliases!);
             type Filters = { query: string; category: string; tier: string; source: string };
-            let category = '', tier = '';
+            let category = '',
+                tier = '';
             const empty = this.querySelector<HTMLElement>('.empty')!;
             const filters = this.querySelector<HTMLElement>('.vault-filters')!;
-            const currentFilters = (): Filters => ({query: query.value, category, tier, source: source.value});
+            const currentFilters = (): Filters => ({
+                query: query.value,
+                category,
+                tier,
+                source: source.value,
+            });
             const restoreFilters = (saved?: Filters) => {
                 query.value = saved?.query ?? '';
                 category = saved?.category ?? '';
@@ -64,30 +167,52 @@ const sources = [['SYS-01','SYS-01 IT'],['SYS-02','SYS-02 HR'],['SYS-03','SYS-03
                 source.value = saved?.source ?? '';
             };
             const select = (id: string) => {
-                links.forEach(link => {
-                    if (link.dataset.id === id) link.setAttribute('aria-current','true'); else link.removeAttribute('aria-current');
+                links.forEach((link) => {
+                    if (link.dataset.id === id) link.setAttribute('aria-current', 'true');
+                    else link.removeAttribute('aria-current');
                 });
-                articles.forEach(article => {
+                articles.forEach((article) => {
                     article.hidden = article.id !== id;
                     if (!article.hidden) {
                         article.querySelector<HTMLElement>('.interactive')!.hidden = false;
-                        article.querySelector('vault-frame')?.dispatchEvent(new Event('activate-preview'));
+                        article
+                            .querySelector('vault-frame')
+                            ?.dispatchEvent(new Event('activate-preview'));
                     }
                 });
                 empty.hidden = Boolean(id);
             };
             const filter = (preferred: string) => {
-                pills.forEach(pill => pill.setAttribute('aria-pressed', String(pill.dataset.categoryFilter === category)));
-                tiers.forEach(pill => pill.setAttribute('aria-pressed', String(pill.dataset.tierFilter === tier)));
-                links.forEach(link => { link.hidden = !!(category && link.dataset.category !== category) || !!(tier && link.dataset.tier !== tier) ||
-                    !!(source.value && !link.dataset.sources!.split(' ').includes(source.value)) || !link.dataset.keywords!.includes(query.value.trim().toLowerCase()); });
-                const match = links.find(link => !link.hidden && link.dataset.id === preferred) ?? links.find(link => !link.hidden);
+                pills.forEach((pill) =>
+                    pill.setAttribute(
+                        'aria-pressed',
+                        String(pill.dataset.categoryFilter === category),
+                    ),
+                );
+                tiers.forEach((pill) =>
+                    pill.setAttribute('aria-pressed', String(pill.dataset.tierFilter === tier)),
+                );
+                links.forEach((link) => {
+                    link.hidden =
+                        !!(category && link.dataset.category !== category) ||
+                        !!(tier && link.dataset.tier !== tier) ||
+                        !!(
+                            source.value && !link.dataset.sources!.split(' ').includes(source.value)
+                        ) ||
+                        !link.dataset.keywords!.includes(query.value.trim().toLowerCase());
+                });
+                const match =
+                    links.find((link) => !link.hidden && link.dataset.id === preferred) ??
+                    links.find((link) => !link.hidden);
                 return match?.dataset.id ?? '';
             };
             const save = (id: string, push: boolean) => {
                 const url = new URL(location.href);
                 url.hash = id;
-                const state = { ...history.state, vault: { hash: url.hash, filters: currentFilters() } };
+                const state = {
+                    ...history.state,
+                    vault: { hash: url.hash, filters: currentFilters() },
+                };
                 if (push && url.hash !== location.hash) history.pushState(state, '', url);
                 else history.replaceState(state, '', url);
             };
@@ -104,19 +229,43 @@ const sources = [['SYS-01','SYS-01 IT'],['SYS-02','SYS-02 HR'],['SYS-03','SYS-03
                 select(id);
             };
             query.addEventListener('input', filterChanged);
-            pills.forEach(pill => pill.addEventListener('click', () => { category = pill.dataset.categoryFilter!; filterChanged(); }));
-            tiers.forEach(pill => pill.addEventListener('click', () => { tier = pill.dataset.tierFilter!; filterChanged(); }));
+            pills.forEach((pill) =>
+                pill.addEventListener('click', () => {
+                    category = pill.dataset.categoryFilter!;
+                    filterChanged();
+                }),
+            );
+            tiers.forEach((pill) =>
+                pill.addEventListener('click', () => {
+                    tier = pill.dataset.tierFilter!;
+                    filterChanged();
+                }),
+            );
             source.addEventListener('change', filterChanged);
-            this.querySelector('[data-clear]')!.addEventListener('click', () => { restoreFilters(); filterChanged(); query.focus(); });
+            this.querySelector('[data-clear]')!.addEventListener('click', () => {
+                restoreFilters();
+                filterChanged();
+                query.focus();
+            });
             window.addEventListener('popstate', fromURL);
             window.addEventListener('hashchange', fromURL);
-            links.forEach(link => link.addEventListener('click', event => {
-                if (event.button !== 0 || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
-                event.preventDefault();
-                save(link.dataset.id!, true);
-                select(link.dataset.id!);
-                if (matchMedia('(max-width: 760px)').matches) document.getElementById(link.dataset.id!)?.scrollIntoView();
-            }));
+            links.forEach((link) =>
+                link.addEventListener('click', (event) => {
+                    if (
+                        event.button !== 0 ||
+                        event.altKey ||
+                        event.ctrlKey ||
+                        event.metaKey ||
+                        event.shiftKey
+                    )
+                        return;
+                    event.preventDefault();
+                    save(link.dataset.id!, true);
+                    select(link.dataset.id!);
+                    if (matchMedia('(max-width: 760px)').matches)
+                        document.getElementById(link.dataset.id!)?.scrollIntoView();
+                }),
+            );
             fromURL();
             filters.hidden = false;
             this.dataset.enhanced = 'true';
@@ -125,29 +274,142 @@ const sources = [['SYS-01','SYS-01 IT'],['SYS-02','SYS-02 HR'],['SYS-03','SYS-03
     customElements.define('component-vault', ComponentVault);
 </script>
 <style>
-    component-vault { display:grid; grid-template-columns:minmax(14rem,19rem) minmax(0,1fr); gap:clamp(1rem,3vw,2.5rem); }
-    .vault-register { align-self:start; border:1px solid var(--border-hairline); background:var(--bg-surface); padding:1rem; border-block-start:3px solid var(--accent-primary); }
-    label { display:grid; gap:.25rem; margin-block-end:.75rem; font-size:.84rem; font-weight:600; }
-    input,select { width:100%; background:var(--bg-canvas); border:1px solid var(--border-strong); padding:.5rem; border-radius:3px; }
-    fieldset { margin: .6rem 0 1rem; } legend { font-weight: 600; font-size: .84rem; }
-    .pills { display: flex; flex-wrap: wrap; gap: .28rem; margin-block-start:.35rem; }
-    .pills button { border:1px solid var(--border-hairline); padding:.25rem .45rem; font-size:.75rem; border-radius:3px; }
-    .pills button[aria-pressed="true"] { border-color:var(--accent-primary); background:var(--accent-tint); color:var(--accent-primary); }
-    nav { display:grid; } nav a { padding:.65rem .5rem; border-block-start:1px solid var(--border-hairline); font-size:.9rem; line-height:1.3; font-weight:600; }
-    nav a[aria-current] { border-inline-start:3px solid var(--accent-primary); background:var(--accent-tint); color:var(--accent-primary); }
-    small { display:block; font:.68rem var(--font-mono); color:var(--ink-secondary); margin-block-start:.25rem; }
-    .vault-detail { min-width:0; }
-    .static-source { display:flex; flex-wrap:wrap; gap:.5rem 1rem; margin-block:.75rem; }
-    .static-source a { color:var(--accent-primary); text-decoration:underline; }
-    [data-enhanced] .static-source { display:none; }
-    .provenance,.earlier { display:inline-block; font:500 .73rem/1.5 var(--font-mono); color:var(--ink-secondary); margin-block-start:.65rem; }
-    .provenance { border:1px solid var(--border-hairline); padding:.18rem .4rem; }
-    .evidence { font: .75rem/1.6 var(--font-mono); color: var(--ink-secondary); margin-block:.5rem; }
-    .earlier { display:block; text-decoration:underline; }
-    article,.empty { background:var(--bg-surface); border:1px solid var(--border-hairline); padding:clamp(.75rem,2vw,1.7rem); }
-    article { scroll-margin-block-start:5.2rem; }
-    component-vault:not([data-enhanced]) article + article { margin-block-start:.75rem; }
-    article h2 { font-size:clamp(1.6rem,2.7vw,2.6rem); margin-block:.55rem; font-weight:600; }
-    [data-clear] { text-decoration:underline; color:var(--accent-primary); }
-    @media (max-width:760px) { component-vault { grid-template-columns:1fr; } nav { max-height:15rem; overflow:auto; } }
+    component-vault {
+        display: grid;
+        grid-template-columns: minmax(14rem, 19rem) minmax(0, 1fr);
+        gap: clamp(1rem, 3vw, 2.5rem);
+    }
+    .vault-register {
+        align-self: start;
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+        padding: 1rem;
+        border-block-start: 3px solid var(--accent-primary);
+    }
+    label {
+        display: grid;
+        gap: 0.25rem;
+        margin-block-end: 0.75rem;
+        font-size: 0.84rem;
+        font-weight: 600;
+    }
+    input,
+    select {
+        width: 100%;
+        background: var(--bg-canvas);
+        border: 1px solid var(--border-strong);
+        padding: 0.5rem;
+        border-radius: 3px;
+    }
+    fieldset {
+        margin: 0.6rem 0 1rem;
+    }
+    legend {
+        font-weight: 600;
+        font-size: 0.84rem;
+    }
+    .pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.28rem;
+        margin-block-start: 0.35rem;
+    }
+    .pills button {
+        border: 1px solid var(--border-hairline);
+        padding: 0.25rem 0.45rem;
+        font-size: 0.75rem;
+        border-radius: 3px;
+    }
+    .pills button[aria-pressed='true'] {
+        border-color: var(--accent-primary);
+        background: var(--accent-tint);
+        color: var(--accent-primary);
+    }
+    nav {
+        display: grid;
+    }
+    nav a {
+        padding: 0.65rem 0.5rem;
+        border-block-start: 1px solid var(--border-hairline);
+        font-size: 0.9rem;
+        line-height: 1.3;
+        font-weight: 600;
+    }
+    nav a[aria-current] {
+        border-inline-start: 3px solid var(--accent-primary);
+        background: var(--accent-tint);
+        color: var(--accent-primary);
+    }
+    small {
+        display: block;
+        font: 0.68rem var(--font-mono);
+        color: var(--ink-secondary);
+        margin-block-start: 0.25rem;
+    }
+    .vault-detail {
+        min-width: 0;
+    }
+    .static-source {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        margin-block: 0.75rem;
+    }
+    .static-source a {
+        color: var(--accent-primary);
+        text-decoration: underline;
+    }
+    [data-enhanced] .static-source {
+        display: none;
+    }
+    .provenance,
+    .earlier {
+        display: inline-block;
+        font: 500 0.73rem/1.5 var(--font-mono);
+        color: var(--ink-secondary);
+        margin-block-start: 0.65rem;
+    }
+    .provenance {
+        border: 1px solid var(--border-hairline);
+        padding: 0.18rem 0.4rem;
+    }
+    .evidence {
+        font: 0.75rem/1.6 var(--font-mono);
+        color: var(--ink-secondary);
+        margin-block: 0.5rem;
+    }
+    .earlier {
+        display: block;
+        text-decoration: underline;
+    }
+    article,
+    .empty {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-hairline);
+        padding: clamp(0.75rem, 2vw, 1.7rem);
+    }
+    article {
+        scroll-margin-block-start: 5.2rem;
+    }
+    component-vault:not([data-enhanced]) article + article {
+        margin-block-start: 0.75rem;
+    }
+    article h2 {
+        font-size: clamp(1.6rem, 2.7vw, 2.6rem);
+        margin-block: 0.55rem;
+        font-weight: 600;
+    }
+    [data-clear] {
+        text-decoration: underline;
+        color: var(--accent-primary);
+    }
+    @media (max-width: 760px) {
+        component-vault {
+            grid-template-columns: 1fr;
+        }
+        nav {
+            max-height: 15rem;
+            overflow: auto;
+        }
+    }
 </style>

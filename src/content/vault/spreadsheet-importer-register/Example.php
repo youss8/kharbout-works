@@ -123,6 +123,14 @@ class SpreadsheetImporterRegister extends Component
                 $value = $raw === '' || strtolower($raw) === 'n/a' ? null : $raw;
                 if ($value !== null && RegisterForm::FIELDS[$field]['type'] === 'number') {
                     $value = is_numeric($value) ? (float) $value : null;
+                    $minimum = RegisterForm::FIELDS[$field]['min'] ?? null;
+                    if ($minimum !== null && $value !== null && $value < $minimum) {
+                        $this->error = "paste.csv:$line · ".RegisterForm::FIELDS[$field]['label']." must be $minimum or greater.";
+                        $this->preview = [];
+                        fclose($stream);
+
+                        return;
+                    }
                 }
                 if ($value !== null && RegisterForm::FIELDS[$field]['type'] === 'date') {
                     $date = null;

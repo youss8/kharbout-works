@@ -2,7 +2,7 @@ import { parseRegisterCsv, toCsv } from '../../../lib/kernels/safeCsv';
 import { cleanForWrite, type RegisterField } from '../../../lib/kernels/cleanForWrite';
 export const fields: RegisterField[] = [
     { key: 'name', label: 'Backup job', aliases: ['Job Name', 'Job'], required: true },
-    { key: 'interval', label: 'Interval (h)', aliases: ['Interval'], type: 'number' },
+    { key: 'interval', label: 'Interval (h)', aliases: ['Interval'], type: 'number', min: 0 },
     { key: 'last', label: 'Last run', type: 'date' },
     { key: 'notes', label: 'Internal notes', detail: true, type: 'textarea' },
 ];
@@ -105,6 +105,10 @@ export default function createModel() {
                     const n = Number(patch[f.key]);
                     if (!Number.isFinite(n)) {
                         this.notice = 'Enter a number for ' + f.label + '.';
+                        return;
+                    }
+                    if (f.min !== undefined && n < f.min) {
+                        this.notice = f.label + ' must be ' + f.min + ' or greater.';
                         return;
                     }
                     patch[f.key] = n;

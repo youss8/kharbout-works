@@ -2,22 +2,34 @@
 import { ArrowUpRight, ChevronDown, Compass } from 'lucide-react';
 import type { SandboxChallenge } from '../../data/sandbox-directory';
 
-interface Props { challenge: SandboxChallenge }
+interface Props {
+    challenge: SandboxChallenge;
+}
 const { challenge } = Astro.props;
 ---
-<aside class="guide" aria-label="Guided challenge">
+
+<aside class="guide" aria-label={'Guided challenge · ' + challenge.title}>
     <div class="guide-intro">
-        <span class="guide-icon"><Compass size={19} strokeWidth={1.75} aria-hidden="true" /></span>
+        <span class="guide-icon">
+            <Compass size={19} strokeWidth={1.75} aria-hidden="true" />
+        </span>
         <div>
             <h4>{challenge.title}</h4>
             <p>{challenge.instructions}</p>
-            <p class="expected"><strong>Expected result</strong> {challenge.expected}</p>
+            <p class="expected">
+                <strong>Expected result</strong> {challenge.expected}
+            </p>
         </div>
     </div>
     <div class="guide-reference">
-        <a href={challenge.reference.href}>{challenge.reference.label} <ArrowUpRight size={15} className="directional-icon" aria-hidden="true" /></a>
+        <a href={challenge.reference.href}>
+            {challenge.reference.label}{' '}
+            <ArrowUpRight size={15} className="directional-icon" aria-hidden="true" />
+        </a>
         <details>
-            <summary aria-label={`Preview ${challenge.reference.label}`}>Preview <ChevronDown className="preview-chevron" size={15} aria-hidden="true" /></summary>
+            <summary aria-label={`Preview ${challenge.reference.label}`}>
+                Preview <ChevronDown className="preview-chevron" size={15} aria-hidden="true" />
+            </summary>
             <div class="reference-preview">
                 <strong>{challenge.reference.label}</strong>
                 <p>{challenge.reference.summary}</p>
@@ -26,23 +38,101 @@ const { challenge } = Astro.props;
     </div>
 </aside>
 <style>
-    .guide { background: var(--bg-subtle); border: 1px solid var(--border-hairline); border-inline-start: 3px solid var(--accent-primary); border-radius: .5rem; padding: clamp(.65rem, 2vw, 1rem); margin-block-end: 1.2rem; }
-    .guide-intro { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: .65rem; }
-    .guide-icon { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: .35rem; color: var(--accent-primary); background: var(--accent-tint); }
-    .guide h4 { margin: .08rem 0 .25rem; font-size: clamp(.95rem, 1.6vw, 1.08rem); line-height: 1.35; font-weight: 700; }
-    .guide p { font-size: .84rem; color: var(--ink-secondary); }
-    .expected { margin-block-start: .4rem; }
-    .expected strong { color: var(--ink-primary); margin-inline-end: .18rem; }
-    .guide-reference { margin-block-start: .4rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .65rem; }
-    .guide-reference a, summary { display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; font-size: .8rem; font-weight: 700; color: var(--accent-primary); }
-    .guide-reference a { text-decoration: underline; text-underline-offset: .2em; }
-    .guide-reference a:hover { color: var(--accent-hover); }
-    .guide-reference details[open] { flex: 1 1 100%; }
-    summary { list-style: none; padding-inline: .45rem; border-radius: .3rem; cursor: pointer; }
-    summary::-webkit-details-marker { display: none; }
-    summary:hover, details[open] summary { background: var(--accent-tint); }
-    details[open] .preview-chevron { rotate: 180deg; }
-    .reference-preview { margin-block-start: .35rem; padding: .65rem; border: 1px solid var(--border-hairline); border-radius: .35rem; background: var(--bg-surface); }
-    .reference-preview strong { font-size: .83rem; }
-    .reference-preview p { max-inline-size: 65ch; margin-block-start: .2rem; }
+    .guide {
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-hairline);
+        border-inline-start: 3px solid var(--accent-primary);
+        border-radius: 0.5rem;
+        padding: clamp(0.65rem, 2vw, 1rem);
+        margin-block-end: 1.2rem;
+    }
+    .guide-intro {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        align-items: start;
+        gap: 0.65rem;
+    }
+    .guide-icon {
+        display: grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        border-radius: 0.35rem;
+        color: var(--accent-primary);
+        background: var(--accent-tint);
+    }
+    .guide h4 {
+        margin: 0.08rem 0 0.25rem;
+        font-size: clamp(0.95rem, 1.6vw, 1.08rem);
+        line-height: 1.35;
+        font-weight: 700;
+    }
+    .guide p {
+        font-size: 0.84rem;
+        color: var(--ink-secondary);
+    }
+    .expected {
+        margin-block-start: 0.4rem;
+    }
+    .expected strong {
+        color: var(--ink-primary);
+        margin-inline-end: 0.18rem;
+    }
+    .guide-reference {
+        margin-block-start: 0.4rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.15rem 0.65rem;
+    }
+    .guide-reference a,
+    summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        min-height: 44px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--accent-primary);
+    }
+    .guide-reference a {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+    .guide-reference a:hover {
+        color: var(--accent-hover);
+    }
+    .guide-reference details[open] {
+        flex: 1 1 100%;
+    }
+    summary {
+        list-style: none;
+        padding-inline: 0.45rem;
+        border-radius: 0.3rem;
+        cursor: pointer;
+    }
+    summary::-webkit-details-marker {
+        display: none;
+    }
+    summary:hover,
+    details[open] summary {
+        background: var(--accent-tint);
+    }
+    details[open] .preview-chevron {
+        rotate: 180deg;
+    }
+    .reference-preview {
+        margin-block-start: 0.35rem;
+        padding: 0.65rem;
+        border: 1px solid var(--border-hairline);
+        border-radius: 0.35rem;
+        background: var(--bg-surface);
+    }
+    .reference-preview strong {
+        font-size: 0.83rem;
+    }
+    .reference-preview p {
+        max-inline-size: 65ch;
+        margin-block-start: 0.2rem;
+    }
 </style>
