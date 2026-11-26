@@ -2,6 +2,7 @@ import { router, usePage } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import SearchDialog from '../../../kit/components/search-dialog/SearchDialog';
 import type { SearchResult } from '../../../kit/components/search-dialog/SearchDialog';
+import { carryCatalogueFilters } from '../catalogue';
 import type { CatalogueEntry } from '../catalogue';
 import { categoryLabel, useLocale } from '../i18n';
 import { searchEntries } from '../searchEntries';
@@ -16,7 +17,10 @@ export type VaultSearch = {
 const workflowResultPrefix = 'vault:';
 
 export default function CatalogueSearch({ vault }: { vault?: VaultSearch }) {
-    const { entries } = usePage<{ entries: CatalogueEntry[] }>().props;
+    const {
+        url,
+        props: { entries },
+    } = usePage<{ entries: CatalogueEntry[] }>();
     const { locale, t } = useLocale();
     const [open, setOpen] = useState(false);
     const trigger = useRef<HTMLButtonElement>(null);
@@ -83,7 +87,7 @@ export default function CatalogueSearch({ vault }: { vault?: VaultSearch }) {
             return;
         }
 
-        router.visit(id);
+        router.visit(carryCatalogueFilters(id, new URL(url, window.location.origin)));
     }
 
     return (

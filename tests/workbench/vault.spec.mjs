@@ -4,6 +4,69 @@ import { expect, test } from '@playwright/test';
 const items = readdirSync('src/content/vault',{withFileTypes:true}).filter(file => file.isDirectory()).map(file =>
     JSON.parse(readFileSync('src/content/vault/' + file.name + '/kit.json', 'utf8')),
 ).sort((a,b)=>a.order-b.order);
+
+test.describe('vault without client scripts', () => {
+    test.use({ javaScriptEnabled: false });
+    test('all twenty register links reach visible descriptions and source', async ({ page }) => {
+        await page.goto('/vault/');
+        const links = page.getByRole('navigation', { name: 'Component patterns' }).getByRole('link');
+        await expect(links).toHaveCount(items.length);
+        for (const [i, item] of items.entries()) {
+            await links.nth(i).click();
+            await expect(page).toHaveURL(new RegExp('#' + item.id + '$'));
+            const article = page.locator('#' + item.id);
+            await expect(article.getByRole('heading', { name: item.title })).toBeVisible();
+            await expect(article.getByRole('link', { name: 'React source' })).toHaveAttribute('href', '/vault/source/' + item.id + '/react/');
+        }
+    });
+});
+
+test('a filtered kit URL opens the active kit and back restores the previous selection', async ({ browser, page }) => {
+    await page.goto('/vault/#spreadsheet-importer-register');
+    await expect(page.locator('#spreadsheet-importer-register')).toBeVisible();
+    await page.getByRole('button', { name: 'T1 Primitives' }).click();
+    await expect(page).toHaveURL(/#status-tone-vocabulary$/);
+    await expect(page.locator('#status-tone-vocabulary')).toBeVisible();
+    const fresh = await browser.newPage();
+    await fresh.goto(page.url());
+    await expect(fresh.locator('#status-tone-vocabulary')).toBeVisible();
+    await fresh.close();
+    await page.reload();
+    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'true');
+    await page.goBack();
+    await expect(page.locator('#spreadsheet-importer-register')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'false');
+    await page.goForward();
+    await expect(page.locator('#status-tone-vocabulary')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+for (const engine of ['alpine', 'react']) {
+    test(engine + ' legacy previews expose spaced buttons and a keyboard-scrolling quote', async ({ page }) => {
+        await page.setViewportSize({ width: 320, height: 740 });
+        await page.goto('/vault/preview/config-driven-register/?engine=' + engine);
+        const edit = page.getByRole('button', { name: 'Edit NH-WS-014' });
+        const history = page.getByRole('button', { name: 'History for NH-WS-014' });
+        for (const button of [edit, history]) {
+            await expect(button).toBeVisible();
+            const bounds = await button.boundingBox();
+            expect(bounds?.width).toBeGreaterThanOrEqual(24);
+            expect(bounds?.height).toBeGreaterThanOrEqual(24);
+            await button.click();
+            const dialog = page.getByRole('dialog');
+            await expect(dialog).toBeVisible();
+            await page.keyboard.press('Escape');
+            await expect(dialog).toBeHidden();
+        }
+        await page.goto('/vault/preview/live-quoting-composer/?engine=' + engine);
+        await page.getByLabel('Through').fill('2027-01-31');
+        const quote = page.getByRole('region', { name: 'Quote breakdown' });
+        await expect(quote).toHaveAttribute('tabindex', '0');
+        await expect.poll(() => quote.evaluate(el => el.scrollHeight - el.clientHeight)).toBeGreaterThan(0);
+        await quote.press('End');
+        await expect.poll(() => quote.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
+    });
+}
 test('an original extraction ID opens its curated example in either implementation', async ({page}) => {
     await page.goto('/vault/');
     await page.getByRole('searchbox').fill('PT-25');

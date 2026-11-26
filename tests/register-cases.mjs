@@ -102,3 +102,14 @@ test('partial register writes trim blank fields to null and omit unseen keys', (
     });
     assert.deepEqual(cleanForWrite(fields, Object.create({ name: 'inherited' })), {});
 });
+
+test('duplicate CSV columns are rejected before a mapped field or metadata can be overwritten', () => {
+    const fields = [{ key: 'name', label: 'Backup job', aliases: ['Job', 'Job Name'] }];
+    for (const header of ['Job,Job', 'Job,Job Name', 'Job,Ｊｏｂ Ｎａｍｅ']) {
+        assert.throws(() => parseRegisterCsv(`${header}\nFirst,Second`, fields), /paste\.csv:1.+Backup job/);
+    }
+    assert.throws(() => parseRegisterCsv('Job,Tag,Tag\nFirst,Red,Blue', fields), /paste\.csv:1.+Tag/);
+    const { rows } = parseRegisterCsv('Job,Tag,Owner\nFirst,Red,NA', fields);
+    assert.equal(rows[0].name, 'First');
+    assert.equal(rows[0].metadata.Owner, 'NA');
+});

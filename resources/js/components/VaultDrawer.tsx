@@ -6,6 +6,8 @@ import type { Workflow } from '../vault';
 
 type VaultDrawerProps = {
     workflow: Workflow;
+    values: Record<string, string>;
+    onValuesChange: (values: Record<string, string>) => void;
     onClose: () => void;
     returnFocus: HTMLElement | null;
 };
@@ -24,7 +26,13 @@ function pointsToBackdrop(event: MouseEvent<HTMLDialogElement> | PointerEvent<HT
     );
 }
 
-export default function VaultDrawer({ workflow, onClose, returnFocus }: VaultDrawerProps) {
+export default function VaultDrawer({
+    workflow,
+    values,
+    onValuesChange,
+    onClose,
+    returnFocus,
+}: VaultDrawerProps) {
     const { locale, t } = useLocale();
     const id = useId();
     const dialog = useRef<HTMLDialogElement>(null);
@@ -52,7 +60,6 @@ export default function VaultDrawer({ workflow, onClose, returnFocus }: VaultDra
         );
         return { segments, fields };
     });
-    const [values, setValues] = useState<Record<string, string>>({});
     const [view, setView] = useState<View>('instructions');
     const [copyState, setCopyState] = useState<CopyState>('idle');
     const compiled = compilePrompt(segments, values);
@@ -83,11 +90,13 @@ export default function VaultDrawer({ workflow, onClose, returnFocus }: VaultDra
             ? {
                   href: 'https://claude.ai/new',
                   label: t('Open in Claude', 'In Claude öffnen', 'افتح في Claude'),
+                  retryLabel: t('Continue to Claude', 'Weiter zu Claude', 'تابع إلى Claude'),
               }
             : workflow.platform === 'gemini'
               ? {
                     href: 'https://gemini.google.com/app',
                     label: t('Open in Gemini', 'In Gemini öffnen', 'افتح في Gemini'),
+                    retryLabel: t('Continue to Gemini', 'Weiter zu Gemini', 'تابع إلى Gemini'),
                 }
               : null;
 
@@ -107,7 +116,7 @@ export default function VaultDrawer({ workflow, onClose, returnFocus }: VaultDra
 
     function updateValues(nextValues: Record<string, string>) {
         promptRevision.current += 1;
-        setValues(nextValues);
+        onValuesChange(nextValues);
         if (!copyPending.current) setCopyState('idle');
     }
 
@@ -351,29 +360,19 @@ export default function VaultDrawer({ workflow, onClose, returnFocus }: VaultDra
                         )
                     )}
                 </button>
-                {launch && (
+                {launch && (copyState === 'copied' || copyState === 'failed') && (
                     <a
                         href={launch.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-disabled={copyState === 'copying' || undefined}
-                        title={t(
-                            'Copies the prompt and opens a new tab',
-                            'Kopiert den Prompt und öffnet einen neuen Tab',
-                            'ينسخ المطالبة ويفتح علامة تبويب جديدة',
-                        )}
-                        onClick={(event) => {
-                            if (copyPending.current) {
-                                event.preventDefault();
-                                return;
-                            }
-                            void copyPrompt();
-                        }}
+                        aria-describedby={copyState === 'failed' ? `${id}-copy-status` : undefined}
                     >
-                        {launch.label} <span aria-hidden="true">↗</span>
+                        {copyState === 'failed' ? launch.retryLabel : launch.label}{' '}
+                        <span aria-hidden="true">↗</span>
                     </a>
                 )}
                 <p
+                    id={`${id}-copy-status`}
                     role="status"
                     className={copyState === 'failed' ? 'vault-copy-feedback' : 'browse-sr-only'}
                 >

@@ -2,7 +2,10 @@ FROM node:24-bookworm-slim AS assets
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
-COPY . .
+COPY vite.config.ts tsconfig.catalogue.json ./
+COPY resources ./resources
+COPY kit ./kit
+COPY src/data/brand.ts ./src/data/brand.ts
 RUN npm run build:catalogue
 
 FROM php:8.4-cli-bookworm
@@ -12,8 +15,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends unzip \
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts --no-autoloader
-COPY . .
-RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs \
+COPY artisan LICENSE ./
+COPY app ./app
+COPY bootstrap ./bootstrap
+COPY docker ./docker
+COPY kit ./kit
+COPY public ./public
+COPY resources ./resources
+COPY routes ./routes
+COPY src/data/brand.ts ./src/data/brand.ts
+RUN mkdir -p bootstrap/cache storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs \
     && composer dump-autoload --no-dev --optimize --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache
 COPY --from=assets /app/public/build ./public/build

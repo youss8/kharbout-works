@@ -1,86 +1,44 @@
 ---
-import mermaidAsset from 'mermaid/dist/mermaid.min.js?url';
+import { createHash } from 'node:crypto';
+
 interface Props { source: string; label: string }
 const { source, label } = Astro.props;
+const originals = import.meta.glob<string>('../../data/diagrams/*.mmd', { eager: true, query: '?raw', import: 'default' });
+const assets = import.meta.glob<string>('../../data/diagrams/rendered/*.svg', { eager: true, query: '?url', import: 'default' });
+const renders = import.meta.glob<string>('../../data/diagrams/rendered/*.svg', { eager: true, query: '?raw', import: 'default' });
+const normalized = (text: string) => text.replaceAll('\r\n', '\n');
+const match = Object.entries(originals).find(([, diagram]) => normalized(diagram) === normalized(source));
+if (!match) throw new Error('No diagram source matches ' + label);
+const id = match[0].split('/').at(-1)!.slice(0, -4);
+const digest = createHash('sha256').update(normalized(source)).digest('hex');
+const images = ['light', 'dark'].map(theme => {
+    const key = '../../data/diagrams/rendered/' + id + '-' + theme + '.svg';
+    if (!renders[key]?.startsWith('<!-- Mermaid source SHA-256 ' + digest + ' -->')) {
+        throw new Error('Run node scripts/render-system-diagrams.mjs to refresh ' + id + ' (' + theme + ')');
+    }
+    return { theme, src: assets[key] };
+});
 ---
-<entity-diagram data-library={mermaidAsset}>
+<entity-diagram>
     <figure aria-label={label}>
         <figcaption><strong>Entity relationship diagram</strong>
-            <label>Scale <select aria-label="Diagram scale"><option value="100">Fit width</option><option value="175">175%</option><option value="300">300%</option></select></label>
+            <label hidden>Scale <select aria-label="Diagram scale"><option value="100">Fit width</option><option value="175">175%</option><option value="300">300%</option></select></label>
         </figcaption>
-        <div class="diagram-window" role="region" aria-label={label} tabindex="0"><div class="drawing"></div></div>
-        <div class="diagram-error error-card" role="alert" hidden>
-            The diagram could not render. You can read its source below.
-            <button type="button">Retry diagram</button>
+        <div class="diagram-window" role="region" aria-label={label} tabindex="0">
+            <div class="drawing">
+                {images.map(({ theme, src }) => <img src={src} alt={label} loading="lazy" decoding="async" data-diagram-theme={theme} />)}
+            </div>
         </div>
         <details><summary>Mermaid source</summary><pre><code>{source}</code></pre></details>
     </figure>
 </entity-diagram>
 <script>
-    import type mermaid from 'mermaid';
-    type Engine = typeof mermaid;
-    declare global { interface Window { mermaid: Engine } }
-    let library: Promise<Engine> | undefined;
-    function loadEngine(url: string) {
-        return library ??= new Promise<Engine>((resolve, reject) => {
-            const script = document.createElement('script');
-            script.src = url;
-            script.onload = () => resolve(window.mermaid);
-            script.onerror = () => { library = undefined; reject(new Error('Diagram library unavailable')); };
-            document.head.append(script);
-        });
-    }
     class EntityDiagram extends HTMLElement {
-        async connectedCallback() {
+        connectedCallback() {
             const drawing = this.querySelector<HTMLElement>('.drawing')!;
-            const source = this.querySelector('code')!.textContent!;
             const scale = this.querySelector('select')!;
-            const error = this.querySelector<HTMLElement>('.diagram-error')!;
             scale.addEventListener('change', () => drawing.style.width = scale.value + '%');
-            let revision = 0;
-            const render = async () => {
-                const version = ++revision;
-                drawing.dataset.loading = 'true';
-                drawing.setAttribute('aria-busy', 'true');
-                error.hidden = true;
-                try {
-                    const engine = await loadEngine(this.dataset.library!);
-                    const dark = document.documentElement.dataset.theme === 'dark';
-                    engine.initialize({
-                        startOnLoad: false, securityLevel: 'strict', theme: 'base',
-                        themeVariables: {
-                            darkMode: dark, fontFamily: 'Plus Jakarta Sans, sans-serif',
-                            primaryColor: dark ? '#18201D' : '#E7F2EE', primaryTextColor: dark ? '#ECF1EE' : '#101412',
-                            primaryBorderColor: dark ? '#75978D' : '#53786C', lineColor: dark ? '#A1B0AA' : '#4A5550',
-                            background: dark ? '#121816' : '#FFFFFF',
-                        },
-                    });
-                    const { svg } = await engine.render('entities-' + version, source);
-                    if (version === revision) {
-                        drawing.innerHTML = svg;
-                        drawing.dataset.renderedTheme = dark ? 'dark' : 'light';
-                    }
-                } catch {
-                    if (version === revision) {
-                        error.hidden = false;
-                        this.querySelector('details')!.open = true;
-                    }
-                } finally {
-                    if (version === revision) {
-                        delete drawing.dataset.loading;
-                        drawing.setAttribute('aria-busy', 'false');
-                    }
-                }
-            };
-            error.querySelector('button')!.addEventListener('click', render);
-            const observer = new IntersectionObserver(entries => {
-                if (entries.some(entry => entry.isIntersecting)) {
-                    observer.disconnect();
-                    void render();
-                    window.addEventListener('yok-theme-change', render);
-                }
-            }, { rootMargin: '500px' });
-            observer.observe(this);
+            this.querySelector('label')!.hidden = false;
         }
     }
     customElements.define('entity-diagram', EntityDiagram);
@@ -92,11 +50,11 @@ const { source, label } = Astro.props;
     label,summary { font-size: .82rem; }
     select { padding: .3rem; border: 1px solid var(--border-strong); background: var(--bg-surface); border-radius: 3px; }
     .diagram-window { overflow: auto; max-height: 65vh; padding: .8rem; }
-    .drawing { min-height: 9rem; }
-    .drawing :global(svg) { display: block; width: 100%; max-width: none !important; height: auto; }
+    .drawing img { display: block; width: 100%; height: auto; }
+    .drawing [data-diagram-theme="dark"],
+    :global([data-theme="dark"]) .drawing [data-diagram-theme="light"] { display: none; }
+    :global([data-theme="dark"]) .drawing [data-diagram-theme="dark"] { display: block; }
     details { border-block-start: 1px solid var(--border-hairline); padding: .6rem 1rem; }
     summary { cursor: pointer; }
-    .diagram-error { padding: .8rem; border-inline-start: 3px solid var(--status-crit); }
-    .diagram-error button { text-decoration: underline; margin-inline-start: .5rem; }
     pre { max-height: 22rem; overflow: auto; font-size: .75rem; }
 </style>

@@ -1,12 +1,17 @@
-import type { CloudClient, CloudDraft, Folder, Member, MemberRole, SessionInfo, Share, Snapshot, Version } from './cloud';
+import type { CloudClient, CloudDraft, CloudDraftSummary, Folder, Invitation, Member, MemberRole, SessionInfo, Share, Snapshot, VersionSummary } from './cloud';
 import type { Draft } from './model';
 import { builderPath } from './workflows';
+
+const pageSize = 20;
 
 export function cloudState() {
     let client: CloudClient | undefined;
     let unsubscribe: (() => void) | undefined;
     let refreshSequence = 0;
     let linkSequence = 0;
+    let sessionSequence = 0;
+    let sessionRequests = new AbortController();
+    let signingOut = false;
     return {
         available: Boolean(import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY),
         ready: false,
@@ -24,10 +29,14 @@ export function cloudState() {
         manageFolder: '',
         inviteRole: 'viewer' as MemberRole,
         inviteLink: '',
+        invites: [] as Invitation[],
         inviteToken: '',
-        drafts: [] as CloudDraft[],
-        versions: [] as Version[],
-        current: null as CloudDraft | null,
+        drafts: [] as CloudDraftSummary[],
+        moreDrafts: false,
+        draftOffset: 0,
+        versions: [] as VersionSummary[],
+        moreVersions: false,
+        current: null as CloudDraftSummary | null,
         conflict: false,
         shares: [] as Share[],
         shared: null as Snapshot | null,
@@ -36,7 +45,7 @@ export function cloudState() {
         sharePreview: null as Snapshot | null,
         shareLink: '',
 
-        async start() {
+        async start(onAccountChange: () => void) {
             const url = import.meta.env.PUBLIC_SUPABASE_URL;
             const key = import.meta.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY;
             if (!url || !key) {
@@ -51,6 +60,7 @@ export function cloudState() {
                 this.account = account;
                 if (!changed) return;
                 this.clearAccount();
+                onAccountChange();
                 if (account) {
                     this.codeSent = false;
                     this.code = '';
@@ -87,17 +97,31 @@ export function cloudState() {
             unsubscribe?.();
             refreshSequence++;
             linkSequence++;
+            sessionSequence++;
+            sessionRequests.abort();
         },
         clearAccount() {
             refreshSequence++;
+            sessionSequence++;
+            sessionRequests.abort();
+            sessionRequests = new AbortController();
+            this.busy = false;
+            this.status = '';
+            this.email = '';
+            this.code = '';
+            this.codeSent = false;
             this.drafts = [];
+            this.moreDrafts = false;
+            this.draftOffset = 0;
             this.folders = [];
             this.memberships = [];
             this.shares = [];
             this.manageFolder = '';
             this.members = [];
             this.selectedFolder = '';
+            this.folderName = '';
             this.inviteLink = '';
+            this.invites = [];
             this.shareLink = '';
             this.sharePreview = null;
             this.detach();
@@ -105,31 +129,47 @@ export function cloudState() {
         detach() {
             this.current = null;
             this.versions = [];
+            this.moreVersions = false;
             this.conflict = false;
             this.selectedFolder = '';
         },
-        async perform<T>(operation: (api: CloudClient) => Promise<T>): Promise<T | undefined> {
-            if (!client || this.busy) return;
+        async perform<T>(operation: (api: CloudClient, signal: AbortSignal) => Promise<T>): Promise<T | undefined> {
+            if (!client || this.busy || signingOut) return;
+            const sequence = sessionSequence;
             this.busy = true;
             this.status = '';
             try {
-                return await operation(client);
+                const result = await operation(client, sessionRequests.signal);
+                return sequence === sessionSequence ? result : undefined;
             } catch (error) {
-                this.status = error instanceof Error ? error.message : 'cloud_error';
+                if (sequence === sessionSequence) this.status = error instanceof Error ? error.message : 'cloud_error';
                 return undefined;
             } finally {
-                this.busy = false;
+                if (sequence === sessionSequence) this.busy = false;
             }
         },
         async refresh() {
             if (!client || !this.account) return;
             const update = ++refreshSequence;
             try {
-                const listing = await client.library();
-                if (update === refreshSequence) Object.assign(this, listing);
+                const [page, listing] = await Promise.all([client.draftPage(0, pageSize + 1), client.foldersAndShares()]);
+                if (update !== refreshSequence) return;
+                Object.assign(this, listing);
+                this.drafts = page.slice(0, pageSize);
+                this.moreDrafts = page.length > pageSize;
+                this.draftOffset = this.drafts.length;
             } catch {
                 if (update === refreshSequence) this.status = 'cloud_error';
             }
+        },
+        async loadMoreDrafts() {
+            const update = refreshSequence;
+            const page = await this.perform(api => api.draftPage(this.draftOffset, pageSize + 1));
+            if (!page || update !== refreshSequence) return;
+            const rows = page.slice(0, pageSize);
+            this.drafts.push(...rows.filter(row => !this.drafts.some(item => item.id === row.id)));
+            this.draftOffset += rows.length;
+            this.moreDrafts = page.length > pageSize;
         },
         async requestCode() {
             const sent = await this.perform(async api => {
@@ -145,121 +185,200 @@ export function cloudState() {
             await this.perform(api => api.confirmCode(this.email.trim(), this.code.trim()));
         },
         async signOut() {
-            await this.perform(api => api.signOut());
+            if (!client || signingOut) return;
+            signingOut = true;
+            try {
+                await client.signOut();
+            } catch {
+                this.status = 'cloud_error';
+            } finally {
+                signingOut = false;
+            }
         },
         canWrite(folderId: string | null | undefined) {
             if (!folderId) return true;
             return this.folders.some(folder => folder.id === folderId && folder.owner_id === this.account?.id) ||
                 this.memberships.some(item => item.folder_id === folderId && item.role === 'editor');
         },
-        attach(item: CloudDraft) {
-            this.current = item;
+        attach({ payload: _payload, ...summary }: CloudDraft) {
+            this.current = summary;
             this.conflict = false;
-            this.selectedFolder = item.folder_id ?? '';
+            this.selectedFolder = this.canWrite(summary.folder_id) ? summary.folder_id ?? '' : '';
             this.versions = [];
+            this.moreVersions = false;
         },
         async save(name: string, draft: Draft, asCopy: boolean) {
             const current = asCopy ? null : this.current;
-            const folder = asCopy ? this.selectedFolder : current?.folder_id ?? this.selectedFolder;
+            const folder = current ? current.folder_id : this.canWrite(this.selectedFolder) ? this.selectedFolder : '';
             const result = await this.perform(api => api.save(current?.id ?? null, current?.revision ?? 0, folder || null, name, draft));
-            if (result) await this.refresh();
+            if (result) {
+                const { payload: _payload, ...summary } = result;
+                this.drafts = [summary, ...this.drafts.filter(item => item.id !== result.id)];
+                if (!current) this.draftOffset++;
+            }
             if (this.status === 'prompt_conflict') this.conflict = true;
             return result;
         },
         async latest(id: string) {
             return this.perform(api => api.draft(id));
         },
-        async showVersions() {
+        async showVersions(more = false) {
             const id = this.current?.id;
             if (!id) return;
-            const list = await this.perform(api => api.versions(id));
-            if (list && this.current?.id === id) this.versions = list;
+            const before = more ? this.versions.at(-1)?.revision : undefined;
+            const list = await this.perform(api => api.versionPage(id, pageSize + 1, before));
+            if (list && this.current?.id === id) {
+                this.versions = [...(more ? this.versions : []), ...list.slice(0, pageSize)];
+                this.moreVersions = list.length > pageSize;
+            }
+        },
+        async getVersion(revision: number) {
+            const id = this.current?.id;
+            if (!id) return;
+            const version = await this.perform(api => api.version(id, revision));
+            if (this.current?.id === id) return version;
         },
         async remove(id: string) {
-            await this.perform(async api => {
+            const removed = await this.perform(async api => {
                 await api.remove(id);
-                if (this.current?.id === id) this.detach();
-                await this.refresh();
-                this.status = 'removed';
+                return true;
             });
+            if (removed) {
+                if (this.current?.id === id) this.detach();
+                if (this.drafts.some(item => item.id === id)) this.draftOffset--;
+                this.drafts = this.drafts.filter(item => item.id !== id);
+                this.status = 'removed';
+            }
         },
         async createFolder() {
             const name = this.folderName.trim();
             if (!name) return;
-            await this.perform(async api => {
+            const created = await this.perform(async api => {
                 await api.createFolder(name);
-                await this.refresh();
+                return true;
+            });
+            if (created) {
                 this.folderName = '';
                 this.status = 'saved';
-            });
+                await this.refresh();
+            }
         },
         async deleteFolder(id: string) {
-            await this.perform(async api => {
+            const removed = await this.perform(async api => {
                 await api.deleteFolder(id);
+                return true;
+            });
+            if (removed) {
                 if (this.current?.folder_id === id) this.detach();
                 if (this.selectedFolder === id) this.selectedFolder = '';
                 this.manageFolder = '';
                 this.inviteLink = '';
-                await this.refresh();
                 this.status = 'removed';
-            });
+                await this.refresh();
+            }
         },
         async showMembers(id: string) {
-            await this.perform(async api => {
-                this.members = await api.members(id);
+            const detail = await this.perform(api => Promise.all([api.members(id), api.invites(id)]));
+            if (detail) {
+                [this.members, this.invites] = detail;
                 this.manageFolder = id;
                 this.inviteLink = '';
-            });
+            }
         },
         async setMember(userId: string, role: MemberRole | null) {
             const folder = this.manageFolder;
-            await this.perform(async api => {
+            const members = await this.perform(async api => {
                 await api.setMember(folder, userId, role);
-                this.members = await api.members(folder);
+                return api.members(folder);
             });
+            if (members && this.manageFolder === folder) this.members = members;
+        },
+        async transferFolder(member: string) {
+            const folder = this.manageFolder;
+            const transferred = await this.perform(async api => {
+                await api.transferFolder(folder, member);
+                return true;
+            });
+            if (transferred) {
+                this.manageFolder = '';
+                this.members = [];
+                this.invites = [];
+                this.inviteLink = '';
+                this.status = 'saved';
+                await this.refresh();
+            }
         },
         async invite() {
             const folder = this.manageFolder;
-            await this.perform(async api => {
+            const detail = await this.perform(async api => {
                 const token = await api.invite(folder, this.inviteRole);
-                if (this.manageFolder === folder) this.inviteLink = new URL(builderPath + '#invite=' + token, location.origin).href;
+                return { token, invitations: await api.invites(folder) };
             });
+            if (detail && this.manageFolder === folder) {
+                this.inviteLink = new URL(builderPath + '#invite=' + detail.token, location.origin).href;
+                this.invites = detail.invitations;
+            }
+        },
+        async revokeInvite(id: string) {
+            const folder = this.manageFolder;
+            const removed = await this.perform(async api => {
+                await api.revokeInvite(folder, id);
+                return true;
+            });
+            if (removed && this.manageFolder === folder) {
+                this.invites = this.invites.filter(item => item.id !== id);
+                this.inviteLink = '';
+                this.status = 'removed';
+            }
         },
         async acceptInvite() {
-            await this.perform(async api => {
+            const accepted = await this.perform(async api => {
                 await api.acceptInvite(this.inviteToken);
+                return true;
+            });
+            if (accepted) {
                 this.inviteToken = '';
                 history.replaceState(history.state, '', location.pathname + location.search);
-                await this.refresh();
                 this.status = 'saved';
-            });
+                await this.refresh();
+            }
         },
         async publish() {
             const snapshot = this.sharePreview;
             if (!snapshot) return;
-            await this.perform(async api => {
-                const token = await api.share(snapshot);
+            const token = await this.perform(api => api.share(snapshot));
+            if (token) {
                 this.shareLink = new URL(builderPath + '#share=' + token, location.origin).href;
                 this.sharePreview = null;
                 await this.refresh();
-            });
+            }
         },
         async revoke(id: string) {
-            await this.perform(async api => {
+            const removed = await this.perform(async api => {
                 await api.revoke(id);
-                this.shareLink = '';
-                await this.refresh();
-                this.status = 'removed';
+                return true;
             });
+            if (removed) {
+                this.shareLink = '';
+                this.status = 'removed';
+                await this.refresh();
+            }
         },
         async exportData() {
+            const account = this.account;
+            if (!account) return;
             return this.perform(async api => {
-                const [data, shares] = await Promise.all([api.library(), api.exportedShares()]);
-                const drafts = data.drafts.filter(draft => draft.created_by === this.account?.id);
+                const [data, summaries, shares] = await Promise.all([api.foldersAndShares(), api.allDraftSummaries(), api.exportedShares()]);
+                const folders = data.folders.filter(folder => folder.owner_id === account.id);
+                const exportIds = summaries.filter(draft => draft.created_by === account.id ||
+                    folders.some(folder => folder.id === draft.folder_id)).map(draft => draft.id);
+                const drafts = [];
                 const histories = [];
-                for (const draft of drafts) histories.push({ id: draft.id, versions: await api.versions(draft.id) });
-                return { version: 1, account: this.account, drafts, shares, histories, memberships: data.memberships,
-                    folders: data.folders.filter(folder => folder.owner_id === this.account?.id) };
+                for (const id of exportIds) {
+                    drafts.push(await api.draft(id));
+                    histories.push({ id, versions: await api.exportedVersions(id) });
+                }
+                return { version: 1, account, drafts, shares, histories, memberships: data.memberships, folders };
             });
         },
         async deleteAccount() {
@@ -271,6 +390,7 @@ export function cloudState() {
 export const cloudMessages = {
     code_sent: 'codeSent', saved: 'saveOk', removed: 'removed',
     prompt_forbidden: 'forbidden', prompt_conflict: 'conflict', prompt_invite_invalid: 'inviteInvalid',
+    prompt_account_shared_folders: 'accountSharedFolders',
     ai_limit: 'aiLimit', ai_unavailable: 'aiUnavailable', ai_timeout: 'aiTimeout', ai_refused: 'aiRefused',
     ai_length: 'aiLength', ai_error: 'aiError',
 } as const;

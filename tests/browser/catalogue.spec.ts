@@ -46,6 +46,82 @@ test('a category can be shared, refined and cleared', async ({ page }) => {
     await expect(page.getByRole('status')).toHaveText('7 entries');
 });
 
+test('filtering retains keyboard focus, the catalogue anchor and local history', async ({
+    page,
+}) => {
+    await page.goto('/');
+    await page.getByRole('link', { name: 'Explore the catalogue' }).click();
+    const query = page.getByRole('searchbox', { name: 'Search catalogue' });
+    const requests: string[] = [];
+    page.on('request', (request) => {
+        if (new URL(request.url()).pathname === '/') requests.push(request.url());
+    });
+
+    await query.fill('keyboard');
+    await query.press('Enter');
+    await expect(page).toHaveURL(/\?q=keyboard#catalogue$/);
+    await expect(query).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'Search', exact: true })).toBeFocused();
+    await page.getByRole('link', { name: 'Utilities', exact: true }).click();
+    await expect(page).toHaveURL(/category=utilities#catalogue$/);
+    await expect(page.getByRole('heading', { name: 'No matching entries' })).toBeVisible();
+    await page.goBack();
+    await expect(query).toHaveValue('keyboard');
+    await expect(page.getByRole('link', { name: 'Keyboard search dialog' })).toBeVisible();
+    await page.goForward();
+    await expect(page.getByRole('heading', { name: 'No matching entries' })).toBeVisible();
+    await page.getByRole('link', { name: 'Clear filters' }).click();
+    await expect(query).toHaveValue('');
+    await expect(query).toBeFocused();
+    await expect(page.getByRole('status')).toHaveText('7 entries');
+    expect(requests).toEqual([]);
+});
+
+test('the entry Back link restores the query, category and results', async ({ page }) => {
+    await page.goto('/?q=url&category=utilities#catalogue');
+    await expect(page.getByRole('status')).toHaveText('1 entry');
+    const result = page.getByRole('link', { name: 'Shareable URL filters' });
+    await result.click();
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Shareable URL filters');
+    const back = page.getByRole('link', { name: 'Back to catalogue' });
+    await expect(back).toHaveAttribute('href', '/?q=url&category=utilities#catalogue');
+    await back.click();
+    await expect(page).toHaveURL(/\?q=url&category=utilities#catalogue$/);
+    await expect(page.getByRole('searchbox', { name: 'Search catalogue' })).toHaveValue('url');
+    await expect(page.getByRole('link', { name: 'Utilities', exact: true })).toHaveAttribute(
+        'aria-current',
+        'true',
+    );
+    await expect(page.getByRole('status')).toHaveText('1 entry');
+    await page.goto('/entries/url-filters');
+    await expect(back).toHaveAttribute('href', '/');
+});
+
+test.describe('HTML fallback', () => {
+    test.use({ javaScriptEnabled: false });
+
+    test('visitors can browse entries and download source without JavaScript', async ({ page }) => {
+        await page.goto('/');
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+            'Kharbout Works catalogue',
+        );
+        await expect(page.getByRole('main').getByRole('heading', { level: 2 })).toHaveCount(7);
+        await page.getByRole('link', { name: 'Keyboard search dialog' }).click();
+        await expect(page.getByRole('heading', { level: 1 })).toHaveText('Keyboard search dialog');
+        const source = page.waitForEvent('download');
+        await page.getByRole('link', { name: 'Download source (.zip)' }).click();
+        expect((await source).suggestedFilename()).toBe('search-dialog.zip');
+    });
+});
+
+test('blocking the entry bundle leaves the HTML fallback available', async ({ page }) => {
+    await page.route('**/build/assets/*.js', (route) => route.abort());
+    await page.goto('/entries/copy-code');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Copy code');
+    await expect(page.getByRole('link', { name: 'Download source (.zip)' })).toBeVisible();
+});
+
 test('a visitor can open every recipe on a narrow screen', async ({ page }) => {
     await page.setViewportSize({ width: 360, height: 780 });
     const errors: string[] = [];
@@ -153,7 +229,7 @@ test.describe('narrow touch gallery with reduced motion', () => {
         expect(await sample.evaluate((element) => element.getAnimations().length)).toBe(0);
         expect(await topWithinCard(sample)).toBeCloseTo(restingSample, 1);
         await preview.tap({ force: true });
-        await expect(page).toHaveURL(/\/entries\/accessible-ui-review$/);
+        await expect(page).toHaveURL(/\/entries\/accessible-ui-review\?category=ai-tools$/);
         await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
     });
 });

@@ -21,6 +21,20 @@ async function expectToFitViewport(page) {
     }))).toEqual({ content: 375, viewport: 375 });
 }
 
+test('CV keeps shared search without loading unrelated feature modules', async ({ page }) => {
+    const scripts = [];
+    page.on('request', request => {
+        if (request.resourceType() === 'script') scripts.push(new URL(request.url()).pathname);
+    });
+    await page.goto('/cv/');
+    const search = page.getByRole('button', { name: 'Open command search' });
+    await expect(search).toContainText('Search');
+    await expect(search).toHaveAccessibleName(/search/i);
+    await search.click();
+    await expect(page.getByRole('combobox', { name: /search pages/i })).toBeFocused();
+    expect(scripts.filter(url => /(?:hr-alpine|portfolio-alpine|pt-funding-flow|prototypes|workspace)\..+\.js$/i.test(url))).toEqual([]);
+});
+
 test('theme is established in the head and the user choice survives reload', async ({ page }) => {
     await page.emulateMedia({ colorScheme: 'dark' });
     // Capture the real head's result as the parser reaches the end of it, before body content appears.

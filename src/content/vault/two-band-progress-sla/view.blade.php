@@ -16,7 +16,9 @@
     </div>
     @if($funding = $this->funding['value'])
       <dl class="kit-row items-baseline tabular-nums"><div><dt>Received</dt><dd>{{ $funding['received'] }}</dd></div><div><dt>Committed</dt><dd>{{ $funding['committed'] }}</dd></div></dl>
-      <div class="kit-track" role="progressbar" aria-label="Funding received" aria-valuemin="0" aria-valuemax="{{ max(0,$committed) }}" aria-valuenow="{{ max(0,min($received,$committed)) }}" aria-valuetext="{{ $funding['received'].' of '.$funding['committed'].' · '.$funding['label'] }}"><i style="width:{{ $funding['width'] }}%;background:{{ $funding['over'] ? 'var(--status-warn)' : 'var(--accent-primary)' }}"></i></div>
+      @if($funding['width'] !== null)
+        <div class="kit-track" role="progressbar" aria-label="Funding received" aria-valuemin="0" aria-valuemax="{{ $committed }}" aria-valuenow="{{ max(0,min($received,$committed)) }}" aria-valuetext="{{ $funding['received'].' of '.$funding['committed'].' · '.$funding['label'] }}"><i style="width:{{ $funding['width'] }}%;background:{{ $funding['over'] ? 'var(--status-warn)' : 'var(--accent-primary)' }}"></i></div>
+      @endif
       <p aria-live="polite" data-tone="{{ $funding['over'] ? 'warn' : 'neutral' }}">{{ ($funding['over'] ? '◐ ' : '').$funding['label'] }}</p>
     @else
       <p role="alert">{{ $this->funding['error'] }} <button type="button" wire:click="$set('currency','USD')">Retry with USD</button></p>

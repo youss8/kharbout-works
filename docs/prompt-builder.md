@@ -2,6 +2,8 @@
 
 Open [/ai-kit/prompt-builder/](http://localhost:4321/ai-kit/prompt-builder/) while running `npm run dev`. Choose a workflow, load its fictional example, and try both prompt variants. Device drafts, presets, and favorites use IndexedDB. The language selection uses browser storage. Saving to a shared folder makes the full draft, including any results kept in it, available to that folder. A read-only link contains only the title and prompt shown in the share preview.
 
+Cloud drafts and AI results in the editor clear when the account changes. A viewer can save a personal cloud copy. Folder owners can revoke pending invitations individually. Before closing an account that owns shared folders, transfer each folder to an existing editor. Its drafts and revision history stay with the folder. The account export also includes drafts and revisions in folders the account owns.
+
 ## Target the assistant you use
 
 Select **Target model or assistant** before copying the prompt. The profile changes section order, formatting, and any applicable model or tool guidance. **How to use this profile** links to the provider’s official guide and describes settings that belong in the host or API. The builder supports a portable default, general chat and reasoning models, self-hosted Llama and Qwen, research with Perplexity, and separate profiles for the Microsoft and GitHub Copilot products, Codex, and Claude Code.
@@ -29,8 +31,8 @@ Use a Vercel Preview deployment protected with Vercel Authentication for private
 
 1. Create separate Supabase projects for staging and production. Apply the migrations in `supabase/migrations` and deploy the `prompt-ai` and `prompt-account` Edge Functions with JWT verification enabled.
 2. Set `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the Astro build environment. Cloud controls stay unavailable when either value is missing.
-3. Set `PROMPT_BUILDER_ORIGINS` on the Edge Functions to a comma-separated list of exact web origins. Set `OPENAI_API_KEY` as an Edge Function secret. Set the Supabase Auth site URL to the deployment, configure custom SMTP, set code expiry to 600 seconds, and use the email code template in `supabase/templates`. [Supabase SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp)
-4. Test real delivery to a separate staging email address, save and reload a draft in two sessions, and test owner, editor, and viewer access as distinct users. Open an active snapshot in a signed-out browser and confirm that revocation makes it unavailable.
+3. Set `PROMPT_BUILDER_ORIGINS` on the Edge Functions to a comma-separated list of exact web origins. Set `OPENAI_API_KEY` as an Edge Function secret. Set the Supabase Auth site URL to the deployment, configure custom SMTP, set code expiry to 600 seconds, and use `supabase/templates/prompt-sign-in.html` for both Confirm signup and Magic link. [Supabase SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp)
+4. Test numeric-code delivery and sign-in for a new staging account and again for the confirmed account. Save and reload a draft in two sessions, and test owner, editor, and viewer access as distinct users. Open an active snapshot in a signed-out browser and confirm that revocation makes it unavailable.
 5. Enable model calls on staging with `update public.prompt_ai_settings set enabled = true where id;`. The default is ten calls per verified account per UTC day and US $25 of reserved or reconciled model usage per UTC month. Verify the limit and pause behavior before enabling calls on production. An upstream failure with unknown billing retains its reservation for the current month. Use the same statement with `enabled = false` to pause model calls.
 
 ## Verification
@@ -63,6 +65,8 @@ The Qwen run used the local 8B checkpoint with thinking disabled. In Arabic, its
 ## Production monitoring
 
 After launch, use the following query to review event counts, latency, and usage. Its input contains timing, outcome, and cost metadata.
+
+Usage reconciliation retries temporary database failures with the original reservation. Function warnings contain the reservation ID, attempt number, and whether another retry is scheduled. If all attempts fail, the reservation remains charged at its conservative hold for that month. Review persistent pending reservations before adjusting any billing records.
 
 ```sql
 select date_trunc('day', created_at, 'UTC') as day,

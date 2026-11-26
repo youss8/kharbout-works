@@ -103,3 +103,19 @@ run('gantt-and-timesheet-machines', async ({ page, role, status }) => {
     await role('Confirm').click();
     await expect(page.getByText('Confirmed', { exact: true })).toBeVisible();
 });
+
+run('spreadsheet-importer-register', async ({ page, role }) => {
+    const csv = page.getByLabel('CSV to import');
+    const load = role('Load rows into register');
+    await csv.fill('Job,Interval\nAlpha backup,24');
+    await role('Parse CSV').click();
+    await expect(load).toBeEnabled();
+    await csv.fill('Job,Interval\nBeta backup,24');
+    await expect(load).toBeDisabled();
+    await expect(page.getByRole('alert')).toContainText('Parse it again');
+    await expect(page.locator('tbody')).not.toContainText('Alpha backup');
+    await role('Parse CSV').click();
+    await load.click();
+    await expect(page.locator('tbody')).toContainText('Beta backup');
+    await expect(page.locator('tbody')).not.toContainText('Alpha backup');
+});

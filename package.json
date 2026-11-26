@@ -18,7 +18,6 @@
     "test:workbench": "playwright test --config playwright.workbench.config.mjs"
   },
   "dependencies": {
-    "@astrojs/alpinejs": "^1.0.0",
     "@astrojs/check": "^0.9.12",
     "@astrojs/mdx": "^8.1.6",
     "@astrojs/react": "^7.1.9",

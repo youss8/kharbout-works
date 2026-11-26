@@ -192,12 +192,18 @@ export function readDraft(value: unknown): Draft | null {
         criteria: preferences.criteria ?? '',
         example: preferences.example ?? '',
     };
-    for (const [key, answer] of Object.entries(values)) {
-        if (!workflow.fields.some(field => field.key === key) || !boundedString(answer, maxFieldLength)) return null;
+    if (Object.keys(values).some(key => !workflow.fields.some(field => field.key === key))) return null;
+    for (const { key } of workflow.fields) {
+        if (!Object.hasOwn(values, key)) continue;
+        const answer = values[key];
+        if (!boundedString(answer, maxFieldLength)) return null;
         draft.values[key] = answer;
     }
-    for (const [variant, text] of Object.entries(edits)) {
-        if ((variant !== 'concise' && variant !== 'detailed') || !boundedString(text, maxPromptLength)) return null;
+    if (Object.keys(edits).some(key => key !== 'concise' && key !== 'detailed')) return null;
+    for (const variant of variants) {
+        if (!Object.hasOwn(edits, variant)) continue;
+        const text = edits[variant];
+        if (!boundedString(text, maxPromptLength)) return null;
         draft.edits[variant] = text;
     }
     if (runs.length > maxSavedRuns) return null;

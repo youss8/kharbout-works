@@ -1,10 +1,10 @@
 import type Alpine from 'alpinejs';
 import { cloudMessages, cloudState } from './cloud-state';
-import type { AIReply, AIRequest, CloudDraft, Version } from './cloud';
+import type { AIReply, AIRequest } from './cloud';
 import { copy } from './copy';
 import exampleRuns from './example-runs.json';
 import {
-    advanceChain, compilePrompt, formats, handoffContext, invalidResponseExample, maxFieldLength, maxImportBytes, maxSavedRuns,
+    advanceChain, compilePrompt, formats, handoffContext, invalidResponseExample, maxFieldLength, maxImportBytes, maxPromptLength, maxSavedRuns,
     newDraft, readDraft, tones, visiblePrompt, type Draft, type Variant,
 } from './model';
 import { isModelProfile, modelProfile } from './profiles';
@@ -24,7 +24,7 @@ function createWorkspace() {
         tones,
         formats,
         draft: newDraft(),
-        baseline: JSON.stringify(newDraft()),
+        baseline: { name: '', draft: readDraft(newDraft())! },
         draftKey: 0,
         variant: 'concise' as Variant,
         editor: null as Variant | null,
@@ -38,6 +38,7 @@ function createWorkspace() {
         name: '',
         status: '' as CopyKey | '',
         cloud: cloudState(),
+        cloudDraftAccount: '',
         aiNotes: '',
         aiPending: null as AIRequest | null,
         suggestions: [] as { key: string; label: string; value: string; selected: boolean }[],
@@ -96,7 +97,7 @@ function createWorkspace() {
             if (chain && step >= 0) initial.chain = { id: chain.id, step };
             this.applyDraft(initial, '');
             void loadLibrary().then(data => { this.library = data; }).catch(() => { this.status = 'storageError'; });
-            void this.cloud.start().catch(() => { this.cloud.status = 'cloud_error'; });
+            void this.cloud.start(() => this.clearAccountContent()).catch(() => { this.cloud.status = 'cloud_error'; });
         },
         destroy() { this.cloud.stop(); },
         setLocale(locale: Locale) {
@@ -104,21 +105,25 @@ function createWorkspace() {
             try { localStorage.setItem('kharbout-prompt-builder-locale', locale); } catch { /* Keep the current selection in memory. */ }
         },
         confirmReplace(keepProfile = false) {
-            let baseline = this.baseline;
-            if (keepProfile) {
-                const saved = JSON.parse(baseline) as Draft;
-                saved.preferences.profile = this.draft.preferences.profile;
-                baseline = JSON.stringify(saved);
-            }
-            return JSON.stringify(this.draft) === baseline || window.confirm(this.t.replaceDraft);
+            const draft = readDraft(this.draft);
+            const { name, draft: saved } = this.baseline;
+            const baseline = keepProfile
+                ? { ...saved, preferences: { ...saved.preferences, profile: this.draft.preferences.profile } }
+                : saved;
+            return (this.name === name && JSON.stringify(draft) === JSON.stringify(baseline)) || window.confirm(this.t.replaceDraft);
         },
         installDraft(draft: Draft) {
             this.draftKey++;
             this.draft = draft;
-            this.baseline = JSON.stringify(draft);
             this.editor = null;
             this.exampleLocale = null;
             this.handoffOpen = false;
+            this.handoff = '';
+            this.goal = '';
+            this.clearAI();
+            this.status = '';
+        },
+        clearAI() {
             this.aiPending = null;
             this.aiNotes = '';
             this.suggestions = [];
@@ -126,13 +131,25 @@ function createWorkspace() {
             this.runSlot = 0;
             this.evaluation = [];
             this.aiStatus = '';
-            this.status = '';
         },
         applyDraft(draft: Draft, name: string, id = '') {
             this.cloud.detach();
+            this.cloudDraftAccount = '';
             this.installDraft(draft);
             this.localId = id;
             this.name = name;
+            this.baseline = { name, draft: readDraft(draft)! };
+            document.querySelector('#builder-export asset-export')?.dispatchEvent(new Event('asset-export-reset'));
+        },
+        clearAccountContent() {
+            const account = this.cloud.account?.id;
+            if (this.cloudDraftAccount && this.cloudDraftAccount !== account) {
+                this.applyDraft(newDraft('blank', this.locale), '');
+                this.compare = false;
+                this.variant = 'concise';
+                this.updateUrl();
+            }
+            this.clearAI();
         },
         updateUrl() {
             const url = new URL(location.href);
@@ -188,12 +205,20 @@ function createWorkspace() {
         continueChain() {
             const next = advanceChain(this.draft, this.handoff, this.goal);
             if (!next) return;
+            const account = this.cloudDraftAccount;
             this.applyDraft(next, '');
+            this.cloudDraftAccount = account;
             this.updateUrl();
             document.getElementById('builder-input-heading')?.focus();
         },
         editPrompt(variant: Variant) {
-            this.draft.edits[variant] ??= compilePrompt(this.draft, variant);
+            const text = visiblePrompt(this.draft, variant);
+            if (text.length > maxPromptLength) {
+                this.status = 'editLength';
+                return;
+            }
+            this.draft.edits[variant] ??= text;
+            this.status = '';
             this.variant = variant;
             this.editor = variant;
             requestAnimationFrame(() => document.getElementById('builder-editor-' + variant)?.focus());
@@ -231,7 +256,8 @@ function createWorkspace() {
             }));
         },
         async saveLocal(kind: LibraryEntry['kind']) {
-            const name = this.name.trim() || this.workflow.title[this.locale];
+            const enteredName = this.name;
+            const name = enteredName.trim() || this.workflow.title[this.locale];
             const existing = this.library.entries.find(entry => entry.id === this.localId && entry.kind === kind);
             const id = existing?.id ?? crypto.randomUUID();
             const draft = readDraft(this.draft);
@@ -244,8 +270,8 @@ function createWorkspace() {
             }), 'saveOk');
             if (stored && key === this.draftKey && kind === 'draft') {
                 this.localId = id;
-                this.name = name;
-                this.baseline = JSON.stringify(draft);
+                if (this.name === enteredName) this.name = name;
+                this.baseline = { name, draft };
             }
         },
         openLocal(item: LibraryEntry) {
@@ -275,34 +301,43 @@ function createWorkspace() {
             await this.saveLocal('draft');
             if (this.status !== 'storageError') this.status = 'imported';
         },
-        openCloud(item: CloudDraft) {
+        async openCloud(id: string) {
+            const key = this.draftKey;
+            const account = this.cloud.account;
+            if (!account) return;
+            const item = await this.cloud.latest(id);
+            if (!item || key !== this.draftKey || account.id !== this.cloud.account?.id) return;
             const draft = readDraft(item.payload);
             if (!draft) { this.status = 'invalid'; return; }
             if (!this.confirmReplace()) return;
             this.applyDraft(draft, item.name);
+            this.cloudDraftAccount = account.id;
             this.cloud.attach(item);
             this.updateUrl();
         },
         async saveCloud(asCopy = false) {
-            const name = this.name.trim() || this.workflow.title[this.locale];
+            const enteredName = this.name;
+            const name = enteredName.trim() || this.workflow.title[this.locale];
             const draft = readDraft(this.draft);
             if (!draft) { this.status = 'invalid'; return; }
             const key = this.draftKey;
             const item = await this.cloud.save(name, draft, asCopy);
             if (item && key === this.draftKey && this.cloud.account) {
                 this.cloud.attach(item);
-                this.name = name;
-                this.baseline = JSON.stringify(draft);
+                this.cloudDraftAccount = this.cloud.account.id;
+                if (this.name === enteredName) this.name = name;
+                this.baseline = { name, draft };
                 this.cloud.status = 'saved';
             }
         },
         async reloadCloud() {
             const id = this.cloud.current?.id;
-            if (!id) return;
-            const item = await this.cloud.latest(id);
-            if (item && this.cloud.current?.id === id) this.openCloud(item);
+            if (id) await this.openCloud(id);
         },
-        restoreVersion(version: Version) {
+        async restoreVersion(revision: number) {
+            const key = this.draftKey;
+            const version = await this.cloud.getVersion(revision);
+            if (!version || key !== this.draftKey) return;
             const draft = readDraft(version.payload);
             if (!draft) { this.status = 'invalid'; return; }
             if (!this.confirmReplace()) return;
@@ -349,7 +384,7 @@ function createWorkspace() {
             const account = this.cloud.account?.id;
             const slot = this.runSlot;
             this.aiPending = null;
-            const result = await this.cloud.perform(api => api.ai(request));
+            const result = await this.cloud.perform((api, signal) => api.ai(request, signal));
             if (key !== this.draftKey || this.cloud.account?.id !== account) return;
             if (!result) {
                 this.aiStatus = cloudMessages[this.cloud.status as keyof typeof cloudMessages] ?? 'aiError';
@@ -371,6 +406,9 @@ function createWorkspace() {
             if (result.action === 'evaluate') this.evaluation = result.results;
         },
         applySuggestions() {
+            if (this.suggestions.some(item => item.selected)) {
+                this.cloudDraftAccount = this.cloud.account?.id ?? this.cloudDraftAccount;
+            }
             for (const item of this.suggestions) {
                 if (item.selected) this.draft.values[item.key] = item.value;
             }
@@ -379,6 +417,7 @@ function createWorkspace() {
         saveRun(index: number) {
             const run = this.results[index];
             if (!run || this.draft.runs.some(item => item.prompt === run.prompt && item.result === run.result)) return;
+            this.cloudDraftAccount = this.cloud.account?.id ?? this.cloudDraftAccount;
             this.draft.runs = [...this.draft.runs, { ...run }].slice(-maxSavedRuns);
             this.status = 'saveOk';
         },

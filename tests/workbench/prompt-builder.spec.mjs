@@ -163,6 +163,40 @@ test('claims an example run only for a profile with a completed benchmark pair',
     await expect(page.getByText('Example planned')).toBeVisible();
 });
 
+test('long compiled prompts stay available and saveable when manual editing exceeds the limit', async ({ page }) => {
+    await page.goto(route + '?workflow=handover&model=claude');
+    for (const name of ['Current state', 'Next action']) {
+        await page.getByRole('textbox', { name, exact: true }).fill('<'.repeat(7_500));
+    }
+    const compiled = await prompt(page).textContent();
+    expect(compiled.length).toBeGreaterThan(40_000);
+    await button(page, 'Edit prompt').click();
+    await expect(page.locator('#builder-output').getByRole('status').filter({ hasText: /exceeds the 40,000-character editor limit/ })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Editing prompt · Concise' })).toBeHidden();
+    expect(await prompt(page).textContent()).toBe(compiled);
+    await page.getByRole('textbox', { name: 'Draft name' }).fill('Long handover');
+    await button(page, 'Save draft').click();
+    await expect(page.getByText('Long handover', { exact: true })).toBeVisible();
+});
+
+test('a freshly saved draft is clean and a title-only edit is protected', async ({ page }) => {
+    await page.goto(route + '?workflow=bug-to-spec');
+    await button(page, 'Load example').click();
+    await page.getByRole('textbox', { name: 'Draft name' }).fill('QA example');
+    await button(page, 'Save draft').click();
+    await expect(page.getByText('QA example', { exact: true })).toBeVisible();
+    const workflow = page.getByRole('combobox', { name: 'Workflow', exact: true });
+    await workflow.selectOption('handover');
+    await expect(workflow).toHaveValue('handover');
+    await page.getByRole('textbox', { name: 'Draft name' }).fill('New title without a body edit');
+    let prompted = false;
+    page.once('dialog', dialog => { prompted = true; return dialog.dismiss(); });
+    await workflow.selectOption('bug-to-spec');
+    expect(prompted).toBe(true);
+    await expect(workflow).toHaveValue('handover');
+    await expect(page.getByRole('textbox', { name: 'Draft name' })).toHaveValue('New title without a body edit');
+});
+
 test('matches benchmark evidence to the language of the loaded example and answer', async ({ page }) => {
     await page.goto(route + '?workflow=draft-email&model=codex');
     await button(page, 'Load example').click();

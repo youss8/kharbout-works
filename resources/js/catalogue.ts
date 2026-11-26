@@ -7,3 +7,9 @@ export type CatalogueEntry = {
     href: string;
     downloadHref: string;
 };
+import { readFilters, writeFilters } from '../../kit/utilities/url-filters/filters';
+
+export function carryCatalogueFilters(path: string, source: URL) {
+    const target = writeFilters(new URL(path, source.origin), readFilters(source));
+    return target.pathname + target.search + target.hash;
+}

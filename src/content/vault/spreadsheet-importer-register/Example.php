@@ -5,6 +5,7 @@ namespace App\Livewire;
 use DateTimeImmutable;
 use Livewire\Attributes\Locked;
 use Livewire\Component;
+use Normalizer;
 
 class SpreadsheetImporterRegister extends Component
 {
@@ -21,6 +22,9 @@ class SpreadsheetImporterRegister extends Component
 
     #[Locked]
     public array $preview = [];
+
+    #[Locked]
+    public string $previewSource = '';
 
     #[Locked]
     public array $warnings = [];
@@ -44,10 +48,26 @@ class SpreadsheetImporterRegister extends Component
         $this->parse();
     }
 
+    private static function headerKey(string $header): string
+    {
+        $normalized = Normalizer::normalize(trim($header), Normalizer::FORM_KC);
+
+        return preg_replace('/[^\p{L}\p{N}]/u', '', mb_strtolower($normalized === false ? '' : $normalized)) ?? '';
+    }
+
+    public function updatedCsv(): void
+    {
+        $this->error = $this->previewSource === '' ? '' : 'CSV changed. Parse it again before loading.';
+        $this->preview = [];
+        $this->previewSource = '';
+        $this->warnings = [];
+    }
+
     public function parse(): void
     {
         $this->preview = [];
         $this->warnings = [];
+        $this->previewSource = '';
         $this->error = '';
         $stream = fopen('php://temp', 'w+b');
         fwrite($stream, preg_replace('/^\xEF\xBB\xBF/', '', $this->csv));
@@ -62,8 +82,24 @@ class SpreadsheetImporterRegister extends Component
         $map = [];
         foreach (RegisterForm::FIELDS as $key => $field) {
             foreach ([$key, $field['label'], ...($field['aliases'] ?? [])] as $alias) {
-                $map[preg_replace('/[^\p{L}\p{N}]/u', '', mb_strtolower(trim($alias)))] = $key;
+                $map[self::headerKey($alias)] = $key;
             }
+        }
+        $columns = [];
+        $targets = [];
+        foreach ($headers as $index => $header) {
+            $header = (string) $header;
+            $field = $map[self::headerKey($header)] ?? null;
+            $target = $field === null ? 'metadata:'.$header : 'field:'.$field;
+            if (isset($targets[$target])) {
+                $label = RegisterForm::FIELDS[$field]['label'] ?? $header;
+                $this->error = "paste.csv:1 · More than one column maps to \"$label\". Rename or remove one of the columns.";
+                fclose($stream);
+
+                return;
+            }
+            $targets[$target] = true;
+            $columns[$index] = $field;
         }
         $line = 1;
         while (($record = fgetcsv($stream, 0, ',', '"', '')) !== false) {
@@ -77,7 +113,7 @@ class SpreadsheetImporterRegister extends Component
             $row = ['metadata' => []];
             foreach ($record as $i => $cell) {
                 $header = $headers[$i] ?? 'Column '.($i + 1);
-                $field = $map[preg_replace('/[^\p{L}\p{N}]/u', '', mb_strtolower(trim($header)))] ?? null;
+                $field = $columns[$i] ?? null;
                 if (! $field) {
                     $row['metadata'][$header] = $cell;
 
@@ -114,16 +150,26 @@ class SpreadsheetImporterRegister extends Component
             $this->preview[] = $row;
         }
         fclose($stream);
+        $this->previewSource = hash('sha256', $this->csv);
     }
 
     public function loadRows(): void
     {
+        if ($this->previewSource === '') {
+            return;
+        }
+        if ($this->previewSource !== hash('sha256', $this->csv)) {
+            $this->updatedCsv();
+
+            return;
+        }
         foreach ($this->preview as $row) {
             if (($row['name'] ?? null) !== null) {
                 $this->rows[] = $row;
             }
         }
         $this->preview = [];
+        $this->previewSource = '';
     }
 
     public function edit(int $id): void

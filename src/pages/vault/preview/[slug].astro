@@ -50,6 +50,10 @@ const sheet = sheets['../../../content/vault/' + data.id + '/style.css'];
             import Alpine from 'alpinejs';
             const models = import.meta.glob<{default: () => object}>('../../../content/vault/*/model.ts');
             const host = document.querySelector<HTMLTemplateElement>('#alpine-example')!;
+            if (document.documentElement.dataset.engine === 'alpine') {
+                Object.assign(window, { Alpine });
+                Alpine.start();
+            }
             if (host.dataset.kit && document.documentElement.dataset.engine === 'alpine') {
                 const load = models['../../../content/vault/' + host.dataset.kit + '/model.ts'];
                 const render = async () => {

@@ -30,7 +30,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
       {sections.map(({ index, label, href, current }) => <a href={href} aria-current={current ? "page" : undefined}><small>{index}</small>{label}</a>)}
     </nav>
     <div class="utilities">
-      {askAvailable && <button class="ask-trigger" type="button" aria-label="Open command search" aria-haspopup="dialog" data-ask-open><Command size={15} aria-hidden="true"/><kbd>Ctrl K</kbd></button>}
+      {askAvailable && <button class="ask-trigger" type="button" aria-label="Open command search" title="Search (Ctrl+K or Cmd+K)" aria-keyshortcuts="Control+K Meta+K" aria-haspopup="dialog" data-ask-open><Command size={15} aria-hidden="true"/><span>Search</span></button>}
       <button class="tool theme" type="button" aria-label="Dark mode" aria-pressed="false" title="Toggle dark mode" data-theme-toggle>
         <Moon className="moon-icon" size={17} aria-hidden="true"/><Sun className="sun-icon" size={17} aria-hidden="true"/>
       </button>
@@ -96,8 +96,7 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   .tool, .ask-trigger { padding: 0; cursor: pointer; min-height: 38px; background: none; border: 1px solid transparent; border-radius: 4px; }
   .tool { min-width: 38px; }
   .tool:hover, .ask-trigger:hover { background: var(--bg-subtle); }
-  .ask-trigger { gap: .45rem; padding-inline: .6rem; border-color: var(--border-hairline); }
-  kbd { font-family: var(--font-mono); font-size: .65rem; }
+  .ask-trigger { gap: .38rem; padding-inline: .5rem; border-color: var(--border-hairline); font-size: .8rem; font-weight: 600; }
   .theme :global(.sun-icon), .menu-trigger { display: none; }
   :global([data-theme="dark"]) .theme :global(.sun-icon) { display: block; }
   :global([data-theme="dark"]) .theme :global(.moon-icon) { display: none; }
@@ -110,6 +109,9 @@ const askAvailable = "/src/pages/search-index.json.ts" in builtPages;
   .mobile-github { gap: .5rem; font-size: .8rem; }
   @media (max-width: 1060px) { .desktop-links { display: none; } .menu-trigger { display: inline-flex; } }
   @media (max-width: 480px) { .gh-link { display: none; } .nav-shell { min-height: 57px; } .brand { gap: .4rem; } }
-  @media (max-width: 360px) { .ask-trigger { padding-inline: 0; } .ask-trigger kbd { display: none; } }
+  @media (max-width: 360px) {
+    .nav-shell { gap: .45rem; padding-inline: .65rem; }
+    .ask-trigger :global(svg) { display: none; }
+  }
   @media print { .site-header { display: none !important; } }
 </style>

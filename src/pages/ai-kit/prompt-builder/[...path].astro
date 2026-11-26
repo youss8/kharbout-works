@@ -159,6 +159,7 @@ export function getStaticPaths() {
                                 <button type="button" class="builder-button builder-variant-toggle" x-bind:aria-pressed={`variant === '${mode}'`} x-on:click={`variant = '${mode}'`} x-text={`t.${mode}`}></button>
                             ))}
                         </div>
+                        <p class="builder-message" role="status" x-show="status === 'editLength'" x-text="t.editLength"></p>
                         <div id="builder-export">
                             <ExportBar id="prompt-builder" kind="builder">
                                 <div class="builder-actions builder-export-actions">
@@ -230,7 +231,7 @@ export function getStaticPaths() {
                         <button type="button" class="builder-button" x-on:click="$refs.importFile.click()"><Upload size={17} aria-hidden="true"/><span x-text="t.import"></span></button>
                         <input type="file" hidden accept=".json,application/json" x-ref="importFile" x-on:change="importFile($event.target.files[0]); $event.target.value = ''" />
                     </div>
-                    <p role="status" class="builder-message" x-show="status" x-text="t[status]"></p>
+                    <p role="status" class="builder-message" x-show="status && status !== 'editLength'" x-text="t[status]"></p>
                     <p class="builder-muted" x-show="!library.entries.length" x-text="t.noLocal"></p>
                     <ul class="builder-list" x-show="library.entries.length">
                         <template x-for="item in library.entries" x-bind:key="item.id">

@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { useLayoutEffect } from 'react';
 import type { ReactNode } from 'react';
 import { siteName } from '../../../src/data/brand';
 import { isLocale, useLocale } from '../i18n';
@@ -15,6 +16,9 @@ export default function CatalogueShell({
     vault?: VaultSearch;
 }) {
     const { locale, t, setLocale } = useLocale();
+    useLayoutEffect(() => {
+        document.getElementById('catalogue-fallback')?.remove();
+    }, []);
     return (
         <>
             <a className="skip-link" href="#main-content">

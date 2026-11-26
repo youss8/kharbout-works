@@ -103,19 +103,21 @@
                         <dd x-text="funding.value.committed"></dd>
                     </div>
                 </dl>
-                <div
-                    class="kit-track"
-                    role="progressbar"
-                    aria-label="Funding received"
-                    aria-valuemin="0"
-                    :aria-valuemax="committed"
-                    :aria-valuenow="Math.min(committed,received)"
-                    :aria-valuetext="funding.value.received+' of '+funding.value.committed+' · '+funding.value.label"
-                >
-                    <i
-                        :style="{width:funding.value.width+'%',background:funding.value.over?'var(--status-warn)':'var(--accent-primary)'}"
-                    ></i>
-                </div>
+                <template x-if="funding.value.width !== null">
+                    <div
+                        class="kit-track"
+                        role="progressbar"
+                        aria-label="Funding received"
+                        aria-valuemin="0"
+                        :aria-valuemax="committed"
+                        :aria-valuenow="Math.max(0,Math.min(committed,received))"
+                        :aria-valuetext="funding.value.received+' of '+funding.value.committed+' · '+funding.value.label"
+                    >
+                        <i
+                            :style="{width:funding.value.width+'%',background:funding.value.over?'var(--status-warn)':'var(--accent-primary)'}"
+                        ></i>
+                    </div>
+                </template>
                 <p
                     aria-live="polite"
                     :data-tone="funding.value.over?'warn':'neutral'"

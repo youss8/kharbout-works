@@ -1,5 +1,6 @@
 import { adminClient, endpoint, verifiedUser } from '../_shared/http.ts';
 import { maximumChargeMicros, providerRequest, readOutput, readRequest, requestByteLimit } from './contract.ts';
+import { reconcileUsage } from './reconciliation.ts';
 
 class RequestTooLarge extends Error {}
 
@@ -93,9 +94,17 @@ Deno.serve(endpoint(async (request, reply) => {
         return reply({ error: 'ai_error' }, 502);
     } finally {
         // An unconfirmed upstream charge keeps its reservation until the monthly window rolls over.
-        await admin.rpc('finish_prompt_ai', {
-            reservation: reservation.reservation, billed_micros: billed, outcome,
-            elapsed_ms: Math.round(performance.now() - started),
-        }).then(() => undefined, () => undefined);
+        const id = reservation.reservation as string;
+        const settlement = {
+            reservation: id, billed_micros: billed, outcome, elapsed_ms: Math.round(performance.now() - started),
+        };
+        const pending = reconcileUsage(id,
+            () => admin.rpc('finish_prompt_ai', settlement).abortSignal(AbortSignal.timeout(3_000)),
+            (reservationId, attempt, willRetry) => {
+                console.warn('Prompt AI usage reconciliation failed', { reservationId, attempt, willRetry });
+            });
+        const runtime = (globalThis as typeof globalThis & { EdgeRuntime?: { waitUntil(task: Promise<unknown>): void } }).EdgeRuntime;
+        if (runtime) runtime.waitUntil(pending);
+        else await pending;
     }
 }));

@@ -2,7 +2,6 @@ import { copyFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
-import alpine from '@astrojs/alpinejs';
 import mdx from '@astrojs/mdx';
 import tailwind from '@tailwindcss/vite';
 import vaultPreviews from './scripts/vault-previews.mjs';
@@ -21,7 +20,7 @@ export default defineConfig({
     site: process.env.SITE_URL || undefined,
     output: 'static',
     publicDir: fileURLToPath(staticFiles),
-    integrations: [vaultPreviews(), react(), alpine({ entrypoint: './src/alpine.js' }), mdx()],
+    integrations: [vaultPreviews(), react(), mdx()],
     vite: { configFile: false, plugins: [tailwind()] },
     markdown: { shikiConfig: { themes: { light: 'github-light', dark: 'github-dark-dimmed' } } },
     devToolbar: { enabled: false },

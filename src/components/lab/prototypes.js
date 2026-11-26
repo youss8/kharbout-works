@@ -41,30 +41,77 @@ function dayKey(date) {
 }
 function shiftDay(date, offset) { return new Date(date.getFullYear(), date.getMonth(), date.getDate() + offset, 12); }
 function habitTracker() {
-    const today = shiftDay(new Date(), 0);
-    const storageKey = 'yok-lab-habits-v1';
+    const legacyKey = 'yok-lab-habits-v1';
+    const prefix = 'yok-lab-habits-v2:';
     const names = ['Read', 'Walk', 'Practice'];
+    let midnightTimer;
     return {
-        names, active: 'Read', history: {}, offset: 0, localOnly: false, todayKey: dayKey(today),
+        names, active: 'Read', history: {}, offset: 0, localOnly: false,
+        today: shiftDay(new Date(), 0),
         init() {
+            this.syncHistory();
+            this.scheduleMidnight();
+        },
+        destroy() { window.clearTimeout(midnightTimer); },
+        scheduleMidnight() {
+            this.refreshToday();
+            window.clearTimeout(midnightTimer);
+            const now = new Date();
+            const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+            midnightTimer = window.setTimeout(() => this.scheduleMidnight(), midnight.getTime() - now.getTime());
+        },
+        refreshToday() {
+            const now = shiftDay(new Date(), 0);
+            if (dayKey(now) !== this.todayKey) this.today = now;
+        },
+        syncHistory(event) {
+            if (this.localOnly || (event?.key && !event.key.startsWith(prefix) && event.key !== legacyKey)) return;
+            this.refreshToday();
             try {
-                const saved = JSON.parse(localStorage.getItem(storageKey) || '{}');
-                if (saved && typeof saved === 'object')
-                    this.history = Object.fromEntries(names.map(name => [name, Array.isArray(saved[name]) ? saved[name].filter(key => typeof key === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(key) && key <= this.todayKey) : []]));
+                let saved;
+                try { saved = JSON.parse(localStorage.getItem(legacyKey) || '{}'); } catch { saved = {}; }
+                const validDate = key => typeof key === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(key);
+                const entries = Object.fromEntries(names.map(name => [
+                    name, new Set(Array.isArray(saved?.[name]) ? saved[name].filter(validDate) : []),
+                ]));
+                for (const storageKey of Object.keys(localStorage)) {
+                    if (!storageKey.startsWith(prefix)) continue;
+                    const [name, day] = storageKey.slice(prefix.length).split(':');
+                    if (!names.includes(name) || !validDate(day)) continue;
+                    const value = localStorage.getItem(storageKey);
+                    if (value === '1') entries[name].add(day);
+                    else if (value === '0') entries[name].delete(day);
+                }
+                this.history = Object.fromEntries(names.map(name => [name, [...entries[name]]]));
             } catch { this.localOnly = true; }
         },
+        get todayKey() { return dayKey(this.today); },
         get checked() { return this.history[this.active] ?? []; },
-        get days() { return Array.from({ length: 28 }, (_, i) => dayKey(shiftDay(today, i - 27 + this.offset))); },
+        get days() { return Array.from({ length: 28 }, (_, i) => dayKey(shiftDay(this.today, i - 27 + this.offset))); },
         get streak() {
             let length = 0, cursor = this.checked.includes(this.todayKey) ? 0 : -1;
-            while (this.checked.includes(dayKey(shiftDay(today, cursor--)))) length++;
+            while (this.checked.includes(dayKey(shiftDay(this.today, cursor--)))) length++;
             return length;
         },
+        moveDays(delta) {
+            this.refreshToday();
+            this.offset = Math.min(0, this.offset + delta);
+        },
+        toggleToday() {
+            this.refreshToday();
+            this.offset = 0;
+            this.toggle(this.todayKey);
+        },
         toggle(key) {
+            this.refreshToday();
             if (!this.days.includes(key) && key !== this.todayKey) return;
-            const next = this.checked.includes(key) ? this.checked.filter(item => item !== key) : [...this.checked, key];
+            const check = !this.checked.includes(key);
+            const next = check ? [...this.checked, key] : this.checked.filter(item => item !== key);
             this.history = { ...this.history, [this.active]: next };
-            try { localStorage.setItem(storageKey, JSON.stringify(this.history)); } catch { this.localOnly = true; }
+            if (this.localOnly) return;
+            // Each write changes one habit/day, so another tab's independent edits are preserved.
+            try { localStorage.setItem(prefix + this.active + ':' + key, check ? '1' : '0'); }
+            catch { this.localOnly = true; }
         },
     };
 }

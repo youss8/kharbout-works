@@ -43,12 +43,23 @@ const builder = kind === 'builder';
             const feedback = this.querySelector<HTMLElement>('[role=status]')!;
             const manual = this.querySelector<HTMLLabelElement>('[data-manual]')!;
             const field = manual.querySelector('textarea')!;
-            const copy = async (value: string, messages?: ExportPayload['messages']) => {
+            let revision = 0;
+            this.addEventListener('asset-export-reset', () => {
+                revision++;
                 manual.hidden = true;
+                field.value = '';
+                feedback.textContent = '';
+            });
+            const copy = async (value: string, messages?: ExportPayload['messages']) => {
+                const current = ++revision;
+                manual.hidden = true;
+                field.value = '';
                 try {
                     await navigator.clipboard.writeText(value);
+                    if (current !== revision) return;
                     feedback.textContent = messages?.copied ?? 'Copied to clipboard.';
                 } catch {
+                    if (current !== revision) return;
                     manual.hidden = false;
                     field.value = value;
                     field.focus();
@@ -72,6 +83,7 @@ const builder = kind === 'builder';
                 const { action, text, messages } = (event as CustomEvent<ExportPayload>).detail;
                 if (action === 'copy' && typeof text === 'string') { void copy(text, messages); return; }
                 if (action !== 'md' && action !== 'json' && action !== 'txt') return;
+                revision++;
                 manual.hidden = true;
                 let body: string;
                 if (action === 'json') {

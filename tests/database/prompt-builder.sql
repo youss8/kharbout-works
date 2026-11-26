@@ -53,6 +53,8 @@ select pg_temp.check_error(
     $$select public.save_prompt_draft(current_setting('test.draft')::uuid, 1, current_setting('test.folder')::uuid, 'Shared draft', '{"version":1}')$$,
     'prompt_conflict');
 select pg_temp.check_true((select count(*) from public.prompt_versions where draft_id = current_setting('test.draft')::uuid) = 2, 'history has both versions');
+select set_config('test.editor_draft', public.save_prompt_draft(null, 0, current_setting('test.folder')::uuid, 'Editor draft', '{"version":1}')->>'id', true);
+select public.save_prompt_draft(current_setting('test.editor_draft')::uuid, 1, current_setting('test.folder')::uuid, 'Editor revision', '{"version":1}');
 
 select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000003', true);
 select public.accept_prompt_folder_invite(current_setting('test.viewer_token'));
@@ -74,6 +76,22 @@ select pg_temp.check_true(not has_function_privilege('authenticated', 'public.fi
 set local role authenticated;
 select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000001', true);
 select pg_temp.check_true((select count(*) from public.list_prompt_folder_members(current_setting('test.folder')::uuid)) = 2, 'owners can list members');
+select set_config('test.revoked_invite', public.invite_to_prompt_folder(current_setting('test.folder')::uuid, 'editor'), true);
+select set_config('test.surviving_invite', public.invite_to_prompt_folder(current_setting('test.folder')::uuid, 'viewer'), true);
+select pg_temp.check_true(
+    (select count(*) from public.list_prompt_folder_invites(current_setting('test.folder')::uuid)) = 2,
+    'owners can identify both outstanding invitations');
+select public.revoke_prompt_folder_invite(current_setting('test.folder')::uuid,
+    (select id from public.list_prompt_folder_invites(current_setting('test.folder')::uuid) where role = 'editor'));
+select pg_temp.check_true(
+    (select count(*) from public.list_prompt_folder_invites(current_setting('test.folder')::uuid)) = 1,
+    'revoking one invitation leaves the second active');
+select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000004', true);
+select pg_temp.check_error($$select public.accept_prompt_folder_invite(current_setting('test.revoked_invite'))$$, 'prompt_invite_invalid');
+select public.accept_prompt_folder_invite(current_setting('test.surviving_invite'));
+select pg_temp.check_true(public.prompt_folder_role(current_setting('test.folder')::uuid) = 'viewer', 'the other invitation works');
+select pg_temp.check_error($$select public.list_prompt_folder_invites(current_setting('test.folder')::uuid)$$, 'prompt_forbidden');
+select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000001', true);
 select public.set_prompt_folder_member(current_setting('test.folder')::uuid, 'a0000000-0000-4000-8000-000000000003', null);
 select public.revoke_prompt_snapshot(current_setting('test.share')::uuid);
 select set_config('test.expiring_token', public.publish_prompt_snapshot('Expired test', 'Expired content'), true);
@@ -95,11 +113,40 @@ select set_config('test.reservation', public.reserve_prompt_ai('a0000000-0000-40
 select pg_temp.check_true(public.reserve_prompt_ai('a0000000-0000-4000-8000-000000000001', 'run', 1)->>'error' = 'ai_limit', 'per-account daily limit');
 select pg_temp.check_true(public.reserve_prompt_ai('a0000000-0000-4000-8000-000000000002', 'run', 2)->>'error' = 'ai_limit', 'pending requests count against the site budget');
 select public.finish_prompt_ai(current_setting('test.reservation')::uuid, 1, 'success', 50);
+select public.finish_prompt_ai(current_setting('test.reservation')::uuid, 2, 'success', 60);
 select pg_temp.check_true(public.reserve_prompt_ai('a0000000-0000-4000-8000-000000000002', 'run', 2) ? 'reservation', 'reported usage releases unused budget');
+select pg_temp.check_true(public.prompt_account_has_shared_folders('a0000000-0000-4000-8000-000000000001'), 'account preflight detects shared work');
 
+set local role none;
+select pg_temp.check_true(
+    (select actual_micros from public.prompt_ai_usage where id = current_setting('test.reservation')::uuid) = 1,
+    'repeated settlement cannot change the recorded bill');
+select pg_temp.check_error(
+    $$delete from auth.users where id = 'a0000000-0000-4000-8000-000000000001'$$,
+    'prompt_account_shared_folders');
+select pg_temp.check_true(
+    (select count(*) from public.prompt_versions where draft_id = current_setting('test.editor_draft')::uuid) = 2,
+    'blocked deletion preserves the editor history');
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000001', true);
+select pg_temp.check_error(
+    $$select public.transfer_prompt_folder(current_setting('test.folder')::uuid, 'a0000000-0000-4000-8000-000000000004')$$,
+    'prompt_forbidden');
+select public.transfer_prompt_folder(current_setting('test.folder')::uuid, 'a0000000-0000-4000-8000-000000000002');
+select pg_temp.check_true(public.prompt_folder_role(current_setting('test.folder')::uuid) = 'editor', 'former owner becomes editor');
 set local role none;
 delete from auth.users where id = 'a0000000-0000-4000-8000-000000000001';
 select pg_temp.check_true(not exists(select 1 from public.prompt_drafts where id = current_setting('test.private')::uuid), 'deleted accounts lose personal drafts');
 select pg_temp.check_true(not exists(select 1 from public.prompt_shares where title = 'Expired test'), 'deleted accounts lose snapshots');
+select pg_temp.check_true(
+    exists (select 1 from public.prompt_drafts where id = current_setting('test.draft')::uuid and created_by is null),
+    'shared draft from deleted user remains with the folder');
+set local role authenticated;
+select set_config('request.jwt.claim.sub', 'a0000000-0000-4000-8000-000000000002', true);
+select pg_temp.check_true(public.prompt_folder_role(current_setting('test.folder')::uuid) = 'owner', 'recipient becomes owner');
+select pg_temp.check_true(
+    (select count(*) from public.prompt_versions where draft_id = current_setting('test.editor_draft')::uuid) = 2,
+    'editor reads both revisions after the former owner leaves');
 
 rollback;

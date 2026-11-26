@@ -34,6 +34,7 @@ jobs:
           VAULT_FORBIDDEN_TERMS: ${{ secrets.VAULT_FORBIDDEN_TERMS }}
       - run: npx astro check
       - run: npm run build
+      - run: python scripts/audit-public.py
       - run: npm run build:catalogue
       - run: vendor/bin/pint --test
       - run: composer analyse
@@ -47,9 +48,60 @@ jobs:
           mkdir -p test-results/livewire-runtime
           composer --working-dir=test-results/livewire-runtime require 'laravel/framework:13.*' 'livewire/livewire:4.*' --no-interaction --prefer-dist
           php tests/workbench/verify-livewire.php
+          rc=0
+          APP_PACKAGES_CACHE=test-results/nonexistent-package-cache/packages.php php tests/workbench/verify-livewire.php > "$RUNNER_TEMP/livewire-bootstrap.log" 2>&1 || rc=$?
+          test "$rc" -eq 1
+          rg --quiet 'must be present.*writable' "$RUNNER_TEMP/livewire-bootstrap.log"
           php tests/workbench/verify-tier4-contracts.php
           npx playwright test --config tests/workbench/livewire.playwright.config.mjs
       - run: npm run test:browser
+
+  prompt-builder:
+    name: Prompt Builder cloud contracts
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: prompt-builder-fixture
+          POSTGRES_DB: prompt_builder_test
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd "pg_isready -U postgres -d prompt_builder_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Verify database roles, revisions and quotas
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: ${{ job.services.postgres.ports[5432] }}
+          PGUSER: postgres
+          PGPASSWORD: prompt-builder-fixture
+          PGDATABASE: prompt_builder_test
+        run: |
+          command -v psql || sudo apt-get install -y postgresql-client
+          psql -X -v ON_ERROR_STOP=1 -f tests/database/supabase-fixture.sql
+          for migration in supabase/migrations/*.sql; do
+            psql -X -v ON_ERROR_STOP=1 -f "$migration"
+          done
+          psql -X -v ON_ERROR_STOP=1 -f tests/database/prompt-builder.sql
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build the workbench for fictional cloud responses
+        env:
+          PROMPT_BUILDER_ENABLED: 'true'
+          PUBLIC_SUPABASE_URL: https://prompt-test.supabase.co
+          PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_test
+        run: npm run build
+      - name: Exercise the mocked cloud flows
+        env:
+          PLAYWRIGHT_PROMPT_CLOUD: '1'
+        run: npm run test:workbench -- tests/workbench/prompt-builder-cloud.spec.mjs
 
   docker-smoke:
     name: Docker catalogue
@@ -60,12 +112,26 @@ jobs:
         with:
           node-version: '24'
       - run: docker compose config --quiet
+      - name: Seed local-only packaging fixtures
+        run: |
+          touch debug.log VAULT_EXTRACTION_PACKAGING_FIXTURE.md resources/qa-local.log
       - run: docker compose up --build --detach
+      - name: Verify the final container excludes local-only files
+        run: |
+          docker compose exec -T catalogue sh -eu -c '
+            test ! -f /app/debug.log
+            test ! -f /app/VAULT_EXTRACTION_PACKAGING_FIXTURE.md
+            test ! -f /app/resources/qa-local.log
+          '
       - name: Verify the catalogue, source download and standalone build
         run: |
           curl --retry 20 --retry-all-errors --retry-delay 1 --fail --silent --show-error http://127.0.0.1:8080/ -o /dev/null
           curl --fail --silent --show-error http://127.0.0.1:8080/entries/copy-code -o "$RUNNER_TEMP/catalogue-entry.html"
           grep --quiet --fixed-strings 'copy-code' "$RUNNER_TEMP/catalogue-entry.html"
+          for slug in copy-code keyboard-shortcut-label empty-state-page url-filters catalogue-search accessible-ui-review; do
+            curl --fail --silent --show-error "http://127.0.0.1:8080/entries/$slug/download" -o "$RUNNER_TEMP/$slug.zip"
+            unzip -t "$RUNNER_TEMP/$slug.zip"
+          done
           curl --fail --silent --show-error http://127.0.0.1:8080/entries/search-dialog/download -o "$RUNNER_TEMP/search-dialog.zip"
           unzip -t "$RUNNER_TEMP/search-dialog.zip"
           unzip -q "$RUNNER_TEMP/search-dialog.zip" -d "$RUNNER_TEMP/dialog-example"

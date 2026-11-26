@@ -92,6 +92,16 @@ export function parseRegisterCsv(
         ),
     );
     const columns = headers.map((header) => aliases.get(headerKey(header)));
+    const targets = new Set<string>();
+    headers.forEach((header, index) => {
+        const field = columns[index];
+        const target = field ? 'field:' + field.key : 'metadata:' + header;
+        if (targets.has(target)) {
+            const label = field?.label ?? header;
+            throw new Error(`${file}:1 · More than one column maps to "${label}". Rename or remove one of the columns.`);
+        }
+        targets.add(target);
+    });
     const warnings: string[] = [];
     const rows = records.flatMap((record, index) => {
         if (record.every((cell) => !cell.trim())) return [];

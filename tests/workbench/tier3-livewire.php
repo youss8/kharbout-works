@@ -51,6 +51,16 @@ return static function (string $slug, array $snapshot): void {
     }
 
     if ($slug === 'spreadsheet-importer-register') {
+        foreach (['Job,Job', 'Job,Job Name', 'Job,Ｊｏｂ Ｎａｍｅ'] as $headers) {
+            $html = $step('parse', [], ['csv' => "$headers\nFirst,Second"])['html'];
+            $check(str_contains($html, 'More than one column maps to') && ! str_contains($html, 'Load rows into register'), 'Duplicate mapped header was accepted');
+        }
+        $step('parse', [], ['csv' => "Job,Interval\nAlpha backup,24"]);
+        $html = $step('loadRows', [], ['csv' => "Job,Interval\nBeta backup,24"])['html'];
+        $check(str_contains($html, 'Parse it again') && ! str_contains($html, 'Alpha backup'), 'Stale preview was committed');
+        $step('parse');
+        $html = $step('loadRows')['html'];
+        $check(str_contains($html, 'Beta backup') && ! str_contains($html, 'Alpha backup'), 'Fresh import did not replace the stale preview');
         $html = $step('loadSample')['html'];
         $check(str_contains($html, 'paste.csv:4') && str_contains($html, '2025-12-31'), 'Missing CSV warning or Excel date');
         $html = $step('loadRows')['html'];
@@ -59,6 +69,17 @@ return static function (string $slug, array $snapshot): void {
         $step('save', [], ['form.values.interval' => '', 'form.values.notes' => 'unexpected']);
         $patch = $snapshot['data']['payload'][0];
         $check(array_key_exists('interval', $patch) && $patch['interval'] === null && ! array_key_exists('notes', $patch), 'Partial Form write failed');
+    }
+
+    if ($slug === 'two-band-progress-sla') {
+        foreach ([40000, 0] as $received) {
+            $html = $step(null, [], ['committed' => 0, 'received' => $received])['html'];
+            $check(str_contains($html, number_format($received, 2).' USD') && str_contains($html, 'Percentage unavailable') && ! str_contains($html, 'aria-label="Funding received"'), 'Zero commitment showed a numerical percentage');
+        }
+        foreach ([40000 => '66.67% received', 70800 => 'Over by 18%'] as $received => $label) {
+            $html = $step(null, [], ['committed' => 60000, 'received' => $received])['html'];
+            $check(str_contains($html, $label) && str_contains($html, 'aria-label="Funding received"'), 'Positive commitment ratio missing');
+        }
     }
 
     if ($slug === 'amendment-diff-org-chart') {

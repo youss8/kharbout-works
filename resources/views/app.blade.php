@@ -7,10 +7,11 @@
         @viteReactRefresh
         @vite('resources/js/app.tsx')
         <x-inertia::head>
-            <title>Kharbout Works</title>
+            <title>{{ isset($page['props']['entry']) ? $page['props']['entry']['title'].' · ' : '' }}Kharbout Works</title>
         </x-inertia::head>
     </head>
     <body>
         <x-inertia::app />
+        @include('catalogue-fallback')
     </body>
 </html>
