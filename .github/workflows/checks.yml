@@ -24,6 +24,8 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - name: Install release check tools
+        run: sudo apt-get update && sudo apt-get install -y ripgrep poppler-utils
       - run: composer install --prefer-dist --no-interaction
       - run: composer validate --strict
       - run: composer audit --locked --no-dev
@@ -46,7 +48,6 @@ jobs:
       - run: composer test
       - run: npm run test:kit
       - run: npx playwright install --with-deps chromium firefox webkit
-      - run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - run: npm run test:workbench
       - name: Exercise the Vault examples on Laravel 13 and Livewire 4
         run: |
