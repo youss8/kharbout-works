@@ -26,9 +26,15 @@ test('all five entries filter by category, resolve their deep link, and export t
         await page.goto('/templates/#' + id);
         const article = page.getByRole('article');
         await expect(article).toHaveAttribute('id', id);
+        const browse = page.getByRole('button', { name: 'Browse templates' });
+        await expect(browse).toHaveAttribute('aria-expanded', 'false');
+        await browse.press('Enter');
         await page.getByRole('button', { name: category, exact: true }).click();
         const directory = page.getByRole('navigation', { name: 'Template directory' });
         await expect(directory.getByRole('link')).toHaveCount(fixtures.filter(row => row[1] === category).length);
+        await directory.locator('[href="#' + id + '"]').press('Enter');
+        await expect(browse).toHaveAttribute('aria-expanded', 'false');
+        await expect(article).toBeFocused();
         await expect(article.getByText('Starter blueprint', { exact: true })).toBeVisible();
         await article.getByRole('tab', { name: 'Raw Markdown' }).click();
         const rawPanel = article.getByRole('tabpanel', { name: 'Raw Markdown', exact: true });

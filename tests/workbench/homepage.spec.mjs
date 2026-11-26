@@ -4,9 +4,24 @@ const tracking = '/systems/03-portfolio-kpi-engine/';
 const hr = '/systems/02-hr-lifecycle-crm/';
 const demos = [
     ['KPI cockpit', tracking + '#kpi-cockpit', 'KPI performance and pooled ratios', '#modeling'],
-    ['Leave approval desk', hr + '#leave-engine', 'Leave pricing and two-tier approval desk', '#modeling'],
-    ['Funding flow', tracking + '#funding-flow', 'Funding flow and agreement health', '/vault/#html-svg-sankey-flow'],
-    ['Attendance & contracts', hr + '#attendance-amend', 'Attendance month and signed contract diff', '/vault/#gantt-and-timesheet-machines'],
+    [
+        'Leave approval desk',
+        hr + '#leave-engine',
+        'Leave pricing and two-tier approval desk',
+        '#modeling',
+    ],
+    [
+        'Funding flow',
+        tracking + '#funding-flow',
+        'Funding flow and agreement health',
+        '/vault/#html-svg-sankey-flow',
+    ],
+    [
+        'Attendance & contracts',
+        hr + '#attendance-amend',
+        'Attendance month and signed contract diff',
+        '/vault/#gantt-and-timesheet-machines',
+    ],
 ];
 
 test('the two homepage previews match their full workflow results', async ({ page }) => {
@@ -52,33 +67,82 @@ test('at 320px the previews and evidence remain usable in dark RTL', async ({ pa
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     await page.getByRole('button', { name: 'Dark mode' }).click();
-    await page.locator('html').evaluate(html => { html.dir = 'rtl'; });
+    await page.locator('html').evaluate((html) => {
+        html.dir = 'rtl';
+    });
     await page.evaluate(() => document.fonts.ready);
 
+    const launch = page.getByRole('link', { name: 'Run KPI cockpit' });
+    const launchBox = await launch.boundingBox();
+    expect(launchBox.y + launchBox.height).toBeLessThanOrEqual(740);
+    const tabs = page.getByRole('tablist', { name: 'System architecture' });
+    await tabs.getByRole('tab', { name: /SYS-03/ }).press('ArrowLeft');
+    await expect(tabs.getByRole('tab', { name: /SYS-02/ })).toBeFocused();
+    const panel = page.getByRole('tabpanel');
+    await expect(panel.getByRole('link', { name: 'Price a leave request' })).toHaveAttribute(
+        'href',
+        hr + '#leave-engine',
+    );
+    await panel.locator('summary').click();
+    await panel.getByRole('button', { name: /2026-12-23/ }).click();
+    await expect(panel.locator('output')).toContainText('8h');
+    await panel.locator('summary').click();
+
     const preview = page.locator('#featured-workflows');
+    await page.getByRole('link', { name: 'Try a workflow', exact: true }).click();
     const compare = preview.getByRole('button', { name: 'Site average' });
     const button = await compare.boundingBox();
-    expect(button.height).toBeGreaterThanOrEqual(44);
-    expect(button.y + button.height).toBeLessThanOrEqual(740);
+    expect(Math.round(button.height)).toBeGreaterThanOrEqual(44);
     await compare.click();
     await expect(preview.getByRole('status')).toContainText('59.6%');
     await preview.getByRole('button', { name: 'HR workflows' }).click();
     await preview.getByRole('button', { name: 'Morning only' }).click();
     await expect(preview.getByRole('status')).toContainText('8h');
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+});
 
-    const tabs = page.getByRole('tablist', { name: 'System architecture' });
-    await tabs.getByRole('tab', { name: /SYS-03/ }).press('ArrowLeft');
-    await expect(tabs.getByRole('tab', { name: /SYS-02/ })).toBeFocused();
+test('each system instrument responds to its fixture and preserves its demo links', async ({
+    page,
+}) => {
+    await page.goto('/');
     const panel = page.getByRole('tabpanel');
-    await expect(panel.getByText('16h', { exact: true })).toBeVisible();
-    await expect(panel.getByText('8h', { exact: true })).toBeVisible();
+    const tabs = page.getByRole('tablist', { name: 'System architecture' });
+    await panel.locator('summary').click();
+    await panel.getByRole('button', { name: /North Hub/ }).click();
+    await expect(panel.locator('[data-display]')).toHaveText('74.3%');
+    await expect(panel.locator('output')).toContainText('52 of 70 participants');
+    await panel.getByRole('button', { name: /Valley Office/ }).click();
+    await expect(panel.locator('[data-display]')).toHaveText('—');
+    await panel.getByRole('button', { name: /All sites/ }).click();
+    await expect(panel.locator('[data-display]')).toHaveText('67.8%');
+    await tabs.getByRole('tab', { name: /SYS-02/ }).click();
+    await panel.locator('summary').click();
+    await panel.getByRole('button', { name: /2026-12-25/ }).click();
+    await expect(panel.locator('output')).toContainText('0h');
+    await tabs.getByRole('tab', { name: /SYS-01/ }).click();
+    await panel.locator('summary').click();
+    await panel.getByRole('button', { name: /NH-SRV-FILE/ }).click();
+    await expect(panel.locator('[data-display]')).toHaveText('96%');
+    await expect(panel.locator('output')).toContainText('35% CPU');
+    await expect(page).toHaveURL(/#exhibit-SYS-01$/);
+    await page.goBack();
+    await expect(tabs.getByRole('tab', { name: /SYS-02/ })).toHaveAttribute('aria-selected', 'true');
+    await page.goForward();
+    await expect(tabs.getByRole('tab', { name: /SYS-01/ })).toHaveAttribute('aria-selected', 'true');
+    await expect(panel.getByRole('link', { name: 'Inspect endpoints' })).toHaveAttribute(
+        'href',
+        '/systems/01-it-ops-helpdesk/#estate-overview',
+    );
+    await tabs.getByRole('tab', { name: /SYS-01/ }).press('Home');
+    await expect(tabs.getByRole('tab', { name: /SYS-03/ })).toBeFocused();
 });
 
 test.describe('static sandbox navigation', () => {
     test.use({ javaScriptEnabled: false });
 
-    test('four flagship demos have direct links and native reference previews', async ({ page }) => {
+    test('four flagship demos have direct links and native reference previews', async ({
+        page,
+    }) => {
         for (const [name, href, heading, reference] of demos) {
             await page.goto('/');
             await expect(page.getByRole('group', { name: 'Choose a workflow' })).toBeHidden();

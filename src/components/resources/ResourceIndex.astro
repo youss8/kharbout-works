@@ -1,0 +1,112 @@
+---
+import { ChevronDown, ListFilter } from 'lucide-react';
+interface Props {
+    title: string;
+    count: number;
+    id: string;
+}
+const { title, count, id } = Astro.props;
+---
+
+<resource-index>
+    <div class="index-heading">
+        <ListFilter size={18} aria-hidden="true" />
+        <span>{title}</span>
+        <span class="index-total">{count}</span>
+    </div>
+    <button type="button" class="index-toggle" aria-controls={id} aria-expanded="true">
+        <ListFilter size={18} aria-hidden="true" />
+        <span>{title}</span>
+        <span class="index-total">{count}</span>
+        <ChevronDown className="index-chevron" size={17} aria-hidden="true" />
+    </button>
+    <div id={id} class="index-contents">
+        <slot />
+    </div>
+</resource-index>
+<script>
+    class ResourceIndex extends HTMLElement {
+        connectedCallback() {
+            const button = this.querySelector('button')!;
+            const narrow = matchMedia('(max-width: 760px)');
+            const setOpen = (open: boolean) => button.setAttribute('aria-expanded', String(open));
+            const followLocation = () => setOpen(!location.hash);
+            button.addEventListener('click', () =>
+                setOpen(button.getAttribute('aria-expanded') !== 'true'),
+            );
+            this.addEventListener('click', (event) => {
+                const link =
+                    event.target instanceof Element
+                        ? event.target.closest<HTMLAnchorElement>('nav a[href^="#"]')
+                        : null;
+                if (
+                    !link ||
+                    !narrow.matches ||
+                    event.metaKey ||
+                    event.ctrlKey ||
+                    event.shiftKey ||
+                    event.altKey
+                )
+                    return;
+                const reader = document.getElementById(link.hash.slice(1));
+                if (!reader) return;
+                setOpen(false);
+                requestAnimationFrame(() => {
+                    reader.focus({ preventScroll: true });
+                    this.scrollIntoView({ block: 'start' });
+                });
+            });
+            window.addEventListener('popstate', followLocation);
+            window.addEventListener('hashchange', followLocation);
+            followLocation();
+            this.dataset.ready = '';
+        }
+    }
+    customElements.define('resource-index', ResourceIndex);
+</script>
+<style>
+    resource-index {
+        display: block;
+        scroll-margin-block-start: 5.5rem;
+    }
+    .index-heading,
+    .index-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        inline-size: 100%;
+        padding: 0.85rem 1rem;
+        color: var(--assembly-lime);
+        background: var(--assembly-ink);
+        font: 600 0.91rem/1.3 var(--font-display);
+        text-align: start;
+        border: 0;
+        border-radius: 0;
+    }
+    .index-total {
+        margin-inline-start: auto;
+        font: 0.75rem/1.3 var(--font-mono);
+    }
+    .index-toggle {
+        display: none;
+    }
+    .index-contents {
+        padding: 1rem;
+    }
+    @media screen and (max-width: 760px) {
+        [data-ready] .index-toggle {
+            display: flex;
+            min-block-size: 48px;
+        }
+        [data-ready] .index-heading,
+        .index-toggle[aria-expanded='false'] + .index-contents {
+            display: none;
+        }
+        .index-toggle[aria-expanded='true'] :global(.index-chevron) {
+            transform: rotate(180deg);
+        }
+        .index-toggle :global(.index-chevron) {
+            transition: transform var(--motion-duration) var(--motion-ease);
+        }
+    }
+</style>

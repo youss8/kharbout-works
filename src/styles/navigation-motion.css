@@ -1,0 +1,43 @@
+/* Native cross-document transitions retain ordinary navigation, history and island hydration. */
+@media screen and (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+
+    .site-header {
+        view-transition-name: workbench-navigation;
+    }
+    .case-transition-title {
+        view-transition-name: var(--case-title);
+        view-transition-class: case-heading;
+    }
+    ::view-transition-group(.case-heading) {
+        animation-duration: 260ms;
+        animation-timing-function: cubic-bezier(0.22, 0.76, 0.2, 1);
+    }
+    ::view-transition-group(workbench-navigation) {
+        animation-duration: 190ms;
+    }
+    ::view-transition-old(root) {
+        animation: page-leave 120ms ease-out both;
+    }
+    ::view-transition-new(root) {
+        animation: page-arrive 220ms cubic-bezier(0.22, 0.76, 0.2, 1) both;
+    }
+}
+
+@keyframes page-leave {
+    to {
+        opacity: 0;
+    }
+}
+@keyframes page-arrive {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}

@@ -3,7 +3,10 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const css = readFileSync(new URL('../src/styles/tokens.css', import.meta.url), 'utf8');
-const themes = { light: ':root', dark: '[data-theme="dark"]' };
+const themes = {
+    light: /^:root\s*\{([^}]+)\}/m,
+    dark: /^\[data-theme=['"]dark['"]\]\s*\{([^}]+)\}/m,
+};
 
 function luminance(hex) {
     assert.match(hex ?? '', /^#[\da-f]{6}$/i);
@@ -24,7 +27,7 @@ function contrast(first, second) {
 }
 
 for (const [theme, selector] of Object.entries(themes)) {
-    const block = css.split('\n' + selector + ' {')[1]?.split('}')[0];
+    const block = css.match(selector)?.[1];
     assert.ok(block, 'Missing palette for ' + theme);
     const colors = Object.fromEntries(
         [...block.matchAll(/--([\w-]+):\s*(#[\da-f]{6});/gi)].map((m) => [m[1], m[2]]),

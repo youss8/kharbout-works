@@ -1,5 +1,6 @@
 import type Alpine from 'alpinejs';
 import type { CommandIndex } from '../../data/command-index';
+import { searchScopes } from '../../data/search-scopes';
 import { bilingualSearch, prepareAskIndex } from '../../lib/kernels/bilingualAsk';
 
 type Group = 'actions' | 'pages' | 'assets';
@@ -93,6 +94,7 @@ export default function registerAsk(AlpineClient: typeof Alpine) {
         let recent = loadHistory();
         return {
             query: '',
+            scope: 'All',
             opened: false,
             selected: 0,
             groups: [] as ResultGroup[],
@@ -145,12 +147,16 @@ export default function registerAsk(AlpineClient: typeof Alpine) {
                 this.query = query;
                 this.selected = 0;
                 if (!prepared) return;
-                const hits = bilingualSearch(query, { items: prepared, recent });
+                const kinds: readonly string[] =
+                    searchScopes.find((scope) => scope.label === this.scope)?.kinds ?? [];
+                const hits = bilingualSearch(query, { items: prepared, recent }).filter(
+                    ({ item }) => !kinds.length || kinds.includes(item.kind),
+                );
                 const term = query.trim(),
                     groups: ResultGroup[] = [];
                 let position = 0;
                 for (const group of ['actions', 'pages', 'assets'] as const) {
-                    const limit = term ? 10 : group === 'actions' ? 2 : 4;
+                    const limit = term || kinds.length ? 10 : group === 'actions' ? 2 : 4;
                     const matches = hits
                         .filter(
                             ({ item }) =>
@@ -177,7 +183,17 @@ export default function registerAsk(AlpineClient: typeof Alpine) {
                 }
                 this.groups = groups;
             },
+            setScope(scope: string) {
+                this.scope = scope;
+                this.filter(this.query);
+                searchElement().focus();
+            },
             open() {
+                // A native navigation snapshot can still be covering the destination's controls.
+                const page = document as Document & {
+                    activeViewTransition?: ViewTransition | null;
+                };
+                page.activeViewTransition?.skipTransition();
                 if (this.opened) {
                     searchElement().focus();
                     return;
@@ -185,6 +201,7 @@ export default function registerAsk(AlpineClient: typeof Alpine) {
                 returnFocus =
                     document.activeElement instanceof HTMLElement ? document.activeElement : null;
                 this.query = '';
+                this.scope = 'All';
                 this.opened = true;
                 this.syncTheme();
                 dialogElement().showModal();

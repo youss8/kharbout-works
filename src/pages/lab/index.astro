@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import StatusBadge from '../../components/ui/StatusBadge.astro';
+import WorkbenchPicker from '../../components/ui/WorkbenchPicker.astro';
 import DatePlanner from '../../components/lab/DatePlanner.astro';
 import HabitTracker from '../../components/lab/HabitTracker.astro';
 import LandingStudy from '../../components/lab/LandingStudy.astro';
@@ -13,64 +14,104 @@ const demos = {
     'landing-redesign': LandingStudy,
     'meal-configurator': MealConfigurator,
 };
+const projectActions: Record<string, string> = {
+    'date-planner': 'Build an itinerary',
+    'habit-tracker': 'Track a habit',
+    'landing-redesign': 'Compare landing pages',
+    'meal-configurator': 'Configure a meal',
+};
+const choices = labProjects.map(({ id, title }) => ({ id, label: projectActions[id] ?? title }));
 ---
 
 <BaseLayout title="R&D lab">
-    <div class="page-shell">
-        <header class="page-heading">
-            <p class="section-id">05 / Lab</p>
+    <div class="page-shell lab-page">
+        <header class="page-heading lab-intro">
             <h1>R&amp;D lab</h1>
             <p>
                 Four personal, unshipped prototypes. Try the interaction behind each product idea.
             </p>
         </header>
-        <div class="lab-grid">
-            {labProjects.map((project) => {
-                const Demo = demos[project.id as keyof typeof demos];
-                return (
-                    <article id={project.id}>
-                        <header>
-                            <StatusBadge label="Prototype · R&D Build" shape="dashed" />
-                            <h2>{project.title}</h2>
-                            <p>{project.summary}</p>
-                            {project.repoUrl && <a href={project.repoUrl}>Source repository</a>}
-                            {project.liveUrl && (
-                                <a href={project.liveUrl}>Open standalone prototype</a>
-                            )}
-                            {project.screenshot && (
-                                <img
-                                    src={project.screenshot}
-                                    loading="lazy"
-                                    alt={project.title + ' interface'}
-                                />
-                            )}
-                        </header>
-                        {Demo && <Demo />}
-                    </article>
-                );
-            })}
-        </div>
+        <WorkbenchPicker label="Choose a prototype" items={choices}>
+            <div class="lab-grid">
+                {labProjects.map((project) => {
+                    const Demo = demos[project.id as keyof typeof demos];
+                    return (
+                        <article id={project.id} data-picker-panel tabindex="-1">
+                            <header>
+                                <StatusBadge label="Prototype · R&D Build" shape="dashed" />
+                                <h2>{project.title}</h2>
+                                <p>{project.summary}</p>
+                                {project.repoUrl && <a href={project.repoUrl}>Source repository</a>}
+                                {project.liveUrl && (
+                                    <a href={project.liveUrl}>Open standalone prototype</a>
+                                )}
+                                {project.screenshot && (
+                                    <img
+                                        src={project.screenshot}
+                                        loading="lazy"
+                                        alt={project.title + ' interface'}
+                                    />
+                                )}
+                            </header>
+                            {Demo && <Demo />}
+                        </article>
+                    );
+                })}
+            </div>
+        </WorkbenchPicker>
     </div>
 </BaseLayout>
 <style is:global>
     .lab-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 29rem), 1fr));
+        grid-template-columns: minmax(0, 1fr);
         gap: clamp(1rem, 2vw, 2rem);
         align-items: start;
     }
     .lab-grid article {
         background: var(--bg-surface);
         border: 1px solid var(--border-hairline);
-        border-block-start: 3px solid var(--accent-primary);
-        border-radius: 3px;
+        border-block-start: 0;
         min-width: 0;
     }
     .lab-grid article > header,
     .lab-demo {
         padding: clamp(1rem, 2vw, 1.7rem);
     }
-    .lab-grid article > header p,
+    .lab-intro {
+        border-bottom: 2px solid var(--ink-primary);
+        padding-block-end: clamp(1.25rem, 3vw, 2.6rem);
+        max-inline-size: none;
+    }
+    .lab-intro h1 {
+        font-family: var(--font-display);
+    }
+    .lab-grid article > header {
+        color: #fff;
+        background: var(--assembly-blue);
+    }
+    .lab-grid article > header p {
+        color: #eef3ff;
+    }
+    .lab-grid article > header .status-badge {
+        color: var(--assembly-lime);
+        border: 0;
+        padding: 0;
+    }
+    .lab-grid article > header .status-badge > span[aria-hidden] {
+        display: none;
+    }
+    .lab-grid article > header h2 {
+        font: 700 clamp(1.75rem, 3.6vw, 3.6rem)/1.02 var(--font-display);
+        letter-spacing: -0.055em;
+    }
+    .lab-grid article > header a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        color: #fff;
+        text-decoration: underline;
+    }
     .lab-note {
         color: var(--ink-secondary);
         font-size: 0.9rem;

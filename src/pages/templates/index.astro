@@ -3,7 +3,9 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import ExportBar from '../../components/toolkit/ExportBar.astro';
 import StatusBadge from '../../components/ui/StatusBadge.astro';
+import ResourceIndex from '../../components/resources/ResourceIndex.astro';
 import '../../styles/workbench.css';
+import '../../styles/resource-workspaces.css';
 
 const entries = (await getCollection('templates')).sort((a, b) => a.data.order - b.data.order);
 const templates = await Promise.all(
@@ -40,9 +42,8 @@ const browserState = `{
     title="Ops & engineering templates"
     description="Reusable architecture, operations, planning and technical handover blueprints with Markdown and schema downloads."
 >
-    <div class="page-shell">
-        <header class="page-heading">
-            <p class="section-id">04 / Templates</p>
+    <div class="page-shell resource-shell">
+        <header class="page-heading resource-heading">
             <h1>Ops & engineering templates</h1>
             <p>
                 Use a worked blueprint to agree on invariants, review a scope change or hand an
@@ -50,41 +51,47 @@ const browserState = `{
             </p>
         </header>
         <div
-            class="template-workspace"
+            class="template-workspace resource-workspace"
             x-data={browserState}
             x-init="fromHash()"
             x-on:hashchange.window="fromHash()"
             x-on:popstate.window="fromHash()"
         >
-            <aside class="register">
-                <fieldset x-cloak>
-                    <legend>Category</legend>
-                    <div class="category-pills">
-                        {['', ...categories].map((category) => (
-                            <button
-                                type="button"
-                                aria-pressed={!category ? 'true' : 'false'}
-                                x-bind:aria-pressed={`category === ${JSON.stringify(category)}`}
-                                x-on:click={`filter(${JSON.stringify(category)})`}
+            <aside class="register resource-register">
+                <ResourceIndex
+                    title="Browse templates"
+                    count={entries.length}
+                    id="template-directory"
+                >
+                    <fieldset x-cloak>
+                        <legend>Category</legend>
+                        <div class="category-pills">
+                            {['', ...categories].map((category) => (
+                                <button
+                                    type="button"
+                                    aria-pressed={!category ? 'true' : 'false'}
+                                    x-bind:aria-pressed={`category === ${JSON.stringify(category)}`}
+                                    x-on:click={`filter(${JSON.stringify(category)})`}
+                                >
+                                    {category || 'All'}
+                                </button>
+                            ))}
+                        </div>
+                    </fieldset>
+                    <nav aria-label="Template directory">
+                        {entries.map(({ data }) => (
+                            <a
+                                href={'#' + data.id}
+                                x-show={`!category || category === ${JSON.stringify(data.category)}`}
+                                x-bind:aria-current={`chosen === ${JSON.stringify(data.id)} ? 'true' : null`}
+                                x-on:click={`chosen = ${JSON.stringify(data.id)}`}
                             >
-                                {category || 'All'}
-                            </button>
+                                <span>{data.title}</span>
+                                <small>{data.category}</small>
+                            </a>
                         ))}
-                    </div>
-                </fieldset>
-                <nav aria-label="Template directory">
-                    {entries.map(({ data }) => (
-                        <a
-                            href={'#' + data.id}
-                            x-show={`!category || category === ${JSON.stringify(data.category)}`}
-                            x-bind:aria-current={`chosen === ${JSON.stringify(data.id)} ? 'true' : null`}
-                            x-on:click={`chosen = ${JSON.stringify(data.id)}`}
-                        >
-                            <span>{data.title}</span>
-                            <small>{data.category}</small>
-                        </a>
-                    ))}
-                </nav>
+                    </nav>
+                </ResourceIndex>
             </aside>
             <div class="template-reader">
                 {templates.map(({ entry, Content, schema, raw }) => {
@@ -98,6 +105,7 @@ const browserState = `{
                     return (
                         <article
                             id={data.id}
+                            tabindex="-1"
                             aria-labelledby={data.id + '-title'}
                             x-data={state}
                             x-show={`chosen === ${JSON.stringify(data.id)}`}
@@ -112,6 +120,14 @@ const browserState = `{
                                     <StatusBadge label="Starter blueprint" shape="dashed" />
                                 )}
                             </header>
+                            <ExportBar
+                                id={data.id}
+                                kind="template"
+                                hasJson={Boolean(schema)}
+                                sourcePath={
+                                    entry.filePath ?? 'src/content/templates/' + entry.id + '.md'
+                                }
+                            />
                             <div
                                 class="reader-tabs"
                                 role="tablist"
@@ -167,14 +183,6 @@ const browserState = `{
                                     <pre tabindex="0"><code>{JSON.stringify(schema,null,2)}</code></pre>
                                 </div>
                             )}
-                            <ExportBar
-                                id={data.id}
-                                kind="template"
-                                hasJson={Boolean(schema)}
-                                sourcePath={
-                                    entry.filePath ?? 'src/content/templates/' + entry.id + '.md'
-                                }
-                            />
                         </article>
                     );
                 })}
@@ -197,7 +205,7 @@ const browserState = `{
         border-radius: 4px;
     }
     .register {
-        padding: 1rem;
+        padding: 0;
     }
     .register fieldset {
         margin: 0;

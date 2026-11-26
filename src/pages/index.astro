@@ -1,175 +1,119 @@
 ---
+import { getCollection } from 'astro:content';
 import {
-    ArrowDownRight,
+    ArrowDown,
     ArrowRight,
     ArrowUpRight,
-    Boxes,
+    BookOpen,
     Braces,
     CalendarDays,
     ChartNoAxesCombined,
-    Check,
-    Database,
-    FileStack,
     FlaskConical,
+    Folders,
     GitBranch,
     Layers3,
     Mail,
     Network,
-    ScanLine,
-    Users,
+    Search,
+    Workflow,
 } from 'lucide-react';
 import FeaturedWorkflows from '../components/demos/FeaturedWorkflows';
 import { leaveDesk } from '../components/demos/hr-alpine.js';
 import { kpiCockpit } from '../components/demos/portfolio-alpine.js';
+import SystemExplorer from '../components/home/SystemExplorer.astro';
 import BaseLayout from '../components/layout/BaseLayout.astro';
 import { siteName } from '../data/brand';
 import { skillGuides } from '../data/claude-skills';
+import { labProjects } from '../data/lab';
 import { profile } from '../data/profile';
+import '../styles/home-assembly.css';
 
-const builtPages = import.meta.glob('/src/pages/**/*.{astro,ts}');
-const available = (slug: string) => `/src/pages/${slug}/index.astro` in builtPages;
+const [systems, vault, blueprints, templates] = await Promise.all([
+    getCollection('systems'),
+    getCollection('vault'),
+    getCollection('ai-kit'),
+    getCollection('templates'),
+]);
 const leave = leaveDesk();
-const fullDay = leave.priced;
+const full = leave.priced;
 leave.form.partOfDay = 'am';
 const morning = leave.priced;
-const fullDayQuote = fullDay.hours === null ? '—' : `${fullDay.hours}h`;
-const morningQuote = morning.hours === null ? '—' : `${morning.hours}h`;
 const kpi = kpiCockpit();
 const pooled = kpi.result;
 const pooledRate = kpi.show(pooled.actual);
 kpi.method = 'naive';
-const averageRate = kpi.show(kpi.result.actual);
-
-const systems = [
-    {
-        code: 'SYS-03',
-        key: 'PORTFOLIO TRACKING',
-        slug: '03-portfolio-kpi-engine',
-        title: 'Portfolio Tracking & Funding Analytics',
-        owner: '~80% Primary',
-        scope: 'Primary architect and full-stack builder on a three-developer team. The audit covers the full platform.',
-        stack: ['PHP 8.5', 'Laravel 13', 'MySQL'],
-        metrics: [
-            ['~98', 'Live tables'],
-            ['197', 'Migrations'],
-            ['175', 'Actions'],
-            ['481', 'Test files'],
-        ],
-        nodes: ['Site returns', 'Rollup rules', 'Pooled KPI'],
-        icons: [FileStack, Database, ChartNoAxesCombined],
-        problem:
-            'Sites report on different-sized groups. A simple average can misstate the portfolio result.',
-        evidence:
-            'PHP and SQL pool site numerators and denominators to give each participant equal weight.',
-        demo: {
-            id: 'kpi-cockpit',
-            title: 'KPI cockpit',
-            task: 'Compare portfolio rollups',
-            icon: ChartNoAxesCombined,
-            figures: [
-                ['Pooled ratio', pooledRate],
-                ['Site average', averageRate],
-            ],
-        },
-    },
-    {
-        code: 'SYS-02',
-        key: 'HR LIFECYCLE',
-        slug: '02-hr-lifecycle-crm',
-        title: 'HR Lifecycle Platform',
-        owner: 'Core Pre-RMS',
-        scope: 'Core full-stack contributor and co-architect on a three-developer team. The audit covers the full platform.',
-        stack: ['Laravel 13', 'Livewire 4', 'MySQL'],
-        metrics: [
-            ['136', 'Tables'],
-            ['138', 'Migrations'],
-            ['29', 'Policies'],
-            ['293', 'Test files'],
-        ],
-        nodes: ['Leave request', 'Manager', 'HR review'],
-        icons: [FileStack, Users, Check],
-        problem:
-            'Leave requests need a reliable balance before routing through manager and HR approval.',
-        evidence:
-            'One deterministic leave quote powers previews, reservations, deductions and approval refunds.',
-        demo: {
-            id: 'leave-engine',
-            title: 'Leave approval desk',
-            task: 'Price a leave request',
-            icon: Users,
-            figures: [
-                ['Full days', fullDayQuote],
-                ['Mornings only', morningQuote],
-            ],
-        },
-    },
-];
-const caseHref = (slug: string) => `/systems/${slug}/`;
-const demoHref = (slug: string, demoId: string) => `${caseHref(slug)}#${demoId}`;
-const [tracking, hr] = systems;
+const portfolio = '/systems/03-portfolio-kpi-engine/';
+const hr = '/systems/02-hr-lifecycle-crm/';
 const demos = [
-    { slug: tracking.slug, ...tracking.demo },
-    { slug: hr.slug, ...hr.demo },
     {
-        slug: tracking.slug,
-        id: 'funding-flow',
+        title: 'KPI cockpit',
+        text: 'Compare portfolio rollups',
+        href: portfolio + '#kpi-cockpit',
+        icon: ChartNoAxesCombined,
+    },
+    {
+        title: 'Leave approval desk',
+        text: 'Price and approve a request',
+        href: hr + '#leave-engine',
+        icon: CalendarDays,
+    },
+    {
         title: 'Funding flow',
-        task: 'Trace funding by currency',
+        text: 'Trace funding by currency',
+        href: portfolio + '#funding-flow',
         icon: GitBranch,
     },
     {
-        slug: hr.slug,
-        id: 'attendance-amend',
         title: 'Attendance & contracts',
-        task: 'Review timesheets and signed terms',
-        icon: CalendarDays,
+        text: 'Review timesheets and signed terms',
+        href: hr + '#attendance-amend',
+        icon: Workflow,
     },
 ];
-const directory = [
+const resources = [
     {
         path: 'systems',
         name: 'System sandboxes',
-        count: '06',
-        detail: 'Explore business workflows, architecture and working demos.',
+        count: systems.reduce((sum, item) => sum + item.data.demoIds.length, 0),
+        detail: 'Case studies and working demos',
         icon: Network,
     },
     {
         path: 'vault',
         name: 'Component vault',
-        count: '20',
-        detail: 'Explore four tiers of reusable operational interfaces.',
+        count: vault.length,
+        detail: 'Reusable operational interfaces',
         icon: Layers3,
     },
     {
         path: 'ai-kit',
         name: 'AI engineering toolkit',
-        count: '11',
-        detail: 'Compile and export Gems, skills and workflows.',
+        count: blueprints.length,
+        detail: 'Prompt blueprints and a builder',
         icon: Braces,
     },
     {
         path: 'claude-code-skills',
         name: 'Claude Code skills',
-        count: String(skillGuides.length),
-        detail: 'Find a skill by task, copy its example and check the result.',
-        icon: FileStack,
+        count: skillGuides.length,
+        detail: 'Guides, examples and agent support',
+        icon: BookOpen,
     },
     {
         path: 'templates',
         name: 'Operations templates',
-        count: '05',
-        detail: 'Download architecture, planning and handover documents.',
-        icon: FileStack,
+        count: templates.length,
+        detail: 'Architecture and handover documents',
+        icon: Folders,
     },
     {
         path: 'lab',
         name: 'R&D lab',
-        count: '04',
-        detail: 'Try independent product and interaction prototypes.',
+        count: labProjects.length,
+        detail: 'Independent working prototypes',
         icon: FlaskConical,
     },
 ];
-const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
 ---
 
 <BaseLayout
@@ -183,869 +127,138 @@ const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
             }
         </style>
     </noscript>
-    <div class="workbench">
-        <section class="hero" aria-labelledby="home-title">
-            <div class="intro">
-                <div class="workbench-title">
-                    <span class="workbench-mark" aria-hidden="true"></span> Engineering workbench
-                </div>
-                <h1 id="home-title">{profile.fullName}</h1>
-                <p class="role">{profile.headline}</p>
-                <p class="pitch">{profile.subheadline}</p>
-                <nav class="hero-actions" aria-label="Start exploring">
-                    <a class="action primary" href="#featured-workflows">
-                        Try a workflow{' '}
-                        <ArrowDownRight className="directional-icon" size={16} aria-hidden="true" />
+    <div class="ha-home">
+        <header class="ha-masthead" aria-labelledby="home-title">
+            <div>
+                <p class="ha-byline">
+                    <i aria-hidden="true"></i>
+                    {profile.fullName} <span>/ Engineering portfolio</span>
+                </p>
+                <h1 id="home-title">
+                    Systems at work<span>.</span>
+                </h1>
+            </div>
+            <div class="ha-intro">
+                <p>
+                    I design and build workflow software for portfolio tracking, HR and IT
+                    operations.
+                </p>
+                <nav aria-label="Start exploring">
+                    <a href="#featured-workflows">
+                        Try a workflow <ArrowDown size={15} aria-hidden="true" />
                     </a>
-                    <a class="action secondary" href="/cv/">
-                        Read my CV
+                    <a href="/cv/">
+                        Read my CV <ArrowUpRight size={15} aria-hidden="true" />
                     </a>
-                    {available('vault') && (
-                        <a class="action secondary" href="/vault/">
-                            Browse reusable code
+                </nav>
+            </div>
+        </header>
+
+        <SystemExplorer />
+
+        <section class="ha-workflow-section" aria-labelledby="ha-workflows">
+            <div class="ha-workflow-intro">
+                <h2 id="ha-workflows">
+                    Try a workflow<span>.</span>
+                </h2>
+                <p>
+                    Change an input and watch the calculation update. Open the full demo to trace
+                    the rule behind the result.
+                </p>
+                <nav aria-label="Try a system demo" class="ha-demo-index">
+                    {demos.map(({ title, text, href, icon: Icon }) => (
+                        <a href={href}>
+                            <Icon size={20} strokeWidth={1.6} aria-hidden="true" />
+                            <span>
+                                <b>{title}</b>
+                                <small>{text}</small>
+                            </span>
+                            <ArrowUpRight size={16} aria-hidden="true" />
                         </a>
-                    )}
-                </nav>
-            </div>
-            <div class="featured">
-                <FeaturedWorkflows
-                    tracking={{
-                        title: kpi.current.name,
-                        indicator: kpi.selected,
-                        pooled: {
-                            value: pooledRate,
-                            detail: `${pooled.numerator} of ${pooled.denominator} people across reporting sites`,
-                        },
-                        average: {
-                            value: averageRate,
-                            detail: 'Each reporting site receives equal weight, regardless of size.',
-                        },
-                        exclusions: kpi.exclusionNotes,
-                        href: demoHref(tracking.slug, tracking.demo.id),
-                    }}
-                    hr={{
-                        full: { value: fullDayQuote, days: fullDay.days },
-                        am: { value: morningQuote, days: morning.days },
-                        href: demoHref(hr.slug, hr.demo.id),
-                    }}
-                    client:load
-                />
-            </div>
-            <div class="availability">
-                <span>{profile.availability.badge} · REMOTE / GERMANY RELOCATION</span>
-                <a href={`mailto:${profile.contact.email}`}>
-                    <Mail size={15} aria-hidden="true" /> Get in touch
-                </a>
-            </div>
-        </section>
-        <section class="selected-systems" aria-labelledby="systems-heading">
-            <div class="section-heading system-heading">
-                <h2 id="systems-heading">Selected systems</h2>
-                <span class="heading-rule"></span>
-                {available('systems') && (
-                    <a class="case-link" href="/systems/">
-                        All case studies{' '}
-                        <ArrowRight className="directional-icon" size={15} aria-hidden="true" />
-                    </a>
-                )}
-            </div>
-            {available('systems') && (
-                <nav class="demo-shortcuts" aria-label="Try a system demo">
-                    {demos.map(({ slug, id, title, task, icon: Icon }) => {
-                        return (
-                            <a href={demoHref(slug, id)}>
-                                <span class="demo-symbol">
-                                    <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
-                                </span>
-                                <span>
-                                    <strong>{title}</strong>
-                                    <small>{task}</small>
-                                </span>
-                                <ArrowUpRight
-                                    className="directional-icon demo-arrow"
-                                    size={16}
-                                    aria-hidden="true"
-                                />
-                            </a>
-                        );
-                    })}
-                </nav>
-            )}
-            <div
-                class="switcher"
-                id="architecture"
-                x-data="{
-        active: 0,
-        choose(i, focus) {
-          this.active = i;
-          if (focus) document.getElementById('system-tab-' + i)?.focus();
-        },
-        move(direction) {
-          const forward = getComputedStyle(this.$el).direction === 'rtl' ? -direction : direction;
-          const count = this.$refs.tabs.children.length;
-          this.choose((this.active + forward + count) % count, true);
-        }
-      }"
-            >
-                <div class="switcher-head">
-                    <strong>
-                        <Boxes size={16} aria-hidden="true" />
-                        System architecture
-                    </strong>
-                    <span class="sheet-count">
-                        <span x-text="String(active + 1).padStart(2, '0')">01</span> /{' '}
-                        {String(systems.length).padStart(2, '0')}
-                    </span>
-                </div>
-                <div
-                    class="tabs"
-                    role="tablist"
-                    aria-label="System architecture"
-                    x-ref="tabs"
-                    x-cloak
-                >
-                    {systems.map((sys, i) => (
-                        <button
-                            type="button"
-                            role="tab"
-                            id={`system-tab-${i}`}
-                            aria-controls={`system-panel-${i}`}
-                            aria-selected={i === 0 ? 'true' : 'false'}
-                            tabindex={i === 0 ? 0 : -1}
-                            x-bind:aria-selected={`active === ${i}`}
-                            x-bind:tabindex={`active === ${i} ? 0 : -1`}
-                            x-on:click={`choose(${i}, false)`}
-                            x-on:keydown.right.prevent="move(1)"
-                            x-on:keydown.left.prevent="move(-1)"
-                            x-on:keydown.home.prevent="choose(0, true)"
-                            x-on:keydown.end.prevent={`choose(${systems.length - 1}, true)`}
-                        >
-                            <span>{sys.code}</span> {sys.key}
-                        </button>
                     ))}
-                </div>
-                {systems.map((sys, i) => (
-                    <div
-                        class="panel"
-                        role="tabpanel"
-                        tabindex="0"
-                        id={`system-panel-${i}`}
-                        aria-labelledby={`system-tab-${i}`}
-                        hidden={i !== 0}
-                        x-bind:hidden={`active !== ${i}`}
-                    >
-                        <div class="panel-summary">
-                            <h3>{sys.title}</h3>
-                            <p class="problem">{sys.problem}</p>
-                            <div class="scope">
-                                <span class="ownership">
-                                    <Users size={13} aria-hidden="true" />
-                                    {sys.owner}
-                                </span>
-                                <p>{sys.scope}</p>
-                            </div>
-                            <p class="evidence">{sys.evidence}</p>
-                            {available('systems') ? (
-                                <div class="panel-actions">
-                                    <a
-                                        class="action primary"
-                                        href={demoHref(sys.slug, sys.demo.id)}
-                                    >
-                                        Try demo{' '}
-                                        <ArrowRight
-                                            className="directional-icon"
-                                            size={15}
-                                            aria-hidden="true"
-                                        />
-                                    </a>
-                                    <a class="action secondary" href={caseHref(sys.slug)}>
-                                        Read case study
-                                    </a>
-                                </div>
-                            ) : (
-                                <span class="planned">Case study and two sandboxes planned</span>
-                            )}
+                </nav>
+            </div>
+            <FeaturedWorkflows
+                client:load
+                tracking={{
+                    title: kpi.current.name,
+                    indicator: kpi.selected,
+                    pooled: {
+                        value: pooledRate,
+                        detail: `${pooled.numerator} of ${pooled.denominator} people across reporting sites`,
+                    },
+                    average: {
+                        value: kpi.show(kpi.result.actual),
+                        detail: 'Each reporting site receives equal weight, regardless of size.',
+                    },
+                    exclusions: kpi.exclusionNotes,
+                    href: portfolio + '#kpi-cockpit',
+                }}
+                hr={{
+                    full: { value: full.hours === null ? '—' : full.hours + 'h', days: full.days },
+                    am: {
+                        value: morning.hours === null ? '—' : morning.hours + 'h',
+                        days: morning.days,
+                    },
+                    href: hr + '#leave-engine',
+                }}
+            />
+        </section>
+
+        <section class="ha-library" aria-labelledby="directory-heading">
+            <div class="ha-section-head">
+                <h2 id="directory-heading">
+                    Workbench directory<span>.</span>
+                </h2>
+                <button type="button" data-ask-open aria-haspopup="dialog">
+                    <Search size={16} aria-hidden="true" /> Search {siteName}
+                </button>
+            </div>
+            <div class="ha-resource-list">
+                {resources.map(({ path, name, count, detail, icon: Icon }) => (
+                    <a href={'/' + path + '/'} id={'directory-' + path}>
+                        <div>
+                            <Icon size={22} strokeWidth={1.6} aria-hidden="true" />
+                            <span aria-label={count + ' entries'}>
+                                {String(count).padStart(2, '0')}
+                            </span>
                         </div>
-                        <div class="panel-details">
-                            <div class="diagram" aria-label="Workflow" role="group">
-                                {sys.nodes.map((node, n) => {
-                                    const Icon = sys.icons[n]!;
-                                    return (
-                                        <div class="diagram-node">
-                                            <span class="symbol">
-                                                <Icon
-                                                    size={18}
-                                                    strokeWidth={1.6}
-                                                    aria-hidden="true"
-                                                />
-                                            </span>
-                                            <span>{node}</span>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            <div class="demo-figures" role="group" aria-label="Starting example">
-                                {sys.demo.figures.map(([label, value]) => (
-                                    <p>
-                                        <span>{label}</span> <bdi>{value}</bdi>
-                                    </p>
-                                ))}
-                            </div>
-                            <p class="metric-label">Codebase audit</p>
-                            <dl class="system-metrics">
-                                {sys.metrics.map(([value, label]) => (
-                                    <div>
-                                        <dt>{label}</dt>
-                                        <dd>
-                                            <bdi>{value}</bdi>
-                                        </dd>
-                                    </div>
-                                ))}
-                            </dl>
-                            <div class="stack-tags">
-                                {sys.stack.map((item) => (
-                                    <span>{item}</span>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                        <h3>
+                            {name}
+                            <ArrowUpRight size={19} aria-hidden="true" />
+                        </h3>
+                        <p>{detail}</p>
+                    </a>
                 ))}
             </div>
         </section>
-        <section class="principles" aria-labelledby="pillars-heading">
-            <div class="section-heading">
-                <h2 id="pillars-heading">Engineering principles</h2>
-                <span class="heading-rule"></span>
+
+        <section class="ha-principles" aria-labelledby="pillars-heading">
+            <div class="ha-section-head">
+                <h2 id="pillars-heading">
+                    Engineering principles<span>.</span>
+                </h2>
             </div>
-            <div class="pillar-grid">
-                {profile.pillars.map((pillar, i) => {
-                    const Icon = [GitBranch, ScanLine, Braces][i]!;
-                    return (
-                        <article>
-                            <div class="pillar-icon">
-                                <Icon size={21} strokeWidth={1.6} aria-hidden="true" />
-                                <span>{pillar.index}</span>
-                            </div>
-                            <h3>{pillar.title}</h3>
-                            <p>{pillar.summary}</p>
-                        </article>
-                    );
-                })}
+            <div>
+                {profile.pillars.map((pillar) => (
+                    <details>
+                        <summary>
+                            {pillar.title}
+                            <span aria-hidden="true">+</span>
+                        </summary>
+                        <p>{pillar.summary}</p>
+                    </details>
+                ))}
             </div>
         </section>
-        <section class="directory" aria-labelledby="directory-heading">
-            <div class="section-heading">
-                <h2 id="directory-heading">Workbench directory</h2>
-                <span class="heading-rule"></span>
-                <ArrowDownRight className="directional-icon" size={20} aria-hidden="true" />
-            </div>
-            {askAvailable && (
-                <button class="search-hint" type="button" data-ask-open aria-haspopup="dialog">
-                    <kbd>Ctrl K</kbd> Search {siteName}{' '}
-                    <ArrowRight className="directional-icon" size={12} aria-hidden="true" />
-                </button>
-            )}
-            <div class="directory-list">
-                {directory.map(({ path, name, count, detail, icon: Icon }) => {
-                    const live = available(path);
-                    const Tag = live ? 'a' : 'article';
-                    return (
-                        <Tag
-                            class="directory-row"
-                            id={`directory-${path}`}
-                            href={live ? `/${path}/` : undefined}
-                        >
-                            <Icon size={20} strokeWidth={1.6} aria-hidden="true" />
-                            <h3>
-                                {name} <span aria-label={`${Number(count)} entries`}>{count}</span>
-                            </h3>
-                            <p>{detail}</p>
-                            {live ? (
-                                <ArrowUpRight
-                                    className="directional-icon"
-                                    size={17}
-                                    aria-hidden="true"
-                                />
-                            ) : (
-                                <span class="planned">Planned</span>
-                            )}
-                        </Tag>
-                    );
-                })}
-            </div>
-        </section>
+        <aside class="ha-contact" aria-label="Career and contact">
+            <span>
+                {profile.availability.badge} · {profile.availability.location}
+            </span>
+            <a href={`mailto:${profile.contact.email}`}>
+                <Mail size={15} aria-hidden="true" /> Get in touch{' '}
+                <ArrowRight size={15} aria-hidden="true" />
+            </a>
+        </aside>
     </div>
 </BaseLayout>
-<style>
-    .workbench {
-        max-width: 1440px;
-        padding: 0 clamp(1rem, 4.3vw, 4.5rem);
-        margin: 0 auto;
-    }
-    .workbench-title,
-    .availability > span,
-    .sheet-count,
-    .tabs button,
-    .stack-tags span,
-    .metric-label,
-    .system-metrics dd,
-    .planned,
-    kbd,
-    .directory-row h3 span,
-    .pillar-icon span {
-        font-family: var(--font-mono);
-    }
-    .workbench-title {
-        display: flex;
-        align-items: center;
-        gap: 0.55rem;
-        text-transform: uppercase;
-        letter-spacing: 0.11em;
-        font-size: 0.72rem;
-        font-weight: 600;
-        color: var(--accent-primary);
-    }
-    .workbench-mark {
-        width: 0.56rem;
-        height: 0.56rem;
-        border-radius: 50%;
-        background: currentColor;
-        box-shadow: 0 0 0 0.22rem var(--accent-tint);
-    }
-    .hero {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 0.97fr);
-        grid-template-areas: 'intro feature' 'availability feature';
-        gap: 0.65rem clamp(1.35rem, 4.8vw, 5rem);
-        align-items: center;
-        padding-block: clamp(1.75rem, 5.1vw, 5rem) clamp(1.5rem, 3.2vw, 3rem);
-    }
-    .intro {
-        grid-area: intro;
-        align-self: end;
-    }
-    .featured {
-        grid-area: feature;
-        min-width: 0;
-        position: relative;
-        isolation: isolate;
-    }
-    .featured::before {
-        content: '';
-        position: absolute;
-        z-index: -1;
-        inset: -0.9rem -0.7rem;
-        border-radius: 1.15rem;
-        pointer-events: none;
-        background: radial-gradient(
-                circle,
-                color-mix(in srgb, var(--accent-primary) 25%, transparent) 1px,
-                transparent 1px
-            )
-            0 0 / 13px 13px;
-        mask-image: linear-gradient(118deg, transparent 11%, black 52%, black);
-    }
-    .availability {
-        grid-area: availability;
-        align-self: start;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.1rem 0.85rem;
-        align-items: center;
-        color: var(--ink-secondary);
-    }
-    .availability > span {
-        font-size: 0.66rem;
-        font-weight: 600;
-        letter-spacing: 0.015em;
-    }
-    .availability a {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        min-height: 44px;
-        color: var(--accent-primary);
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-underline-offset: 0.22em;
-    }
-    .availability a:hover {
-        text-decoration: underline;
-    }
-    h1 {
-        margin: 0.8rem 0 0.65rem;
-        max-width: 10ch;
-        font-size: clamp(3.05rem, 7vw, 6.8rem);
-        line-height: 0.99;
-        letter-spacing: -0.075em;
-        font-weight: 700;
-    }
-    .role {
-        margin: 0;
-        font-size: clamp(1.02rem, 1.7vw, 1.52rem);
-        line-height: 1.4;
-        font-weight: 600;
-        letter-spacing: -0.032em;
-    }
-    .pitch {
-        max-width: 50ch;
-        margin: 0.6rem 0 1rem;
-        color: var(--ink-secondary);
-        line-height: 1.65;
-        font-size: clamp(0.86rem, 1.1vw, 1rem);
-    }
-    .hero-actions,
-    .panel-actions,
-    .action,
-    .search-hint,
-    .switcher-head,
-    .switcher-head strong,
-    .case-link,
-    .ownership,
-    .section-heading,
-    .stack-tags,
-    .pillar-icon {
-        display: flex;
-        align-items: center;
-    }
-    .hero-actions,
-    .panel-actions {
-        gap: 0.45rem;
-        flex-wrap: wrap;
-    }
-    .action {
-        gap: 0.55rem;
-        border-radius: 0.4rem;
-        min-height: 44px;
-        padding: 0.55rem 0.75rem;
-        font-size: 0.82rem;
-        font-weight: 700;
-        text-decoration: none;
-    }
-    .primary {
-        border: 1px solid var(--accent-primary);
-        background: var(--accent-primary);
-        color: var(--bg-surface);
-    }
-    .primary:hover {
-        background: var(--accent-hover);
-    }
-    .secondary {
-        border: 1px solid var(--border-strong);
-        background: var(--bg-surface);
-        color: var(--ink-primary);
-    }
-    .secondary:hover {
-        border-color: var(--accent-primary);
-        background: var(--accent-tint);
-    }
-    .search-hint {
-        border: 0;
-        background: transparent;
-        min-height: 44px;
-        padding: 0.4rem 0.15rem;
-        margin-block-end: 0.5rem;
-        color: var(--ink-secondary);
-        font-size: 0.8rem;
-        gap: 0.4rem;
-        cursor: pointer;
-    }
-    kbd {
-        font-size: 0.62rem;
-        border: 1px solid var(--border-strong);
-        border-radius: 2px;
-        padding: 0.07rem 0.22rem;
-    }
-    .selected-systems {
-        margin-block-end: clamp(1.65rem, 4vw, 3.25rem);
-    }
-    .section-heading.system-heading {
-        margin-block-start: 0;
-        flex-wrap: wrap;
-    }
-    .case-link {
-        gap: 0.4rem;
-        min-height: 44px;
-        text-decoration: none;
-        color: var(--accent-primary);
-        font-size: 0.81rem;
-        font-weight: 700;
-    }
-    .case-link:hover {
-        text-decoration: underline;
-    }
-    .demo-shortcuts {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-        gap: 0.65rem;
-        margin-block-end: 1rem;
-    }
-    .demo-shortcuts a {
-        display: grid;
-        grid-template-columns: auto minmax(0, 1fr) auto;
-        gap: 0.75rem;
-        align-items: center;
-        min-height: 60px;
-        padding: 0.7rem 0.75rem;
-        border: 1px solid var(--border-hairline);
-        border-radius: 0.6rem;
-        background: var(--bg-surface);
-    }
-    .demo-shortcuts a:hover {
-        border-color: var(--accent-primary);
-        background: var(--accent-tint);
-    }
-    .demo-shortcuts strong,
-    .demo-shortcuts small {
-        display: block;
-    }
-    .demo-shortcuts strong {
-        font-size: 0.88rem;
-    }
-    .demo-shortcuts small {
-        color: var(--ink-secondary);
-        font-size: 0.73rem;
-    }
-    .demo-symbol {
-        display: grid;
-        place-items: center;
-        width: 2.4rem;
-        height: 2.4rem;
-        border-radius: 0.45rem;
-        background: var(--accent-tint);
-        color: var(--accent-primary);
-    }
-    .demo-arrow {
-        color: var(--accent-primary);
-    }
-    .switcher {
-        border: 1px solid var(--border-hairline);
-        border-radius: 0.7rem;
-        overflow: clip;
-        background: var(--bg-surface);
-    }
-    .switcher-head {
-        justify-content: space-between;
-        border-block-end: 1px solid var(--border-hairline);
-        padding: 0.75rem 1.05rem;
-    }
-    .switcher-head strong {
-        gap: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        font-size: 0.67rem;
-        font-family: var(--font-mono);
-        color: var(--ink-secondary);
-    }
-    .switcher-head :global(svg) {
-        color: var(--accent-primary);
-    }
-    .sheet-count {
-        font-size: 0.62rem;
-        color: var(--ink-secondary);
-    }
-    .tabs {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .tabs button {
-        border: 0;
-        border-radius: 0;
-        border-inline-end: 1px solid var(--border-hairline);
-        border-block-end: 2px solid var(--border-hairline);
-        min-height: 44px;
-        padding: 0.5rem 0.2rem;
-        background: var(--bg-subtle);
-        color: var(--ink-secondary);
-        font-size: clamp(0.63rem, 1.2vw, 0.76rem);
-        cursor: pointer;
-        font-weight: 600;
-        line-height: 1.4;
-    }
-    .tabs button:last-child {
-        border-inline-end: 0;
-    }
-    .tabs button[aria-selected='true'] {
-        color: var(--accent-primary);
-        background: var(--bg-surface);
-        border-block-end: 2px solid var(--accent-primary);
-    }
-    .tabs button:focus-visible {
-        outline-offset: -3px;
-    }
-    .panel {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: clamp(1.1rem, 3vw, 2.5rem);
-        padding: clamp(0.85rem, 2.4vw, 1.75rem);
-    }
-    .panel[hidden] {
-        display: none;
-    }
-    .panel:focus-visible {
-        outline-offset: -3px;
-    }
-    .panel h3 {
-        margin: 0;
-        font-size: clamp(1.2rem, 2.5vw, 1.85rem);
-    }
-    .ownership {
-        gap: 0.3rem;
-        width: fit-content;
-        border-radius: 0.25rem;
-        border: 1px solid var(--border-hairline);
-        padding: 0.2rem 0.45rem;
-        font: 600 0.69rem var(--font-mono);
-        color: var(--ink-secondary);
-        background: var(--bg-subtle);
-    }
-    .scope {
-        margin: 0.85rem 0;
-    }
-    .scope p {
-        margin-block-start: 0.35rem;
-    }
-    .problem,
-    .scope p,
-    .evidence {
-        color: var(--ink-secondary);
-        font-size: 0.85rem;
-        line-height: 1.6;
-    }
-    .problem {
-        margin-block-start: 0.5rem;
-    }
-    .evidence {
-        border-inline-start: 2px solid var(--accent-primary);
-        padding-inline-start: 0.65rem;
-    }
-    .panel-actions {
-        margin-block-start: 0.9rem;
-    }
-    .diagram {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        align-items: start;
-        background: var(--bg-subtle);
-        border: 1px solid var(--border-hairline);
-        border-radius: 0.4rem;
-        margin-block-end: 0.65rem;
-        padding: 0.85rem 0.35rem;
-    }
-    .diagram-node {
-        position: relative;
-        display: grid;
-        justify-items: center;
-        text-align: center;
-        gap: 0.4rem;
-        color: var(--ink-secondary);
-        font: 500 0.6rem var(--font-mono);
-    }
-    .diagram-node:not(:last-child)::after {
-        position: absolute;
-        top: 15px;
-        inset-inline-start: calc(50% + 17px);
-        content: '';
-        width: calc(100% - 34px);
-        border-block-start: 1px solid var(--border-strong);
-    }
-    .symbol {
-        width: 32px;
-        height: 32px;
-        display: grid;
-        place-items: center;
-        border: 1px solid var(--border-strong);
-        border-radius: 3px;
-        background: var(--bg-surface);
-        color: var(--accent-primary);
-    }
-    .stack-tags {
-        flex-wrap: wrap;
-        gap: 0.35rem;
-    }
-    .stack-tags span {
-        font-size: 0.61rem;
-        padding: 0.13rem 0.35rem;
-        border: 1px solid var(--border-hairline);
-        border-radius: 2px;
-    }
-    .demo-figures {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 0.45rem;
-        margin-block: 0.8rem;
-    }
-    .demo-figures p {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.2rem 0.55rem;
-        justify-content: space-between;
-        padding: 0.45rem 0.6rem;
-        background: var(--accent-tint);
-        border-radius: 0.4rem;
-        font-size: 0.75rem;
-        color: var(--accent-primary);
-    }
-    .demo-figures bdi {
-        font: 600 0.88rem var(--font-mono);
-    }
-    .metric-label {
-        color: var(--ink-secondary);
-        font-size: 0.71rem;
-        font-weight: 600;
-        margin-block: 0.7rem 0.35rem;
-    }
-    .system-metrics {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        border-block: 1px solid var(--border-hairline);
-        margin: 0 0 0.75rem;
-        padding-block: 0.55rem;
-    }
-    .system-metrics div {
-        display: flex;
-        flex-direction: column-reverse;
-        gap: 0.1rem;
-        padding-inline-start: 0.55rem;
-        border-inline-start: 1px solid var(--border-hairline);
-    }
-    .system-metrics div:first-child {
-        border-inline-start: 0;
-        padding-inline-start: 0;
-    }
-    .system-metrics dt {
-        font-size: 0.62rem;
-        color: var(--ink-secondary);
-    }
-    .system-metrics dd {
-        margin: 0;
-        line-height: 1.25;
-        font-size: 1.15rem;
-        font-weight: 500;
-        letter-spacing: -0.07em;
-    }
-    .planned {
-        font-size: 0.62rem;
-        color: var(--ink-secondary);
-    }
-    .section-heading {
-        gap: 1rem;
-        margin-block: clamp(2.3rem, 5vw, 4.3rem) 1.15rem;
-    }
-    .section-heading h2 {
-        font-size: clamp(1.5rem, 2.8vw, 2.5rem);
-        margin: 0;
-    }
-    .heading-rule {
-        flex: 1;
-        border-block-start: 1px solid var(--border-strong);
-    }
-    .pillar-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: clamp(0.85rem, 2.5vw, 2.5rem);
-    }
-    .pillar-grid article {
-        border-block-start: 2px solid var(--accent-primary);
-        padding: 1rem 0;
-    }
-    .pillar-icon {
-        color: var(--accent-primary);
-        justify-content: space-between;
-    }
-    .pillar-icon span {
-        color: var(--ink-secondary);
-        font-size: 0.7rem;
-    }
-    .pillar-grid h3 {
-        font-size: clamp(1rem, 1.5vw, 1.25rem);
-        margin: 0.85rem 0 0.5rem;
-    }
-    .pillar-grid p,
-    .directory-row p {
-        color: var(--ink-secondary);
-        font-size: 0.85rem;
-        line-height: 1.6;
-        margin: 0;
-    }
-    .directory-list {
-        border-block-start: 1px solid var(--border-hairline);
-    }
-    .directory-row {
-        color: var(--ink-primary);
-        text-decoration: none;
-        display: grid;
-        grid-template-columns: 1.4rem minmax(12rem, 1fr) minmax(0, 1.5fr) auto;
-        align-items: center;
-        gap: 1rem;
-        padding: 0.95rem 0.7rem;
-        border-block-end: 1px solid var(--border-hairline);
-        scroll-margin-block-start: 6rem;
-    }
-    a.directory-row:hover {
-        background: var(--accent-tint);
-        color: var(--accent-primary);
-    }
-    .directory-row > :global(svg:first-child) {
-        color: var(--accent-primary);
-    }
-    .directory-row h3 {
-        font-size: 0.95rem;
-        margin: 0;
-    }
-    .directory-row h3 span {
-        color: var(--ink-secondary);
-        font-size: 0.67rem;
-        margin-inline-start: 0.22rem;
-    }
-    .directory-row .planned {
-        border: 1px dashed var(--border-strong);
-        border-radius: 2px;
-        padding: 0.1rem 0.3rem;
-    }
-    @media (max-width: 740px) {
-        .hero,
-        .panel {
-            grid-template-columns: minmax(0, 1fr);
-        }
-        .hero {
-            grid-template-areas: 'intro' 'feature' 'availability';
-            row-gap: 1.3rem;
-            align-items: start;
-        }
-        h1 {
-            max-width: 14ch;
-            font-size: clamp(2.05rem, 11.6vw, 4.8rem);
-        }
-        .pillar-grid {
-            grid-template-columns: 1fr;
-            gap: 0.45rem;
-        }
-        .pillar-grid article {
-            padding: 0.85rem 0;
-        }
-        .directory-row {
-            grid-template-columns: 1.25rem 1fr auto;
-            gap: 0.3rem 0.65rem;
-            padding-inline: 0;
-        }
-        .directory-row p {
-            grid-column: 2 / 4;
-            grid-row: 2;
-        }
-        .directory-row > :last-child {
-            grid-column: 3;
-            grid-row: 1;
-        }
-    }
-    @media (prefers-reduced-motion: no-preference) {
-        .action,
-        .demo-shortcuts a,
-        .directory-row {
-            transition:
-                background-color var(--motion-duration) var(--motion-ease),
-                border-color var(--motion-duration) var(--motion-ease);
-        }
-    }
-</style>

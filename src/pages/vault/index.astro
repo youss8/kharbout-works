@@ -2,9 +2,17 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import CodeTabs from '../../components/ui/CodeTabs.astro';
+import { ArrowLeft, ArrowUpRight, Search, SlidersHorizontal } from 'lucide-react';
+import type { ImageMetadata } from 'astro';
 import '../../styles/workbench.css';
+import '../../styles/resource-workspaces.css';
 import { supersededBy } from '../../data/vault-legacy';
 const items = (await getCollection('vault')).sort((a, b) => a.data.order - b.data.order);
+const gallery = [...items].sort((a, b) => b.data.tier - a.data.tier || a.data.order - b.data.order);
+const specimens = import.meta.glob<ImageMetadata>('../../assets/vault-gallery/*.webp', {
+    eager: true,
+    import: 'default',
+});
 const categories = [...new Set(items.map((item) => item.data.category))];
 const tiers = ['T1 Primitives', 'T2 Controls & Guards', 'T3 Workflows', 'T4 Flagship Engines'];
 const sources = [
@@ -16,97 +24,151 @@ const sources = [
 ---
 
 <BaseLayout title="Dual-stack component vault">
-    <div class="page-shell">
-        <header class="page-heading">
-            <p class="section-id">02 / Vault</p>
+    <div class="page-shell resource-shell">
+        <header class="page-heading resource-heading">
             <h1>Component vault</h1>
             <p>
-                Explore 20 kits curated from 97 source components across Project Tracking (44), IT
-                Helpdesk (28) and HR Core (25).
+                Explore {items.length} working kits distilled from 97 components across IT, HR and
+                portfolio tracking. Open a kit to try it and inspect its Alpine, React or Livewire
+                source.
             </p>
         </header>
-        <component-vault data-aliases={JSON.stringify(supersededBy)}>
-            <aside class="vault-register">
-                <div class="vault-filters" hidden>
-                    <label>
-                        Search patterns
-                        <input type="search" placeholder="Name, behavior or system" />
-                    </label>
-                    <fieldset>
-                        <legend>Complexity tier</legend>
-                        <div class="pills">
-                            {['All', ...tiers].map((label, i) => (
-                                <button
-                                    type="button"
-                                    data-tier-filter={i ? String(i) : ''}
-                                    aria-pressed={!i ? 'true' : 'false'}
-                                >
-                                    {label}
-                                </button>
-                            ))}
-                        </div>
-                    </fieldset>
-                    <label>
-                        Source system
-                        <select data-source-filter>
-                            <option value="">All sources</option>
-                            {sources.map(([key, label]) => (
-                                <option value={key}>{label}</option>
-                            ))}
-                        </select>
-                    </label>
-                    <fieldset>
-                        <legend>Category</legend>
-                        <div class="pills">
-                            {['', ...categories].map((category) => (
-                                <button
-                                    type="button"
-                                    data-category-filter={category}
-                                    aria-pressed={category === '' ? 'true' : 'false'}
-                                >
-                                    {category || 'All'}
-                                </button>
-                            ))}
-                        </div>
-                    </fieldset>
-                </div>
-                <nav aria-label="Component patterns">
-                    {items.map((item) => (
-                        <a
-                            href={'#' + item.id}
-                            data-id={item.id}
-                            data-tier={item.data.tier}
-                            data-sources={item.data.sourceSystems.join(' ')}
-                            data-category={item.data.category}
-                            data-keywords={[
-                                item.id,
-                                item.data.title,
-                                item.data.category,
-                                item.data.sourceSystem,
-                                item.data.summary,
-                                ...item.data.sourceIds,
-                                ...item.data.interactionSpecs,
-                            ]
-                                .join(' ')
-                                .toLowerCase()}
+        <component-vault class="resource-workspace" data-aliases={JSON.stringify(supersededBy)}>
+            <section class="vault-gallery" aria-label="Kit gallery">
+                <div class="gallery-tools" hidden>
+                    <div class="query-row">
+                        <label class="catalogue-query">
+                            <span class="sr-only">Search patterns</span>
+                            <Search size={21} aria-hidden="true" />
+                            <input
+                                type="search"
+                                placeholder="Search kits by name, behavior or source ID"
+                            />
+                        </label>
+                        <button
+                            type="button"
+                            data-refine
+                            aria-expanded="false"
+                            aria-controls="vault-refinements"
                         >
-                            <span>{item.data.title}</span>
-                            <small>
-                                T{item.data.tier} · {item.data.sourceSystem}
-                            </small>
-                        </a>
-                    ))}
+                            <SlidersHorizontal size={17} aria-hidden="true" /> Filters{' '}
+                            <span data-filter-count></span>
+                        </button>
+                    </div>
+                    <div class="refinements" id="vault-refinements" hidden>
+                        <label>
+                            Source system{' '}
+                            <select data-source-filter>
+                                <option value="">All sources</option>
+                                {sources.map(([key, label]) => (
+                                    <option value={key}>{label}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label>
+                            Category{' '}
+                            <select data-category-filter>
+                                <option value="">All categories</option>
+                                {categories.map((category) => (
+                                    <option value={category}>{category}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label>
+                            Show first{' '}
+                            <select data-sort>
+                                <option value="">Flagship kits</option>
+                                <option value="catalogue">Catalogue order</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="shelf">
+                        <fieldset>
+                            <legend class="sr-only">Complexity tier</legend>
+                            <div class="tier-list">
+                                {['All kits', ...tiers].map((label, i) => (
+                                    <button
+                                        type="button"
+                                        data-tier-filter={i ? String(i) : ''}
+                                        aria-pressed={!i ? 'true' : 'false'}
+                                    >
+                                        {label}
+                                    </button>
+                                ))}
+                            </div>
+                        </fieldset>
+                        <p role="status" data-results>
+                            {items.length} kits
+                        </p>
+                    </div>
+                </div>
+                <nav class="kit-gallery" aria-label="Component patterns">
+                    {gallery.map((item, index) => {
+                        const image = specimens['../../assets/vault-gallery/' + item.id + '.webp'];
+                        return (
+                            <a
+                                href={'#' + item.id}
+                                data-id={item.id}
+                                data-order={item.data.order}
+                                data-tier={item.data.tier}
+                                data-sources={item.data.sourceSystems.join(' ')}
+                                data-category={item.data.category}
+                                data-keywords={[
+                                    item.id,
+                                    item.data.title,
+                                    item.data.category,
+                                    item.data.sourceSystem,
+                                    item.data.summary,
+                                    ...item.data.sourceIds,
+                                    ...item.data.interactionSpecs,
+                                ]
+                                    .join(' ')
+                                    .toLowerCase()}
+                            >
+                                <div
+                                    class="kit-plate"
+                                    data-hue={item.data.order % 4}
+                                    aria-hidden="true"
+                                >
+                                    {image && (
+                                        <img
+                                            src={image.src}
+                                            width={image.width}
+                                            height={image.height}
+                                            loading={index < 3 ? 'eager' : 'lazy'}
+                                            alt=""
+                                        />
+                                    )}
+                                </div>
+                                <div class="kit-caption">
+                                    <small>
+                                        T{item.data.tier} / {item.data.category}
+                                    </small>
+                                    <strong>{item.data.title}</strong>
+                                    <ArrowUpRight
+                                        className="kit-arrow"
+                                        size={19}
+                                        aria-hidden="true"
+                                    />
+                                </div>
+                            </a>
+                        );
+                    })}
                 </nav>
-            </aside>
-            <div class="vault-detail">
-                <p role="status" class="empty" hidden>
+                <p class="empty" hidden>
                     No matching patterns.{' '}
                     <button type="button" data-clear>
                         Clear filters
                     </button>
                 </p>
+            </section>
+            <div class="vault-detail">
+                <a class="return-to-gallery" href="/vault/" data-browse>
+                    <ArrowLeft className="directional-icon" size={17} aria-hidden="true" />
+                    Back to kit gallery
+                </a>
                 {items.map((item) => (
-                    <article id={item.id}>
+                    <article id={item.id} tabindex="-1">
                         <p class="section-id">
                             T{item.data.tier} / {item.data.sourceSystem} / {item.data.category}
                         </p>
@@ -142,132 +204,173 @@ const sources = [
 <script>
     class ComponentVault extends HTMLElement {
         connectedCallback() {
-            const links = [...this.querySelectorAll<HTMLAnchorElement>('nav a')];
-            const articles = [...this.querySelectorAll<HTMLElement>('.vault-detail article')];
-            const query = this.querySelector('input')!;
-            const pills = [...this.querySelectorAll<HTMLButtonElement>('[data-category-filter]')];
-            const tiers = [...this.querySelectorAll<HTMLButtonElement>('[data-tier-filter]')];
-            const source = this.querySelector<HTMLSelectElement>('[data-source-filter]')!;
+            const gallery = this.querySelector<HTMLElement>('.vault-gallery')!;
+            const detail = this.querySelector<HTMLElement>('.vault-detail')!;
+            const nav = gallery.querySelector('nav')!;
+            const links = [...nav.querySelectorAll<HTMLAnchorElement>('a[data-id]')];
+            const articles = [...detail.querySelectorAll<HTMLElement>('article[id]')];
+            const browse = detail.querySelector<HTMLAnchorElement>('[data-browse]')!;
+            const tools = gallery.querySelector<HTMLElement>('.gallery-tools')!;
+            const query = tools.querySelector('input')!;
+            const source = tools.querySelector<HTMLSelectElement>('[data-source-filter]')!;
+            const category = tools.querySelector<HTMLSelectElement>('[data-category-filter]')!;
+            const sort = tools.querySelector<HTMLSelectElement>('[data-sort]')!;
+            const tiers = [...tools.querySelectorAll<HTMLButtonElement>('[data-tier-filter]')];
+            const refine = tools.querySelector<HTMLButtonElement>('[data-refine]')!;
+            const refinements = tools.querySelector<HTMLElement>('#vault-refinements')!;
+            const results = tools.querySelector<HTMLElement>('[data-results]')!;
+            const empty = gallery.querySelector<HTMLElement>('.empty')!;
             const aliases: Record<string, string> = JSON.parse(this.dataset.aliases!);
-            type Filters = { query: string; category: string; tier: string; source: string };
-            let category = '',
-                tier = '';
-            const empty = this.querySelector<HTMLElement>('.empty')!;
-            const filters = this.querySelector<HTMLElement>('.vault-filters')!;
-            const currentFilters = (): Filters => ({
-                query: query.value,
-                category,
-                tier,
-                source: source.value,
-            });
-            const restoreFilters = (saved?: Filters) => {
-                query.value = saved?.query ?? '';
-                category = saved?.category ?? '';
-                tier = saved?.tier ?? '';
-                source.value = saved?.source ?? '';
-            };
-            const select = (id: string) => {
-                links.forEach((link) => {
-                    if (link.dataset.id === id) link.setAttribute('aria-current', 'true');
-                    else link.removeAttribute('aria-current');
-                });
-                articles.forEach((article) => {
-                    article.hidden = article.id !== id;
-                    if (!article.hidden) {
-                        article.querySelector<HTMLElement>('.interactive')!.hidden = false;
-                        article
-                            .querySelector('vault-frame')
-                            ?.dispatchEvent(new Event('activate-preview'));
-                    }
-                });
-                empty.hidden = Boolean(id);
-            };
-            const filter = (preferred: string) => {
-                pills.forEach((pill) =>
-                    pill.setAttribute(
-                        'aria-pressed',
-                        String(pill.dataset.categoryFilter === category),
-                    ),
-                );
-                tiers.forEach((pill) =>
-                    pill.setAttribute('aria-pressed', String(pill.dataset.tierFilter === tier)),
-                );
-                links.forEach((link) => {
-                    link.hidden =
-                        !!(category && link.dataset.category !== category) ||
-                        !!(tier && link.dataset.tier !== tier) ||
-                        !!(
-                            source.value && !link.dataset.sources!.split(' ').includes(source.value)
-                        ) ||
-                        !link.dataset.keywords!.includes(query.value.trim().toLowerCase());
-                });
-                const match =
-                    links.find((link) => !link.hidden && link.dataset.id === preferred) ??
-                    links.find((link) => !link.hidden);
-                return match?.dataset.id ?? '';
-            };
-            const save = (id: string, push: boolean) => {
+            let tier = '',
+                lastOrder = '',
+                active = '';
+
+            const urlFor = (id: string) => {
                 const url = new URL(location.href);
                 url.hash = id;
-                const state = {
-                    ...history.state,
-                    vault: { hash: url.hash, filters: currentFilters() },
-                };
-                if (push && url.hash !== location.hash) history.pushState(state, '', url);
-                else history.replaceState(state, '', url);
+                for (const [key, value] of [
+                    ['q', query.value],
+                    ['source', source.value],
+                    ['category', category.value],
+                    ['tier', tier],
+                    ['order', sort.value],
+                ]) {
+                    if (value) url.searchParams.set(key, value);
+                    else url.searchParams.delete(key);
+                }
+                return url;
             };
-            const fromURL = () => {
-                const hash = location.hash.slice(1);
-                const state = history.state?.vault;
-                restoreFilters(state?.hash === location.hash ? state.filters : undefined);
-                select(filter(aliases[hash] ?? hash));
+            const updateURL = (id: string, push: boolean) => {
+                const url = urlFor(id);
+                if (url.href === location.href) return;
+                if (push) history.pushState(null, '', url);
+                else history.replaceState(null, '', url);
             };
-            const filterChanged = () => {
-                const hash = location.hash.slice(1);
-                const id = filter(aliases[hash] ?? hash);
-                save(id, true);
-                select(id);
+            const filter = () => {
+                const words = query.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+                let count = 0;
+                for (const link of links) {
+                    link.hidden = Boolean(
+                        (tier && link.dataset.tier !== tier) ||
+                        (category.value && link.dataset.category !== category.value) ||
+                        (source.value &&
+                            !link.dataset.sources!.split(' ').includes(source.value)) ||
+                        words.some((word) => !link.dataset.keywords!.includes(word)),
+                    );
+                    if (!link.hidden) count++;
+                }
+                if (lastOrder !== sort.value) {
+                    const sequence =
+                        sort.value === 'catalogue'
+                            ? [...links].sort(
+                                  (a, b) => Number(a.dataset.order) - Number(b.dataset.order),
+                              )
+                            : links;
+                    nav.append(...sequence);
+                    lastOrder = sort.value;
+                }
+                tiers.forEach((button) =>
+                    button.setAttribute('aria-pressed', String(button.dataset.tierFilter === tier)),
+                );
+                empty.hidden = count !== 0;
+                results.textContent = count + (count === 1 ? ' kit' : ' kits');
+                const refinementsUsed = [source.value, category.value, sort.value].filter(
+                    Boolean,
+                ).length;
+                refine.querySelector('span')!.textContent = refinementsUsed
+                    ? String(refinementsUsed)
+                    : '';
             };
-            query.addEventListener('input', filterChanged);
-            pills.forEach((pill) =>
-                pill.addEventListener('click', () => {
-                    category = pill.dataset.categoryFilter!;
-                    filterChanged();
+            const show = (id: string, focus = false) => {
+                const previous = active;
+                const article = articles.find((item) => item.id === id);
+                active = article?.id ?? '';
+                this.dataset.view = active ? 'kit' : 'gallery';
+                gallery.hidden = Boolean(active);
+                detail.hidden = !active;
+                for (const entry of articles) entry.hidden = entry !== article;
+                if (article) {
+                    article.querySelector<HTMLElement>('.interactive')!.hidden = false;
+                    article
+                        .querySelector('vault-frame')
+                        ?.dispatchEvent(new Event('activate-preview'));
+                    browse.href = urlFor('').href;
+                    if (focus) {
+                        article.focus({ preventScroll: true });
+                        detail.scrollIntoView({ block: 'start' });
+                    }
+                } else if (focus && previous) {
+                    (
+                        links.find((link) => link.dataset.id === previous && !link.hidden) ?? query
+                    ).focus();
+                }
+            };
+            const restore = (focus = false) => {
+                const url = new URL(location.href);
+                const legacy = history.state?.vault;
+                const saved = legacy?.hash === url.hash ? legacy.filters : undefined;
+                query.value = url.searchParams.get('q') ?? saved?.query ?? '';
+                source.value = url.searchParams.get('source') ?? saved?.source ?? '';
+                category.value = url.searchParams.get('category') ?? saved?.category ?? '';
+                sort.value = url.searchParams.get('order') === 'catalogue' ? 'catalogue' : '';
+                if (source.value || category.value || sort.value) {
+                    refinements.hidden = false;
+                    refine.setAttribute('aria-expanded', 'true');
+                }
+                const requestedTier = url.searchParams.get('tier') ?? saved?.tier ?? '';
+                tier = tiers.some((button) => button.dataset.tierFilter === requestedTier)
+                    ? requestedTier
+                    : '';
+                filter();
+                const hash = url.hash.slice(1);
+                show(aliases[hash] ?? hash, focus);
+            };
+            const filtersChanged = (push: boolean) => {
+                filter();
+                updateURL('', push);
+            };
+            query.addEventListener('input', () => filtersChanged(false));
+            [source, category, sort].forEach((select) =>
+                select.addEventListener('change', () => filtersChanged(true)),
+            );
+            tiers.forEach((button) =>
+                button.addEventListener('click', () => {
+                    tier = button.dataset.tierFilter!;
+                    filtersChanged(true);
                 }),
             );
-            tiers.forEach((pill) =>
-                pill.addEventListener('click', () => {
-                    tier = pill.dataset.tierFilter!;
-                    filterChanged();
-                }),
-            );
-            source.addEventListener('change', filterChanged);
-            this.querySelector('[data-clear]')!.addEventListener('click', () => {
-                restoreFilters();
-                filterChanged();
+            refine.addEventListener('click', () => {
+                refinements.hidden = !refinements.hidden;
+                refine.setAttribute('aria-expanded', String(!refinements.hidden));
+            });
+            gallery.querySelector('[data-clear]')!.addEventListener('click', () => {
+                query.value = source.value = category.value = tier = '';
+                filtersChanged(true);
                 query.focus();
             });
-            window.addEventListener('popstate', fromURL);
-            window.addEventListener('hashchange', fromURL);
-            links.forEach((link) =>
-                link.addEventListener('click', (event) => {
-                    if (
-                        event.button !== 0 ||
-                        event.altKey ||
-                        event.ctrlKey ||
-                        event.metaKey ||
-                        event.shiftKey
-                    )
-                        return;
-                    event.preventDefault();
-                    save(link.dataset.id!, true);
-                    select(link.dataset.id!);
-                    if (matchMedia('(max-width: 760px)').matches)
-                        document.getElementById(link.dataset.id!)?.scrollIntoView();
-                }),
-            );
-            fromURL();
-            filters.hidden = false;
+            this.addEventListener('click', (event) => {
+                const link =
+                    event.target instanceof Element
+                        ? event.target.closest<HTMLAnchorElement>('a[data-id],a[data-browse]')
+                        : null;
+                if (
+                    !link ||
+                    event.button ||
+                    event.altKey ||
+                    event.ctrlKey ||
+                    event.metaKey ||
+                    event.shiftKey
+                )
+                    return;
+                event.preventDefault();
+                const id = link.dataset.id ?? '';
+                updateURL(id, true);
+                show(id, true);
+            });
+            window.addEventListener('popstate', () => restore(true));
+            window.addEventListener('hashchange', () => restore());
+            restore();
+            tools.hidden = false;
             this.dataset.enhanced = 'true';
         }
     }
@@ -275,79 +378,302 @@ const sources = [
 </script>
 <style>
     component-vault {
-        display: grid;
-        grid-template-columns: minmax(14rem, 19rem) minmax(0, 1fr);
-        gap: clamp(1rem, 3vw, 2.5rem);
-    }
-    .vault-register {
-        align-self: start;
-        border: 1px solid var(--border-hairline);
-        background: var(--bg-surface);
-        padding: 1rem;
-        border-block-start: 3px solid var(--accent-primary);
-    }
-    label {
-        display: grid;
-        gap: 0.25rem;
-        margin-block-end: 0.75rem;
-        font-size: 0.84rem;
-        font-weight: 600;
-    }
-    input,
-    select {
-        width: 100%;
-        background: var(--bg-canvas);
-        border: 1px solid var(--border-strong);
-        padding: 0.5rem;
-        border-radius: 3px;
-    }
-    fieldset {
-        margin: 0.6rem 0 1rem;
-    }
-    legend {
-        font-weight: 600;
-        font-size: 0.84rem;
-    }
-    .pills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.28rem;
-        margin-block-start: 0.35rem;
-    }
-    .pills button {
-        border: 1px solid var(--border-hairline);
-        padding: 0.25rem 0.45rem;
-        font-size: 0.75rem;
-        border-radius: 3px;
-    }
-    .pills button[aria-pressed='true'] {
-        border-color: var(--accent-primary);
-        background: var(--accent-tint);
-        color: var(--accent-primary);
-    }
-    nav {
-        display: grid;
-    }
-    nav a {
-        padding: 0.65rem 0.5rem;
-        border-block-start: 1px solid var(--border-hairline);
-        font-size: 0.9rem;
-        line-height: 1.3;
-        font-weight: 600;
-    }
-    nav a[aria-current] {
-        border-inline-start: 3px solid var(--accent-primary);
-        background: var(--accent-tint);
-        color: var(--accent-primary);
-    }
-    small {
         display: block;
-        font: 0.68rem var(--font-mono);
-        color: var(--ink-secondary);
-        margin-block-start: 0.25rem;
     }
     .vault-detail {
-        min-width: 0;
+        min-inline-size: 0;
+        scroll-margin-block-start: 5.5rem;
+    }
+    .gallery-tools {
+        margin-block-end: 1.4rem;
+    }
+    .query-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.7rem;
+        align-items: stretch;
+    }
+    .catalogue-query {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding-inline: 1rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+    }
+    .catalogue-query:focus-within {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 2px;
+    }
+    .catalogue-query :global(svg) {
+        color: var(--accent-primary);
+    }
+    .catalogue-query input {
+        min-block-size: 52px;
+        inline-size: 100%;
+        min-inline-size: 0;
+        outline: none;
+        background: transparent;
+        font-size: 1rem;
+    }
+    [data-refine],
+    .return-to-gallery {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
+        min-block-size: 48px;
+        padding: 0.6rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 650;
+    }
+    [data-refine] {
+        background: var(--assembly-ink);
+        color: white;
+    }
+    [data-refine] :global(svg),
+    [data-refine] span {
+        color: var(--assembly-lime);
+    }
+    [data-refine] span:empty {
+        display: none;
+    }
+    .refinements {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.8rem;
+        padding: 1rem;
+        margin-block-start: 0.55rem;
+        background: var(--bg-subtle);
+    }
+    .refinements label {
+        display: grid;
+        min-inline-size: 0;
+        gap: 0.3rem;
+        font-size: 0.83rem;
+        font-weight: 650;
+    }
+    .refinements select {
+        max-inline-size: 100%;
+        min-inline-size: 0;
+        min-block-size: 44px;
+        border: 1px solid var(--border-strong);
+        padding-inline: 0.6rem;
+        color: var(--ink-primary);
+        background: var(--bg-surface);
+    }
+    .shelf {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.5rem 1rem;
+        padding-block: 0.8rem;
+        border-block-end: 1px solid var(--border-strong);
+    }
+    .shelf fieldset {
+        min-inline-size: 0;
+    }
+    .tier-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+    }
+    .tier-list button {
+        border: 1px solid transparent;
+        padding: 0.55rem 0.75rem;
+        min-block-size: 44px;
+        line-height: 1.25;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .tier-list button[aria-pressed='true'] {
+        color: var(--accent-primary);
+        background: var(--accent-tint);
+        border-color: var(--accent-primary);
+    }
+    .tier-list button:hover {
+        text-decoration: underline;
+        text-underline-offset: 0.18em;
+    }
+    [data-results] {
+        color: var(--ink-secondary);
+        font: 0.8rem/1.5 var(--font-mono);
+    }
+    .kit-gallery {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: stretch;
+        gap: clamp(0.8rem, 1.7vw, 1.6rem);
+    }
+    .kit-gallery a {
+        display: flex;
+        flex-direction: column;
+        min-inline-size: 0;
+        text-decoration: none;
+        color: var(--ink-primary);
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    .kit-gallery a:hover,
+    .kit-gallery a:focus-visible {
+        border-color: var(--accent-primary);
+    }
+    .kit-gallery a:hover strong,
+    .kit-gallery a:focus-visible strong {
+        color: var(--accent-primary);
+    }
+    .kit-plate {
+        display: grid;
+        place-items: center;
+        position: relative;
+        overflow: hidden;
+        block-size: clamp(8rem, 13vw, 12.5rem);
+        padding: 1.2rem;
+        background-color: #dce4fa;
+    }
+    .kit-plate[data-hue='1'] {
+        background-color: #19399d;
+    }
+    .kit-plate[data-hue='2'] {
+        background-color: #d4e3af;
+    }
+    .kit-plate[data-hue='3'] {
+        background-color: #252f3c;
+    }
+    .kit-plate img {
+        display: block;
+        max-block-size: 100%;
+        inline-size: auto;
+        block-size: auto;
+        max-inline-size: 100%;
+        min-block-size: 0;
+        object-fit: contain;
+        outline: 1px solid rgb(15 22 35 / 18%);
+        box-shadow: 0 7px 18px rgb(15 22 35 / 12%);
+    }
+    .kit-caption {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
+        gap: 0.45rem 0.65rem;
+        padding: clamp(0.85rem, 1.4vw, 1.3rem);
+    }
+    .kit-caption strong {
+        font: 690 clamp(1.1rem, 1.55vw, 1.65rem)/1.12 var(--font-display);
+        letter-spacing: -0.04em;
+    }
+    .kit-caption small {
+        grid-column: 1/-1;
+        font: 0.69rem/1.45 var(--font-mono);
+        color: var(--ink-secondary);
+    }
+    .kit-caption :global(.kit-arrow) {
+        color: var(--accent-primary);
+    }
+    .return-to-gallery {
+        color: var(--accent-primary);
+        margin-block-end: 0.6rem;
+        padding-inline: 0;
+    }
+    component-vault:not([data-enhanced]) .vault-detail article:not(:target) {
+        display: none;
+    }
+    component-vault:not([data-enhanced])
+        .vault-detail:not(:has(article:target))
+        .return-to-gallery {
+        display: none;
+    }
+    .resource-shell:has([data-view='kit']) .resource-heading {
+        border: 0;
+        margin-block-end: 0.35rem;
+        padding: 0;
+    }
+    .resource-shell:has([data-view='kit']) .resource-heading h1 {
+        font-size: 1.35rem;
+        letter-spacing: -0.035em;
+    }
+    .resource-shell:has([data-view='kit']) .resource-heading p {
+        display: none;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .kit-plate img {
+            transition: transform 180ms var(--motion-ease);
+        }
+        .kit-gallery a:is(:hover, :focus-visible) img {
+            transform: translateY(-3px);
+        }
+    }
+    @media (max-width: 1000px) {
+        .kit-gallery {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+    @media (max-width: 600px) {
+        .kit-gallery {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .kit-gallery a {
+            display: grid;
+            grid-template-columns: minmax(6.5rem, 0.65fr) minmax(0, 1.35fr);
+        }
+        .kit-plate {
+            display: flex;
+            align-items: center;
+            block-size: 100%;
+            min-block-size: 6.75rem;
+            padding: 0.45rem;
+        }
+        .kit-plate img {
+            flex: none;
+            inline-size: 13rem;
+            max-inline-size: none;
+            max-block-size: 5.4rem;
+            object-fit: cover;
+            object-position: left top;
+        }
+        .kit-caption {
+            gap: 0.35rem;
+            padding: 0.75rem;
+            align-content: center;
+        }
+        .kit-caption strong {
+            font-size: 1.12rem;
+        }
+        .kit-caption :global(.kit-arrow) {
+            display: none;
+        }
+        .kit-caption small {
+            font-size: 0.66rem;
+        }
+        .query-row {
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 0.4rem;
+        }
+        .catalogue-query {
+            padding-inline: 0.55rem;
+            gap: 0.4rem;
+        }
+        .catalogue-query input {
+            font-size: 0.87rem;
+        }
+        [data-refine] {
+            font-size: 0.84rem;
+            padding: 0.45rem 0.65rem;
+        }
+        .tier-list {
+            gap: 0.15rem;
+        }
+        .tier-list button {
+            padding: 0.38rem 0.45rem;
+            font-size: 0.79rem;
+        }
+        .refinements {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .shelf {
+            padding-block: 0.55rem;
+        }
     }
     .static-source {
         display: flex;
@@ -402,14 +728,5 @@ const sources = [
     [data-clear] {
         text-decoration: underline;
         color: var(--accent-primary);
-    }
-    @media (max-width: 760px) {
-        component-vault {
-            grid-template-columns: 1fr;
-        }
-        nav {
-            max-height: 15rem;
-            overflow: auto;
-        }
     }
 </style>

@@ -1,0 +1,171 @@
+---
+import { ArrowUpRight } from 'lucide-react';
+
+interface Props {
+    label: string;
+    items: { id: string; label: string; context?: string }[];
+}
+
+const { items, label } = Astro.props;
+---
+
+<workbench-picker>
+    <nav class="picker-list" aria-label={label}>
+        <h2>{label}</h2>
+        {items.map((item) => (
+            <a href={`#${item.id}`} data-picker-link>
+                <span>
+                    {item.context && <small>{item.context}</small>}
+                    <strong>{item.label}</strong>
+                </span>
+                <ArrowUpRight size={19} aria-hidden="true" className="directional-icon" />
+            </a>
+        ))}
+    </nav>
+    <div class="picker-panels">
+        <slot />
+    </div>
+</workbench-picker>
+
+<script>
+    class WorkbenchPicker extends HTMLElement {
+        connectedCallback() {
+            const links = Array.from(
+                this.querySelectorAll<HTMLAnchorElement>('[data-picker-link]'),
+            );
+            const panels = Array.from(this.querySelectorAll<HTMLElement>('[data-picker-panel]'));
+            const select = (target: string) => {
+                const element = document.getElementById(target);
+                const panel = panels.find(
+                    (item) => item === element || (element && item.contains(element)),
+                );
+                if (!panel) return false;
+                panels.forEach((item) => {
+                    item.hidden = item !== panel;
+                });
+                links.forEach((link) => {
+                    if (link.hash.slice(1) === panel.id)
+                        link.setAttribute('aria-current', 'location');
+                    else link.removeAttribute('aria-current');
+                });
+                return true;
+            };
+            const followLocation = () => {
+                const id = location.hash.slice(1);
+                if (id && select(id)) return;
+                if (!id && panels[0]) select(panels[0].id);
+            };
+            if (panels[0]) select(panels[0].id);
+            followLocation();
+            this.addEventListener('click', (event) => {
+                if (
+                    event.defaultPrevented ||
+                    event.button ||
+                    event.ctrlKey ||
+                    event.metaKey ||
+                    event.shiftKey ||
+                    event.altKey
+                )
+                    return;
+                const link =
+                    event.target instanceof Element
+                        ? event.target.closest<HTMLAnchorElement>('[data-picker-link]')
+                        : null;
+                if (link) select(link.hash.slice(1));
+            });
+            window.addEventListener('hashchange', followLocation);
+            this.dataset.ready = '';
+        }
+    }
+    if (!customElements.get('workbench-picker'))
+        customElements.define('workbench-picker', WorkbenchPicker);
+</script>
+
+<style>
+    workbench-picker {
+        display: grid;
+        grid-template-columns: minmax(13rem, 0.85fr) minmax(0, 2fr);
+        gap: clamp(1rem, 3.6vw, 3.6rem);
+        align-items: start;
+    }
+    .picker-list {
+        display: grid;
+        position: sticky;
+        inset-block-start: 6rem;
+    }
+    .picker-list h2 {
+        font: 600 0.78rem/1.4 var(--font-mono);
+        color: var(--ink-secondary);
+        padding-block: 0.1rem 0.8rem;
+    }
+    .picker-list a {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        min-height: 52px;
+        padding: 0.9rem 0.95rem;
+        color: var(--ink-primary);
+        border: 1px solid var(--border-hairline);
+        margin-block-start: -1px;
+        text-decoration: none;
+        background: var(--bg-surface);
+    }
+    .picker-list a small {
+        display: block;
+        font: 500 0.7rem/1.4 var(--font-mono);
+        color: var(--ink-muted);
+        margin-bottom: 0.2rem;
+    }
+    .picker-list a strong {
+        font: 650 1rem/1.25 var(--font-display);
+    }
+    .picker-list a[aria-current] {
+        background: var(--assembly-blue);
+        color: white;
+        border-color: var(--assembly-blue);
+        position: relative;
+    }
+    .picker-list a[aria-current] small {
+        color: #edf3ff;
+    }
+    .picker-list a[aria-current] :global(svg) {
+        color: var(--assembly-lime);
+    }
+    .picker-list a:hover:not([aria-current]) {
+        background: var(--accent-tint);
+    }
+    .picker-panels {
+        min-inline-size: 0;
+    }
+    workbench-picker[data-ready] .picker-panels :global([data-picker-panel]:not([hidden])) {
+        animation: panel-enter 170ms ease-out;
+    }
+    @keyframes panel-enter {
+        from {
+            opacity: 0.82;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+    @media (max-width: 760px) {
+        workbench-picker {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1.35rem;
+        }
+        .picker-list {
+            position: static;
+        }
+        .picker-list a {
+            padding: 0.62rem 0.78rem;
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        workbench-picker[data-ready] .picker-panels :global([data-picker-panel]:not([hidden])) {
+            animation: none;
+        }
+    }
+</style>

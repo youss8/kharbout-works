@@ -2,9 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import PromptCompiler from '../../components/toolkit/PromptCompiler.astro';
+import ResourceIndex from '../../components/resources/ResourceIndex.astro';
 import { promptBuilderEnabled } from '../../lib/prompt-builder/release';
 import { builderPath } from '../../lib/prompt-builder/workflows';
 import '../../styles/workbench.css';
+import '../../styles/resource-workspaces.css';
 
 const items = (await getCollection('ai-kit')).sort((a, b) => a.data.order - b.data.order);
 const kinds = [
@@ -36,25 +38,26 @@ const index = items.map(({ data }) => ({
     title="AI engineering toolkit"
     description="Compile and download reusable architecture, code review and operations prompts."
 >
-    <div class="page-shell">
-        <header class="page-heading">
-            <p class="section-id">03 / AI Kit</p>
+    <div class="page-shell resource-shell">
+        <header class="page-heading resource-heading">
             <h1>AI engineering toolkit</h1>
             <p>
                 Choose a Gem, coding skill or workflow. Set its inputs, inspect the compiled prompt
-                and take it into your engineering tools.{' '}
+                and take it into your engineering tools.
+            </p>
+            <div class="resource-links">
+                {promptBuilderEnabled() && (
+                    <a class="builder-link" href={builderPath}>
+                        Build a prompt <span aria-hidden="true">↗</span>
+                    </a>
+                )}
                 <a class="skills-link" href="/claude-code-skills/">
                     Browse Claude Code skills
                 </a>
-            </p>
-            {promptBuilderEnabled() && (
-                <a class="builder-link" href={builderPath}>
-                    Build a prompt <span aria-hidden="true">↗</span>
-                </a>
-            )}
+            </div>
         </header>
         <div
-            class="kit-grid"
+            class="kit-grid resource-workspace"
             data-index={JSON.stringify(index)}
             x-data={String.raw`{
             items: JSON.parse($el.dataset.index), kind: '', category: '', query: '', active: '',
@@ -84,73 +87,78 @@ const index = items.map(({ data }) => ({
             choose(id) {
                 this.active = id;
                 if (location.hash !== '#' + id) history.pushState(null, '', '#' + id);
-                if (matchMedia('(max-width: 760px)').matches) this.$nextTick(() => document.getElementById(id)?.scrollIntoView())
             }
         }`}
             x-on:hashchange.window="followHash()"
             x-on:popstate.window="followHash()"
         >
-            <aside class="kit-register" aria-label="Prompt directory">
-                <label class="search-label" x-cloak>
-                    Search toolkit
-                    <input
-                        type="search"
-                        placeholder="Name, variable or technology"
-                        x-ref="query"
-                        x-model="query"
-                        x-on:input="filter()"
-                    />
-                </label>
-                <fieldset x-cloak>
-                    <legend>Kind</legend>
-                    <div class="filter-list">
-                        {kinds.map((k) => (
-                            <button
-                                type="button"
-                                x-bind:aria-pressed={`kind === '${k.id}'`}
-                                x-on:click={`kind = '${k.id}'; filter()`}
-                            >
-                                {k.title}
-                            </button>
-                        ))}
-                    </div>
-                </fieldset>
-                <fieldset x-cloak>
-                    <legend>Category</legend>
-                    <div class="filter-list">
-                        {['', ...categories].map((c) => (
-                            <button
-                                type="button"
-                                x-bind:aria-pressed={`category === '${c}'`}
-                                x-on:click={`category = '${c}'; filter()`}
-                            >
-                                {c || 'All categories'}
-                            </button>
-                        ))}
-                    </div>
-                </fieldset>
-                <p
-                    class="count"
-                    role="status"
-                    x-text="matches.length + (matches.length === 1 ? ' prompt' : ' prompts')"
+            <aside class="kit-register resource-register" aria-label="Prompt directory">
+                <ResourceIndex
+                    title="Browse blueprints"
+                    count={items.length}
+                    id="blueprint-directory"
                 >
-                    {items.length} prompts
-                </p>
-                <nav aria-label="Toolkit entries">
-                    {items.map(({ data }) => (
-                        <a
-                            href={'#' + data.id}
-                            x-show={`matches.some(it => it.id === '${data.id}')`}
-                            x-bind:aria-current={`active === '${data.id}' ? 'true' : null`}
-                            x-on:click.prevent={`choose('${data.id}')`}
-                        >
-                            {data.title}
-                            <small>
-                                {data.kind} · {data.category}
-                            </small>
-                        </a>
-                    ))}
-                </nav>
+                    <label class="search-label" x-cloak>
+                        Search toolkit
+                        <input
+                            type="search"
+                            placeholder="Name, variable or technology"
+                            x-ref="query"
+                            x-model="query"
+                            x-on:input="filter()"
+                        />
+                    </label>
+                    <fieldset x-cloak>
+                        <legend>Kind</legend>
+                        <div class="filter-list">
+                            {kinds.map((k) => (
+                                <button
+                                    type="button"
+                                    x-bind:aria-pressed={`kind === '${k.id}'`}
+                                    x-on:click={`kind = '${k.id}'; filter()`}
+                                >
+                                    {k.title}
+                                </button>
+                            ))}
+                        </div>
+                    </fieldset>
+                    <fieldset x-cloak>
+                        <legend>Category</legend>
+                        <div class="filter-list">
+                            {['', ...categories].map((c) => (
+                                <button
+                                    type="button"
+                                    x-bind:aria-pressed={`category === '${c}'`}
+                                    x-on:click={`category = '${c}'; filter()`}
+                                >
+                                    {c || 'All categories'}
+                                </button>
+                            ))}
+                        </div>
+                    </fieldset>
+                    <p
+                        class="count"
+                        role="status"
+                        x-text="matches.length + (matches.length === 1 ? ' prompt' : ' prompts')"
+                    >
+                        {items.length} prompts
+                    </p>
+                    <nav aria-label="Toolkit entries">
+                        {items.map(({ data }) => (
+                            <a
+                                href={'#' + data.id}
+                                x-show={`matches.some(it => it.id === '${data.id}')`}
+                                x-bind:aria-current={`active === '${data.id}' ? 'true' : null`}
+                                x-on:click.prevent={`choose('${data.id}')`}
+                            >
+                                {data.title}
+                                <small>
+                                    {data.kind} · {data.category}
+                                </small>
+                            </a>
+                        ))}
+                    </nav>
+                </ResourceIndex>
             </aside>
             <div class="kit-detail">
                 <div x-show="!matches.length" class="kit-empty" x-cloak>
@@ -163,7 +171,11 @@ const index = items.map(({ data }) => ({
                     </button>
                 </div>
                 {items.map((item) => (
-                    <article id={item.data.id} x-show={`active === '${item.data.id}'`}>
+                    <article
+                        id={item.data.id}
+                        tabindex="-1"
+                        x-show={`active === '${item.data.id}'`}
+                    >
                         <PromptCompiler item={item} />
                     </article>
                 ))}
@@ -208,8 +220,7 @@ const index = items.map(({ data }) => ({
         border: 1px solid var(--border-hairline);
     }
     .kit-register {
-        padding: 1rem;
-        border-block-start: 3px solid var(--accent-primary);
+        padding: 0;
     }
     .search-label,
     legend {
