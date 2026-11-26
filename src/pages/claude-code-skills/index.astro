@@ -1,79 +1,177 @@
 ---
-import { ArrowRight, BookOpen, Download, Search, Terminal } from 'lucide-react';
+import { ArrowRight, BookOpen, Download, Search } from 'lucide-react';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { evidenceLabels, skillGroups, skillGuides, skillPath } from '../../data/claude-skills';
 import '../../styles/workbench.css';
-const agents = [...new Set(skillGuides.flatMap(guide =>
-    guide.compatibility.filter(host => host.level !== 'guide').map(host => host.agent)
-))].sort((a, b) => a.localeCompare(b, 'en'));
+import '../../styles/resource-workspaces.css';
+const agents = [
+    ...new Set(
+        skillGuides.flatMap((guide) =>
+            guide.compatibility.filter((host) => host.level !== 'guide').map((host) => host.agent),
+        ),
+    ),
+].sort((a, b) => a.localeCompare(b, 'en'));
 ---
-<BaseLayout title="Claude Code skills" description="Browse skill guides by task, check what each one requires and try a worked example prompt.">
-    <div class="page-shell">
-        <header class="intro">
-            <div class="page-heading">
-                <p class="section-id">07 / Skill directory</p>
-                <h1>Claude Code skills</h1>
-                <p>Find a skill for the task in front of you. Each guide lists the tools and inputs you need, a prompt to try, and a way to check the result.</p>
-                <a class="download-all" href="/claude-code-skills/download/catalogue.zip" download="claude-code-skill-guides.zip"><Download size={17} aria-hidden="true"/> Download all {skillGuides.length} guides (.zip)</a>
+
+<BaseLayout
+    title="Claude Code skills"
+    description="Browse skill guides by task, check what each one requires and try a worked example prompt."
+>
+    <div class="page-shell resource-shell skill-directory">
+        <header class="page-heading resource-heading">
+            <h1>Claude Code skills</h1>
+            <p>
+                Find a skill for the task in front of you. Each guide lists the tools and inputs you
+                need, a prompt to try, and a way to check the result.
+            </p>
+            <div class="resource-links">
+                <a
+                    class="download-all"
+                    href="/claude-code-skills/download/catalogue.zip"
+                    download="claude-code-skill-guides.zip"
+                >
+                    <Download size={17} aria-hidden="true" /> Download all {skillGuides.length}{' '}
+                    guides (.zip)
+                </a>
             </div>
-            <aside class="setup" id="setup" aria-labelledby="setup-title">
-                <h2 id="setup-title"><Terminal size={19} aria-hidden="true"/> Using a skill</h2>
-                <p>Use the agent labels to check support for the original skill. Each guide links to the evidence, the publisher’s setup and downloadable instructions.</p>
-                <p>“Standard format” means the agent can read that kind of skill file. “Guide only” means you can load our instructions there, while the original workflow has its own requirements.</p>
-                <a href="https://code.claude.com/docs/en/skills">Claude Code setup</a> · <a href="https://developers.openai.com/codex/skills">Codex setup</a>
-            </aside>
         </header>
 
         <div class="directory" id="guides">
             <aside class="topics">
                 <h2>Browse by category</h2>
                 <nav aria-label="Skill categories">
-                    <a href="#guides" data-topic="" aria-current="true">All guides <span>{skillGuides.length}</span></a>
-                    {skillGroups.map(group =>
-                        <a href={'?topic=' + group.id + '#' + group.id} data-topic={group.id}>{group.name} <span>{group.guides.length}</span></a>
-                    )}
+                    <a href="#guides" data-topic="" aria-current="true">
+                        All guides <span>{skillGuides.length}</span>
+                    </a>
+                    {skillGroups.map((group) => (
+                        <a href={'?topic=' + group.id + '#' + group.id} data-topic={group.id}>
+                            {group.name} <span>{group.guides.length}</span>
+                        </a>
+                    ))}
                 </nav>
-                <label class="mobile-topic">Category
+                <label class="mobile-topic">
+                    Category
                     <select id="topic-select">
                         <option value="">All guides ({skillGuides.length})</option>
-                        {skillGroups.map(group => <option value={group.id}>{group.name} ({group.guides.length})</option>)}
+                        {skillGroups.map((group) => (
+                            <option value={group.id}>
+                                {group.name} ({group.guides.length})
+                            </option>
+                        ))}
                     </select>
                 </label>
+                <details class="setup" id="setup">
+                    <summary>Using a skill</summary>
+                    <p>
+                        Each guide links to the evidence for agent support, the publisher’s setup
+                        and downloadable instructions.
+                    </p>
+                    <p>
+                        “Standard format” means the agent can read that kind of skill file. “Guide
+                        only” means you can load our instructions there, while the original workflow
+                        has its own requirements.
+                    </p>
+                    <a href="https://code.claude.com/docs/en/skills">Claude Code setup</a> ·{' '}
+                    <a href="https://developers.openai.com/codex/skills">Codex setup</a>
+                </details>
             </aside>
             <div class="results">
                 <div id="search-tools" hidden>
-                    <div><label for="guide-query">Search guides</label>
-                        <div class="query-box"><Search size={18} aria-hidden="true"/><input id="guide-query" type="search" placeholder="Try PDF, React or brand voice" /></div>
+                    <div>
+                        <label for="guide-query">Search guides</label>
+                        <div class="query-box">
+                            <Search size={18} aria-hidden="true" />
+                            <input
+                                id="guide-query"
+                                type="search"
+                                placeholder="Try PDF, React or brand voice"
+                            />
+                        </div>
                     </div>
-                    <div><label for="agent-select">Agent for the original skill</label>
-                        <select id="agent-select"><option value="">All agents</option>
-                            {agents.map(agent => <option value={agent}>{agent}</option>)}
+                    <div>
+                        <label for="agent-select">Agent for the original skill</label>
+                        <select id="agent-select">
+                            <option value="">All agents</option>
+                            {agents.map((agent) => (
+                                <option value={agent}>{agent}</option>
+                            ))}
                         </select>
                     </div>
                 </div>
                 <div class="result-meta">
-                    <p role="status" id="count">{skillGuides.length} guides</p>
-                    <label id="tested-control" hidden><input type="checkbox" id="tested"/> Tested examples only</label>
-                    <button type="button" id="clear" hidden>Clear filters</button>
+                    <p role="status" id="count">
+                        {skillGuides.length} guides
+                    </p>
+                    <label id="tested-control" hidden>
+                        <input type="checkbox" id="tested" /> Tested examples only
+                    </label>
+                    <button type="button" id="clear" hidden>
+                        Clear filters
+                    </button>
+                    <label id="compact-control" hidden>
+                        <input type="checkbox" id="compact" /> Compact list
+                    </label>
                 </div>
-                <p id="empty" hidden>No guides match these filters. Try another name, agent or category.</p>
-                {skillGroups.map(group => (
-                    <section id={group.id} class="group" data-group={group.id} aria-labelledby={'title-' + group.id}>
+                <p id="empty" hidden>
+                    No guides match these filters. Try another name, agent or category.
+                </p>
+                {skillGroups.map((group) => (
+                    <section
+                        id={group.id}
+                        class="group"
+                        data-group={group.id}
+                        aria-labelledby={'title-' + group.id}
+                    >
                         <h2 id={'title-' + group.id}>{group.name}</h2>
                         <ul>
-                            {group.guides.map(guide => (
-                                <li data-tested-in={guide.exampleRun?.agent} data-agents={JSON.stringify(guide.compatibility.filter(host => host.level !== 'guide').map(host => host.agent))}
-                                    data-aliases={[guide.slug, ...guide.aliases, guide.listing?.author, ...guide.compatibility.filter(host => host.level !== 'guide').map(host => host.agent)].join(' ')}>
+                            {group.guides.map((guide) => (
+                                <li
+                                    data-tested-in={guide.exampleRun?.agent}
+                                    data-agents={JSON.stringify(
+                                        guide.compatibility
+                                            .filter((host) => host.level !== 'guide')
+                                            .map((host) => host.agent),
+                                    )}
+                                    data-aliases={[
+                                        guide.slug,
+                                        ...guide.aliases,
+                                        guide.listing?.author,
+                                        ...guide.compatibility
+                                            .filter((host) => host.level !== 'guide')
+                                            .map((host) => host.agent),
+                                    ].join(' ')}
+                                >
                                     <a href={skillPath(guide.slug)}>
-                                        <span class="guide-type"><BookOpen size={13} aria-hidden="true"/>{guide.kind}</span>
+                                        <span class="guide-type">
+                                            <BookOpen size={13} aria-hidden="true" />
+                                            {guide.kind}
+                                        </span>
                                         <h3>{guide.name}</h3>
                                         <p>{guide.description}</p>
                                         <span class="agents">
-                                            {guide.compatibility.slice(0, 3).map(host => <span class="agent-tag" data-level={host.level}>{host.agent} · {evidenceLabels[host.level]}</span>)}
-                                            {guide.compatibility.length > 3 && <span class="more-agents">+{guide.compatibility.length - 3} more</span>}
+                                            {guide.compatibility.slice(0, 3).map((host) => (
+                                                <span class="agent-tag" data-level={host.level}>
+                                                    {host.agent} · {evidenceLabels[host.level]}
+                                                </span>
+                                            ))}
+                                            {guide.compatibility.length > 3 && (
+                                                <span class="more-agents">
+                                                    +{guide.compatibility.length - 3} more
+                                                </span>
+                                            )}
                                         </span>
-                                        <span class="state">{guide.exampleRun ? 'Tested ' + guide.exampleRun.date : guide.toolCheck ? 'Tool checked · prompt planned' : 'Planned example'}</span>
-                                        <ArrowRight className="directional-icon guide-arrow" size={16} aria-hidden="true"/>
+                                        <span class="state">
+                                            {guide.exampleRun
+                                                ? 'Tested ' + guide.exampleRun.date
+                                                : guide.toolCheck
+                                                  ? 'Tool checked · prompt planned'
+                                                  : 'Planned example'}
+                                        </span>
+                                        <ArrowRight
+                                            className="directional-icon guide-arrow"
+                                            size={16}
+                                            aria-hidden="true"
+                                        />
                                     </a>
                                 </li>
                             ))}
@@ -94,15 +192,25 @@ const agents = [...new Set(skillGuides.flatMap(guide =>
     const count = document.getElementById('count')!;
     const empty = document.getElementById('empty')!;
     const clear = document.querySelector<HTMLButtonElement>('#clear')!;
-    const normalize = (value: string) => value.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
-    const groups = [...directory.querySelectorAll<HTMLElement>('[data-group]')].map(section => ({
+    const normalize = (value: string) =>
+        value
+            .toLowerCase()
+            .replace(/[^\p{L}\p{N}]+/gu, ' ')
+            .trim();
+    const groups = [...directory.querySelectorAll<HTMLElement>('[data-group]')].map((section) => ({
         section,
-        rows: [...section.querySelectorAll('li')].map(row => ({
+        rows: [...section.querySelectorAll('li')].map((row) => ({
             row,
             agents: JSON.parse(row.dataset.agents!) as string[],
-            text: normalize([section.querySelector('h2')?.textContent, row.dataset.aliases,
-                row.querySelector('h3')?.textContent, row.querySelector('p')?.textContent,
-                row.querySelector('.guide-type')?.textContent].join(' ')),
+            text: normalize(
+                [
+                    section.querySelector('h2')?.textContent,
+                    row.dataset.aliases,
+                    row.querySelector('h3')?.textContent,
+                    row.querySelector('p')?.textContent,
+                    row.querySelector('.guide-type')?.textContent,
+                ].join(' '),
+            ),
         })),
     }));
 
@@ -115,8 +223,14 @@ const agents = [...new Set(skillGuides.flatMap(guide =>
             for (const { row, text, agents } of rows) {
                 const agentMatches = !agentSelect.value || agents.includes(agentSelect.value);
                 const testedIn = row.dataset.testedIn;
-                const exampleMatches = !tested.checked || (Boolean(testedIn) && (!agentSelect.value || testedIn === agentSelect.value));
-                row.hidden = !inTopic || !agentMatches || !exampleMatches || !terms.every(term => text.includes(term));
+                const exampleMatches =
+                    !tested.checked ||
+                    (Boolean(testedIn) && (!agentSelect.value || testedIn === agentSelect.value));
+                row.hidden =
+                    !inTopic ||
+                    !agentMatches ||
+                    !exampleMatches ||
+                    !terms.every((term) => text.includes(term));
                 if (!row.hidden) visible++;
             }
             section.hidden = visible === 0;
@@ -133,7 +247,12 @@ const agents = [...new Set(skillGuides.flatMap(guide =>
 
     function save(push = false) {
         const url = new URL(location.href);
-        for (const [key, value] of [['q', query.value], ['topic', select.value], ['agent', agentSelect.value], ['tested', tested.checked ? '1' : '']]) {
+        for (const [key, value] of [
+            ['q', query.value],
+            ['topic', select.value],
+            ['agent', agentSelect.value],
+            ['tested', tested.checked ? '1' : ''],
+        ]) {
             if (value) url.searchParams.set(key, value);
             else url.searchParams.delete(key);
         }
@@ -146,14 +265,17 @@ const agents = [...new Set(skillGuides.flatMap(guide =>
     function restore() {
         const params = new URLSearchParams(location.search);
         query.value = params.get('q') ?? '';
-        select.value = topics.find(link => link.dataset.topic === params.get('topic'))?.dataset.topic ?? '';
-        agentSelect.value = [...agentSelect.options].find(option => option.value === params.get('agent'))?.value ?? '';
+        select.value =
+            topics.find((link) => link.dataset.topic === params.get('topic'))?.dataset.topic ?? '';
+        agentSelect.value =
+            [...agentSelect.options].find((option) => option.value === params.get('agent'))
+                ?.value ?? '';
         tested.checked = params.get('tested') === '1';
         filter();
     }
 
     for (const link of topics) {
-        link.addEventListener('click', event => {
+        link.addEventListener('click', (event) => {
             if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
             event.preventDefault();
             select.value = link.dataset.topic ?? '';
@@ -178,59 +300,312 @@ const agents = [...new Set(skillGuides.flatMap(guide =>
     restore();
     document.getElementById('search-tools')!.hidden = false;
     document.getElementById('tested-control')!.hidden = false;
+    const compact = document.querySelector<HTMLInputElement>('#compact')!;
+    document.getElementById('compact-control')!.hidden = false;
+    const setDensity = () => directory.toggleAttribute('data-compact', compact.checked);
+    compact.addEventListener('change', setDensity);
+    window.addEventListener('pageshow', setDensity);
+    setDensity();
+    if (location.hash === '#setup')
+        document.querySelector<HTMLDetailsElement>('#setup')!.open = true;
     directory.dataset.ready = 'true';
 </script>
 <style>
-    .intro { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(18rem,.75fr); align-items:center; gap:clamp(2rem,5vw,5rem); margin-block-end:clamp(2rem,4vw,4rem); }
-    .page-heading { margin:0; }
-    .download-all { display:inline-flex; gap:.5rem; align-items:center; color:var(--accent-primary); font-size:.92rem; font-weight:700; margin-block-start:.9rem; text-underline-offset:.2em; }
-    .setup { padding:1rem 1.2rem; background:var(--bg-subtle); border-inline-start:3px solid var(--accent-primary); }
-    .setup h2 { display:flex; align-items:center; gap:.55rem; font-size:1rem; }
-    .setup :global(svg), .setup a { color:var(--accent-primary); }
-    .setup p, .setup a { font-size:.86rem; }
-    .setup p { margin-block:.5rem; color:var(--ink-secondary); }
-    .setup a, #clear { text-decoration:underline; text-underline-offset:.2em; }
-    .directory { display:grid; grid-template-columns:minmax(12rem,15rem) minmax(0,1fr); gap:clamp(1.25rem,3.5vw,3.7rem); align-items:start; }
-    .topics { position:sticky; inset-block-start:5.5rem; }
-    .topics h2, #search-tools label, .mobile-topic { font-size:.88rem; font-weight:700; }
-    .topics h2 { margin-block-end:.8rem; }
-    .topics nav { display:grid; }
-    .topics nav a { display:flex; align-items:center; justify-content:space-between; gap:.6rem; padding:.48rem .65rem; border-inline-start:2px solid transparent; font-size:.85rem; text-decoration:none; }
-    .topics nav a:hover, .topics nav a[aria-current] { color:var(--accent-primary); background:var(--accent-tint); }
-    .topics nav a[aria-current] { border-color:var(--accent-primary); font-weight:700; }
-    .topics nav span, .result-meta, .guide-type, .state { color:var(--ink-secondary); font:500 .72rem/1.5 var(--font-mono); }
-    .mobile-topic { display:none; }
-    .results { min-width:0; }
-    #search-tools:not([hidden]) { display:grid; grid-template-columns:minmax(0,1fr) minmax(12rem,.55fr); align-items:end; gap:.75rem; }
-    #agent-select { display:block; width:100%; min-width:0; margin-block-start:.4rem; padding:.7rem .5rem; border:1px solid var(--border-strong); border-radius:4px; color:var(--ink-primary); background:var(--bg-surface); }
-    .query-box { display:flex; gap:.7rem; align-items:center; margin-block-start:.4rem; padding-inline:.85rem; border:1px solid var(--border-strong); border-radius:4px; background:var(--bg-surface); color:var(--ink-secondary); }
-    .query-box:focus-within { outline:2px solid var(--accent-primary); outline-offset:2px; }
-    .query-box input { border:none; outline:none; width:100%; min-width:0; padding:.7rem 0; background:transparent; color:var(--ink-primary); }
-    .result-meta { display:flex; flex-wrap:wrap; gap:.4rem .8rem; min-height:2.7rem; align-items:center; }
-    #tested-control:not([hidden]) { display:inline-flex; align-items:center; gap:.35rem; margin-inline-start:auto; font:500 .78rem/1.4 var(--font-sans); cursor:pointer; }
-    #clear { color:var(--accent-primary); }
-    #empty { padding:1rem; background:var(--bg-subtle); }
-    .group + .group { margin-block-start:2.2rem; }
-    .group h2 { padding-block:.6rem .8rem; border-block-start:2px solid var(--accent-primary); font-size:clamp(1.3rem,2.3vw,1.9rem); }
-    .group ul { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.7rem; padding:0; list-style:none; }
-    .group li { display:flex; }
-    .group li > a { position:relative; display:flex; flex-direction:column; align-items:flex-start; width:100%; padding:clamp(.9rem,1.5vw,1.25rem); border:1px solid var(--border-hairline); background:var(--bg-surface); text-decoration:none; }
-    .group li > a:hover, .group li > a:focus-visible { border-color:var(--accent-primary); }
-    .guide-type { display:flex; align-items:center; gap:.4rem; }
-    .group h3 { margin-block:.45rem; font-size:1.04rem; overflow-wrap:anywhere; }
-    .group p { margin-block-end:1rem; color:var(--ink-secondary); font-size:.86rem; }
-    .agents { display:flex; flex-wrap:wrap; align-items:center; gap:.35rem; margin-block:auto .8rem; }
-    .agent-tag { padding:.15rem .42rem; border:1px solid var(--border-hairline); border-radius:3px; font-size:.7rem; color:var(--ink-primary); }
-    .agent-tag[data-level="publisher"], .agent-tag[data-level="verified"] { background:var(--accent-tint); }
-    .more-agents { color:var(--ink-secondary); font-size:.7rem; }
-    .state { margin-block-start:auto; font-size:.67rem; }
-    .group :global(.guide-arrow) { position:absolute; inset-inline-end:1rem; inset-block-end:1rem; color:var(--accent-primary); }
-    @media (max-width:800px) {
-        .intro, .directory { grid-template-columns:minmax(0,1fr); gap:1.2rem; }
-        .topics { position:static; }
-        .directory[data-ready] .topics nav, .directory[data-ready] .topics h2 { display:none; }
-        .directory[data-ready] .mobile-topic { display:grid; gap:.35rem; }
-        select { padding:.5rem; border:1px solid var(--border-strong); border-radius:4px; color:var(--ink-primary); background:var(--bg-surface); }
+    .page-heading {
+        margin: 0;
     }
-    @media (max-width:540px) { .group ul, #search-tools:not([hidden]) { grid-template-columns:minmax(0,1fr); } }
+    .download-all {
+        display: inline-flex;
+        gap: 0.5rem;
+        align-items: center;
+        color: var(--accent-primary);
+        font-size: 0.92rem;
+        font-weight: 700;
+        margin-block-start: 0.9rem;
+        text-underline-offset: 0.2em;
+    }
+    .setup {
+        margin-block-start: 0.8rem;
+        border-block-start: 1px solid var(--border-hairline);
+    }
+    .setup summary {
+        padding-block: 0.7rem;
+        cursor: pointer;
+        font-size: 0.88rem;
+        font-weight: 650;
+    }
+    .setup a {
+        color: var(--accent-primary);
+    }
+    .setup p,
+    .setup a {
+        font-size: 0.86rem;
+    }
+    .setup p {
+        margin-block: 0.5rem;
+        color: var(--ink-secondary);
+    }
+    .setup a,
+    #clear {
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+    .directory {
+        display: grid;
+        grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+        gap: clamp(1.25rem, 3.5vw, 3.7rem);
+        align-items: start;
+    }
+    .topics {
+        align-self: start;
+    }
+    .topics h2,
+    #search-tools label,
+    .mobile-topic {
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+    .topics h2 {
+        margin-block-end: 0.8rem;
+    }
+    .topics nav {
+        display: grid;
+    }
+    .topics nav a {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.6rem;
+        padding: 0.48rem 0.65rem;
+        border-inline-start: 2px solid transparent;
+        font-size: 0.85rem;
+        text-decoration: none;
+    }
+    .topics nav a:hover,
+    .topics nav a[aria-current] {
+        color: var(--accent-primary);
+        background: var(--accent-tint);
+    }
+    .topics nav a[aria-current] {
+        border-color: var(--accent-primary);
+        font-weight: 700;
+    }
+    .topics nav span,
+    .result-meta,
+    .guide-type,
+    .state {
+        color: var(--ink-secondary);
+        font: 500 0.72rem/1.5 var(--font-mono);
+    }
+    .mobile-topic {
+        display: none;
+    }
+    .results {
+        min-width: 0;
+    }
+    #search-tools:not([hidden]) {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(12rem, 0.55fr);
+        align-items: end;
+        gap: 0.75rem;
+    }
+    #agent-select {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        margin-block-start: 0.4rem;
+        padding: 0.7rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 4px;
+        color: var(--ink-primary);
+        background: var(--bg-surface);
+    }
+    .query-box {
+        display: flex;
+        gap: 0.7rem;
+        align-items: center;
+        margin-block-start: 0.4rem;
+        padding-inline: 0.85rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 4px;
+        background: var(--bg-surface);
+        color: var(--ink-secondary);
+    }
+    .query-box:focus-within {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 2px;
+    }
+    .query-box input {
+        border: none;
+        outline: none;
+        width: 100%;
+        min-width: 0;
+        padding: 0.7rem 0;
+        background: transparent;
+        color: var(--ink-primary);
+    }
+    .result-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem 0.8rem;
+        min-height: 2.7rem;
+        align-items: center;
+    }
+    #tested-control:not([hidden]) {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-inline-start: auto;
+        font: 500 0.78rem/1.4 var(--font-sans);
+        cursor: pointer;
+    }
+    #compact-control:not([hidden]) {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font: 500 0.78rem/1.4 var(--font-sans);
+        cursor: pointer;
+    }
+    .directory[data-compact] .group ul {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0;
+    }
+    .directory[data-compact] .group li > a {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.45rem 1.2rem;
+        padding: 0.65rem 0.85rem;
+        border-width: 0 0 1px;
+    }
+    .directory[data-compact] .group li > a:hover {
+        background: var(--accent-tint);
+    }
+    .directory[data-compact] .group h3,
+    .directory[data-compact] .state {
+        margin: 0;
+    }
+    .directory[data-compact] .group :is(.guide-type, .agents, p),
+    .directory[data-compact] .group :global(.guide-arrow) {
+        display: none;
+    }
+    #clear {
+        color: var(--accent-primary);
+    }
+    #empty {
+        padding: 1rem;
+        background: var(--bg-subtle);
+    }
+    .group + .group {
+        margin-block-start: 2.2rem;
+    }
+    .group h2 {
+        padding-block: 0.6rem 0.8rem;
+        border-block-start: 2px solid var(--accent-primary);
+        font-size: clamp(1.3rem, 2.3vw, 1.9rem);
+    }
+    .group ul {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.7rem;
+        padding: 0;
+        list-style: none;
+    }
+    .group li {
+        display: flex;
+    }
+    .group li > a {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        padding: clamp(0.9rem, 1.5vw, 1.25rem);
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+        text-decoration: none;
+    }
+    .group li > a:hover,
+    .group li > a:focus-visible {
+        border-color: var(--accent-primary);
+    }
+    .guide-type {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .group h3 {
+        margin-block: 0.45rem;
+        font-size: 1.04rem;
+        overflow-wrap: anywhere;
+    }
+    .group p {
+        margin-block-end: 1rem;
+        color: var(--ink-secondary);
+        font-size: 0.86rem;
+    }
+    .agents {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.35rem;
+        margin-block: auto 0.8rem;
+    }
+    .agent-tag {
+        padding: 0.15rem 0.42rem;
+        border: 1px solid var(--border-hairline);
+        border-radius: 3px;
+        font-size: 0.7rem;
+        color: var(--ink-primary);
+    }
+    .agent-tag[data-level='publisher'],
+    .agent-tag[data-level='verified'] {
+        background: var(--accent-tint);
+    }
+    .more-agents {
+        color: var(--ink-secondary);
+        font-size: 0.7rem;
+    }
+    .state {
+        margin-block-start: auto;
+        font-size: 0.67rem;
+    }
+    .group :global(.guide-arrow) {
+        position: absolute;
+        inset-inline-end: 1rem;
+        inset-block-end: 1rem;
+        color: var(--accent-primary);
+    }
+    @media (max-width: 800px) {
+        .directory {
+            grid-template-columns: minmax(0, 1fr);
+            gap: 1.2rem;
+        }
+        .directory[data-ready] .topics nav,
+        .directory[data-ready] .topics h2 {
+            display: none;
+        }
+        .directory[data-ready] .mobile-topic {
+            display: grid;
+            gap: 0.35rem;
+        }
+        select {
+            padding: 0.5rem;
+            border: 1px solid var(--border-strong);
+            border-radius: 4px;
+            color: var(--ink-primary);
+            background: var(--bg-surface);
+        }
+    }
+    @media (max-width: 540px) {
+        .group ul,
+        #search-tools:not([hidden]) {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    @media (max-width: 420px) {
+        .directory[data-compact] .group li > a {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 </style>

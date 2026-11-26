@@ -8,31 +8,100 @@ import SystemSandboxes from '../../components/ui/SystemSandboxes.astro';
 import { sandboxTitles } from '../../data/sandbox-directory';
 import '../../styles/workbench.css';
 export async function getStaticPaths() {
-    return (await getCollection('systems')).map(entry => ({ params: { slug: entry.id }, props: { entry } }));
+    return (await getCollection('systems')).map((entry) => ({
+        params: { slug: entry.id },
+        props: { entry },
+    }));
 }
-interface Props { entry: CollectionEntry<'systems'> }
+interface Props {
+    entry: CollectionEntry<'systems'>;
+}
 const { entry } = Astro.props;
 const { data } = entry;
 const { Content } = await render(entry);
 ---
+
 <BaseLayout title={data.title} description={data.scopeNote}>
-    {data.presentation ? <FlagshipCaseStudy data={data} presentation={data.presentation}>
-        <SystemSandboxes slot="workflows" code={data.code} order={data.order} demoIds={data.demoIds} featured />
-        <Content />
-    </FlagshipCaseStudy> :
-    <div class="page-shell">
-        <header class="page-heading"><a class="section-id" href="/systems/">01 / Systems</a><p class="case-id">{data.code}</p><h1>{data.title}</h1><p>{data.subtitle}</p></header>
-        <div class="study-grid">
-            <SectionRail />
-            <article class="study">
-                <section id="scope" class="scope-panel">
-                    <h2>Ownership and scope</h2><StatusBadge label={data.ownershipBadge} shape="surface"/>
-                    <dl><dt>Team</dt><dd>{data.teamSize}</dd><dt>Youssef’s direct ownership</dt><dd>{data.scopeNote}</dd><dt>Operational scale</dt><dd>{data.realWorldScale}</dd></dl>
-                    <div class="demo-links">{data.demoIds.map(id => <a href={'#'+id}>{sandboxTitles[id]} ↓</a>)}</div>
-                </section>
-                <div class="study-copy"><Content /></div>
-                <SystemSandboxes code={data.code} order={data.order} demoIds={data.demoIds} />
-            </article>
+    {data.presentation ? (
+        <FlagshipCaseStudy data={data} presentation={data.presentation}>
+            <SystemSandboxes
+                slot="workflows"
+                code={data.code}
+                order={data.order}
+                demoIds={data.demoIds}
+                featured
+            />
+            <Content />
+        </FlagshipCaseStudy>
+    ) : (
+        <div class="page-shell">
+            <header class="page-heading side-case-heading">
+                <a class="section-id" href="/systems/">
+                    All case studies
+                </a>
+                <p class="case-id">{data.code}</p>
+                <h1
+                    class="case-transition-title"
+                    style={`--case-title: case-${data.code.toLowerCase()}`}
+                >
+                    {data.title}
+                </h1>
+                <p>{data.subtitle}</p>
+                <nav aria-label="Open a workflow">
+                    {data.demoIds.map((id) => (
+                        <a href={'#' + id}>
+                            {sandboxTitles[id]} <span aria-hidden="true">↘</span>
+                        </a>
+                    ))}
+                </nav>
+            </header>
+            <div class="study-grid">
+                <SectionRail />
+                <article class="study">
+                    <section id="scope" class="scope-panel">
+                        <h2>Ownership and scope</h2>
+                        <StatusBadge label={data.ownershipBadge} shape="surface" />
+                        <dl>
+                            <dt>Team</dt>
+                            <dd>{data.teamSize}</dd>
+                            <dt>Youssef’s direct ownership</dt>
+                            <dd>{data.scopeNote}</dd>
+                            <dt>Operational scale</dt>
+                            <dd>{data.realWorldScale}</dd>
+                        </dl>
+                    </section>
+                    <SystemSandboxes code={data.code} order={data.order} demoIds={data.demoIds} />
+                    <div class="study-copy">
+                        <Content />
+                    </div>
+                </article>
+            </div>
         </div>
-    </div>}
+    )}
 </BaseLayout>
+<style>
+    .side-case-heading {
+        max-inline-size: none;
+        padding-block-end: 1.2rem;
+        border-bottom: 2px solid var(--ink-primary);
+    }
+    .side-case-heading nav {
+        display: flex;
+        flex-wrap: wrap;
+        margin-block-start: 1rem;
+        gap: 0.5rem;
+    }
+    .side-case-heading nav a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        min-block-size: 44px;
+        background: var(--assembly-blue);
+        color: #fff;
+        font-weight: 650;
+        padding: 0.55rem 0.9rem;
+    }
+    .side-case-heading nav a:hover {
+        text-decoration: underline;
+    }
+</style>

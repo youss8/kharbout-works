@@ -4,6 +4,8 @@ Youssef Kharbout’s engineering workbench brings six interactive system demonst
 
 [Logo concept and palette](docs/design/kharbout-works-logo-concept.png)
 
+The homepage opens with three instruments. Choose a site to inspect retention, a calendar day to price leave, or a device to read its telemetry. Each instrument leads to its working demo and the engineering decisions behind it. [Watch the system explorer](docs/design/workbench-explorer.webp).
+
 ## Run the workbench
 
 Use Node.js 24 and npm. From the repository root, run:
@@ -39,7 +41,7 @@ Open the [local Prompt Builder](http://localhost:4321/ai-kit/prompt-builder/) to
 
 Astro builds static routes from four Zod-validated content collections. The service desk and estate monitor hydrate as React 19/TypeScript islands. Alpine 3 handles the HR, funding, toolkit and lab interactions. The six case-study fixtures and three Mermaid diagrams come directly from the master handoff.
 
-Each kit runs inside an isolated preview. Choose a viewport, theme, writing direction, grayscale, or preview implementation. The Alpine and React previews use the same source files shown in their code tabs. The Livewire tab includes PHP and Blade. Shiki highlights the files at build time, and the browser fetches a source tab when it opens. Tailwind 4 and locally bundled Plus Jakarta Sans and JetBrains Mono supply the shared design tokens.
+The Vault opens with a gallery of rendered kit previews. Filter the gallery, open a kit to try it, or copy the filtered URL. Each kit runs inside an isolated preview with viewport, theme, writing direction, grayscale and implementation controls. The Alpine and React previews use the same source files shown in their code tabs. The Livewire tab includes PHP and Blade. Shiki highlights the files at build time, and the browser fetches a source tab when it opens. The workbench uses Tailwind 4 with locally bundled Archivo for display type, Space Grotesk for interface text and JetBrains Mono for readings and code.
 
 Vault previews on Vercel run in a sandbox. Use the embedded Vault preview to persist demo layout and saved-view preferences.
 

@@ -1,0 +1,222 @@
+---
+import { getCollection } from 'astro:content';
+import {
+    ArrowRight,
+    ArrowUpRight,
+    CalendarDays,
+    ChartNoAxesCombined,
+    Cpu,
+    Play,
+} from 'lucide-react';
+import SystemArtifact from './SystemArtifact.astro';
+
+const exhibits = [
+    {
+        code: 'SYS-03',
+        tab: 'Portfolio',
+        title: 'Portfolio analytics',
+        icon: ChartNoAxesCombined,
+        explanation:
+            'Pool site numerators and denominators to find the retention rate across participants.',
+        links: [
+            ['kpi-cockpit', 'Run KPI cockpit'],
+            ['funding-flow', 'Funding flow'],
+        ],
+    },
+    {
+        code: 'SYS-02',
+        tab: 'HR lifecycle',
+        title: 'HR lifecycle',
+        icon: CalendarDays,
+        explanation:
+            'A leave quote checks site hours, weekends and holidays before manager and HR approval.',
+        links: [
+            ['leave-engine', 'Price a leave request'],
+            ['attendance-amend', 'Attendance & contracts'],
+        ],
+    },
+    {
+        code: 'SYS-01',
+        tab: 'IT operations',
+        title: 'IT operations',
+        icon: Cpu,
+        explanation:
+            'Inspect endpoint readings, sweep for stale check-ins or trace a service ticket to its SLA.',
+        links: [
+            ['estate-overview', 'Inspect endpoints'],
+            ['service-desk', 'Service desk'],
+        ],
+    },
+];
+const studies = await getCollection('systems');
+const systems = exhibits.map((exhibit) => {
+    const study = studies.find(({ data }) => data.code === exhibit.code);
+    if (!study) throw new Error(`Missing homepage study ${exhibit.code}`);
+    return {
+        ...exhibit,
+        href: `/systems/${study.id}/`,
+        ...study.data,
+        displayTitle: exhibit.title,
+    };
+});
+---
+
+<system-explorer id="architecture" class="ha-console" aria-labelledby="ha-explore-title">
+    <div class="ha-console-head">
+        <h2 id="ha-explore-title">
+            <span aria-hidden="true"></span> System explorer
+        </h2>
+        <a href="/systems/">
+            Compare all systems <ArrowUpRight size={15} aria-hidden="true" />
+        </a>
+    </div>
+    <div class="ha-console-body">
+        <nav class="ha-systems" aria-label="System architecture" data-system-navigation>
+            {systems.map(({ code, tab, icon: Icon }, index) => (
+                <a
+                    href={'#exhibit-' + code}
+                    id={'selector-' + code}
+                    data-system-tab
+                    data-first={index === 0 ? '' : undefined}
+                >
+                    <Icon size={20} strokeWidth={1.6} aria-hidden="true" />
+                    <span>
+                        <small>{code}</small>
+                        <b>{tab}</b>
+                    </span>
+                    <ArrowRight className="ha-selector-arrow" size={16} aria-hidden="true" />
+                </a>
+            ))}
+        </nav>
+        <div class="ha-scenes">
+            {systems.map((system) => (
+                <section
+                    id={'exhibit-' + system.code}
+                    class="ha-scene"
+                    aria-labelledby={'selector-' + system.code}
+                    data-system-panel
+                >
+                    <SystemArtifact code={system.code} />
+                    <div class="ha-scene-copy">
+                        <div class="ha-system-meta">
+                            <i></i>
+                            {system.code} / Case study
+                        </div>
+                        <h3
+                            class="case-transition-title"
+                            style={`--case-title: case-${system.code.toLowerCase()}`}
+                        >
+                            {system.displayTitle}
+                            <span>.</span>
+                        </h3>
+                        <p>{system.explanation}</p>
+                        <p class="ha-credit">
+                            {system.ownershipPercent} · {system.teamSize}
+                            {system.code === 'SYS-01' && ' · Held from fleet rollout'}
+                        </p>
+                        <div class="ha-demo-links">
+                            {system.links.map(([id, name], index) => (
+                                <a
+                                    class:list={[index === 0 && 'ha-play']}
+                                    href={system.href + '#' + id}
+                                >
+                                    {index === 0 && (
+                                        <Play size={14} fill="currentColor" aria-hidden="true" />
+                                    )}
+                                    {name}
+                                    {index > 0 && <ArrowUpRight size={14} aria-hidden="true" />}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                    <div class="ha-evidence">
+                        <a href={system.href}>
+                            Case study <ArrowUpRight size={14} aria-hidden="true" />
+                        </a>
+                        <dl aria-label="System codebase audit">
+                            {system.keyMetrics.slice(0, 4).map((metric) => (
+                                <div>
+                                    <dt>{metric.label.split(' (')[0]}</dt>
+                                    <dd>
+                                        <bdi>{metric.value}</bdi>
+                                    </dd>
+                                </div>
+                            ))}
+                        </dl>
+                    </div>
+                </section>
+            ))}
+        </div>
+    </div>
+</system-explorer>
+
+<script>
+    class SystemExplorer extends HTMLElement {
+        connectedCallback() {
+            if (this.hasAttribute('data-enhanced')) return;
+            const list = this.querySelector<HTMLElement>('[data-system-navigation]')!;
+            const tabs = Array.from(list.querySelectorAll<HTMLAnchorElement>('[data-system-tab]'));
+            const panels = Array.from(this.querySelectorAll<HTMLElement>('[data-system-panel]'));
+            const activate = (index: number, focus = false) => {
+                tabs.forEach((tab, i) => {
+                    const selected = i === index;
+                    tab.setAttribute('aria-selected', String(selected));
+                    tab.tabIndex = selected ? 0 : -1;
+                    panels[i]!.hidden = !selected;
+                    if (!selected) panels[i]!.querySelector('details')?.removeAttribute('open');
+                });
+                if (focus) tabs[index]!.focus();
+            };
+            const choose = (index: number, focus = false) => {
+                const target = tabs[index]!.hash;
+                if (target !== location.hash) history.pushState(history.state, '', target);
+                activate(index, focus);
+            };
+            list.setAttribute('role', 'tablist');
+            tabs.forEach((tab, index) => {
+                const panel = panels[index]!;
+                tab.setAttribute('role', 'tab');
+                tab.setAttribute('aria-controls', panel.id);
+                panel.setAttribute('role', 'tabpanel');
+                panel.tabIndex = 0;
+                tab.addEventListener('click', (event) => {
+                    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                    event.preventDefault();
+                    choose(index);
+                });
+                tab.addEventListener('keydown', (event) => {
+                    const direction = getComputedStyle(list).direction === 'rtl' ? -1 : 1;
+                    const steps: Record<string, number> = {
+                        ArrowRight: direction,
+                        ArrowLeft: -direction,
+                        ArrowDown: 1,
+                        ArrowUp: -1,
+                    };
+                    let next = index;
+                    if (event.key in steps)
+                        next = (index + steps[event.key]! + tabs.length) % tabs.length;
+                    else if (event.key === 'Home') next = 0;
+                    else if (event.key === 'End') next = tabs.length - 1;
+                    else if (event.key !== ' ') return;
+                    event.preventDefault();
+                    choose(next, true);
+                });
+            });
+            const followHash = () => {
+                const selected = panels.findIndex((panel) => '#' + panel.id === location.hash);
+                if (selected !== -1) activate(selected);
+                else if (!location.hash || location.hash === '#architecture') activate(0);
+            };
+            activate(0);
+            followHash();
+            window.addEventListener('hashchange', followHash, { signal: this.cleanup.signal });
+            this.setAttribute('data-enhanced', '');
+        }
+        private cleanup = new AbortController();
+        disconnectedCallback() {
+            this.cleanup.abort();
+        }
+    }
+    if (!customElements.get('system-explorer'))
+        customElements.define('system-explorer', SystemExplorer);
+</script>

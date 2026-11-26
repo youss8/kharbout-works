@@ -19,6 +19,26 @@ const resultGroups = [answerGroup, 'Systems, sandboxes & pages', 'Vault, AI tool
 const search = (page) =>
     page.getByRole('combobox', { name: 'Search pages, assets and quick actions' });
 
+test('a search scope narrows results and resets when the palette reopens', async ({ page }) => {
+    await page.goto('/');
+    await page.keyboard.press('Control+k');
+    const scopes = page.getByRole('group', { name: 'Search within' });
+    await scopes.getByRole('button', { name: 'Demos', exact: true }).click();
+    await expect(search(page)).toBeFocused();
+    await expect(page.getByRole('option').first()).toBeVisible();
+    const kinds = page.getByRole('option').locator('.ask-kind');
+    expect(await kinds.allTextContents()).toEqual(expect.arrayContaining(['Sandbox', 'Prototype']));
+    expect((await kinds.allTextContents()).every(kind => ['Sandbox', 'Prototype'].includes(kind))).toBe(true);
+    await scopes.getByRole('button', { name: 'Skill guides' }).click();
+    await search(page).fill('UX Copy');
+    await expect(page.getByRole('option').first()).toContainText('UX Copy');
+    await expect(kinds.first()).toHaveText('Skill guide');
+    await page.keyboard.press('Escape');
+    await page.keyboard.press('Control+k');
+    await expect(scopes.getByRole('button', { name: 'All', exact: true })).toHaveAttribute('aria-pressed', 'true');
+    await expect(search(page)).toHaveValue('');
+});
+
 test('command index covers each public collection and resolves internal anchors', async ({
     page,
     request,

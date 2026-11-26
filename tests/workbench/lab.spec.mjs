@@ -82,6 +82,8 @@ test('the redesign preserves the agenda and the meal recalculates excluded ingre
     page.on('pageerror', e => errors.push(e.message));
     await page.setViewportSize({width:375, height:812});
     await page.goto('/lab/');
+    const picker = page.getByRole('navigation', { name: 'Choose a prototype' });
+    await picker.getByRole('link', { name: 'Compare landing pages' }).click();
     const study = page.locator('#landing-redesign');
     await study.getByRole('button', { name:'Original' }).click();
     await study.getByRole('button', { name:'View agenda' }).click();
@@ -89,6 +91,13 @@ test('the redesign preserves the agenda and the meal recalculates excluded ingre
     await study.getByRole('button', { name:'Revised' }).click();
     await expect(study.locator('ol')).toBeVisible();
     const meal = page.locator('#meal-configurator');
+    await picker.getByRole('link', { name: 'Configure a meal' }).click();
+    await expect(study).toBeHidden();
+    await page.goBack();
+    await expect(study).toBeVisible();
+    await expect(study.locator('ol')).toBeVisible();
+    await page.goForward();
+    await expect(meal).toBeVisible();
     await meal.getByLabel(/Grilled tofu/).check();
     await expect(meal.locator('.lab-result')).toContainText('€7.20');
     await meal.getByRole('button', { name:'Soy',exact:true }).click();

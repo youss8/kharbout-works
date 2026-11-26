@@ -7,6 +7,7 @@ import '@fontsource/jetbrains-mono/latin-400.css';
 import '@fontsource/jetbrains-mono/latin-500.css';
 import '@fontsource/jetbrains-mono/latin-600.css';
 import '../../styles/tokens.css';
+import '../../styles/navigation-motion.css';
 import TopNav from './TopNav.astro';
 import Footer from './Footer.astro';
 import CommandAskBar from './CommandAskBar.astro';
@@ -36,7 +37,7 @@ const { title, description = profile.subheadline } = Astro.props;
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <title>{title} · {siteName}</title>
     </head>
-    <body>
+    <body id="page-top">
         <a class="skip-link no-print" href="#main-content">
             Skip to content
         </a>

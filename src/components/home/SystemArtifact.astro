@@ -1,0 +1,240 @@
+---
+import { ScanLine } from 'lucide-react';
+import endpointAssembly from '../../assets/home/endpoint-assembly.webp';
+import estate from '../../data/demos/it-estate-ops.json';
+import { leaveDesk } from '../demos/hr-alpine.js';
+import { kpiCockpit } from '../demos/portfolio-alpine.js';
+
+interface Props {
+    code: string;
+}
+const { code } = Astro.props;
+const kpi = kpiCockpit();
+const pooled = kpi.show(kpi.result.actual);
+const participantCount = kpi.result.denominator;
+const siteReadings = kpi.sites.map((site) => {
+    kpi.site = site.id;
+    const { numerator, denominator } = kpi.result;
+    return {
+        name: site.name,
+        value: numerator ?? 0,
+        total: denominator ?? 0,
+        rate: kpi.show(kpi.result.actual),
+    };
+});
+const leave = leaveDesk();
+const quotedDays: Array<{ date: string; hours: number; label: string }> = leave.priced.days;
+const days = quotedDays.map((day) => ({
+    ...day,
+    weekday: new Intl.DateTimeFormat('en', { weekday: 'short', timeZone: 'UTC' }).format(
+        new Date(day.date),
+    ),
+}));
+const titles: Record<string, string> = {
+    'SYS-03': 'Placement retention at six months',
+    'SYS-02': 'Leave quote by calendar day',
+    'SYS-01': 'Endpoint telemetry',
+};
+const readings =
+    code === 'SYS-03'
+        ? siteReadings.map((site) => ({
+              label: site.name,
+              reading: site.total ? `${site.value} / ${site.total}` : 'No denominator',
+              display: site.rate,
+              detail: site.total
+                  ? `${site.value} of ${site.total} participants`
+                  : 'Excluded from pooled retention',
+          }))
+        : code === 'SYS-02'
+          ? days.map((day) => ({
+                label: day.date,
+                reading: `${day.hours}h · ${day.label}`,
+                display: `${day.hours}h`,
+                detail: day.label,
+            }))
+          : estate.endpoints.map((device) => ({
+                label: device.name,
+                reading: `${device.disk}% disk`,
+                display: `${device.disk}%`,
+                detail: `${device.cpu}% CPU · ${device.ram}% RAM`,
+            }));
+const overview =
+    code === 'SYS-03'
+        ? { label: 'All sites', display: pooled, detail: `${participantCount} participants` }
+        : code === 'SYS-02'
+          ? { label: 'Full request', display: `${leave.priced.hours}h`, detail: 'Quoted hours' }
+          : {
+                label: 'All endpoints',
+                display: String(estate.endpoints.length),
+                detail: 'Endpoints across ' + estate.branches.length + ' branches',
+            };
+---
+
+<figure class:list={['ha-artifact', 'ha-artifact-' + code.toLowerCase()]} data-specimen={code}>
+    <div class="ha-exhibit" aria-hidden="true">
+        {code === 'SYS-03' && (
+            <div class="ha-instrument" dir="ltr">
+                <i class="ha-screws"></i>
+                <div class="ha-instrument-head">
+                    <b>RETENTION METER</b>
+                    <span>{kpi.selected}</span>
+                </div>
+                <div class="ha-lcd">
+                    <div class="ha-rate">
+                        <strong data-display>{pooled}</strong>
+                        <span data-dial-label>Pooled retention</span>
+                    </div>
+                    <div class="ha-led-banks">
+                        {siteReadings.map(
+                            (site, index) =>
+                                site.total > 0 && (
+                                    <div class="ha-bank" data-physical-part={index}>
+                                        <div class="ha-led-grid">
+                                            {Array.from({ length: site.total }, (_, i) => (
+                                                <i class:list={[i < site.value && 'is-lit']} />
+                                            ))}
+                                        </div>
+                                        <span>
+                                            {site.value}/{site.total}
+                                        </span>
+                                    </div>
+                                ),
+                        )}
+                    </div>
+                </div>
+                <div class="ha-instrument-foot">
+                    <i></i>
+                    <span>PARTICIPANTS / YTD</span>
+                    <em></em>
+                </div>
+            </div>
+        )}
+        {code === 'SYS-02' && (
+            <div class="ha-clock" dir="ltr">
+                <div class="ha-paper">
+                    <div class="ha-paper-head">
+                        <b>LEAVE REGISTER</b>
+                        <span>{leave.site.name}</span>
+                    </div>
+                    <div class="ha-calendar">
+                        {days.map((day, index) => (
+                            <div
+                                data-physical-part={index}
+                                class:list={[day.hours > 0 && 'is-workday']}
+                            >
+                                <span>{day.weekday}</span>
+                                <strong>{day.date.slice(-2)}</strong>
+                                <i></i>
+                                <b>{day.hours}h</b>
+                            </div>
+                        ))}
+                    </div>
+                    <div class="ha-paper-foot">
+                        <span data-dial-label>DEC {leave.form.from.slice(0, 4)}</span>
+                        <b data-display>{leave.priced.hours}h</b>
+                    </div>
+                </div>
+                <div class="ha-clock-base">
+                    <i></i>
+                    <span>SITE CALENDAR</span>
+                </div>
+            </div>
+        )}
+        {code === 'SYS-01' && (
+            <>
+                <img
+                    class="ha-device"
+                    src={endpointAssembly.src}
+                    width={endpointAssembly.width}
+                    height={endpointAssembly.height}
+                    alt=""
+                    loading="lazy"
+                />
+                <div class="ha-telemetry">
+                    <span data-dial-label>Sample endpoints</span>
+                    <strong data-display>{estate.endpoints.length}</strong>
+                </div>
+            </>
+        )}
+    </div>
+    <figcaption>
+        <details class="ha-readings">
+            <summary>
+                <ScanLine size={16} aria-hidden="true" /> Inspect sample
+            </summary>
+            <div>
+                <strong>{titles[code]}</strong>
+                <ul>
+                    <li
+                        data-sample-row="-1"
+                        data-name={overview.label}
+                        data-value={overview.display}
+                        data-info={overview.detail}
+                    >
+                        <span>{overview.label}</span>
+                        <bdi>{overview.display}</bdi>
+                    </li>
+                    {readings.map(({ label, reading, display, detail }, index) => (
+                        <li
+                            data-sample-row={index}
+                            data-name={label}
+                            data-value={display}
+                            data-info={detail}
+                        >
+                            <span>{label}</span>
+                            <bdi>{reading}</bdi>
+                        </li>
+                    ))}
+                </ul>
+                <output class="ha-inspection-result" aria-live="polite" hidden></output>
+            </div>
+        </details>
+        <span class="ha-art-note">Synthetic data</span>
+    </figcaption>
+</figure>
+
+<script>
+    for (const specimen of document.querySelectorAll<HTMLElement>('[data-specimen]')) {
+        const display = specimen.querySelector<HTMLElement>('[data-display]')!;
+        const label = specimen.querySelector<HTMLElement>('[data-dial-label]')!;
+        const initialLabel = label.textContent;
+        const result = specimen.querySelector<HTMLOutputElement>('output')!;
+        const physicalParts = specimen.querySelectorAll<HTMLElement>('[data-physical-part]');
+        const rows = Array.from(specimen.querySelectorAll<HTMLElement>('[data-sample-row]'));
+        for (const row of rows) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.setAttribute('aria-pressed', String(row.dataset.sampleRow === '-1'));
+            button.append(...row.childNodes);
+            row.append(button);
+            button.addEventListener('click', () => {
+                const index = row.dataset.sampleRow;
+                for (const item of rows)
+                    item.querySelector('button')!.setAttribute(
+                        'aria-pressed',
+                        String(item === row),
+                    );
+                physicalParts.forEach((part) => {
+                    part.toggleAttribute(
+                        'data-muted',
+                        index !== '-1' && part.dataset.physicalPart !== index,
+                    );
+                    part.toggleAttribute('data-highlight', part.dataset.physicalPart === index);
+                });
+                display.textContent = row.dataset.value ?? '';
+                label.textContent = index === '-1' ? initialLabel : (row.dataset.name ?? '');
+                result.hidden = false;
+                result.value = [row.dataset.name, row.dataset.value, row.dataset.info].join(' · ');
+                if (!matchMedia('(prefers-reduced-motion:reduce)').matches) {
+                    display.animate(
+                        [
+                            { opacity: 0.45, translate: '0 3px' },
+                            { opacity: 1, translate: '0 0' },
+                        ],
+                        { duration: 230 },
+                    );
+                }
+            });
+        }
+    }
+</script>

@@ -11,8 +11,8 @@ test.describe('vault without client scripts', () => {
         await page.goto('/vault/');
         const links = page.getByRole('navigation', { name: 'Component patterns' }).getByRole('link');
         await expect(links).toHaveCount(items.length);
-        for (const [i, item] of items.entries()) {
-            await links.nth(i).click();
+        for (const item of items) {
+            await page.locator('.kit-gallery [href="#' + item.id + '"]').click();
             await expect(page).toHaveURL(new RegExp('#' + item.id + '$'));
             const article = page.locator('#' + item.id);
             await expect(article.getByRole('heading', { name: item.title })).toBeVisible();
@@ -30,26 +30,44 @@ test('standalone kit source has a title and copies one complete file', async ({ 
     await file.getByRole('button', { name: 'Copy file' }).press('Enter');
     await expect(page.locator('[data-source-reader] .feedback')).toHaveText('Source copied.');
     expect((await page.evaluate(() => navigator.clipboard.readText())).replaceAll('\r\n', '\n')).toBe(original);
+    const outline = page.getByRole('navigation', { name: 'Files in this implementation' });
+    const secondFile = outline.getByRole('link').nth(1);
+    const sectionId = await secondFile.getAttribute('href');
+    await secondFile.press('Enter');
+    await expect(page.locator(sectionId + ' .file-label')).toBeInViewport();
+    await page.getByRole('link', { name: 'React source', exact: true }).click();
+    await page.getByRole('link', { name: 'Live preview', exact: true }).click();
+    await expect(page.getByRole('link', { name: 'View source' })).toHaveAttribute('href', /status-tone-vocabulary\/react\/$/);
 });
 
 test('a filtered kit URL opens the active kit and back restores the previous selection', async ({ browser, page }) => {
     await page.goto('/vault/#spreadsheet-importer-register');
     await expect(page.locator('#spreadsheet-importer-register')).toBeVisible();
+    await page.getByRole('link', { name: 'Back to kit gallery' }).press('Enter');
     await page.getByRole('button', { name: 'T1 Primitives' }).click();
+    const gallery = page.getByRole('navigation', { name: 'Component patterns' });
+    await expect(gallery.getByRole('link')).toHaveCount(5);
+    await gallery.locator('[href="#status-tone-vocabulary"]').press('Enter');
     await expect(page).toHaveURL(/#status-tone-vocabulary$/);
-    await expect(page.locator('#status-tone-vocabulary')).toBeVisible();
+    await expect(page.locator('#status-tone-vocabulary')).toBeFocused();
     const fresh = await browser.newPage();
     await fresh.goto(page.url());
     await expect(fresh.locator('#status-tone-vocabulary')).toBeVisible();
     await fresh.close();
     await page.reload();
+    await expect(page.locator('#status-tone-vocabulary')).toBeVisible();
+    await page.goBack();
     await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(gallery.getByRole('link')).toHaveCount(5);
+    await page.goBack();
+    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'false');
     await page.goBack();
     await expect(page.locator('#spreadsheet-importer-register')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'false');
+    await page.goForward();
+    await page.goForward();
+    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'true');
     await page.goForward();
     await expect(page.locator('#status-tone-vocabulary')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'T1 Primitives' })).toHaveAttribute('aria-pressed', 'true');
 });
 
 for (const engine of ['alpine', 'react']) {
@@ -83,6 +101,7 @@ test('an original extraction ID opens its curated example in either implementati
     await page.getByRole('searchbox').fill('PT-25');
     const nav = page.getByRole('navigation', {name:'Component patterns'});
     await expect(nav.getByRole('link')).toHaveCount(1);
+    await nav.getByRole('link').click();
     const card = page.locator('#office-pdf-preview');
     await expect(card.getByText('Source entries · PT-25')).toBeVisible();
     await card.getByRole('button', {name:'Dark',exact:true}).click();
@@ -148,15 +167,16 @@ test('vault filters and empty state work at 375 pixels', async ({ page }) => {
     await expect(nav.getByRole('link')).toHaveCount(20);
     await page.getByRole('button',{name:'T2 Controls & Guards'}).click();
     await expect(nav.getByRole('link')).toHaveCount(6);
+    await page.getByRole('button', { name: 'Filters', exact: true }).press('Enter');
     await page.getByLabel('Source system').selectOption('SYS-03');
     await expect(nav.getByRole('link')).toHaveCount(items.filter(item=>item.tier===2 && item.sourceSystems.includes('SYS-03')).length);
-    await page.getByRole('button',{name:'Tables & Queues'}).click();
+    await page.getByRole('combobox', { name: 'Category', exact: true }).selectOption('Tables & Queues');
     await expect(nav.getByRole('link')).toHaveCount(items.filter(item => item.tier === 2 && item.sourceSystems.includes('SYS-03') && item.category === 'Tables & Queues').length);
     await page.getByRole('searchbox').fill('assignee');
     await expect(nav.getByRole('link')).toHaveCount(1);
     await page.getByRole('searchbox').fill('no matching kit');
     await page.getByRole('button',{name:'Clear filters'}).click();
-    await page.getByRole('button', { name: 'Forms & Guards' }).click();
+    await page.getByRole('combobox', { name: 'Category', exact: true }).selectOption('Forms & Guards');
     await expect(nav.getByRole('link')).toHaveCount(items.filter(item => item.category === 'Forms & Guards').length);
     await page.getByRole('searchbox').fill('qqzzzz');
     await expect(nav.getByRole('link')).toHaveCount(0);

@@ -2,45 +2,324 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../components/layout/BaseLayout.astro';
 import StatusBadge from '../../components/ui/StatusBadge.astro';
+import WorkbenchPicker from '../../components/ui/WorkbenchPicker.astro';
+import { ArrowDown, ArrowRight, ArrowUpRight, Play } from 'lucide-react';
 import { sandboxTitles, securitySummaries } from '../../data/sandbox-directory';
 import '../../styles/workbench.css';
 const portfolioOrder: Record<string, number> = { 'SYS-03': 0, 'SYS-02': 1, 'SYS-01': 2 };
-const systems = (await getCollection('systems')).sort((a, b) => (portfolioOrder[a.data.code] ?? 3) - (portfolioOrder[b.data.code] ?? 3));
+const systems = (await getCollection('systems')).sort(
+    (a, b) => (portfolioOrder[a.data.code] ?? 3) - (portfolioOrder[b.data.code] ?? 3),
+);
+const tasks: Record<string, string> = {
+    'SYS-03': 'Track funding and performance',
+    'SYS-02': 'Manage leave and attendance',
+    'SYS-01': 'Run an IT service desk',
+};
+const choices = systems.map(({ id, data }) => ({
+    id,
+    label: tasks[data.code] ?? data.title,
+    context: data.code,
+}));
 const rows = [
-    ['Ecosystem', (s: typeof systems[number]) => s.data.ecosystem],
-    ['Direct ownership', (s: typeof systems[number]) => s.data.ownershipBadge],
-    ['Codebase scale', (s: typeof systems[number]) => s.data.keyMetrics.slice(0, 3).map(m => m.value + ' ' + m.label).join(' · ')],
-    ['Operational scope', (s: typeof systems[number]) => s.data.realWorldScale],
-    ['Modeling challenge', (s: typeof systems[number]) => s.data.toughestProblemSummary],
-    ['Security architecture', (s: typeof systems[number]) => securitySummaries[s.data.code]],
+    ['Ecosystem', (s: (typeof systems)[number]) => s.data.ecosystem],
+    ['Direct ownership', (s: (typeof systems)[number]) => s.data.ownershipBadge],
+    [
+        'Codebase scale',
+        (s: (typeof systems)[number]) =>
+            s.data.keyMetrics
+                .slice(0, 3)
+                .map((m) => m.value + ' ' + m.label)
+                .join(' · '),
+    ],
+    ['Operational scope', (s: (typeof systems)[number]) => s.data.realWorldScale],
+    ['Modeling challenge', (s: (typeof systems)[number]) => s.data.toughestProblemSummary],
+    ['Security architecture', (s: (typeof systems)[number]) => securitySummaries[s.data.code]],
 ] as const;
 ---
+
 <BaseLayout title="Systems comparison">
-    <div class="page-shell">
-        <header class="page-heading"><p class="section-id">01 / Systems</p><h1>Systems comparison</h1><p>Compare the portfolio tracking and HR platforms, then explore the IT operations side project. All six demonstrations use synthetic data.</p></header>
-        <div class="systems-matrix">
-            <table><caption class="sr-only">Compare the three engineering case studies</caption>
-                <thead><tr><th scope="col">Engineering scope</th>{systems.map(s => <th scope="col"><StatusBadge label={s.data.code === 'SYS-01' ? 'Side project' : s.data.code} shape="outline"/><h2><a href={'/systems/'+s.id+'/'}>{s.data.title}</a></h2></th>)}</tr></thead>
-                <tbody>{rows.map(([label, read]) => <tr><th scope="row">{label}</th>{systems.map(s => <td data-code={s.data.code}>{read(s)}</td>)}</tr>)}
-                    <tr><th scope="row">Live sandboxes</th>{systems.map(s => <td data-code={s.data.code}>{s.data.demoIds.map(id => <a class="table-link" href={'/systems/'+s.id+'/#'+id}>{sandboxTitles[id]}</a>)}</td>)}</tr>
+    <div class="page-shell systems-library">
+        <header class="systems-intro">
+            <div>
+                <p class="section-id">Case studies</p>
+                <h1>Systems comparison</h1>
+                <p>
+                    Choose an operations problem to try its workflows and see what Youssef built.
+                    Each demonstration uses synthetic data.
+                </p>
+            </div>
+            <a class="compare-jump" href="#comparison">
+                Compare all systems <ArrowDown size={17} aria-hidden="true" />
+            </a>
+        </header>
+        <WorkbenchPicker label="Choose a problem" items={choices}>
+            {systems.map(({ id, data }) => (
+                <article id={id} tabindex="-1" data-picker-panel class="system-file">
+                    <header>
+                        <p class="ownership-line">
+                            {data.code}
+                            <span>{data.ownershipPercent}</span>
+                        </p>
+                        <h2
+                            class="case-transition-title"
+                            style={`--case-title: case-${data.code.toLowerCase()}`}
+                        >
+                            {data.presentation?.headline ?? data.title}
+                        </h2>
+                        <p>{data.subtitle}</p>
+                    </header>
+                    <div class="file-body">
+                        <nav aria-label={`Workflows for ${data.title}`}>
+                            {data.demoIds.map((demoId) => {
+                                const workflow = data.presentation?.workflows.find(
+                                    (item) => item.id === demoId,
+                                );
+                                return (
+                                    <a href={`/systems/${id}/#${demoId}`}>
+                                        <Play size={17} aria-hidden="true" />
+                                        <span>
+                                            <strong>
+                                                {workflow?.title ?? sandboxTitles[demoId]}
+                                            </strong>
+                                            {workflow && <small>{workflow.task}</small>}
+                                        </span>
+                                        <ArrowRight
+                                            size={18}
+                                            className="directional-icon"
+                                            aria-hidden="true"
+                                        />
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                        <div class="file-scope">
+                            <h3>Engineering scope</h3>
+                            <p>{data.scopeNote}</p>
+                            <a href={`/systems/${id}/`}>
+                                Read the case study{' '}
+                                <ArrowUpRight
+                                    size={17}
+                                    className="directional-icon"
+                                    aria-hidden="true"
+                                />
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            ))}
+        </WorkbenchPicker>
+        <section class="systems-matrix" id="comparison" aria-labelledby="comparison-title">
+            <h2 id="comparison-title">Technical comparison</h2>
+            <table>
+                <caption class="sr-only">Compare the three engineering case studies</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Engineering scope</th>
+                        {systems.map((s) => (
+                            <th scope="col">
+                                <StatusBadge
+                                    label={s.data.code === 'SYS-01' ? 'Side project' : s.data.code}
+                                    shape="outline"
+                                />
+                                <h2>
+                                    <a href={'/systems/' + s.id + '/'}>{s.data.title}</a>
+                                </h2>
+                            </th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {rows.map(([label, read]) => (
+                        <tr>
+                            <th scope="row">{label}</th>
+                            {systems.map((s) => (
+                                <td data-code={s.data.code}>{read(s)}</td>
+                            ))}
+                        </tr>
+                    ))}
+                    <tr>
+                        <th scope="row">Live sandboxes</th>
+                        {systems.map((s) => (
+                            <td data-code={s.data.code}>
+                                {s.data.demoIds.map((id) => (
+                                    <a class="table-link" href={'/systems/' + s.id + '/#' + id}>
+                                        {sandboxTitles[id]}
+                                    </a>
+                                ))}
+                            </td>
+                        ))}
+                    </tr>
                 </tbody>
             </table>
-        </div>
+        </section>
     </div>
 </BaseLayout>
 <style>
-    .systems-matrix table { width: 100%; table-layout: fixed; border: 1px solid var(--border-hairline); background: var(--bg-surface); }
-    .systems-matrix :is(td,th) { padding: clamp(.8rem,1.7vw,1.5rem); vertical-align: top; border: 1px solid var(--border-hairline); text-align: start; }
-    .systems-matrix th:first-child { width: 16%; background: var(--bg-subtle); font-size: .84rem; }
-    .systems-matrix td { font-size: .92rem; }
-    h2 { margin-block-start: .9rem; font-size: 1.32rem; }
-    a:hover { text-decoration: underline; }
-    .table-link { display: block; color: var(--accent-primary); text-decoration: underline; margin-block-end: .5rem; }
+    .systems-intro {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        flex-wrap: wrap;
+        gap: 1.25rem 2rem;
+        border-bottom: 2px solid var(--ink-primary);
+        padding-block-end: clamp(1.4rem, 3vw, 2.75rem);
+        margin-block-end: clamp(1.8rem, 3vw, 3.2rem);
+    }
+    .systems-intro h1 {
+        font: 750 clamp(2.8rem, 6.2vw, 6.4rem)/0.98 var(--font-display);
+        letter-spacing: -0.065em;
+        margin: 0.65rem 0 0.9rem;
+    }
+    .systems-intro p:last-child {
+        max-width: 58ch;
+        color: var(--ink-secondary);
+    }
+    .compare-jump,
+    .file-scope a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 44px;
+        color: var(--accent-primary);
+        font-weight: 650;
+    }
+    .system-file {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-hairline);
+        min-width: 0;
+    }
+    .system-file:not(:last-child) {
+        margin-bottom: 1rem;
+    }
+    .system-file > header {
+        padding: clamp(1.2rem, 3vw, 2.8rem);
+        background: var(--assembly-ink);
+        color: #fff;
+    }
+    .system-file .ownership-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.8rem;
+        align-items: baseline;
+        color: var(--assembly-lime);
+        font: 550 0.77rem/1.45 var(--font-mono);
+    }
+    .ownership-line span {
+        color: #cbd4e3;
+    }
+    .system-file > header h2 {
+        font: 680 clamp(1.85rem, 3.4vw, 3.75rem)/1.03 var(--font-display);
+        letter-spacing: -0.05em;
+        max-width: 23ch;
+        margin: 0.85rem 0;
+    }
+    .system-file > header > p:last-child {
+        color: #d7dfee;
+    }
+    .file-body {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+    }
+    .file-body nav {
+        padding: 0.35rem clamp(0.9rem, 2vw, 1.65rem);
+    }
+    .file-body nav a {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 0.75rem;
+        padding-block: 1rem;
+        color: var(--ink-primary);
+        min-height: 52px;
+    }
+    .file-body nav a + a {
+        border-top: 1px solid var(--border-hairline);
+    }
+    .file-body nav a :global(svg) {
+        color: var(--accent-primary);
+    }
+    .file-body small {
+        display: block;
+        color: var(--ink-secondary);
+        font-size: 0.84rem;
+        margin-top: 0.25rem;
+    }
+    .file-scope {
+        padding: 1.15rem clamp(1rem, 2vw, 1.65rem);
+        background: var(--bg-subtle);
+    }
+    .file-scope h3 {
+        font: 650 0.77rem/1.45 var(--font-mono);
+    }
+    .file-scope p {
+        margin: 0.45rem 0;
+        font-size: 0.91rem;
+        color: var(--ink-secondary);
+    }
+    .systems-matrix {
+        margin-top: clamp(3rem, 6vw, 6rem);
+    }
+    .systems-matrix > h2 {
+        font: 700 clamp(1.85rem, 3vw, 3rem)/1.1 var(--font-display);
+        letter-spacing: -0.045em;
+        margin: 0 0 1.5rem;
+    }
+    .systems-matrix table {
+        width: 100%;
+        table-layout: fixed;
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    .systems-matrix :is(td, th) {
+        padding: clamp(0.8rem, 1.7vw, 1.5rem);
+        vertical-align: top;
+        border: 1px solid var(--border-hairline);
+        text-align: start;
+    }
+    .systems-matrix th:first-child {
+        width: 16%;
+        background: var(--bg-subtle);
+        font-size: 0.84rem;
+    }
+    .systems-matrix td {
+        font-size: 0.92rem;
+    }
+    h2 {
+        margin-block-start: 0.9rem;
+        font-size: 1.32rem;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    .table-link {
+        display: block;
+        color: var(--accent-primary);
+        text-decoration: underline;
+        margin-block-end: 0.5rem;
+    }
     @media (max-width: 740px) {
-        .systems-matrix :is(table,thead,tbody,tr,td,th) { display: block; width: 100%; }
-        .systems-matrix table { border: 0; }
-        .systems-matrix th:first-child { width: 100%; }
-        .systems-matrix td::before { content: attr(data-code); display: block; font: 600 .72rem var(--font-mono); color: var(--accent-primary); margin-block-end: .3rem; }
-        .systems-matrix tr { margin-block-end: 1rem; }
+        .file-body {
+            grid-template-columns: 1fr;
+        }
+        .systems-matrix :is(table, thead, tbody, tr, td, th) {
+            display: block;
+            width: 100%;
+        }
+        .systems-matrix table {
+            border: 0;
+        }
+        .systems-matrix th:first-child {
+            width: 100%;
+        }
+        .systems-matrix td::before {
+            content: attr(data-code);
+            display: block;
+            font: 600 0.72rem var(--font-mono);
+            color: var(--accent-primary);
+            margin-block-end: 0.3rem;
+        }
+        .systems-matrix tr {
+            margin-block-end: 1rem;
+        }
     }
 </style>

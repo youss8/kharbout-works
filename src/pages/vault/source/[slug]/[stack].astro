@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import { Code } from 'astro:components';
 import BaseLayout from '../../../../components/layout/BaseLayout.astro';
 import '../../../../styles/workbench.css';
+import '../../../../styles/resource-workspaces.css';
 import { sourceFiles, type Stack } from '../../../../lib/vault-sources';
 export async function getStaticPaths() {
     return (await getCollection('vault')).flatMap((item) =>
@@ -40,47 +41,81 @@ const themes = { light: 'github-light-high-contrast', dark: 'github-dark-high-co
 ---
 
 <BaseLayout title={title + ' · ' + stackName + ' source'}>
-    <div class="page-shell" data-source-reader>
+    <div class="page-shell resource-shell source-workspace" data-source-reader>
         <a href={'/vault/#' + slug}>Return to the kit</a>
         <header class="page-heading">
             <h1>
                 {title} · {stackName} source
             </h1>
         </header>
+        <nav class="source-switcher" aria-label="Kit implementation">
+            <a
+                href={
+                    '/vault/preview/' +
+                    slug +
+                    '/' +
+                    (stack === 'livewire' ? '' : '?engine=' + stack)
+                }
+            >
+                Live preview
+            </a>
+            {Object.entries({ alpine: 'Alpine', react: 'React', livewire: 'Livewire' }).map(
+                ([id, label]) => (
+                    <a
+                        href={'/vault/source/' + slug + '/' + id + '/'}
+                        aria-current={stack === id ? 'page' : undefined}
+                    >
+                        {label} source
+                    </a>
+                ),
+            )}
+        </nav>
         <p class="feedback" role="status"></p>
         <label class="manual-copy" hidden>
             Source to copy<textarea readonly rows="6"></textarea>
         </label>
-        <div data-source-files>
-            {stack === 'alpine' && (
-                <p>
-                    Register the model with <code>Alpine.data('vaultKit', model)</code> before
-                    starting Alpine.
-                </p>
-            )}
-            {files.map((file) => (
-                <section class="source-file">
-                    <p class="file-label">{file.path}</p>
-                    {stack === 'livewire' && laravelPath(file) && (
-                        <p class="type-meta">
-                            Laravel path · <code>{laravelPath(file)}</code>
-                        </p>
-                    )}
-                    <button type="button" hidden data-copy-file>
-                        Copy file
-                    </button>
-                    <Code code={file.code} lang={file.lang} themes={themes} />
-                </section>
-            ))}
-            {Object.entries(fixtures)
-                .filter(([path]) => path.includes('/' + slug + '/'))
-                .map(([path, url]) => (
-                    <p>
-                        <a href={url} download={path.split('/').pop()}>
-                            Download {path.split('/').pop()}
-                        </a>
-                    </p>
+        <div class="source-layout">
+            <nav class="source-outline" aria-label="Files in this implementation">
+                <h2>
+                    Files <small>{files.length}</small>
+                </h2>
+                {files.map((file, index) => (
+                    <a href={'#' + slug + '-' + stack + '-file-' + (index + 1)}>
+                        {file.path.split('/' + slug + '/').pop() ?? file.path}
+                    </a>
                 ))}
+            </nav>
+            <div data-source-files>
+                {stack === 'alpine' && (
+                    <p>
+                        Register the model with <code>Alpine.data('vaultKit', model)</code> before
+                        starting Alpine.
+                    </p>
+                )}
+                {files.map((file, index) => (
+                    <section class="source-file" id={slug + '-' + stack + '-file-' + (index + 1)}>
+                        <p class="file-label">{file.path}</p>
+                        {stack === 'livewire' && laravelPath(file) && (
+                            <p class="type-meta">
+                                Laravel path · <code>{laravelPath(file)}</code>
+                            </p>
+                        )}
+                        <button type="button" hidden data-copy-file>
+                            Copy file
+                        </button>
+                        <Code code={file.code} lang={file.lang} themes={themes} />
+                    </section>
+                ))}
+                {Object.entries(fixtures)
+                    .filter(([path]) => path.includes('/' + slug + '/'))
+                    .map(([path, url]) => (
+                        <p>
+                            <a href={url} download={path.split('/').pop()}>
+                                Download {path.split('/').pop()}
+                            </a>
+                        </p>
+                    ))}
+            </div>
         </div>
     </div>
 </BaseLayout>

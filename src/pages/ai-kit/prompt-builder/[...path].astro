@@ -1,6 +1,5 @@
 ---
 import {
-    ArrowDown,
     ArrowLeft,
     ArrowRight,
     Clipboard,
@@ -24,6 +23,7 @@ import {
 import { modelProfiles } from '../../../lib/prompt-builder/profiles';
 import { presets, workflows } from '../../../lib/prompt-builder/workflows';
 import '../../../styles/prompt-builder.css';
+import '../../../styles/resource-workspaces.css';
 
 export function getStaticPaths() {
     return promptBuilderEnabled() ? [{ params: { path: undefined } }] : [];
@@ -47,7 +47,7 @@ export function getStaticPaths() {
                 <ArrowLeft size={17} className="directional-icon" aria-hidden="true" />
                 <span x-text="t.kit">AI engineering toolkit</span>
             </a>
-            <label class="builder-language">
+            <label class="builder-language" x-cloak>
                 <Languages size={19} aria-hidden="true" />
                 <span class="sr-only" x-text="t.language">
                     Interface language
@@ -73,6 +73,23 @@ export function getStaticPaths() {
             </p>
         </noscript>
         <div class="builder-app" x-cloak>
+            <nav
+                class="builder-stations"
+                x-bind:aria-label="locale === 'ar' ? 'أقسام منشئ الموجّهات' : 'Builder sections'"
+            >
+                <a href="#builder-input-heading" x-text="t.workspace">
+                    Prompt workspace
+                </a>
+                <a href="#builder-output" x-text="t.jump">
+                    Jump to prompt
+                </a>
+                <a href="#builder-chain-heading" x-text="t.chains">
+                    Multi-step workflows
+                </a>
+                <a href="#builder-library-heading" x-text="t.library">
+                    Prompt library
+                </a>
+            </nav>
             <section
                 class="builder-panel builder-shared"
                 aria-labelledby="builder-shared-heading"
@@ -105,10 +122,6 @@ export function getStaticPaths() {
                             <Layers size={21} aria-hidden="true" />
                             <span x-text="t.workspace"></span>
                         </h2>
-                        <a class="builder-jump" href="#builder-output">
-                            <span x-text="t.jump"></span>
-                            <ArrowDown size={16} aria-hidden="true" />
-                        </a>
                     </header>
                     <div class="builder-panel-body builder-stack">
                         <div class="builder-workflow-row">

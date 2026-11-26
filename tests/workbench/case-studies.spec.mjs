@@ -45,6 +45,46 @@ test('matrix links reach all six sandboxes', async ({ page }) => {
     }
 });
 
+test('a problem selection exposes its two workflows and follows browser history', async ({ page }) => {
+    await page.goto('/systems/');
+    const picker = page.getByRole('navigation', { name: 'Choose a problem' });
+    const choice = picker.getByRole('link', { name: /Manage leave and attendance/ });
+    await choice.press('Enter');
+    const hr = page.locator('[id="02-hr-lifecycle-crm"]');
+    await expect(hr).toBeVisible();
+    await expect(hr.getByRole('navigation').getByRole('link')).toHaveCount(2);
+    await expect(choice).toHaveAttribute('aria-current', 'location');
+    await picker.getByRole('link', { name: /Run an IT service desk/ }).click();
+    await expect(hr).toBeHidden();
+    await page.goBack();
+    await expect(hr).toBeVisible();
+    await page.reload();
+    await expect(hr).toBeVisible();
+});
+
+test('expanded demo retains the edited leave quote and returns to its launch control', async ({ page }) => {
+    await page.goto('/systems/02-hr-lifecycle-crm/#leave-engine');
+    const demo = page.locator('#leave-engine');
+    const expand = demo.getByRole('button', { name: 'Expand demo' });
+    await expand.focus();
+    const start = await page.evaluate(() => scrollY);
+    await expand.press('Enter');
+    await expect.poll(() => page.evaluate(() => document.fullscreenElement?.id)).toBe('leave-engine');
+    await expect(page.locator('.section-rail')).toHaveJSProperty('inert', true);
+    await demo.getByLabel('Part of day').selectOption('am');
+    await expect(demo.getByText('Quoted hours · 8h')).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(expand).toBeFocused();
+    await expect.poll(() => page.evaluate(() => document.fullscreenElement)).toBeNull();
+    await expect.poll(() => page.evaluate(() => scrollY)).toBeCloseTo(start, 0);
+    await expect(demo.getByLabel('Part of day')).toHaveValue('am');
+    await expand.click();
+    await demo.getByRole('button', { name: 'Exit expanded view' }).click();
+    await expect(expand).toBeFocused();
+    await expect(page.locator('.section-rail')).toHaveJSProperty('inert', false);
+    await expect(page.getByRole('navigation', { name: 'Case study contents' })).toBeVisible();
+});
+
 for (const slug of cases) {
     test(slug + ' displays both static ER diagram themes and zooms without loading Mermaid', async ({ page }) => {
         const errors = [];

@@ -1,0 +1,1201 @@
+.ha-home {
+    --ha-metal: #b4c6d0;
+    --ha-lime: var(--assembly-lime, #d7f879);
+    --ha-blue: var(--assembly-blue, #244aca);
+    --ha-ink: var(--assembly-ink, #10151d);
+    --ha-face: #16212d;
+    --ha-text: #f7f9f4;
+    --ha-muted: #b7c5d3;
+    --ha-grid: #30404f;
+    --ha-display: var(--font-display, 'Arial', sans-serif);
+    width: min(100%, 1510px);
+    margin-inline: auto;
+    padding-inline: var(--page-gutter, clamp(1rem, 4vw, 4.5rem));
+    color: var(--ink-primary);
+}
+.ha-masthead {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 0.66fr);
+    align-items: end;
+    gap: clamp(1.5rem, 4.5vw, 5rem);
+    padding-block: clamp(1.65rem, 3.5vw, 3.7rem) clamp(1.65rem, 2.9vw, 3rem);
+}
+.ha-byline,
+.ha-console-head h2,
+.ha-system-meta,
+.ha-art-note,
+.ha-contact > span {
+    font: 600 0.72rem/1.5 var(--font-mono);
+    letter-spacing: 0.065em;
+    text-transform: uppercase;
+}
+.ha-byline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--ink-primary);
+}
+.ha-byline span {
+    color: var(--ink-muted);
+}
+.ha-byline i {
+    width: 1.4rem;
+    height: 0.68rem;
+    margin-inline-end: 0.2rem;
+    background: repeating-linear-gradient(115deg, var(--accent-primary) 0 3px, transparent 3px 5px);
+}
+.ha-masthead h1 {
+    margin-block: 0.8rem 0;
+    font: 780 clamp(3.6rem, 7.2vw, 7.6rem)/0.89 var(--ha-display);
+    letter-spacing: -0.073em;
+    word-spacing: 0.025em;
+    text-wrap: balance;
+}
+.ha-masthead h1 span,
+.ha-library h2 span,
+.ha-workflow-section h2 span,
+.ha-principles h2 span {
+    color: var(--accent-primary);
+}
+.ha-intro > p {
+    color: var(--ink-secondary);
+    max-width: 40ch;
+    font-size: clamp(0.93rem, 1.18vw, 1.13rem);
+    line-height: 1.45;
+}
+.ha-intro nav,
+.ha-contact a {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.ha-intro nav a,
+.ha-console-head a,
+.ha-evidence > a,
+.ha-contact a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+.ha-intro nav a {
+    color: var(--accent-primary);
+    text-underline-offset: 0.24rem;
+    text-decoration: underline;
+}
+.ha-home a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.24rem;
+}
+.ha-home :is(a, summary, button):active {
+    filter: brightness(0.9);
+}
+
+.ha-console {
+    display: block;
+    color: var(--ha-text);
+    background: var(--ha-ink);
+    border: 1px solid #344253;
+    box-shadow: 0 9px 24px -24px #061122;
+}
+.ha-console :focus-visible {
+    outline: 3px solid var(--ha-lime);
+    outline-offset: 2px;
+}
+.ha-console-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.15rem 1rem;
+    padding-inline: clamp(0.85rem, 1.7vw, 1.65rem);
+    min-height: 48px;
+    border-block-end: 1px solid var(--ha-grid);
+}
+.ha-console-head h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    color: #d4dfe8;
+    font-weight: 600;
+}
+.ha-console-head h2 > span {
+    width: 9px;
+    height: 9px;
+    background: var(--ha-lime);
+    border-radius: 2px;
+    box-shadow: 0 0 10px #d7f87940;
+}
+.ha-console-head a {
+    color: #d3e1f5;
+    font-size: 0.78rem;
+}
+.ha-console-body {
+    display: grid;
+    grid-template-columns: minmax(8.8rem, 0.41fr) minmax(0, 2.65fr);
+}
+.ha-systems {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    align-items: stretch;
+    border-inline-end: 1px solid var(--ha-grid);
+    background: repeating-linear-gradient(-45deg, transparent 0 8px, #ffffff04 8px 9px), #101821;
+}
+.ha-systems a {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+    padding: clamp(0.75rem, 1.4vw, 1.25rem) clamp(0.65rem, 1.15vw, 1rem);
+    min-height: 67px;
+    border-block-end: 1px solid var(--ha-grid);
+    color: #d9e2e8;
+    background: #131e29;
+}
+.ha-systems a small,
+.ha-systems a b {
+    display: block;
+}
+.ha-systems a small {
+    color: #9baebf;
+    font: 500 0.62rem/1.5 var(--font-mono);
+    letter-spacing: 0.06em;
+}
+.ha-systems a b {
+    font-size: 0.9rem;
+    line-height: 1.3;
+    font-weight: 650;
+}
+.ha-systems .ha-selector-arrow {
+    opacity: 0;
+}
+.ha-systems a[aria-selected='true'],
+.ha-console:not([data-enhanced]) .ha-systems a[data-first] {
+    background: var(--ha-lime);
+    color: #182419;
+}
+.ha-systems a[aria-selected='true'] small,
+.ha-console:not([data-enhanced]) .ha-systems a[data-first] small {
+    color: #3c4b2c;
+}
+.ha-systems a[aria-selected='true'] .ha-selector-arrow {
+    opacity: 1;
+}
+.ha-systems a:hover {
+    text-decoration: none;
+}
+.ha-systems a:not([aria-selected='true']):hover {
+    background: #253648;
+    color: #fff;
+}
+.ha-scenes,
+.ha-scene {
+    min-inline-size: 0;
+}
+.ha-scene {
+    display: grid;
+    grid-template-columns: minmax(0, 1.17fr) minmax(0, 0.9fr);
+    grid-template-areas: 'artifact copy' 'evidence evidence';
+}
+.ha-console:not([data-enhanced]) .ha-scene + .ha-scene {
+    border-block-start: 1px solid var(--ha-grid);
+}
+.ha-scene[hidden] {
+    display: none;
+}
+.ha-scene-copy {
+    grid-area: copy;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: clamp(1.1rem, 2.5vw, 2.7rem);
+    min-inline-size: 0;
+    background: var(--ha-face);
+}
+.ha-system-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    color: #c0cddc;
+    font-size: 0.66rem;
+}
+.ha-system-meta i {
+    width: 1.3rem;
+    height: 1px;
+    background: #9dacbd;
+}
+.ha-scene h3 {
+    margin: 0.8rem 0;
+    color: #f5f7f4;
+    font: 740 clamp(2.45rem, 3.8vw, 4.25rem)/0.95 var(--ha-display);
+    letter-spacing: -0.062em;
+    text-wrap: balance;
+}
+.ha-scene h3 span {
+    color: var(--ha-lime);
+}
+.ha-scene-copy > p {
+    color: #d7e0e6;
+    font-size: clamp(0.88rem, 1.06vw, 1rem);
+    line-height: 1.53;
+    max-width: 40ch;
+}
+.ha-scene-copy .ha-credit {
+    color: #afc0ce;
+    font: 500 0.7rem/1.55 var(--font-mono);
+    margin-block: 0.75rem 0;
+}
+.ha-demo-links {
+    display: flex;
+    gap: 0.28rem 0.9rem;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-block-start: 1.15rem;
+}
+.ha-demo-links a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    color: #e2ebf1;
+    font-size: 0.83rem;
+    font-weight: 650;
+    line-height: 1.3;
+}
+.ha-demo-links .ha-play {
+    color: #172116;
+    background: var(--ha-lime);
+    padding: 0.6rem 0.9rem;
+}
+.ha-demo-links .ha-play:hover {
+    text-decoration: none;
+    background: #ecffaf;
+}
+.ha-evidence {
+    grid-area: evidence;
+    display: flex;
+    gap: clamp(0.8rem, 2.2vw, 2rem);
+    align-items: center;
+    padding: 0.8rem clamp(0.85rem, 1.8vw, 1.65rem);
+    border-block-start: 1px solid var(--ha-grid);
+    background: #111a23;
+}
+.ha-evidence > a {
+    flex: none;
+    color: #eaf3fb;
+}
+.ha-evidence dl {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    gap: 0.5rem;
+}
+.ha-evidence dl > div {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    border-inline-start: 1px solid #344352;
+    padding-inline-start: clamp(0.5rem, 1.3vw, 1.25rem);
+}
+.ha-evidence dt {
+    color: var(--ha-muted);
+    font-size: 0.73rem;
+    line-height: 1.3;
+}
+.ha-evidence dd {
+    margin: 0.05rem 0 0.24rem;
+    color: #fff;
+    font: 650 clamp(1rem, 1.7vw, 1.5rem)/1.05 var(--ha-display);
+    letter-spacing: -0.035em;
+}
+
+/* The meter, punch card and endpoint are specimens inside the same illuminated display. */
+.ha-artifact {
+    grid-area: artifact;
+    margin: 0;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-width: 0;
+    background-color: #1539a0;
+    position: relative;
+    isolation: isolate;
+}
+.ha-exhibit {
+    min-height: clamp(255px, 24vw, 375px);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+    perspective: 850px;
+    background-color: #244cc3;
+    background-image:
+        radial-gradient(ellipse at 55% 55%, #6586ff80, transparent 62%),
+        linear-gradient(90deg, #b5d6ff19 1px, transparent 1px),
+        linear-gradient(#b5d6ff19 1px, transparent 1px);
+    background-size:
+        100% 100%,
+        24px 24px,
+        24px 24px;
+}
+.ha-exhibit::before,
+.ha-exhibit::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    border-color: #d4e3ff93;
+    border-style: solid;
+}
+.ha-exhibit::before {
+    top: 14px;
+    left: 14px;
+    border-width: 1px 0 0 1px;
+}
+.ha-exhibit::after {
+    bottom: 14px;
+    right: 14px;
+    border-width: 0 1px 1px 0;
+}
+.ha-instrument {
+    position: relative;
+    width: min(72%, 340px);
+    padding: clamp(0.62rem, 1.4vw, 1.1rem) 6.5% 0.7rem;
+    border-radius: 0.7rem;
+    transform: rotateX(22deg) rotateY(-10deg) rotateZ(-9deg);
+    color: #1b3142;
+    border: 1px solid #e7f4ff;
+    background: linear-gradient(144deg, #e7edf0 0%, #c5d4dc 28%, #b8c9d3 60%, #a8bbc8 100%);
+    box-shadow:
+        0 2px 1px #8599a6,
+        0 4px 0 #647a8c,
+        0 7px 0 #acb9c1,
+        0 10px 0 #71899b,
+        0 12px 0 #5a7389,
+        0 14px 0 #91a4b2,
+        0 17px 0 #576d83,
+        0 20px 0 #425a70,
+        7px 26px 16px #05122f85,
+        13px 36px 32px #0a1f5c82;
+}
+.ha-screws {
+    position: absolute;
+    pointer-events: none;
+    inset: 8px;
+    background:
+        radial-gradient(
+            circle at 3px 3px,
+            #5d7284 1px,
+            #a8b9c4 1.5px,
+            #71899b 2.5px,
+            transparent 3.5px
+        ),
+        radial-gradient(
+            circle at calc(100% - 3px) 3px,
+            #5d7284 1px,
+            #a8b9c4 1.5px,
+            #71899b 2.5px,
+            transparent 3.5px
+        ),
+        radial-gradient(
+            circle at 3px calc(100% - 3px),
+            #5d7284 1px,
+            #a8b9c4 1.5px,
+            #71899b 2.5px,
+            transparent 3.5px
+        ),
+        radial-gradient(
+            circle at calc(100% - 3px) calc(100% - 3px),
+            #5d7284 1px,
+            #a8b9c4 1.5px,
+            #71899b 2.5px,
+            transparent 3.5px
+        );
+}
+.ha-instrument-head,
+.ha-instrument-foot,
+.ha-paper-head,
+.ha-paper-foot,
+.ha-clock-base {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    font: 650 clamp(0.54rem, 0.75vw, 0.72rem)/1.3 var(--font-mono);
+    letter-spacing: 0.06em;
+}
+.ha-instrument-head {
+    margin-block: 0.12rem 0.5rem;
+}
+.ha-instrument-head span {
+    letter-spacing: 0;
+    color: #395265;
+}
+.ha-lcd {
+    background: #1c2d2e;
+    border: 3px solid #697e89;
+    border-radius: 2px;
+    padding: 0.45rem 0.85rem 0.7rem;
+    box-shadow: inset 1px 2px 4px #070f16;
+}
+.ha-rate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.3rem;
+    margin-block-end: 0.33rem;
+}
+.ha-rate strong {
+    color: var(--ha-lime);
+    font: 730 clamp(1.5rem, 3.35vw, 3.7rem)/1 var(--ha-display);
+    letter-spacing: -0.07em;
+}
+.ha-rate > span {
+    color: #d1dbbd;
+    max-width: 11ch;
+    font: 500 clamp(0.5rem, 0.66vw, 0.7rem)/1.2 var(--font-mono);
+    text-transform: uppercase;
+}
+.ha-led-banks {
+    display: grid;
+    gap: 4px;
+}
+.ha-bank {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.ha-led-grid {
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: 2px;
+    flex: 1;
+}
+.ha-led-grid i {
+    height: clamp(3px, 0.48vw, 7px);
+    border-radius: 1px;
+    background: #48574a;
+    box-shadow: inset 0 1px 1px #101b1d;
+}
+.ha-led-grid .is-lit {
+    background: #cbee86;
+    box-shadow:
+        inset 0 1px 0 #effab7,
+        0 0 3px #b8ec5a48;
+}
+.ha-bank > span {
+    color: #c3ccb8;
+    min-width: 3.4ch;
+    font: 600 clamp(0.45rem, 0.65vw, 0.65rem)/1 var(--font-mono);
+}
+.ha-instrument-foot {
+    margin-block-start: 0.45rem;
+    justify-content: flex-start;
+    font-size: clamp(0.4rem, 0.58vw, 0.57rem);
+}
+.ha-instrument-foot i {
+    width: 5px;
+    height: 5px;
+    background: #5f803a;
+    border-radius: 50%;
+}
+.ha-instrument-foot em {
+    margin-inline-start: auto;
+    width: 20%;
+    height: 7px;
+    background: repeating-linear-gradient(95deg, #687c8c 0 2px, transparent 2px 4px);
+}
+.ha-artifact-sys-02 .ha-exhibit {
+    background-color: #294b8d;
+    background-image:
+        radial-gradient(ellipse at 65% 35%, #8eb2f969, transparent 65%),
+        linear-gradient(90deg, #dae4ff16 1px, transparent 1px),
+        linear-gradient(#dae4ff16 1px, transparent 1px);
+}
+.ha-clock {
+    width: min(73%, 340px);
+    transform: rotateX(14deg) rotateY(-10deg) rotateZ(-8deg);
+    position: relative;
+    padding-block-end: 7%;
+}
+.ha-paper {
+    position: relative;
+    z-index: 1;
+    padding: 7% 7% 4.5%;
+    color: #223142;
+    background: linear-gradient(125deg, #fff8d6, #ede7c8);
+    box-shadow:
+        3px 4px 0 #d2d2bd,
+        6px 8px 0 #e9e6d2,
+        8px 11px 0 #afb6af,
+        12px 16px 12px #14243a5a;
+    border-block-start: 4px solid #354b7e;
+}
+.ha-paper-head {
+    border-block-end: 2px solid #566579;
+    padding-block-end: 0.45rem;
+    font-size: clamp(0.5rem, 0.68vw, 0.65rem);
+}
+.ha-paper-head span {
+    font-weight: 500;
+    letter-spacing: 0;
+}
+.ha-calendar {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-block: 0.7rem;
+}
+.ha-calendar > div {
+    display: grid;
+    justify-items: center;
+    gap: 0.2rem;
+    border-inline-end: 1px dashed #87978e;
+    color: #666d64;
+}
+.ha-calendar > div:last-child {
+    border: 0;
+}
+.ha-calendar b,
+.ha-calendar span {
+    font: 650 clamp(0.5rem, 0.72vw, 0.72rem) var(--font-mono);
+    text-transform: uppercase;
+}
+.ha-calendar strong {
+    font: 750 clamp(1.45rem, 2.8vw, 2.85rem)/1 var(--ha-display);
+    letter-spacing: -0.06em;
+}
+.ha-calendar .is-workday {
+    color: #163e82;
+}
+.ha-calendar i {
+    height: 6px;
+    width: 6px;
+    border: 1px solid #78836b;
+    border-radius: 50%;
+}
+.ha-calendar .is-workday i {
+    background: #214b80;
+    border-color: #214b80;
+}
+.ha-paper-foot {
+    padding-block-start: 0.4rem;
+    border-block-start: 1px solid #8f9d8c;
+    font-size: clamp(0.48rem, 0.66vw, 0.68rem);
+}
+.ha-clock-base {
+    position: absolute;
+    inset: auto -4% 0;
+    min-height: 35%;
+    justify-content: flex-end;
+    align-items: flex-end;
+    padding: 2% 6%;
+    background: linear-gradient(135deg, #b9cbd4, #7898ab);
+    border: 1px solid #dae8ec;
+    color: #21384a;
+    box-shadow:
+        0 5px 0 #657f91,
+        0 10px 0 #4d677f,
+        0 14px 0 #36516b,
+        8px 23px 13px #132d467d;
+}
+.ha-clock-base i {
+    margin-inline-end: auto;
+    width: 15%;
+    height: 5px;
+    background: repeating-linear-gradient(90deg, #465c72 0 2px, transparent 2px 4px);
+}
+.ha-artifact-sys-01 .ha-exhibit {
+    background: #244bc3;
+}
+.ha-device {
+    width: 100%;
+    max-height: clamp(255px, 24vw, 375px);
+    display: block;
+    object-fit: contain;
+}
+.ha-telemetry {
+    position: absolute;
+    inset: auto 0.85rem 0.85rem auto;
+    padding: 0.4rem 0.65rem;
+    border: 1px solid #a0b6dc;
+    background: #101d32ee;
+    color: var(--ha-lime);
+}
+.ha-telemetry span {
+    display: block;
+    color: #dce9fb;
+    font: 600 0.59rem var(--font-mono);
+    text-transform: uppercase;
+}
+.ha-telemetry strong {
+    font: 740 1.45rem/1.1 var(--ha-display);
+}
+.ha-artifact [data-muted] {
+    opacity: 0.3;
+}
+.ha-bank[data-highlight] .is-lit {
+    background: #eaffab;
+}
+.ha-calendar > [data-highlight] {
+    outline: 2px solid #335280;
+    outline-offset: -2px;
+}
+.ha-artifact figcaption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding-inline: 0.8rem;
+    background: #192e67;
+    border-block-start: 1px solid #7993cb80;
+}
+.ha-readings summary {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    cursor: pointer;
+    font-size: 0.76rem;
+    font-weight: 650;
+    color: #f4f8ff;
+}
+.ha-readings summary::-webkit-details-marker {
+    display: none;
+}
+.ha-readings[open] summary {
+    color: var(--ha-lime);
+}
+.ha-artifact figcaption:has(.ha-readings[open]) {
+    align-items: start;
+}
+.ha-readings[open] {
+    width: 100%;
+}
+.ha-readings[open] + .ha-art-note {
+    display: none;
+}
+.ha-readings > div {
+    padding: 0.75rem 0;
+    border-block-start: 1px solid #8297c5;
+    font-size: 0.8rem;
+}
+.ha-readings ul {
+    display: grid;
+    gap: 0.18rem;
+    padding: 0;
+    margin: 0.5rem 0 0;
+    list-style: none;
+}
+.ha-readings li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border-block-start: 1px solid #3c5268;
+    padding-block: 0.15rem;
+}
+.ha-readings li bdi {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--ha-lime);
+}
+.ha-readings li button {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    text-align: start;
+    background: transparent;
+    padding: 0.35rem 0.55rem;
+    color: inherit;
+}
+.ha-readings li button[aria-pressed='true'] {
+    background: #d8e4ff;
+    color: #132644;
+    box-shadow: inset 3px 0 #95bbfc;
+}
+.ha-readings li button[aria-pressed='true'] bdi {
+    color: #193b76;
+}
+.ha-readings li button:hover {
+    text-decoration: underline;
+}
+.ha-inspection-result {
+    display: block;
+    margin-block-start: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    background: #111f3e;
+    color: #deeac7;
+    font-size: 0.76rem;
+}
+.ha-inspection-result[hidden] {
+    display: none;
+}
+.ha-art-note {
+    font-size: 0.58rem;
+    color: #d3dffc;
+}
+
+.ha-workflow-section,
+.ha-library,
+.ha-principles {
+    margin-block-start: clamp(3rem, 6vw, 6.5rem);
+}
+.ha-workflow-section {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.05fr);
+    align-items: start;
+    gap: clamp(1.5rem, 6vw, 6rem);
+}
+.ha-home :is(.ha-workflow-intro, .ha-section-head) > h2 {
+    font: 740 clamp(2.15rem, 4.7vw, 4.7rem)/0.98 var(--ha-display);
+    letter-spacing: -0.065em;
+}
+.ha-workflow-intro > p,
+.ha-library p,
+.ha-principles details > p {
+    color: var(--ink-secondary);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.ha-workflow-intro > p {
+    max-width: 43ch;
+    margin-block: 0.85rem 1.25rem;
+}
+.ha-demo-index {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 1rem;
+    border-block-start: 1px solid var(--border-strong);
+}
+.ha-demo-index a {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+    border-block-end: 1px solid var(--border-hairline);
+    padding: 0.8rem 0;
+}
+.ha-demo-index svg {
+    color: var(--accent-primary);
+}
+.ha-demo-index b,
+.ha-demo-index small {
+    display: block;
+}
+.ha-demo-index b {
+    font-size: 0.84rem;
+}
+.ha-demo-index small {
+    font-size: 0.74rem;
+    line-height: 1.4;
+    color: var(--ink-secondary);
+}
+.ha-home #featured-workflows {
+    border: 1px solid var(--border-strong);
+    border-radius: 0;
+    box-shadow: none;
+}
+.ha-home #featured-workflows [aria-label='Choose a workflow'] {
+    background: var(--ha-ink);
+}
+.ha-home #featured-workflows button,
+.ha-home #featured-workflows [role='status'] {
+    border-radius: 0;
+}
+.ha-home #featured-workflows [aria-label='Choose a workflow'] button[aria-pressed='true'] {
+    background: var(--ha-lime);
+    color: #182419;
+}
+.ha-home #featured-workflows [aria-label='Choose a workflow'] :focus-visible {
+    outline-color: var(--ha-lime);
+}
+.ha-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-block-end: 1.75rem;
+}
+.ha-section-head button {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-height: 44px;
+    font-size: 0.85rem;
+    font-weight: 650;
+    border: 1px solid var(--border-strong);
+    padding: 0.55rem 0.85rem;
+    background: var(--bg-surface);
+}
+.ha-resource-list {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border: 1px solid var(--border-hairline);
+    border-block-start: 3px solid var(--ink-primary);
+}
+.ha-resource-list a {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    padding: clamp(1rem, 2.2vw, 2rem);
+    background: var(--bg-surface);
+    border-inline-end: 1px solid var(--border-hairline);
+    border-block-end: 1px solid var(--border-hairline);
+}
+.ha-resource-list a:hover {
+    background: var(--accent-tint);
+    text-decoration: none;
+}
+.ha-resource-list a > div,
+.ha-resource-list h3 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+}
+.ha-resource-list a > div {
+    color: var(--accent-primary);
+    font: 650 0.78rem var(--font-mono);
+}
+.ha-resource-list h3 {
+    margin-block: 1.35rem 0.3rem;
+    font: 700 clamp(1.1rem, 1.8vw, 1.65rem)/1.15 var(--ha-display);
+    letter-spacing: -0.04em;
+}
+.ha-resource-list h3 svg {
+    color: var(--accent-primary);
+}
+.ha-resource-list p {
+    font-size: 0.87rem;
+}
+.ha-principles {
+    display: grid;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.05fr);
+    gap: 1.5rem clamp(1.5rem, 6vw, 6rem);
+    border-block-start: 1px solid var(--border-strong);
+    padding-block-start: 2rem;
+}
+.ha-principles .ha-section-head {
+    align-items: flex-start;
+}
+.ha-principles details {
+    border-block-end: 1px solid var(--border-hairline);
+}
+.ha-principles summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 50px;
+    padding-block: 0.5rem;
+    font-weight: 650;
+}
+.ha-principles summary::-webkit-details-marker {
+    display: none;
+}
+.ha-principles summary span {
+    font-size: 1.45rem;
+    color: var(--accent-primary);
+}
+.ha-principles details[open] summary span {
+    transform: rotate(45deg);
+}
+.ha-principles details > p {
+    margin-block: 0 1rem;
+    font-size: 0.92rem;
+}
+.ha-contact {
+    margin-block-start: clamp(2rem, 4vw, 4rem);
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem 1rem;
+    justify-content: space-between;
+    padding-block: 0.7rem;
+    border-block: 1px solid var(--border-hairline);
+}
+.ha-contact a {
+    color: var(--accent-primary);
+}
+.ha-home a > svg:last-child:dir(rtl),
+.ha-systems .ha-selector-arrow:dir(rtl) {
+    scale: -1 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .ha-console[data-enhanced] .ha-scene:not([hidden]) .ha-exhibit > *,
+    .ha-console[data-enhanced] .ha-scene:not([hidden]) .ha-scene-copy {
+        animation: ha-insert 0.43s cubic-bezier(0.18, 0.78, 0.25, 1) both;
+    }
+    .ha-console[data-enhanced] .ha-scene:not([hidden]) .ha-scene-copy {
+        animation-name: ha-enter-copy;
+    }
+    .ha-readings[open] > div {
+        animation: ha-enter-copy 0.18s ease-out;
+    }
+    .ha-artifact [data-physical-part] {
+        transition: opacity 0.18s;
+    }
+    .ha-systems a,
+    .ha-demo-links a,
+    .ha-resource-list a {
+        transition:
+            background-color 0.16s,
+            color 0.16s;
+    }
+    @keyframes ha-insert {
+        from {
+            opacity: 0.55;
+            translate: 0 6px;
+        }
+        to {
+            opacity: 1;
+            translate: 0 0;
+        }
+    }
+    @keyframes ha-enter-copy {
+        from {
+            opacity: 0.65;
+            translate: 4px 0;
+        }
+        to {
+            opacity: 1;
+            translate: 0 0;
+        }
+    }
+}
+@media (max-width: 1000px) {
+    .ha-console-body {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .ha-systems {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        border-inline: 0;
+        background: #344253;
+    }
+    .ha-systems a {
+        min-height: 52px;
+        padding: 0.6rem 0.9rem;
+        border: 0;
+    }
+    .ha-systems a span {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
+    .ha-masthead {
+        grid-template-columns: minmax(0, 1.4fr) minmax(13rem, 0.75fr);
+    }
+}
+@media (max-width: 720px) {
+    .ha-masthead,
+    .ha-workflow-section,
+    .ha-principles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .ha-masthead {
+        gap: 0.75rem;
+        padding-block: 1.45rem 1.15rem;
+    }
+    .ha-masthead h1 {
+        font-size: clamp(3.35rem, 10.5vw, 4.9rem);
+        margin-block: 0.55rem 0;
+    }
+    .ha-intro > p {
+        max-width: 50ch;
+    }
+    .ha-systems a {
+        grid-template-columns: auto minmax(0, 1fr);
+        padding: 0.55rem 0.6rem;
+        gap: 0.4rem;
+    }
+    .ha-systems a span {
+        display: block;
+    }
+    .ha-systems .ha-selector-arrow {
+        display: none;
+    }
+    .ha-scenes .ha-scene {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .ha-exhibit {
+        min-height: 200px;
+    }
+    .ha-scene-copy {
+        padding: 0.95rem;
+    }
+    .ha-scene h3 {
+        font-size: 2.2rem;
+    }
+    .ha-evidence {
+        gap: 0.7rem;
+    }
+    .ha-instrument {
+        width: 83%;
+    }
+    .ha-resource-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ha-principles .ha-section-head {
+        margin: 0;
+    }
+}
+@media (max-width: 550px) {
+    .ha-home {
+        padding-inline: max(0.85rem, env(safe-area-inset-left));
+    }
+    .ha-masthead {
+        padding-inline: 0.15rem;
+    }
+    .ha-masthead h1 {
+        font-size: clamp(2.2rem, 10.25vw, 3.5rem);
+    }
+    .ha-byline {
+        font-size: 0.62rem;
+    }
+    .ha-intro > p {
+        font-size: 0.89rem;
+    }
+    .ha-intro nav {
+        gap: 1rem;
+    }
+    .ha-systems a > svg:first-child {
+        display: none;
+    }
+    .ha-systems a {
+        display: block;
+        min-height: 48px;
+        padding: 0.42rem 0.55rem;
+    }
+    .ha-systems a b {
+        font-size: 0.78rem;
+    }
+    .ha-console-head {
+        gap: 0 0.35rem;
+        min-height: 42px;
+        padding-inline: 0.65rem;
+    }
+    .ha-console-head h2 {
+        font-size: 0.62rem;
+    }
+    .ha-console-head a {
+        font-size: 0.68rem;
+    }
+    .ha-scenes .ha-scene {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: 'label' 'title' 'actions' 'artifact' 'explanation' 'credit' 'evidence';
+        background: var(--ha-face);
+    }
+    .ha-scene-copy {
+        display: contents;
+    }
+    .ha-system-meta {
+        grid-area: label;
+        margin: 0.75rem 1rem 0;
+        font-size: 0.6rem;
+    }
+    .ha-scene h3 {
+        grid-area: title;
+        margin: 0.4rem 1rem 0;
+        font-size: 2.1rem;
+    }
+    .ha-scene-copy > p {
+        grid-area: explanation;
+        margin: 0.85rem 1rem 0;
+        font-size: 0.84rem;
+    }
+    .ha-scene-copy .ha-credit {
+        grid-area: credit;
+        margin: 0.4rem 1rem 0.85rem;
+        font-size: 0.63rem;
+    }
+    .ha-demo-links {
+        grid-area: actions;
+        margin: 0.6rem 1rem 0.85rem;
+    }
+    .ha-exhibit {
+        min-height: 200px;
+    }
+    .ha-instrument {
+        width: min(69%, 240px);
+    }
+    .ha-clock {
+        width: min(68%, 237px);
+    }
+    .ha-device {
+        max-height: 220px;
+    }
+    .ha-evidence {
+        flex-direction: column-reverse;
+        align-items: flex-start;
+        gap: 0.15rem;
+        padding: 0.8rem 0.65rem 0.15rem;
+    }
+    .ha-evidence dt {
+        font-size: 0.65rem;
+    }
+    .ha-evidence dl {
+        gap: 0.32rem;
+    }
+    .ha-evidence dl > div {
+        padding-inline-start: 0.35rem;
+    }
+    .ha-workflow-section {
+        gap: 1.25rem;
+    }
+    .ha-demo-index {
+        grid-template-columns: 1fr;
+    }
+    .ha-resource-list a {
+        padding: 0.85rem;
+    }
+    .ha-resource-list p {
+        font-size: 0.75rem;
+    }
+    .ha-resource-list h3 {
+        font-size: 1rem;
+    }
+    .ha-section-head {
+        margin-block-end: 1.1rem;
+    }
+    .ha-contact > span {
+        font-size: 0.62rem;
+    }
+}
+@media print {
+    .ha-scene[hidden] {
+        display: grid !important;
+    }
+    .ha-console-head,
+    .ha-systems,
+    .ha-readings,
+    .ha-demo-links,
+    .ha-contact,
+    .ha-section-head button {
+        display: none;
+    }
+    .ha-scene {
+        break-inside: avoid;
+        color: #111;
+    }
+    .ha-home {
+        padding: 0;
+    }
+}

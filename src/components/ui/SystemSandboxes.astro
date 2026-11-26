@@ -1,5 +1,5 @@
 ---
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Maximize2, Minimize2 } from 'lucide-react';
 import SandboxGuide from './SandboxGuide.astro';
 import ServiceDesk from '../demos/ServiceDeskDemo';
 import Estate from '../demos/EstateOverviewDemo';
@@ -17,22 +17,46 @@ interface Props {
 }
 
 const { code, order, demoIds, featured = false } = Astro.props;
-const demoCodes = [['1A', '1B'], ['2A', '2C'], ['3A', '3B']][order - 1];
+const demoCodes = [
+    ['1A', '1B'],
+    ['2A', '2C'],
+    ['3A', '3B'],
+][order - 1];
 ---
+
 <section id="sandboxes" class:list={[{ 'featured-sandboxes': featured }]}>
     {featured ? (
         <div class="workflows-heading">
             <h2>Try the workflows</h2>
             <p>These demos use sample data.</p>
         </div>
-    ) : <h2>Live sandboxes</h2>}
+    ) : (
+        <h2>Live sandboxes</h2>
+    )}
     {demoIds.map((id, i) => {
         const next = demoIds[i + 1];
         return (
             <section id={id} aria-label={sandboxTitles[id]} class="sandbox">
                 <div class="sandbox-heading">
-                    {!featured && <span class="section-id">{code} / {demoCodes[i]}</span>}
-                    <h3>{sandboxTitles[id]}</h3>
+                    <div>
+                        <span class="section-id">
+                            {code} / {demoCodes[i]}
+                        </span>
+                        <h3>{sandboxTitles[id]}</h3>
+                    </div>
+                    <button
+                        type="button"
+                        class="demo-expand"
+                        data-demo-expand
+                        aria-controls={id}
+                        aria-pressed="false"
+                        hidden
+                    >
+                        <Maximize2 size={16} className="enter-icon" aria-hidden="true" />
+                        <Minimize2 size={16} className="exit-icon" aria-hidden="true" />
+                        <span>Expand demo</span>
+                    </button>
+                    <span class="expand-status" aria-live="polite"></span>
                 </div>
                 {sandboxChallenges[id] && <SandboxGuide challenge={sandboxChallenges[id]} />}
                 {id === 'service-desk' && <ServiceDesk client:load />}
@@ -41,23 +65,242 @@ const demoCodes = [['1A', '1B'], ['2A', '2C'], ['3A', '3B']][order - 1];
                 {id === 'attendance-amend' && <Attendance />}
                 {id === 'kpi-cockpit' && <Kpi />}
                 {id === 'funding-flow' && <Funding />}
-                {featured && <div class="workflow-footer">
+                <div class="workflow-footer">
                     <a href={next ? '#' + next : '#scope'}>
-                        {next ? sandboxTitles[next] : 'What I designed and built'} <ArrowRight size={16} className="directional-icon" aria-hidden="true" />
+                        {next
+                            ? sandboxTitles[next]
+                            : featured
+                              ? 'What I designed and built'
+                              : 'Ownership and scope'}{' '}
+                        <ArrowRight size={16} className="directional-icon" aria-hidden="true" />
                     </a>
-                </div>}
+                    <a href="#architecture">
+                        Read the architecture{' '}
+                        <ArrowRight size={16} className="directional-icon" aria-hidden="true" />
+                    </a>
+                </div>
             </section>
         );
     })}
 </section>
+<script>
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-demo-expand]')) {
+        const demo = button.closest<HTMLElement>('.sandbox');
+        if (!demo || !document.fullscreenEnabled || typeof demo.requestFullscreen !== 'function')
+            continue;
+        const label = button.querySelector('span')!;
+        const status = button.parentElement!.querySelector<HTMLElement>('.expand-status')!;
+        let expanded = false;
+        let scrollBefore = { top: 0, left: 0 };
+        let destination: HTMLElement | null = null;
+        const background: HTMLElement[] = [];
+        button.hidden = false;
+
+        button.addEventListener('click', async () => {
+            status.textContent = '';
+            try {
+                if (document.fullscreenElement === demo) {
+                    await document.exitFullscreen();
+                } else {
+                    scrollBefore = { top: window.scrollY, left: window.scrollX };
+                    await demo.requestFullscreen();
+                }
+            } catch {
+                status.textContent = 'Your browser could not change the demo view.';
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            const active = document.fullscreenElement === demo;
+            if (active === expanded) return;
+            expanded = active;
+            label.textContent = active ? 'Exit expanded view' : 'Expand demo';
+            button.setAttribute('aria-pressed', String(active));
+            if (active) {
+                // Keep the rest of this long case study out of keyboard and screen-reader navigation.
+                for (
+                    let layer: HTMLElement | null = demo;
+                    layer && layer !== document.body;
+                    layer = layer.parentElement
+                ) {
+                    for (const sibling of layer.parentElement!.children) {
+                        if (
+                            sibling !== layer &&
+                            sibling instanceof HTMLElement &&
+                            !sibling.inert &&
+                            !sibling.matches('script, style, link')
+                        ) {
+                            sibling.inert = true;
+                            background.push(sibling);
+                        }
+                    }
+                }
+                demo.scrollTop = 0;
+                button.focus({ preventScroll: true });
+                return;
+            }
+            for (const sibling of background.splice(0)) sibling.inert = false;
+            if (destination) {
+                if (!destination.hasAttribute('tabindex')) destination.tabIndex = -1;
+                destination.focus({ preventScroll: true });
+                destination.scrollIntoView({ behavior: 'instant' });
+                destination = null;
+            } else {
+                button.focus({ preventScroll: true });
+                window.scrollTo({ ...scrollBefore, behavior: 'instant' });
+            }
+        });
+
+        demo.addEventListener('keydown', (event) => {
+            if (
+                expanded &&
+                event.key === 'Escape' &&
+                !event.defaultPrevented &&
+                !demo.querySelector('dialog:modal')
+            ) {
+                event.preventDefault();
+                void document.exitFullscreen().catch(() => {
+                    status.textContent =
+                        'Use your browser’s fullscreen control to return to the case study.';
+                });
+            }
+        });
+        window.addEventListener('hashchange', () => {
+            if (!expanded) return;
+            const target = document.getElementById(location.hash.slice(1));
+            if (target && !demo.contains(target)) {
+                destination = target;
+                void document.exitFullscreen().catch(() => {
+                    destination = null;
+                });
+            }
+        });
+    }
+</script>
 <style>
-    .workflows-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .35rem 1rem; }
-    .workflows-heading h2 { font-size: clamp(1.55rem, 3.2vw, 2.65rem); font-weight: 700; }
-    .workflows-heading p { color: var(--ink-secondary); font-size: .86rem; }
-    .featured-sandboxes .sandbox { margin-block: .95rem clamp(1.2rem, 3vw, 2rem); border-color: var(--border-hairline); border-radius: .8rem; }
-    .featured-sandboxes .sandbox-heading { padding-block-end: .75rem; margin-block-end: .8rem; }
-    .featured-sandboxes .sandbox-heading h3 { margin: 0; font-size: clamp(1.17rem, 2.4vw, 1.75rem); font-weight: 700; }
-    .workflow-footer { margin-block-start: .85rem; border-block-start: 1px solid var(--border-hairline); }
-    .workflow-footer a { display: inline-flex; align-items: center; gap: .45rem; min-block-size: 44px; color: var(--accent-primary); font-size: .86rem; font-weight: 700; text-underline-offset: .22em; }
-    .workflow-footer a:hover { text-decoration: underline; }
+    .sandbox-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.55rem 1rem;
+    }
+    .sandbox-heading > div {
+        flex: 1 1 12rem;
+    }
+    .sandbox .demo-expand {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.45rem;
+        min-height: 44px;
+        color: var(--accent-primary);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 0;
+        padding: 0.4rem 0.7rem;
+        font-size: 0.82rem;
+        font-weight: 650;
+    }
+    .demo-expand :global(.exit-icon),
+    .demo-expand[aria-pressed='true'] :global(.enter-icon) {
+        display: none;
+    }
+    .demo-expand[aria-pressed='true'] :global(.exit-icon) {
+        display: block;
+    }
+    .expand-status:empty {
+        position: absolute;
+        inline-size: 1px;
+        block-size: 1px;
+        overflow: hidden;
+    }
+    .expand-status:not(:empty) {
+        flex-basis: 100%;
+        font-size: 0.84rem;
+        color: var(--ink-secondary);
+    }
+    .sandbox:fullscreen {
+        inline-size: 100%;
+        block-size: 100%;
+        max-inline-size: none;
+        margin: 0;
+        border: 0;
+        border-radius: 0;
+        overflow: auto;
+        overscroll-behavior: contain;
+        scroll-padding-block-start: 5.5rem;
+        padding: 0 max(1rem, calc((100vw - 96rem) / 2)) 2rem;
+        color: var(--ink-primary);
+        background: var(--bg-surface);
+    }
+    .sandbox:fullscreen .sandbox-heading {
+        position: sticky;
+        inset-block-start: 0;
+        z-index: 8;
+        margin-block: 0 1rem;
+        padding-block: 0.65rem;
+        border-bottom: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    @media (max-width: 540px) {
+        .sandbox:fullscreen {
+            scroll-padding-block-start: 9rem;
+        }
+        .sandbox:fullscreen .sandbox-heading h3 {
+            font-size: 1rem;
+        }
+    }
+    .workflows-heading {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.35rem 1rem;
+    }
+    .workflows-heading h2 {
+        font-size: clamp(1.55rem, 3.2vw, 2.65rem);
+        font-weight: 700;
+    }
+    .workflows-heading p {
+        color: var(--ink-secondary);
+        font-size: 0.86rem;
+    }
+    .featured-sandboxes .sandbox {
+        margin-block: 0.95rem clamp(1.2rem, 3vw, 2rem);
+        border-color: var(--border-hairline);
+        border-block-start: 3px solid var(--accent-primary);
+        border-radius: 0;
+    }
+    .featured-sandboxes .sandbox-heading {
+        padding-block-end: 0.75rem;
+        margin-block-end: 0.8rem;
+    }
+    .featured-sandboxes .sandbox-heading h3 {
+        margin: 0;
+        font-size: clamp(1.17rem, 2.4vw, 1.75rem);
+        font-weight: 700;
+    }
+    .workflow-footer {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 0.25rem 1rem;
+        margin-block-start: 0.85rem;
+        border-block-start: 1px solid var(--border-hairline);
+    }
+    .workflow-footer a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-block-size: 44px;
+        color: var(--accent-primary);
+        font-size: 0.86rem;
+        font-weight: 700;
+        text-underline-offset: 0.22em;
+    }
+    .workflow-footer a:hover {
+        text-decoration: underline;
+    }
 </style>

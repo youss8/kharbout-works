@@ -1,80 +1,133 @@
 ---
-import { ArrowUpRight, Command, Menu, Moon, Sun, X } from 'lucide-react';
-import GitHubMark from '../ui/GitHubMark.astro';
+import {
+    ArrowUpRight,
+    Blocks,
+    BookOpen,
+    Boxes,
+    ChevronDown,
+    FileText,
+    FlaskConical,
+    FolderOpen,
+    Layers3,
+    Mail,
+    Menu,
+    Moon,
+    Search,
+    Sun,
+    X,
+} from 'lucide-react';
 import { siteName } from '../../data/brand';
 import { profile } from '../../data/profile';
 
-const builtPages = import.meta.glob('/src/pages/**/*.{astro,ts}');
 const sections = [
-    ['01', 'Systems', 'systems'],
-    ['02', 'Vault', 'vault'],
-    ['03', 'AI Kit', 'ai-kit'],
-    ['04', 'Templates', 'templates'],
-    ['05', 'Lab', 'lab'],
-    ['06', 'CV', 'cv'],
-    ['07', 'Skills', 'claude-code-skills'],
-].map(([index, label, slug]) => ({
-    index,
-    label,
-    slug,
-    href:
-        slug === 'cv' || builtPages[`/src/pages/${slug}/index.astro`]
-            ? `/${slug}/`
-            : `/#directory-${slug}`,
-    current: Astro.url.pathname.split('/')[1] === slug,
-}));
-const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
+    {
+        label: 'Systems',
+        slug: 'systems',
+        description: 'Case studies and working demos',
+        icon: Layers3,
+    },
+    {
+        label: 'Vault',
+        slug: 'vault',
+        description: 'Components with live previews and source',
+        icon: Blocks,
+    },
+    { label: 'AI Kit', slug: 'ai-kit', description: 'Build, test and export prompts', icon: Boxes },
+    {
+        label: 'Skills',
+        slug: 'claude-code-skills',
+        description: 'Find an agent skill by task',
+        icon: BookOpen,
+    },
+    {
+        label: 'Templates',
+        slug: 'templates',
+        description: 'Architecture and operations documents',
+        icon: FolderOpen,
+    },
+    { label: 'Lab', slug: 'lab', description: 'Try the personal prototypes', icon: FlaskConical },
+    { label: 'CV', slug: 'cv', description: 'Experience and printable profiles', icon: FileText },
+];
+const [systems, ...remaining] = sections;
+const resources = remaining.slice(0, 4);
+const personal = remaining.slice(4);
+const current = Astro.url.pathname.split('/')[1];
+const isResource = resources.some((section) => section.slug === current);
+const href = (slug: string) => '/' + slug + '/';
 ---
 
 <header class="site-header no-print">
     <div class="nav-shell">
-        <a class="brand" href="/" aria-label={`${siteName} home`}>
-            <img src="/favicon.svg" width="33" height="33" alt="" />
+        <a class="brand" href="/" aria-label={siteName + ' home'}>
+            <img src="/favicon.svg" width="34" height="34" alt="" />
             <bdi dir="ltr">{siteName}</bdi>
         </a>
         <nav class="desktop-links" aria-label="Primary navigation">
-            {sections.map(({ index, label, href, current }) => (
-                <a href={href} aria-current={current ? 'page' : undefined}>
-                    <small>{index}</small>
+            <a
+                class="nav-link"
+                href={href(systems.slug)}
+                aria-current={current === systems.slug ? 'page' : undefined}
+            >
+                Systems
+            </a>
+            <details class="resource-menu" data-resource-menu>
+                <summary class:list={['nav-link', { 'resource-current': isResource }]}>
+                    Resources <ChevronDown size={14} aria-hidden="true" />
+                </summary>
+                <div class="resource-pane">
+                    {resources.map(({ label, slug, description, icon: Icon }) => (
+                        <a href={href(slug)} aria-current={current === slug ? 'page' : undefined}>
+                            <Icon size={20} aria-hidden="true" />
+                            <span>
+                                <strong>{label}</strong>
+                                <small>{description}</small>
+                            </span>
+                        </a>
+                    ))}
+                </div>
+            </details>
+            {personal.map(({ label, slug }) => (
+                <a
+                    class="nav-link"
+                    href={href(slug)}
+                    aria-current={current === slug ? 'page' : undefined}
+                >
                     {label}
                 </a>
             ))}
         </nav>
         <div class="utilities">
-            {askAvailable && (
-                <button
-                    class="ask-trigger"
-                    type="button"
-                    aria-label="Open command search"
-                    title="Search (Ctrl+K or Cmd+K)"
-                    aria-keyshortcuts="Control+K Meta+K"
-                    aria-haspopup="dialog"
-                    data-ask-open
-                >
-                    <Command size={15} aria-hidden="true" />
-                    <span>Search</span>
-                </button>
-            )}
             <button
-                class="tool theme"
+                class="search-button"
+                type="button"
+                aria-label="Open command search"
+                title="Search (Ctrl+K or Cmd+K)"
+                aria-keyshortcuts="Control+K Meta+K"
+                aria-haspopup="dialog"
+                data-ask-open
+            >
+                <Search size={16} aria-hidden="true" />
+                <span>Search</span>
+                <kbd aria-hidden="true" data-search-key>
+                    Ctrl K
+                </kbd>
+            </button>
+            <button
+                class="icon-button theme"
                 type="button"
                 aria-label="Dark mode"
                 aria-pressed="false"
                 title="Toggle dark mode"
                 data-theme-toggle
             >
-                <Moon className="moon-icon" size={17} aria-hidden="true" />
-                <Sun className="sun-icon" size={17} aria-hidden="true" />
+                <Moon className="moon-icon" size={18} aria-hidden="true" />
+                <Sun className="sun-icon" size={18} aria-hidden="true" />
             </button>
-            <a
-                class="tool gh-link"
-                href={profile.contact.repoUrl}
-                aria-label={`${siteName} on GitHub`}
-            >
-                <GitHubMark />
+            <a class="contact" href={'mailto:' + profile.contact.email}>
+                Get in touch <ArrowUpRight size={15} aria-hidden="true" />
             </a>
             <button
-                class="tool menu-trigger"
+                class="icon-button menu-trigger"
                 type="button"
                 aria-label="Open navigation"
                 aria-haspopup="dialog"
@@ -82,28 +135,32 @@ const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
                 aria-controls="mobile-nav"
                 data-menu-open
             >
-                <Menu size={20} aria-hidden="true" />
+                <Menu size={21} aria-hidden="true" />
             </button>
         </div>
     </div>
     <dialog id="mobile-nav" aria-labelledby="mobile-heading">
         <div class="drawer-head">
             <strong id="mobile-heading">Navigation</strong>
-            <button class="tool" type="button" aria-label="Close navigation" data-menu-close>
-                <X size={19} />
+            <button class="icon-button" type="button" aria-label="Close navigation" data-menu-close>
+                <X size={20} />
             </button>
         </div>
         <nav aria-label="Mobile navigation">
-            {sections.map(({ index, label, href, current }) => (
-                <a href={href} aria-current={current ? 'page' : undefined}>
-                    <small>{index}</small>
-                    {label}
+            {sections.map(({ label, slug, description, icon: Icon }) => (
+                <a href={href(slug)} aria-current={current === slug ? 'page' : undefined}>
+                    <Icon size={21} aria-hidden="true" />
+                    <span>
+                        <strong>{label}</strong>
+                        <small>{description}</small>
+                    </span>
                     <ArrowUpRight className="directional-icon" size={16} aria-hidden="true" />
                 </a>
             ))}
         </nav>
-        <a class="mobile-github" href={profile.contact.repoUrl}>
-            <GitHubMark size={16} /> Source on GitHub
+        <a class="drawer-contact" href={'mailto:' + profile.contact.email}>
+            <Mail size={16} aria-hidden="true" />
+            Get in touch
         </a>
     </dialog>
     <noscript>
@@ -115,8 +172,8 @@ const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
         <details class="mobile-fallback">
             <summary>Navigation</summary>
             <nav aria-label="Mobile navigation">
-                {sections.map(({ label, href, current }) => (
-                    <a href={href} aria-current={current ? 'page' : undefined}>
+                {sections.map(({ label, slug }) => (
+                    <a href={href(slug)} aria-current={current === slug ? 'page' : undefined}>
                         {label}
                     </a>
                 ))}
@@ -139,17 +196,31 @@ const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
         try {
             localStorage.setItem('yok-theme', theme);
         } catch {
-            /* The selected theme still applies to this page. */
+            /* The theme still applies to this visit. */
         }
         syncThemeButton();
         window.dispatchEvent(new CustomEvent('yok-theme-change', { detail: { theme } }));
     });
     window.addEventListener('yok-theme-change', syncThemeButton);
+    const resourceMenu = document.querySelector<HTMLDetailsElement>('[data-resource-menu]');
     document.addEventListener('click', (event) => {
-        if (event.target instanceof Element && event.target.closest('[data-ask-open]')) {
+        if (!(event.target instanceof Element)) return;
+        if (resourceMenu?.open && !resourceMenu.contains(event.target)) resourceMenu.open = false;
+        if (event.target.closest('[data-ask-open]'))
             window.dispatchEvent(new CustomEvent('yok-open-ask'));
+    });
+    resourceMenu?.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && resourceMenu.open) {
+            resourceMenu.open = false;
+            resourceMenu.querySelector('summary')?.focus();
         }
     });
+    resourceMenu?.addEventListener('focusout', (event) => {
+        if (event.relatedTarget instanceof Node && !resourceMenu.contains(event.relatedTarget))
+            resourceMenu.open = false;
+    });
+    const key = document.querySelector('[data-search-key]');
+    if (key && /Macintosh|iPhone|iPad/.test(navigator.userAgent)) key.textContent = '⌘ K';
     const drawer = document.querySelector<HTMLDialogElement>('#mobile-nav');
     const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
     menuButton?.addEventListener('click', () => {
@@ -158,114 +229,207 @@ const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
         menuButton.setAttribute('aria-expanded', 'true');
     });
     drawer?.addEventListener('click', (event) => {
-        if (!(event.target instanceof Element)) return;
-        if (event.target === drawer || event.target.closest('[data-menu-close], a[href]'))
+        if (
+            event.target instanceof Element &&
+            (event.target === drawer || event.target.closest('[data-menu-close], a[href]'))
+        )
             drawer.close();
     });
-    drawer?.addEventListener('close', () => menuButton?.setAttribute('aria-expanded', 'false'));
-    window.matchMedia('(min-width: 1061px)').addEventListener('change', (event) => {
-        if (event.matches && drawer?.open) drawer.close();
+    drawer?.addEventListener('close', () => {
+        menuButton?.setAttribute('aria-expanded', 'false');
+        if (window.matchMedia('(max-width: 780px)').matches)
+            menuButton?.focus({ preventScroll: true });
+    });
+    window.matchMedia('(max-width: 780px)').addEventListener('change', (event) => {
+        if (!event.matches && drawer?.open) drawer.close();
+        if (event.matches && resourceMenu) resourceMenu.open = false;
     });
 </script>
 <style>
     .site-header {
         position: sticky;
         inset-block-start: 0;
-        z-index: 30;
+        z-index: 35;
+        background: var(--bg-canvas);
         color: var(--ink-primary);
-        background: var(--bg-surface);
         border-block-end: 1px solid var(--border-hairline);
     }
     .nav-shell {
-        max-width: 1440px;
-        padding-inline: clamp(1rem, 4.3vw, 4.5rem);
         margin: auto;
-        min-height: 67px;
+        max-width: 1580px;
+        min-height: 68px;
+        padding-inline: var(--page-gutter);
         display: flex;
-        gap: clamp(0.8rem, 2vw, 2.3rem);
         align-items: center;
         justify-content: space-between;
+        gap: 1rem;
     }
     .brand,
-    .desktop-links a,
-    .tool,
-    .ask-trigger,
-    .mobile-github {
+    .nav-link,
+    .utilities,
+    .search-button,
+    .icon-button,
+    .contact,
+    .drawer-contact {
         display: inline-flex;
         align-items: center;
-        justify-content: center;
-        color: inherit;
+    }
+    .brand,
+    .nav-link,
+    .contact,
+    .drawer-contact,
+    .resource-pane a,
+    dialog nav a {
         text-decoration: none;
+        color: inherit;
     }
     .brand {
-        gap: 0.65rem;
-        white-space: nowrap;
-        font-size: 0.95rem;
-        font-weight: 700;
-        letter-spacing: -0.035em;
-    }
-    .brand img {
+        gap: 0.6rem;
+        min-height: 44px;
         flex: none;
+        font: 760 clamp(1.15rem, 1.65vw, 1.55rem)/1 var(--font-display);
+        letter-spacing: -0.065em;
+        white-space: nowrap;
     }
     .desktop-links {
         display: flex;
-        align-self: stretch;
-        gap: clamp(0.9rem, 1.8vw, 1.85rem);
+        align-items: center;
+        gap: clamp(0.7rem, 2.4vw, 2.5rem);
     }
-    .desktop-links a {
+    .nav-link {
+        cursor: pointer;
+        min-height: 44px;
+        gap: 0.35rem;
         position: relative;
-        gap: 0.3rem;
-        font-size: 0.8rem;
-        font-weight: 600;
+        font: 600 0.88rem/1.3 var(--font-sans);
     }
-    .desktop-links a:hover,
-    .desktop-links a[aria-current],
-    dialog nav a:hover {
-        color: var(--accent-primary);
-    }
-    .desktop-links a[aria-current]::after {
+    .nav-link::after {
         content: '';
         position: absolute;
-        inset: auto 0 -1px;
+        inset: auto 0 0.3rem;
         height: 2px;
         background: var(--accent-primary);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.18s ease-out;
     }
-    nav small {
-        font-family: var(--font-mono);
+    .nav-link:dir(rtl)::after {
+        transform-origin: right;
+    }
+    .nav-link:where(:hover, :focus-visible, [aria-current], .resource-current)::after,
+    .resource-menu[open] summary::after {
+        transform: scaleX(1);
+    }
+    .resource-menu {
+        position: relative;
+    }
+    summary {
+        list-style: none;
+    }
+    summary::-webkit-details-marker {
+        display: none;
+    }
+    summary :global(svg) {
+        transition: transform 0.2s ease;
+    }
+    details[open] summary :global(svg) {
+        transform: rotate(180deg);
+    }
+    .resource-pane {
+        width: min(32rem, 80vw);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        position: absolute;
+        z-index: 2;
+        inset-block-start: calc(100% + 0.7rem);
+        inset-inline-start: -1rem;
+        border: 1px solid var(--border-strong);
+        background: var(--border-hairline);
+        box-shadow: 0 14px 34px #07132724;
+    }
+    .resource-menu[open] .resource-pane,
+    dialog[open] {
+        animation: panel-appear 0.2s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    }
+    .resource-pane a,
+    dialog nav a {
+        display: flex;
+        gap: 0.8rem;
+        align-items: center;
+        padding: 1rem;
+        background: var(--bg-surface);
+    }
+    .resource-pane a:hover,
+    dialog nav a:hover,
+    .resource-pane a[aria-current],
+    dialog nav a[aria-current] {
+        background: var(--accent-tint);
+    }
+    .resource-pane :global(svg),
+    dialog nav :global(svg:first-child) {
+        color: var(--accent-primary);
+    }
+    .resource-pane :is(small, strong),
+    dialog nav :is(small, strong) {
+        display: block;
+    }
+    .resource-pane strong,
+    dialog nav strong {
+        font: 650 1rem/1.3 var(--font-display);
+    }
+    .resource-pane small,
+    dialog nav small {
+        margin-block-start: 0.16rem;
         color: var(--ink-secondary);
-        font-size: 0.62rem;
-        font-weight: 400;
+        font-size: 0.8rem;
+        line-height: 1.4;
     }
     .utilities {
-        display: flex;
-        align-items: center;
-        gap: 3px;
+        gap: 0.35rem;
     }
-    .tool,
-    .ask-trigger {
-        padding: 0;
-        cursor: pointer;
-        min-height: 38px;
-        background: none;
+    .icon-button,
+    .search-button,
+    .contact {
+        justify-content: center;
+        gap: 0.4rem;
+        min-height: 44px;
+        background: transparent;
+        color: inherit;
         border: 1px solid transparent;
-        border-radius: 4px;
+        font: 600 0.85rem/1 var(--font-sans);
     }
-    .tool {
-        min-width: 38px;
+    .icon-button {
+        width: 44px;
+        padding: 0;
     }
-    .tool:hover,
-    .ask-trigger:hover {
+    .search-button {
+        padding: 0 0.72rem;
+        border-color: var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    .search-button kbd {
+        font: 500 0.64rem/1 var(--font-mono);
+        color: var(--ink-muted);
+        padding: 0.25rem 0.3rem;
+        border: 1px solid var(--border-hairline);
+        border-radius: 3px;
+    }
+    .icon-button:hover,
+    .search-button:hover {
         background: var(--bg-subtle);
     }
-    .ask-trigger {
-        gap: 0.38rem;
-        padding-inline: 0.5rem;
-        border-color: var(--border-hairline);
-        font-size: 0.8rem;
-        font-weight: 600;
+    .contact {
+        background: var(--ink-primary);
+        color: var(--bg-surface);
+        padding: 0 0.85rem;
+    }
+    .contact:hover {
+        background: var(--accent-primary);
     }
     .theme :global(.sun-icon),
-    .menu-trigger {
+    .menu-trigger,
+    .mobile-fallback {
         display: none;
     }
     :global([data-theme='dark']) .theme :global(.sun-icon) {
@@ -276,94 +440,130 @@ const askAvailable = '/src/pages/search-index.json.ts' in builtPages;
     }
     dialog {
         position: fixed;
-        inset-block: 0.7rem auto;
-        inset-inline: auto 0.7rem;
-        width: min(21rem, calc(100% - 1.4rem));
-        max-height: calc(100dvh - 1.4rem);
-        margin: 0;
-        padding: 1.1rem;
-        color: var(--ink-primary);
+        inset: auto 0 0;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 32rem;
+        max-height: 90dvh;
+        padding: 0;
         background: var(--bg-surface);
+        color: var(--ink-primary);
         border: 1px solid var(--border-strong);
-        border-radius: 6px;
+        border-block-start: 4px solid var(--assembly-blue);
+        overscroll-behavior: contain;
     }
     dialog::backdrop {
-        background: rgb(8 18 13 / 42%);
+        background: #0b142bb0;
     }
-    .drawer-head,
-    dialog nav a {
+    .drawer-head {
+        padding: 0.5rem 0.8rem 0.5rem 1.1rem;
         display: flex;
         align-items: center;
         justify-content: space-between;
+        border-block-end: 1px solid var(--border-hairline);
     }
-    dialog nav {
-        margin-block: 0.8rem;
+    .drawer-head strong {
+        font: 700 1.35rem var(--font-display);
+        letter-spacing: -0.04em;
     }
     dialog nav a {
-        padding: 0.85rem 0.4rem;
-        gap: 1rem;
-        justify-content: flex-start;
-        text-decoration: none;
-        color: inherit;
-        border-block-start: 1px solid var(--border-hairline);
-        font-weight: 600;
+        border-block-end: 1px solid var(--border-hairline);
+        padding: 0.68rem 1.1rem;
     }
-    dialog nav a :global(svg) {
+    dialog nav a :global(svg:last-child) {
         margin-inline-start: auto;
     }
-    .mobile-github {
+    .drawer-contact {
         gap: 0.5rem;
-        font-size: 0.8rem;
+        color: var(--accent-primary);
+        min-height: 48px;
+        padding-inline: 1.1rem;
+        font-weight: 600;
     }
     .mobile-fallback {
-        display: none;
-        padding: 0 1rem 0.6rem;
+        padding: 0 var(--page-gutter) 0.6rem;
     }
     .mobile-fallback summary {
-        width: max-content;
         cursor: pointer;
     }
     .mobile-fallback nav {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.35rem 1rem;
+        gap: 0.25rem 1rem;
     }
     .mobile-fallback a {
         display: inline-flex;
         align-items: center;
-        min-block-size: 2rem;
-        color: var(--ink-primary);
+        color: var(--accent-primary);
     }
-    @media (max-width: 1060px) {
+    @keyframes panel-appear {
+        from {
+            opacity: 0;
+            translate: 0 8px;
+        }
+        to {
+            opacity: 1;
+            translate: 0 0;
+        }
+    }
+    @media (max-width: 1000px) {
+        .contact {
+            display: none;
+        }
+    }
+    @media (max-width: 780px) {
         .desktop-links {
             display: none;
         }
         .menu-trigger {
             display: inline-flex;
         }
-    }
-    @media (max-width: 1060px) {
         .mobile-fallback {
             display: block;
         }
-    }
-    @media (max-width: 480px) {
-        .gh-link {
+        .nav-shell {
+            min-height: 58px;
+            gap: 0.4rem;
+        }
+        .search-button kbd {
             display: none;
         }
+    }
+    @media (max-width: 420px) {
         .nav-shell {
-            min-height: 57px;
+            padding-inline: 0.75rem;
         }
         .brand {
             gap: 0.4rem;
+            font-size: 1.08rem;
+        }
+        .brand img {
+            width: 28px;
+            height: 28px;
+        }
+        .utilities {
+            gap: 0;
+        }
+        .search-button {
+            padding: 0 0.4rem;
+            border-color: transparent;
+            background: transparent;
         }
     }
     @media (max-width: 360px) {
         .nav-shell {
-            gap: 0.45rem;
-            padding-inline: 0.65rem;
+            padding-inline: 0.56rem;
+            gap: 0.25rem;
         }
-        .ask-trigger :global(svg) {
+        .brand {
+            gap: 0.3rem;
+            font-size: 1rem;
+        }
+        .brand img {
+            width: 25px;
+            height: 25px;
+        }
+        .search-button :global(svg) {
             display: none;
         }
     }

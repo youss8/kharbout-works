@@ -169,8 +169,12 @@ test('category, alias search and history lead to a copyable guide', async ({ pag
     await expect(page.locator('#count')).toHaveText('1 guide');
     await page.reload();
     await expect(search).toHaveValue('docx');
+    await page.getByRole('checkbox', { name: 'Compact list' }).check();
+    await expect(page.locator('[data-group] li:visible .agents')).toBeHidden();
     await page.getByRole('link', { name: /Word Document Creation/ }).press('Enter');
     await expect(page).toHaveURL(directory + 'anthropic-docx/');
+    const filtered = page.getByRole('link', { name: 'Back to filtered guides' });
+    await expect(filtered).toHaveAttribute('href', /q=docx/);
     await expect(page.getByRole('heading', { name: 'What you need' })).toBeVisible();
     const prompt = await page.locator('#prompt').innerText();
     await page.getByRole('button', { name: 'Copy example' }).press('Enter');

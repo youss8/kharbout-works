@@ -1,0 +1,326 @@
+.resource-shell .resource-heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(14rem, 0.7fr);
+    align-items: end;
+    gap: 1rem clamp(2rem, 5vw, 5rem);
+    max-inline-size: none;
+    margin-block-end: clamp(1.25rem, 2.8vw, 2.8rem);
+    padding-block-end: clamp(1.25rem, 2.7vw, 2.5rem);
+    border-block-end: 1px solid var(--ink-primary);
+}
+.resource-shell .page-heading h1,
+.prompt-builder .builder-intro h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2.6rem, 5.7vw, 5.8rem);
+    font-weight: 750;
+    line-height: 0.98;
+    letter-spacing: -0.065em;
+    overflow-wrap: anywhere;
+}
+.resource-heading > p {
+    max-inline-size: 56ch;
+    color: var(--ink-secondary);
+}
+.resource-links {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    grid-column: 1 / -1;
+}
+.resource-shell .resource-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-block-size: 44px;
+    margin: 0;
+    font-size: 0.87rem;
+    font-weight: 650;
+}
+.resource-shell .resource-links .builder-link {
+    color: white;
+    background: var(--assembly-blue);
+    border: 1px solid var(--assembly-blue);
+    padding: 0.55rem 1rem;
+    border-radius: 0;
+}
+.resource-workspace .resource-register {
+    min-inline-size: 0;
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-hairline);
+    border-radius: 0;
+}
+.resource-register nav a {
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+}
+.resource-register nav a[aria-current='true'] {
+    background: var(--bg-surface);
+    color: var(--accent-primary);
+}
+.resource-workspace :is(.vault-detail, .kit-detail, .template-reader) {
+    min-inline-size: 0;
+}
+.resource-workspace :is(.vault-detail, .kit-detail, .template-reader) > article {
+    border-block-start: 3px solid var(--assembly-blue);
+    border-radius: 0;
+}
+.resource-shell
+    :is(.resource-register, .frame-controls, .code-tabs, .reader-tabs, .export-actions)
+    :is(a, input, select, button) {
+    border-radius: 0;
+}
+.resource-shell .kit-detail > article {
+    container: blueprint / inline-size;
+}
+.resource-shell .export-actions :is(a, button) {
+    min-block-size: 44px;
+}
+.resource-shell .export-actions button:first-child {
+    color: white;
+    border-color: var(--assembly-blue);
+    background: var(--assembly-blue);
+}
+.resource-shell .compiler :is(h2, h3),
+.resource-shell .template-reader article > header h2,
+.resource-shell .vault-detail article > h2,
+.skill-directory .group > h2,
+.guide .guide-layout article h2 {
+    font-family: var(--font-display);
+    font-weight: 700;
+}
+.resource-shell .compiler .preview pre {
+    background: var(--bg-subtle);
+}
+.resource-shell .compiler .preview h3,
+.resource-shell .compiler .variable-fields legend {
+    font: 600 0.87rem/1.4 var(--font-mono);
+}
+.resource-shell .template-reader article > header {
+    margin-block-end: 1rem;
+}
+.resource-shell .template-reader .reader-tabs {
+    margin-block: 1rem;
+    border-block-end: 0;
+}
+.resource-shell .reader-tabs button[aria-selected='true'],
+.resource-shell .code-tabs button[aria-selected='true'] {
+    border-block-end: 3px solid var(--accent-primary);
+}
+.skill-directory .directory {
+    gap: clamp(1rem, 3vw, 3rem);
+}
+.skill-directory .topics,
+.source-outline {
+    padding: 1rem;
+    background: var(--bg-subtle);
+    border-block-start: 3px solid var(--ink-primary);
+}
+.skill-directory .topics nav a {
+    padding: 0.65rem 0.55rem;
+    border-block-end: 1px solid var(--border-hairline);
+    line-height: 1.3;
+}
+.skill-directory .group > h2 {
+    border-block-start: 3px solid var(--assembly-blue);
+}
+.skill-directory .group .state {
+    align-self: stretch;
+    padding-block-start: 0.55rem;
+    border-block-start: 1px solid var(--border-hairline);
+    padding-inline-end: 1.3rem;
+}
+.skill-directory [data-compact] .group .state {
+    align-self: center;
+    padding: 0;
+    border: 0;
+}
+.guide.resource-shell .page-heading {
+    max-inline-size: none;
+    border-block-end: 1px solid var(--ink-primary);
+    padding-block-end: 1.25rem;
+}
+.guide.resource-shell .page-heading h1 {
+    margin-block: 0.5rem 1rem;
+}
+.guide.resource-shell .guide-nav {
+    margin-block: 1.25rem 0;
+    gap: 0.25rem 1rem;
+}
+.guide.resource-shell .guide-nav a {
+    min-block-size: 44px;
+    padding: 0.4rem 0;
+    text-decoration-thickness: 1px;
+}
+.guide.resource-shell .guide-layout aside {
+    border-block-start: 4px solid var(--assembly-blue);
+}
+.guide.resource-shell .guide-layout .example {
+    border-width: 0;
+    border-inline-start: 3px solid var(--assembly-blue);
+    background: var(--bg-subtle);
+}
+.source-workspace .page-heading {
+    max-inline-size: none;
+    margin-block: 0.8rem 1.25rem;
+}
+.source-switcher,
+.builder-stations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    padding-block: 0.5rem;
+    border-block: 1px solid var(--ink-primary);
+}
+.source-workspace .source-switcher a,
+.builder-stations a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding: 0.45rem 0.8rem;
+    color: var(--ink-primary);
+    font-size: 0.88rem;
+    font-weight: 650;
+    text-decoration: none;
+}
+.source-workspace .source-switcher a[aria-current] {
+    background: var(--assembly-ink);
+    color: var(--assembly-lime);
+}
+.source-switcher a:hover,
+.builder-stations a:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+.source-layout {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.42fr) minmax(0, 1.58fr);
+    gap: clamp(1rem, 3vw, 3rem);
+    margin-block-start: 1.25rem;
+    align-items: start;
+}
+.source-outline {
+    display: grid;
+    min-inline-size: 0;
+}
+.source-outline h2 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-block-end: 0.5rem;
+    font-size: 1.1rem;
+}
+.source-outline h2 small {
+    font: 0.75rem/1.5 var(--font-mono);
+}
+.source-outline a {
+    display: flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding-block: 0.4rem;
+    border-block-start: 1px solid var(--border-hairline);
+    overflow-wrap: anywhere;
+    font: 0.79rem/1.4 var(--font-mono);
+}
+.source-layout [data-source-files] {
+    min-inline-size: 0;
+}
+.source-layout .source-file {
+    margin-block-end: 1.25rem;
+    padding: clamp(0.7rem, 2vw, 1.4rem);
+    border: 1px solid var(--border-hairline);
+    border-block-start: 3px solid var(--assembly-blue);
+    background: var(--bg-surface);
+}
+.source-layout .source-file .file-label {
+    margin-block: 0 0.55rem;
+}
+.source-layout .source-file [data-copy-file] {
+    min-block-size: 44px;
+}
+.builder-stations {
+    margin-block-end: 0.2rem;
+}
+.builder-stations a {
+    border-inline-start: 2px solid var(--accent-primary);
+}
+.prompt-builder .builder-panel {
+    border-radius: 0;
+    border-block-start: 3px solid var(--assembly-blue);
+}
+.prompt-builder .builder-panel-head {
+    background: var(--bg-subtle);
+}
+.prompt-builder .builder-output .builder-panel-head {
+    color: white;
+    background: var(--assembly-blue);
+}
+.prompt-builder .builder-output .builder-panel-head :is(svg, h2) {
+    color: inherit;
+}
+.prompt-builder .builder-output .builder-panel-head .builder-tag {
+    color: var(--ink-primary);
+}
+@container blueprint (min-width: 42rem) {
+    .resource-shell .compiler {
+        grid-template-columns: minmax(12rem, 0.85fr) minmax(0, 1.15fr);
+        align-items: start;
+    }
+    .resource-shell .compiler > :is(.compiler-head, asset-export) {
+        grid-column: 1 / -1;
+    }
+    .resource-shell .compiler .variable-fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+@media screen and (min-width: 761px) {
+    .resource-register nav {
+        max-block-size: 55vh;
+        overflow: auto;
+        scrollbar-width: thin;
+    }
+    .source-outline {
+        position: sticky;
+        inset-block-start: 6rem;
+        max-block-size: calc(100dvh - 7rem);
+        overflow: auto;
+    }
+}
+@media (max-width: 760px) {
+    .resource-shell .resource-heading,
+    .source-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .resource-shell .resource-heading {
+        gap: 0.75rem;
+    }
+    .resource-shell .resource-workspace {
+        gap: 0.65rem;
+    }
+    .source-outline {
+        max-block-size: 12rem;
+        overflow: auto;
+    }
+    .builder-stations {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (prefers-reduced-motion: no-preference) {
+    .resource-workspace :is(.vault-detail, .kit-detail, .template-reader) > article:not([hidden]),
+    .resource-workspace [role='tabpanel']:not([hidden]) {
+        animation: reader-enter 180ms var(--motion-ease) both;
+    }
+    @keyframes reader-enter {
+        from {
+            opacity: 0.65;
+            transform: translateY(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}

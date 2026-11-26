@@ -14,6 +14,8 @@ const test = base.extend({
 });
 
 async function expectToFitViewport(page) {
+    await page.waitForLoadState('load');
+    await page.evaluate(() => document.fonts.ready);
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => ({
         content: document.documentElement.scrollWidth,
@@ -71,7 +73,7 @@ test('the architecture tabs switch ownership, metrics, and modeling challenges',
         { code: 'SYS-02', scope: /pre.rms/i, scale: '136', challenge: /leave quote/i },
     ];
     await expect(tabs.getByRole('tab', { selected: true })).toHaveAccessibleName(/SYS-03/);
-    await expect(tabs.getByRole('tab')).toHaveCount(2);
+    await expect(tabs.getByRole('tab')).toHaveCount(3);
     for (const { code, scope, scale, challenge } of cases) {
         const tab = tabs.getByRole('tab', { name: new RegExp(code) });
         await tab.click();

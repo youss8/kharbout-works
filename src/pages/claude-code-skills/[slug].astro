@@ -4,40 +4,59 @@ import BaseLayout from '../../components/layout/BaseLayout.astro';
 import { evidenceLabels, skillGuides, skillPath } from '../../data/claude-skills';
 import { adapterName } from '../../lib/claude-skill-exports';
 import '../../styles/workbench.css';
+import '../../styles/resource-workspaces.css';
 
 export function getStaticPaths() {
-    return skillGuides.map(guide => ({ params: { slug: guide.slug }, props: { guide } }));
+    return skillGuides.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }));
 }
 const { guide } = Astro.props;
 const topicPath = '/claude-code-skills/?topic=' + guide.categoryId + '#' + guide.categoryId;
-const related = skillGuides.filter(item => guide.related.includes(item.slug));
-const aliases = guide.aliases.filter(alias => alias.toLowerCase() !== guide.name.toLowerCase());
+const related = skillGuides.filter((item) => guide.related.includes(item.slug));
+const aliases = guide.aliases.filter((alias) => alias.toLowerCase() !== guide.name.toLowerCase());
 const listing = guide.listing;
 const downloadRoot = '/claude-code-skills/download/' + guide.slug + '/';
 const folder = adapterName(guide.slug);
-const evidenceGroups = guide.compatibility.reduce((groups, host) => {
-    const sameEvidence = groups.find(item => item.source === host.source && item.level === host.level);
-    if (sameEvidence) sameEvidence.agents.push(host.agent);
-    else groups.push({ agents: [host.agent], level: host.level, source: host.source });
-    return groups;
-}, [] as { agents: string[]; level: keyof typeof evidenceLabels; source: string }[]);
-const sources = [...new Set([guide.source, ...(guide.upstream ? [guide.upstream] : [])])].map(href => {
-    const { hostname, pathname } = new URL(href);
-    let label = hostname;
-    if (hostname === 'collectivebrain.de') label = pathname.startsWith('/en/') ? 'CollectiveBrain · English' : 'CollectiveBrain · Deutsch';
-    if (hostname === 'github.com') {
-        const [, owner, repo, view] = pathname.split('/');
-        const folder = pathname.replace(/\/SKILL\.md$/i, '').split('/').at(-1);
-        label = 'GitHub · ' + owner + '/' + repo + (view && folder ? ' · ' + folder : '');
-    }
-    return { href, label };
-});
+const evidenceGroups = guide.compatibility.reduce(
+    (groups, host) => {
+        const sameEvidence = groups.find(
+            (item) => item.source === host.source && item.level === host.level,
+        );
+        if (sameEvidence) sameEvidence.agents.push(host.agent);
+        else groups.push({ agents: [host.agent], level: host.level, source: host.source });
+        return groups;
+    },
+    [] as { agents: string[]; level: keyof typeof evidenceLabels; source: string }[],
+);
+const sources = [...new Set([guide.source, ...(guide.upstream ? [guide.upstream] : [])])].map(
+    (href) => {
+        const { hostname, pathname } = new URL(href);
+        let label = hostname;
+        if (hostname === 'collectivebrain.de')
+            label = pathname.startsWith('/en/')
+                ? 'CollectiveBrain · English'
+                : 'CollectiveBrain · Deutsch';
+        if (hostname === 'github.com') {
+            const [, owner, repo, view] = pathname.split('/');
+            const folder = pathname
+                .replace(/\/SKILL\.md$/i, '')
+                .split('/')
+                .at(-1);
+            label = 'GitHub · ' + owner + '/' + repo + (view && folder ? ' · ' + folder : '');
+        }
+        return { href, label };
+    },
+);
 ---
+
 <BaseLayout title={guide.name + ' · Claude Code skills'} description={guide.description}>
-    <div class="page-shell guide">
+    <div class="page-shell guide resource-shell">
         <nav aria-label="Breadcrumb" class="breadcrumbs">
-            <a href="/claude-code-skills/"><ArrowLeft className="directional-icon" size={15} aria-hidden="true"/>Claude Code skills</a>
-            <span aria-hidden="true">/</span><a href={topicPath}>{guide.category}</a>
+            <a href="/claude-code-skills/" data-directory-return>
+                <ArrowLeft className="directional-icon" size={15} aria-hidden="true" />
+                <span>Claude Code skills</span>
+            </a>
+            <span aria-hidden="true">/</span>
+            <a href={topicPath}>{guide.category}</a>
         </nav>
         <header class="page-heading">
             <p class="section-id">{guide.kind}</p>
@@ -45,94 +64,279 @@ const sources = [...new Set([guide.source, ...(guide.upstream ? [guide.upstream]
             <p>{guide.description}</p>
             <nav class="guide-nav" aria-label="In this guide">
                 <a href="#agent-support">Agent compatibility</a>
-                <a href="#downloads"><Download size={15} aria-hidden="true"/> Downloads</a>
+                <a href="#example-prompt">Example prompt</a>
+                <a href="#example-status">Example status</a>
+                <a href="#downloads">
+                    <Download size={15} aria-hidden="true" /> Downloads
+                </a>
             </nav>
         </header>
         <div class="guide-layout">
             <article aria-label={'Using ' + guide.name}>
-                <section><h2>What you need</h2><p>{guide.requirements}</p>
-                    <a class="setup-link" href="#publisher">Find setup instructions</a>
+                <section>
+                    <h2>What you need</h2>
+                    <p>{guide.requirements}</p>
+                    <a class="setup-link" href="#publisher">
+                        Find setup instructions
+                    </a>
                 </section>
-                <section><h2>How to use it</h2><ol>{guide.steps.map(step => <li>{step}</li>)}</ol></section>
+                <section>
+                    <h2>How to use it</h2>
+                    <ol>
+                        {guide.steps.map((step) => (
+                            <li>{step}</li>
+                        ))}
+                    </ol>
+                </section>
                 <section class="example">
-                    <h2>Example prompt</h2>
-                    <blockquote id="prompt" tabindex="-1">{guide.example}</blockquote>
-                    <button type="button" id="copy" hidden><Clipboard size={15} aria-hidden="true"/>Copy example</button>
+                    <h2 id="example-prompt" tabindex="-1">
+                        Example prompt
+                    </h2>
+                    <blockquote id="prompt" tabindex="-1">
+                        {guide.example}
+                    </blockquote>
+                    <button type="button" id="copy" hidden>
+                        <Clipboard size={15} aria-hidden="true" />
+                        Copy example
+                    </button>
                     <span role="status" id="copy-status"></span>
                 </section>
-                <section><h2>Check the result</h2><p>{guide.check}</p></section>
+                <section>
+                    <h2>Check the result</h2>
+                    <p>{guide.check}</p>
+                </section>
                 <section aria-labelledby="agent-support">
                     <h2 id="agent-support">Agent compatibility</h2>
-                    {guide.exampleRun && <a class="tested-link" href="#example-status">Example passed in {guide.exampleRun.agent} {guide.exampleRun.version} · View the result</a>}
+                    {guide.exampleRun && (
+                        <a class="tested-link" href="#example-status">
+                            Example passed in {guide.exampleRun.agent} {guide.exampleRun.version} ·
+                            View the result
+                        </a>
+                    )}
                     <ul class="agent-list">
-                        {evidenceGroups.map(group => <li>
-                            <strong>{group.agents.join(' · ')}</strong>
-                            <a href={group.source}>{evidenceLabels[group.level]}<ArrowUpRight size={13} aria-hidden="true"/></a>
-                        </li>)}
+                        {evidenceGroups.map((group) => (
+                            <li>
+                                <strong>{group.agents.join(' · ')}</strong>
+                                <a href={group.source}>
+                                    {evidenceLabels[group.level]}
+                                    <ArrowUpRight size={13} aria-hidden="true" />
+                                </a>
+                            </li>
+                        ))}
                     </ul>
-                    {guide.formatFile && <p class="scope">The standard-format assessment covers the <a href={guide.formatFile}>CollectiveBrain edition of this skill</a>.</p>}
+                    {guide.formatFile && (
+                        <p class="scope">
+                            The standard-format assessment covers the{' '}
+                            <a href={guide.formatFile}>CollectiveBrain edition of this skill</a>.
+                        </p>
+                    )}
                     {guide.compatibilityNote && <p class="scope">{guide.compatibilityNote}</p>}
-                    <p class="scope">Publisher and directory labels identify who lists the original skill. Standard format means the agent reads this type of skill file. Guide only applies to the downloadable instructions. The example status records whether the full workflow has been tested.</p>
+                    <p class="scope">
+                        Publisher and directory labels identify who lists the original skill.
+                        Standard format means the agent reads this type of skill file. Guide only
+                        applies to the downloadable instructions. The example status records whether
+                        the full workflow has been tested.
+                    </p>
                 </section>
                 <section class="downloads" aria-labelledby="downloads">
                     <h2 id="downloads">Download this guide</h2>
-                    <p>The ZIP contains this site’s instructions and guide data. You can also download either file separately.</p>
+                    <p>
+                        The ZIP contains this site’s instructions and guide data. You can also
+                        download either file separately.
+                    </p>
                     <div class="file-links">
-                        <a href={downloadRoot + guide.slug + '.zip'} download={'guide-' + guide.slug + '.zip'}><Download size={15} aria-hidden="true"/> Guide ZIP</a>
-                        <a href={downloadRoot + 'SKILL.md'} download="SKILL.md">SKILL.md</a>
-                        <a href={downloadRoot + 'guide.json'} download="guide.json">Guide JSON</a>
+                        <a
+                            href={downloadRoot + guide.slug + '.zip'}
+                            download={'guide-' + guide.slug + '.zip'}
+                        >
+                            <Download size={15} aria-hidden="true" /> Guide ZIP
+                        </a>
+                        <a href={downloadRoot + 'SKILL.md'} download="SKILL.md">
+                            SKILL.md
+                        </a>
+                        <a href={downloadRoot + 'guide.json'} download="guide.json">
+                            Guide JSON
+                        </a>
                     </div>
-                    {guide.discovery && <p class="discovery"><strong>Guide discovery verified.</strong> {Object.entries(guide.discovery.hosts).map(([agent, version]) => agent + ' ' + version).join(' and ')} each found this guide after extracting it into a fresh project. Checked <time datetime={guide.discovery.date}>{guide.discovery.date}</time>.</p>}
+                    {guide.discovery && (
+                        <p class="discovery">
+                            <strong>Guide discovery verified.</strong>{' '}
+                            {Object.entries(guide.discovery.hosts)
+                                .map(([agent, version]) => agent + ' ' + version)
+                                .join(' and ')}{' '}
+                            each found this guide after extracting it into a fresh project. Checked{' '}
+                            <time datetime={guide.discovery.date}>{guide.discovery.date}</time>.
+                        </p>
+                    )}
                     <details>
                         <summary>Use this download in Codex or Claude Code</summary>
-                        <p>Extract the ZIP. Place its <code>{folder}/</code> folder inside <code>.agents/skills/</code> for Codex or <code>.claude/skills/</code> for Claude Code in your project. If you downloaded Markdown alone, create that folder and save the file as <code>SKILL.md</code>.</p>
-                        <p>In Codex, select <code>{'$' + folder}</code>. In Claude Code, type <code>{'/' + folder}</code>. Supply the inputs listed above and try the example prompt. Install any required publisher tools separately.</p>
+                        <p>
+                            Extract the ZIP. Place its <code>{folder}/</code> folder inside{' '}
+                            <code>.agents/skills/</code> for Codex or <code>.claude/skills/</code>{' '}
+                            for Claude Code in your project. If you downloaded Markdown alone,
+                            create that folder and save the file as <code>SKILL.md</code>.
+                        </p>
+                        <p>
+                            In Codex, select <code>{'$' + folder}</code>. In Claude Code, type{' '}
+                            <code>{'/' + folder}</code>. Supply the inputs listed above and try the
+                            example prompt. Install any required publisher tools separately.
+                        </p>
                     </details>
                     <h3 id="publisher">Publisher files &amp; setup</h3>
                     {guide.delivery.note && <p>{guide.delivery.note}</p>}
                     <div class="publisher-links">
-                        <a href={guide.delivery.url}>{guide.delivery.label}<ArrowUpRight size={14} aria-hidden="true"/></a>
-                        {guide.delivery.packageUrl && <a href={guide.delivery.packageUrl}>{guide.delivery.packageLabel}<ArrowUpRight size={14} aria-hidden="true"/></a>}
-                        {guide.delivery.repositoryZip && <a href={guide.delivery.repositoryZip}>Download full publisher repository (.zip)<ArrowUpRight size={14} aria-hidden="true"/></a>}
+                        <a href={guide.delivery.url}>
+                            {guide.delivery.label}
+                            <ArrowUpRight size={14} aria-hidden="true" />
+                        </a>
+                        {guide.delivery.packageUrl && (
+                            <a href={guide.delivery.packageUrl}>
+                                {guide.delivery.packageLabel}
+                                <ArrowUpRight size={14} aria-hidden="true" />
+                            </a>
+                        )}
+                        {guide.delivery.repositoryZip && (
+                            <a href={guide.delivery.repositoryZip}>
+                                Download full publisher repository (.zip)
+                                <ArrowUpRight size={14} aria-hidden="true" />
+                            </a>
+                        )}
                     </div>
                 </section>
             </article>
             <aside aria-label="Guide details">
                 <h2 id="example-status">Example status</h2>
-                {guide.exampleRun ? <>
-                    <p><strong>Passed in {guide.exampleRun.agent} {guide.exampleRun.version}.</strong> Checked <time datetime={guide.exampleRun.date}>{guide.exampleRun.date}</time>.</p>
-                    <p>{guide.exampleRun.result}</p>
-                    <details class="observed"><summary>See the actual output</summary>
-                        <ul>{guide.exampleRun.messages.map(message => <li>{message}</li>)}</ul>
-                        <a href={guide.exampleRun.source}>Tested skill file<ArrowUpRight size={13} aria-hidden="true"/></a>
-                    </details>
-                </> : <p><strong>Planned.</strong> A complete run of this prompt in its intended assistant is pending.</p>}
-                {guide.toolCheck && <section aria-label="Tool verification">
-                    <h2>Tool verification</h2><p>{guide.toolCheck.result}</p>
-                    <p class="verified-date">Checked <time datetime={guide.toolCheck.date}>{guide.toolCheck.date}</time></p>
-                </section>}
-                {aliases.length > 0 && <><h2>Also listed as</h2><p>{aliases.join(' · ')}</p></>}
-                <h2 id="guide-sources">Sources &amp; setup</h2><ul>
-                    {sources.map(({href, label}) => <li><a href={href}>
-                        {label}
-                        <ArrowUpRight className="directional-icon" size={14} aria-hidden="true"/>
-                    </a></li>)}
+                {guide.exampleRun ? (
+                    <>
+                        <p>
+                            <strong>
+                                Passed in {guide.exampleRun.agent} {guide.exampleRun.version}.
+                            </strong>{' '}
+                            Checked{' '}
+                            <time datetime={guide.exampleRun.date}>{guide.exampleRun.date}</time>.
+                        </p>
+                        <p>{guide.exampleRun.result}</p>
+                        <details class="observed">
+                            <summary>See the actual output</summary>
+                            <ul>
+                                {guide.exampleRun.messages.map((message) => (
+                                    <li>{message}</li>
+                                ))}
+                            </ul>
+                            <a href={guide.exampleRun.source}>
+                                Tested skill file
+                                <ArrowUpRight size={13} aria-hidden="true" />
+                            </a>
+                        </details>
+                    </>
+                ) : (
+                    <p>
+                        <strong>Planned.</strong> A complete run of this prompt in its intended
+                        assistant is pending.
+                    </p>
+                )}
+                {guide.toolCheck && (
+                    <section aria-label="Tool verification">
+                        <h2>Tool verification</h2>
+                        <p>{guide.toolCheck.result}</p>
+                        <p class="verified-date">
+                            Checked{' '}
+                            <time datetime={guide.toolCheck.date}>{guide.toolCheck.date}</time>
+                        </p>
+                    </section>
+                )}
+                {aliases.length > 0 && (
+                    <>
+                        <h2>Also listed as</h2>
+                        <p>{aliases.join(' · ')}</p>
+                    </>
+                )}
+                <h2 id="guide-sources">Sources &amp; setup</h2>
+                <ul>
+                    {sources.map(({ href, label }) => (
+                        <li>
+                            <a href={href}>
+                                {label}
+                                <ArrowUpRight
+                                    className="directional-icon"
+                                    size={14}
+                                    aria-hidden="true"
+                                />
+                            </a>
+                        </li>
+                    ))}
                 </ul>
-                {listing && <><h2>CollectiveBrain listing details</h2>
-                    <dl>
-                        {listing.author && <><dt>Credited to</dt><dd>{listing.author}</dd></>}
-                        {listing.platforms && <><dt>Listed for</dt><dd>{listing.platforms.join(' · ')}</dd></>}
-                        {listing.level && <><dt>Level</dt><dd>{listing.level}</dd></>}
-                        {listing.version && <><dt>Version</dt><dd>{listing.version}</dd></>}
-                        {listing.updated && <><dt>Updated</dt><dd><time datetime={listing.updated}>{listing.updated}</time></dd></>}
-                    </dl></>}
-                {related.length > 0 && <><h2>Related guides</h2><ul>{related.map(item => <li><a href={skillPath(item.slug)}>{item.name}</a></li>)}</ul></>}
-                <a class="back" href={topicPath}>Browse {guide.category.toLowerCase()} guides</a>
+                {listing && (
+                    <>
+                        <h2>CollectiveBrain listing details</h2>
+                        <dl>
+                            {listing.author && (
+                                <>
+                                    <dt>Credited to</dt>
+                                    <dd>{listing.author}</dd>
+                                </>
+                            )}
+                            {listing.platforms && (
+                                <>
+                                    <dt>Listed for</dt>
+                                    <dd>{listing.platforms.join(' · ')}</dd>
+                                </>
+                            )}
+                            {listing.level && (
+                                <>
+                                    <dt>Level</dt>
+                                    <dd>{listing.level}</dd>
+                                </>
+                            )}
+                            {listing.version && (
+                                <>
+                                    <dt>Version</dt>
+                                    <dd>{listing.version}</dd>
+                                </>
+                            )}
+                            {listing.updated && (
+                                <>
+                                    <dt>Updated</dt>
+                                    <dd>
+                                        <time datetime={listing.updated}>{listing.updated}</time>
+                                    </dd>
+                                </>
+                            )}
+                        </dl>
+                    </>
+                )}
+                {related.length > 0 && (
+                    <>
+                        <h2>Related guides</h2>
+                        <ul>
+                            {related.map((item) => (
+                                <li>
+                                    <a href={skillPath(item.slug)}>{item.name}</a>
+                                </li>
+                            ))}
+                        </ul>
+                    </>
+                )}
+                <a class="back" href={topicPath}>
+                    Browse {guide.category.toLowerCase()} guides
+                </a>
             </aside>
         </div>
     </div>
 </BaseLayout>
 <script>
+    if (document.referrer) {
+        const from = new URL(document.referrer);
+        if (
+            from.origin === location.origin &&
+            from.pathname === '/claude-code-skills/' &&
+            from.search
+        ) {
+            const back = document.querySelector<HTMLAnchorElement>('[data-directory-return]')!;
+            back.href = from.pathname + from.search;
+            back.querySelector('span')!.textContent = 'Back to filtered guides';
+        }
+    }
     const copy = document.querySelector<HTMLButtonElement>('#copy')!;
     const prompt = document.getElementById('prompt')!;
     const status = document.getElementById('copy-status')!;
@@ -153,53 +357,243 @@ const sources = [...new Set([guide.source, ...(guide.upstream ? [guide.upstream]
     });
 </script>
 <style>
-    .guide { max-width:1200px; }
-    .guide :is(h2, h3)[id] { scroll-margin-block-start:6rem; }
-    .breadcrumbs, .breadcrumbs a, aside a, #copy { display:inline-flex; align-items:center; gap:.35rem; }
-    .breadcrumbs { display:flex; flex-wrap:wrap; gap:.55rem; margin-block-end:clamp(1.6rem,4vw,3rem); font-size:.85rem; }
-    .breadcrumbs, aside p, article p, article li { color:var(--ink-secondary); }
-    a { color:var(--accent-primary); text-decoration:underline; text-underline-offset:.2em; }
-    .page-heading { margin-block-end:2rem; }
-    .page-heading h1 { font-size:clamp(2.1rem,5vw,4.25rem); overflow-wrap:anywhere; }
-    .guide-nav, .file-links, .publisher-links { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1rem; margin-block:.7rem; }
-    .guide-nav a, .file-links a, .publisher-links a, .agent-list a { display:inline-flex; align-items:center; gap:.3rem; font-size:.86rem; }
-    .agent-list { list-style:none; padding:0; }
-    .agent-list li { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:.3rem 1rem; padding:.5rem 0; margin:0; border-block-end:1px solid var(--border-hairline); }
-    .agent-list strong { color:var(--ink-primary); font-size:.94rem; }
-    .scope, .downloads details p { margin-block-start:.6rem; font-size:.84rem; }
-    .tested-link { display:inline-block; margin-block-end:.45rem; font-size:.88rem; font-weight:700; }
-    .observed { margin-block:.45rem; }
-    .observed summary { cursor:pointer; font-size:.85rem; }
-    .observed ul { font-size:.85rem; list-style:disc; padding-inline-start:1.3rem; margin-block:.45rem; }
-    .downloads { padding:clamp(1rem,2.8vw,1.75rem); background:var(--bg-subtle); border-block-start:2px solid var(--accent-primary); }
-    .downloads h3 { margin-block:1.25rem .35rem; font-size:1rem; }
-    .discovery { padding-inline-start:.65rem; border-inline-start:2px solid var(--accent-primary); margin-block:.8rem; font-size:.85rem; }
-    .downloads summary { cursor:pointer; font-size:.9rem; font-weight:600; }
-    .downloads code { overflow-wrap:anywhere; }
-    .file-links a { padding:.45rem .72rem; background:var(--bg-surface); border:1px solid var(--border-strong); border-radius:3px; }
-    .guide-layout { display:grid; grid-template-columns:minmax(0,2.2fr) minmax(15rem,1fr); align-items:start; gap:clamp(1.4rem,4.5vw,4.5rem); }
-    article { display:grid; gap:1.5rem; }
-    article h2 { margin-block-end:.6rem; font-size:clamp(1.2rem,2vw,1.55rem); }
-    article p, article li, blockquote { line-height:1.7; }
-    ol { list-style:decimal; padding-inline-start:1.6rem; }
-    li + li { margin-block-start:.45rem; }
-    ol li { padding-inline-start:.25rem; }
-    ol li::marker { font-family:var(--font-mono); color:var(--accent-primary); }
-    .example { padding:clamp(1rem,2.8vw,1.75rem); border:1px solid var(--border-hairline); border-inline-start:3px solid var(--accent-primary); background:var(--bg-surface); }
-    blockquote { white-space:pre-wrap; overflow-wrap:anywhere; margin:0; }
-    #copy { margin-block-start:1rem; padding:.4rem .65rem; border:1px solid var(--border-strong); border-radius:3px; font-size:.82rem; font-weight:600; }
-    #copy:hover { color:var(--accent-primary); border-color:var(--accent-primary); }
-    #copy-status { margin-inline-start:.4rem; font-size:.78rem; }
-    aside { padding:1.15rem 1.25rem; background:var(--bg-subtle); border-block-start:2px solid var(--accent-primary); }
-    aside h2 { font-size:.88rem; margin-block:1rem .35rem; }
-    aside h2:first-child { margin-top:0; }
-    aside p, aside a { font-size:.85rem; overflow-wrap:anywhere; }
-    aside ul { list-style:none; padding:0; }
-    aside dl { display:grid; grid-template-columns:max-content minmax(0,1fr); gap:.3rem .75rem; font-size:.82rem; }
-    aside dt { color:var(--ink-secondary); }
-    aside dd { overflow-wrap:anywhere; }
-    aside .verified-date { margin-block-start:.35rem; font-size:.75rem; }
-    .setup-link { display:inline-flex; align-items:center; min-height:2.1rem; font-size:.82rem; }
-    .back { margin-block-start:1.25rem; }
-    @media (max-width:740px) { .guide-layout { grid-template-columns:minmax(0,1fr); } }
+    .guide {
+        max-width: 1200px;
+    }
+    .guide :is(h2, h3)[id] {
+        scroll-margin-block-start: 6rem;
+    }
+    .breadcrumbs,
+    .breadcrumbs a,
+    aside a,
+    #copy {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    .breadcrumbs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.55rem;
+        margin-block-end: clamp(1.6rem, 4vw, 3rem);
+        font-size: 0.85rem;
+    }
+    .breadcrumbs,
+    aside p,
+    article p,
+    article li {
+        color: var(--ink-secondary);
+    }
+    a {
+        color: var(--accent-primary);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+    .page-heading {
+        margin-block-end: 2rem;
+    }
+    .page-heading h1 {
+        font-size: clamp(2.1rem, 5vw, 4.25rem);
+        overflow-wrap: anywhere;
+    }
+    .guide-nav,
+    .file-links,
+    .publisher-links {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.6rem 1rem;
+        margin-block: 0.7rem;
+    }
+    .guide-nav a,
+    .file-links a,
+    .publisher-links a,
+    .agent-list a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.86rem;
+    }
+    .agent-list {
+        list-style: none;
+        padding: 0;
+    }
+    .agent-list li {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.3rem 1rem;
+        padding: 0.5rem 0;
+        margin: 0;
+        border-block-end: 1px solid var(--border-hairline);
+    }
+    .agent-list strong {
+        color: var(--ink-primary);
+        font-size: 0.94rem;
+    }
+    .scope,
+    .downloads details p {
+        margin-block-start: 0.6rem;
+        font-size: 0.84rem;
+    }
+    .tested-link {
+        display: inline-block;
+        margin-block-end: 0.45rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+    }
+    .observed {
+        margin-block: 0.45rem;
+    }
+    .observed summary {
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    .observed ul {
+        font-size: 0.85rem;
+        list-style: disc;
+        padding-inline-start: 1.3rem;
+        margin-block: 0.45rem;
+    }
+    .downloads {
+        padding: clamp(1rem, 2.8vw, 1.75rem);
+        background: var(--bg-subtle);
+        border-block-start: 2px solid var(--accent-primary);
+    }
+    .downloads h3 {
+        margin-block: 1.25rem 0.35rem;
+        font-size: 1rem;
+    }
+    .discovery {
+        padding-inline-start: 0.65rem;
+        border-inline-start: 2px solid var(--accent-primary);
+        margin-block: 0.8rem;
+        font-size: 0.85rem;
+    }
+    .downloads summary {
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .downloads code {
+        overflow-wrap: anywhere;
+    }
+    .file-links a {
+        padding: 0.45rem 0.72rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-strong);
+        border-radius: 3px;
+    }
+    .guide-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2.2fr) minmax(15rem, 1fr);
+        align-items: start;
+        gap: clamp(1.4rem, 4.5vw, 4.5rem);
+    }
+    article {
+        display: grid;
+        gap: 1.5rem;
+    }
+    article h2 {
+        margin-block-end: 0.6rem;
+        font-size: clamp(1.2rem, 2vw, 1.55rem);
+    }
+    article p,
+    article li,
+    blockquote {
+        line-height: 1.7;
+    }
+    ol {
+        list-style: decimal;
+        padding-inline-start: 1.6rem;
+    }
+    li + li {
+        margin-block-start: 0.45rem;
+    }
+    ol li {
+        padding-inline-start: 0.25rem;
+    }
+    ol li::marker {
+        font-family: var(--font-mono);
+        color: var(--accent-primary);
+    }
+    .example {
+        padding: clamp(1rem, 2.8vw, 1.75rem);
+        border: 1px solid var(--border-hairline);
+        border-inline-start: 3px solid var(--accent-primary);
+        background: var(--bg-surface);
+    }
+    blockquote {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        margin: 0;
+    }
+    #copy {
+        margin-block-start: 1rem;
+        padding: 0.4rem 0.65rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 3px;
+        font-size: 0.82rem;
+        font-weight: 600;
+    }
+    #copy:hover {
+        color: var(--accent-primary);
+        border-color: var(--accent-primary);
+    }
+    #copy-status {
+        margin-inline-start: 0.4rem;
+        font-size: 0.78rem;
+    }
+    aside {
+        padding: 1.15rem 1.25rem;
+        background: var(--bg-subtle);
+        border-block-start: 2px solid var(--accent-primary);
+    }
+    aside h2 {
+        font-size: 0.88rem;
+        margin-block: 1rem 0.35rem;
+    }
+    aside h2:first-child {
+        margin-top: 0;
+    }
+    aside p,
+    aside a {
+        font-size: 0.85rem;
+        overflow-wrap: anywhere;
+    }
+    aside ul {
+        list-style: none;
+        padding: 0;
+    }
+    aside dl {
+        display: grid;
+        grid-template-columns: max-content minmax(0, 1fr);
+        gap: 0.3rem 0.75rem;
+        font-size: 0.82rem;
+    }
+    aside dt {
+        color: var(--ink-secondary);
+    }
+    aside dd {
+        overflow-wrap: anywhere;
+    }
+    aside .verified-date {
+        margin-block-start: 0.35rem;
+        font-size: 0.75rem;
+    }
+    .setup-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.1rem;
+        font-size: 0.82rem;
+    }
+    .back {
+        margin-block-start: 1.25rem;
+    }
+    @media (max-width: 740px) {
+        .guide-layout {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
 </style>
