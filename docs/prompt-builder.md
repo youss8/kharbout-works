@@ -2,6 +2,18 @@
 
 Open [/ai-kit/prompt-builder/](http://localhost:4321/ai-kit/prompt-builder/) while running `npm run dev`. Choose a workflow, load its fictional example, and try both prompt variants. Device drafts, presets, and favorites use IndexedDB. The language selection uses browser storage. Saving to a shared folder makes the full draft, including any results kept in it, available to that folder. A read-only link contains only the title and prompt shown in the share preview.
 
+Cloud drafts and AI results in the editor clear when the account changes. A viewer can save a personal cloud copy. Folder owners can revoke pending invitations individually. Before closing an account that owns shared folders, transfer each folder to an existing editor. Its drafts and revision history stay with the folder. The account export also includes drafts and revisions in folders the account owns.
+
+## Draft recovery and storage
+
+The builder warns before leaving an edited draft. Save the draft on this device, save it to the cloud, or download a JSON backup. Imports accept up to 4 MiB, including whitespace and encoded characters. Every supported version-one draft fits in the JSON backup envelope. A legacy cloud draft that fails validation can still be downloaded in its original form, and its earlier versions remain available for recovery.
+
+Each personal library and each shared folder has a separate 32 MiB budget for draft history. Each version counts its UTF-8 JSON payload, its title and 128 bytes of metadata. An over-budget save leaves the previous revision intact. Export the library before deleting unneeded drafts to release space. Existing history survives the migration, including libraries already over the limit. The account download assembles draft and version pages into one JSON file.
+
+Signing out clears this browser’s cloud session and editor even if the server cannot confirm revocation. Device drafts explicitly saved to IndexedDB remain available. A shared link expires after seven days. Its owner can remove the retained snapshot under **Shared snapshots**. Publishing another snapshot also clears that owner's expired snapshots.
+
+The AI workbench measures the serialized request before approval. The 24,000-byte limit includes the selected text, JSON and request fields, so the same character count can occupy different amounts in English and Arabic. The provider-formatted request also has a 26,000-byte limit, including any additional escaping.
+
 ## Target the assistant you use
 
 Select **Target model or assistant** before copying the prompt. The profile changes section order, formatting, and any applicable model or tool guidance. **How to use this profile** links to the provider’s official guide and describes settings that belong in the host or API. The builder supports a portable default, general chat and reasoning models, self-hosted Llama and Qwen, research with Perplexity, and separate profiles for the Microsoft and GitHub Copilot products, Codex, and Claude Code.
@@ -28,9 +40,11 @@ Follow these stages in private and enable the public route, links, and search en
 Use a Vercel Preview deployment protected with Vercel Authentication for private review. Give that preview its own Supabase project and environment values. Configure production separately after the staging checks pass. [Vercel Deployment Protection](https://vercel.com/docs/deployment-protection) · [Supabase environment setup](https://supabase.com/docs/guides/deployment)
 
 1. Create separate Supabase projects for staging and production. Apply the migrations in `supabase/migrations` and deploy the `prompt-ai` and `prompt-account` Edge Functions with JWT verification enabled.
+
+   Apply the draft history migration before releasing this client. It validates version-one payloads at the save boundary, including workflow fields, chain steps and UTF-16 text lengths. When adding a workflow or profile, update the save contract alongside the frontend registry. The database fixture covers schema rejection, UTF-16 boundaries and a full shared folder. Revision storage accounting uses PostgreSQL generated columns and `regexp_count`, available in the PostgreSQL 17 CI fixture and newer versions.
 2. Set `PUBLIC_SUPABASE_URL` and `PUBLIC_SUPABASE_PUBLISHABLE_KEY` in the Astro build environment. Cloud controls stay unavailable when either value is missing.
-3. Set `PROMPT_BUILDER_ORIGINS` on the Edge Functions to a comma-separated list of exact web origins. Set `OPENAI_API_KEY` as an Edge Function secret. Set the Supabase Auth site URL to the deployment, configure custom SMTP, set code expiry to 600 seconds, and use the email code template in `supabase/templates`. [Supabase SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp)
-4. Test real delivery to a separate staging email address, save and reload a draft in two sessions, and test owner, editor, and viewer access as distinct users. Open an active snapshot in a signed-out browser and confirm that revocation makes it unavailable.
+3. Set `PROMPT_BUILDER_ORIGINS` on the Edge Functions to a comma-separated list of exact web origins. Set `OPENAI_API_KEY` as an Edge Function secret. Set the Supabase Auth site URL to the deployment, configure custom SMTP, set code expiry to 600 seconds, and use `supabase/templates/prompt-sign-in.html` for both Confirm signup and Magic link. [Supabase SMTP setup](https://supabase.com/docs/guides/auth/auth-smtp)
+4. Test numeric-code delivery and sign-in for a new staging account and again for the confirmed account. Save and reload a draft in two sessions, and test owner, editor, and viewer access as distinct users. Open an active snapshot in a signed-out browser and confirm that revocation makes it unavailable.
 5. Enable model calls on staging with `update public.prompt_ai_settings set enabled = true where id;`. The default is ten calls per verified account per UTC day and US $25 of reserved or reconciled model usage per UTC month. Verify the limit and pause behavior before enabling calls on production. An upstream failure with unknown billing retains its reservation for the current month. Use the same statement with `enabled = false` to pause model calls.
 
 ## Verification
@@ -63,6 +77,8 @@ The Qwen run used the local 8B checkpoint with thinking disabled. In Arabic, its
 ## Production monitoring
 
 After launch, use the following query to review event counts, latency, and usage. Its input contains timing, outcome, and cost metadata.
+
+Usage reconciliation retries temporary database failures with the original reservation. Function warnings contain the reservation ID, attempt number, and whether another retry is scheduled. If all attempts fail, the reservation remains charged at its conservative hold for that month. Review persistent pending reservations before adjusting any billing records.
 
 ```sql
 select date_trunc('day', created_at, 'UTC') as day,

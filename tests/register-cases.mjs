@@ -17,6 +17,12 @@ import {
 } from '../src/lib/kernels/sla.ts';
 
 const hour = 3_600_000;
+test('register enforces field-specific minimums and preserves zero', () => {
+    const fields = [{ key: 'interval', type: 'number', min: 0 }, { key: 'change', type: 'number' }];
+    assert.throws(() => parseRegisterCsv('interval,change\n-3,1', fields), /interval must be 0 or greater/);
+    const { rows } = parseRegisterCsv('interval,change\n0,-2\n0.5,3', fields);
+    assert.deepEqual(rows.map(row => [row.interval, row.change]), [[0, -2], [0.5, 3]]);
+});
 const ticket = { created_at: 0, sla_due_at: 4 * hour, status: 'Open', priority: 'High' };
 
 test('SLA elapsed has a 2% floor, a 100% ceiling and respects the resolution instant', () => {
@@ -101,4 +107,15 @@ test('partial register writes trim blank fields to null and omit unseen keys', (
         notes: 'verified',
     });
     assert.deepEqual(cleanForWrite(fields, Object.create({ name: 'inherited' })), {});
+});
+
+test('duplicate CSV columns are rejected before a mapped field or metadata can be overwritten', () => {
+    const fields = [{ key: 'name', label: 'Backup job', aliases: ['Job', 'Job Name'] }];
+    for (const header of ['Job,Job', 'Job,Job Name', 'Job,Ｊｏｂ Ｎａｍｅ']) {
+        assert.throws(() => parseRegisterCsv(`${header}\nFirst,Second`, fields), /paste\.csv:1.+Backup job/);
+    }
+    assert.throws(() => parseRegisterCsv('Job,Tag,Tag\nFirst,Red,Blue', fields), /paste\.csv:1.+Tag/);
+    const { rows } = parseRegisterCsv('Job,Tag,Owner\nFirst,Red,NA', fields);
+    assert.equal(rows[0].name, 'First');
+    assert.equal(rows[0].metadata.Owner, 'NA');
 });

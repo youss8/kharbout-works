@@ -10,7 +10,9 @@ const title = 'AI Skills, Gems & Command Vault';
 const claudeWorkflow = 'Behavior-preserving refactor';
 const geminiWorkflow = 'UI state specification';
 
-test('filters with slash and opens the same drawer from the grid and palette', async ({ page }) => {
+test('filters with the keyboard and opens the same drawer from the grid and palette', async ({
+    page,
+}) => {
     await page.goto('/?q=url&category=utilities');
     const vault = page.getByRole('region', { name: title });
     const search = vault.getByRole('searchbox', { name: 'Search the Vault' });
@@ -31,6 +33,8 @@ test('filters with slash and opens the same drawer from the grid and palette', a
 
     await page.locator('main').focus();
     await page.keyboard.press('/');
+    await expect(page.locator('main')).toBeFocused();
+    await search.focus();
     await expect(search).toBeFocused();
     await search.fill('Claude #Réfact behavior-preserving');
     const match = vault.getByRole('button', { name: claudeWorkflow });
@@ -145,11 +149,33 @@ test('highlights literal substitutions and copies the compiled prompt from eithe
     await expect(opener).toBeFocused();
 });
 
+test('preserves draft fields across each drawer dismissal for the same workflow', async ({
+    page,
+}) => {
+    await page.goto('/');
+    const opener = page.getByRole('button', { name: claudeWorkflow });
+    const drawer = page.getByRole('dialog', { name: claudeWorkflow });
+    const stack = drawer.getByRole('textbox', { name: 'Target stack' });
+    await opener.click();
+    await stack.fill('Fictional stack');
+    await page.keyboard.press('Escape');
+    await expect(drawer).toHaveCount(0);
+    await opener.click();
+    await expect(stack).toHaveValue('Fictional stack');
+    await page.mouse.click(5, 10);
+    await expect(drawer).toHaveCount(0);
+    await opener.click();
+    await expect(stack).toHaveValue('Fictional stack');
+    await drawer.getByRole('button', { name: 'Close' }).click();
+    await opener.click();
+    await expect(stack).toHaveValue('Fictional stack');
+});
+
 for (const [workflow, provider, url] of [
     [claudeWorkflow, 'Claude', 'https://claude.ai/new'],
     [geminiWorkflow, 'Gemini', 'https://gemini.google.com/app'],
 ] as const) {
-    test(`copies and opens ${provider} in a new tab`, async ({ page, context }) => {
+    test(`copies before offering to open ${provider} in a new tab`, async ({ page, context }) => {
         await page.addInitScript(() => {
             window.vaultClipboardWrites = [];
             Object.defineProperty(navigator, 'clipboard', {
@@ -168,6 +194,10 @@ for (const [workflow, provider, url] of [
             .getByRole('tabpanel', { name: 'Prompt Instructions' })
             .locator('pre')
             .textContent();
+        await expect(drawer.getByRole('link', { name: `Open in ${provider}` })).toHaveCount(0);
+        await drawer.getByRole('button', { name: 'Copy compiled prompt' }).click();
+        await expect(drawer.getByRole('status')).toHaveText('Copied to clipboard');
+        expect(context.pages()).toHaveLength(1);
         const popup = context.waitForEvent('page');
         await drawer.getByRole('link', { name: `Open in ${provider}` }).click();
         const destination = await popup;
@@ -178,6 +208,7 @@ for (const [workflow, provider, url] of [
 
 test('keeps the compiled instructions accessible when clipboard access is denied', async ({
     page,
+    context,
 }) => {
     await page.addInitScript(() => {
         Object.defineProperty(navigator, 'clipboard', {
@@ -196,6 +227,14 @@ test('keeps the compiled instructions accessible when clipboard access is denied
     await expect(copy).toBeFocused();
     await expect(copy).toBeEnabled();
     await expect(drawer.getByRole('tabpanel', { name: 'Prompt Instructions' })).toBeVisible();
+    await expect(drawer.getByRole('link', { name: 'Open in Gemini' })).toHaveCount(0);
+    expect(context.pages()).toHaveLength(1);
+    await context.route('https://gemini.google.com/app', (route) =>
+        route.fulfill({ body: 'Provider launch target' }),
+    );
+    const popup = context.waitForEvent('page');
+    await drawer.getByRole('link', { name: 'Continue to Gemini' }).click();
+    await expect(await popup).toHaveURL('https://gemini.google.com/app');
 });
 
 test('fits the Arabic vault at 320px and preserves source direction', async ({ page }) => {

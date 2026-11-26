@@ -241,13 +241,24 @@ export default function registerAsk(AlpineClient: typeof Alpine) {
                 }
                 if (!option.href) return;
                 const url = new URL(option.href, window.location.href);
-                // A fresh same-page asset view clears any filters which could conceal the target.
                 const sameDocument =
                     url.origin === location.origin &&
                     url.pathname === location.pathname &&
                     url.search === location.search;
-                window.location.assign(url.href);
-                if (sameDocument && url.hash) location.reload();
+                if (!sameDocument || !url.hash) {
+                    window.location.assign(url.href);
+                    return;
+                }
+                // Reveal the entry before scrolling, including when the current fragment is reselected.
+                if (location.hash !== url.hash) history.pushState(null, '', url);
+                window.dispatchEvent(new HashChangeEvent('hashchange'));
+                requestAnimationFrame(() => {
+                    const target = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+                    if (!target) return;
+                    if (!target.hasAttribute('tabindex')) target.tabIndex = -1;
+                    target.focus({ preventScroll: true });
+                    target.scrollIntoView({ block: 'start' });
+                });
             },
         };
     });

@@ -8,7 +8,7 @@ export function normalizeAr(text: string): string {
     return text
         .normalize('NFKC')
         .toLowerCase()
-        .replace(/[\u0610-\u061a\u0640\u064b-\u065f\u0670\u06d6-\u06ed]/gu, '')
+        .replace(/\u0640|\u0670|[\u0610-\u061a\u064b-\u065f\u06d6-\u06ed]/gu, '')
         .replace(/[أإآٱ]/gu, 'ا')
         .replace(/ة/gu, 'ه')
         .replace(/ى/gu, 'ي')

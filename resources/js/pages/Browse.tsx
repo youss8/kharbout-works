@@ -1,8 +1,9 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { useState } from 'react';
-import type { FormEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { FormEvent, MouseEvent } from 'react';
 import { readFilters, writeFilters } from '../../../kit/utilities/url-filters/filters';
 import { siteName } from '../../../src/data/brand';
+import { carryCatalogueFilters } from '../catalogue';
 import type { CatalogueEntry } from '../catalogue';
 import { categoryLabel, useLocale } from '../i18n';
 import { searchEntries } from '../searchEntries';
@@ -20,6 +21,7 @@ const categories = [
     { name: 'Modules', slug: 'modules' },
     { name: 'AI tools', slug: 'ai-tools' },
 ] as const;
+const emptyValues: Record<string, string> = {};
 
 function entryCount(count: number, locale: Locale) {
     const n = new Intl.NumberFormat(locale).format(count);
@@ -117,6 +119,10 @@ export default function Browse({
         workflow: Workflow;
         returnFocus: HTMLElement | null;
     } | null>(null);
+    const [workflowValues, setWorkflowValues] = useState<Record<string, Record<string, string>>>(
+        {},
+    );
+    const searchInput = useRef<HTMLInputElement>(null);
     const pageUrl = usePage().url;
     const url = new URL(pageUrl, window.location.origin);
     const { query, category } = readFilters(url);
@@ -130,16 +136,37 @@ export default function Browse({
     );
     const numbers = new Intl.NumberFormat(locale);
 
+    useEffect(() => {
+        if (searchInput.current) searchInput.current.value = query;
+    }, [query]);
+
     function filterUrl(search: string, collection: string) {
         const next = writeFilters(url, { query: search, category: collection });
-        return next.pathname + next.search;
+        return next.pathname + next.search + window.location.hash;
+    }
+
+    function changeFilters(href: string) {
+        router.push({ url: href, preserveScroll: true, preserveState: true });
     }
 
     function search(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const value = new FormData(event.currentTarget).get('q');
-        const href = filterUrl(typeof value === 'string' ? value : '', activeCategory?.slug ?? '');
-        router.visit(href, { preserveScroll: true, preserveState: true });
+        changeFilters(
+            filterUrl(typeof value === 'string' ? value : '', activeCategory?.slug ?? ''),
+        );
+    }
+
+    function followFilter(event: MouseEvent<HTMLAnchorElement>, clear = false) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+            return;
+        event.preventDefault();
+        const { pathname, search } = event.currentTarget;
+        changeFilters(pathname + search + window.location.hash);
+        if (clear && searchInput.current) {
+            searchInput.current.value = '';
+            searchInput.current.focus({ preventScroll: true });
+        }
     }
 
     function inspectWorkflow(workflow: Workflow, opener: HTMLElement | null = null) {
@@ -200,7 +227,7 @@ export default function Browse({
                             {t('Search catalogue', 'Katalog durchsuchen', 'ابحث في الفهرس')}
                         </label>
                         <input
-                            key={pageUrl}
+                            ref={searchInput}
                             id="catalogue-search"
                             type="search"
                             name="q"
@@ -223,21 +250,19 @@ export default function Browse({
                         'تصفية حسب الفئة',
                     )}
                 >
-                    <Link
+                    <a
                         href={filterUrl(query, '')}
-                        preserveState
-                        preserveScroll
+                        onClick={followFilter}
                         aria-current={!activeCategory ? 'true' : undefined}
                     >
                         {t('All entries', 'Alle Einträge', 'جميع العناصر')}{' '}
                         <span aria-hidden="true">{numbers.format(entries.length)}</span>
-                    </Link>
+                    </a>
                     {categories.map((item) => (
-                        <Link
+                        <a
                             key={item.slug}
                             href={filterUrl(query, item.slug)}
-                            preserveState
-                            preserveScroll
+                            onClick={followFilter}
                             aria-current={activeCategory?.slug === item.slug ? 'true' : undefined}
                         >
                             {categoryLabel(item.name, locale)}{' '}
@@ -246,7 +271,7 @@ export default function Browse({
                                     entries.filter((entry) => entry.category === item.name).length,
                                 )}
                             </span>
-                        </Link>
+                        </a>
                     ))}
                 </nav>
                 <div className="browse-summary">
@@ -254,9 +279,9 @@ export default function Browse({
                         {entryCount(matches.length, locale)}
                     </p>
                     {(query || category) && (
-                        <Link href={filterUrl('', '')} preserveState preserveScroll>
+                        <a href={filterUrl('', '')} onClick={(event) => followFilter(event, true)}>
                             {t('Clear filters', 'Filter zurücksetzen', 'إزالة المرشّحات')}
-                        </Link>
+                        </a>
                     )}
                 </div>
                 {matches.length ? (
@@ -275,7 +300,9 @@ export default function Browse({
                                             {categoryLabel(entry.category, locale)}
                                         </p>
                                         <h3>
-                                            <Link href={entry.href}>{entry.title}</Link>
+                                            <Link href={carryCatalogueFilters(entry.href, url)}>
+                                                {entry.title}
+                                            </Link>
                                         </h3>
                                         <p className="browse-card-summary">{entry.summary}</p>
                                         <ul
@@ -321,6 +348,13 @@ export default function Browse({
                 <VaultDrawer
                     key={inspection.workflow.id}
                     workflow={inspection.workflow}
+                    values={workflowValues[inspection.workflow.id] ?? emptyValues}
+                    onValuesChange={(values) =>
+                        setWorkflowValues((current) => ({
+                            ...current,
+                            [inspection.workflow.id]: values,
+                        }))
+                    }
                     returnFocus={inspection.returnFocus}
                     onClose={() => setInspection(null)}
                 />

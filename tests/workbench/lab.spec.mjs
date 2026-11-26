@@ -34,6 +34,49 @@ test('habit streaks persist per habit and can be undone', async ({ page }) => {
     await expect(demo.locator('.lab-result')).toHaveText('1-day streak');
 });
 
+test('habit tabs preserve independent changes and update the visible streak', async ({ context, page }) => {
+    const other = await context.newPage();
+    const habit = (tab) => tab.locator('#habit-tracker');
+    await Promise.all([page.goto('/lab/#habit-tracker'), other.goto('/lab/#habit-tracker')]);
+    await habit(other).getByRole('combobox', { name: 'Habit', exact: true }).selectOption('Walk');
+    await Promise.all([page, other].map(tab => habit(tab).getByRole('button', { name: 'Check in today' }).click()));
+    await Promise.all([page.reload(), other.reload()]);
+    await expect(habit(page).locator('.lab-result')).toHaveText('1-day streak');
+    await habit(other).getByRole('combobox', { name: 'Habit', exact: true }).selectOption('Walk');
+    await expect(habit(other).locator('.lab-result')).toHaveText('1-day streak');
+    await habit(other).getByRole('combobox', { name: 'Habit', exact: true }).selectOption('Read');
+    await habit(page).getByRole('button', { name: 'Undo today’s check-in' }).click();
+    await expect(habit(other).locator('.lab-result')).toHaveText('0-day streak');
+});
+
+test.describe('habit dates in UTC', () => {
+    test.use({ timezoneId: 'UTC' });
+
+    test('an overnight tab checks in on the new day and retains legacy check-ins', async ({ page }) => {
+        await page.clock.install({ time: new Date('2026-11-26T23:58:00Z') });
+        await page.addInitScript(() => {
+            if (!sessionStorage.getItem('legacy-seeded')) {
+                localStorage.setItem('yok-lab-habits-v1', JSON.stringify({ Read: ['2026-11-25', '2026-11-26'] }));
+                sessionStorage.setItem('legacy-seeded', 'true');
+            }
+        });
+        await page.goto('/lab/#habit-tracker');
+        const demo = page.locator('#habit-tracker');
+        const past = demo.getByRole('button', { name: 'Check in for 2026-11-25', exact: true });
+        await expect(past).toHaveAttribute('aria-pressed', 'true');
+        await expect(demo.getByRole('button', { name: 'Undo today’s check-in', exact: true })).toBeVisible();
+        await page.clock.fastForward(4 * 60_000);
+        await demo.getByRole('button', { name: 'Check in today', exact: true }).click();
+        const today = demo.getByRole('button', { name: 'Check in for 2026-11-27', exact: true });
+        await expect(today).toHaveAttribute('aria-pressed', 'true');
+        await expect(demo.getByRole('button', { name: 'Check in for 2026-11-26', exact: true })).toHaveAttribute('aria-pressed', 'true');
+        await past.click();
+        await page.reload();
+        await expect(today).toHaveAttribute('aria-pressed', 'true');
+        await expect(past).toHaveAttribute('aria-pressed', 'false');
+    });
+});
+
 test('the redesign preserves the agenda and the meal recalculates excluded ingredients at 375px', async ({ page }) => {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));

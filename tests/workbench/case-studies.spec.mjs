@@ -46,18 +46,27 @@ test('matrix links reach all six sandboxes', async ({ page }) => {
 });
 
 for (const slug of cases) {
-    test(slug + ' displays the case study and re-renders its ER diagram in dark mode', async ({ page }) => {
+    test(slug + ' displays both static ER diagram themes and zooms without loading Mermaid', async ({ page }) => {
         const errors = [];
         page.on('pageerror', error => errors.push(error.message));
         page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+        const requests = [];
+        page.on('request', request => requests.push(new URL(request.url()).pathname));
         await page.setViewportSize({ width: 375, height: 812 });
         await page.goto('/systems/' + slug + '/#diagram');
         const figure = page.locator('entity-diagram');
         await figure.scrollIntoViewIfNeeded();
-        await expect(figure.locator('[data-rendered-theme="light"] svg')).toBeVisible({ timeout: 20000 });
+        const light = figure.locator('img[data-diagram-theme="light"]');
+        const dark = figure.locator('img[data-diagram-theme="dark"]');
+        await expect(light).toBeVisible();
+        await expect.poll(() => light.evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
         await figure.getByRole('combobox').selectOption('175');
+        await expect(figure.locator('.drawing')).toHaveAttribute('style', /width: 175%/);
         await page.getByRole('button', { name: 'Dark mode' }).click();
-        await expect(figure.locator('[data-rendered-theme="dark"] svg')).toBeVisible();
+        await expect(dark).toBeVisible();
+        await expect.poll(() => dark.evaluate(img => img.naturalWidth)).toBeGreaterThan(0);
+        await expect(light).toBeHidden();
+        expect(requests.some(path => /mermaid.*\.js/i.test(path))).toBe(false);
         const contents = page.getByRole('navigation', { name: 'Case study contents' });
         await expect(contents.getByRole('link')).toHaveCount(slug === cases[0] ? 7 : 4);
         expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);

@@ -1,0 +1,102 @@
+{
+    "categories": {
+        "Components": {
+            "de": "Komponenten",
+            "ar": "المكوّنات"
+        },
+        "Pages": {
+            "de": "Seiten",
+            "ar": "الصفحات"
+        },
+        "Utilities": {
+            "de": "Hilfsfunktionen",
+            "ar": "الدوال المساعدة"
+        },
+        "Modules": {
+            "de": "Module",
+            "ar": "الوحدات"
+        },
+        "AI tools": {
+            "de": "KI-Werkzeuge",
+            "ar": "أدوات الذكاء الاصطناعي"
+        }
+    },
+    "entries": {
+        "search-dialog": {
+            "de": {
+                "title": "Suchdialog mit Tastatursteuerung",
+                "summary": "Durchsuche eine Liste, wechsle mit den Pfeiltasten zwischen Treffern und öffne ein Ergebnis mit der Eingabetaste."
+            },
+            "ar": {
+                "title": "مربع البحث بلوحة المفاتيح",
+                "summary": "ابحث في قائمة، وتنقّل بين النتائج بمفاتيح الأسهم، ثم افتح النتيجة المطلوبة بمفتاح الإدخال."
+            }
+        },
+        "keyboard-shortcut-label": {
+            "de": {
+                "title": "Tastenkürzel anzeigen",
+                "summary": "Zeige einen Befehl zusammen mit seinem Tastenkürzel an."
+            },
+            "ar": {
+                "title": "عرض اختصار لوحة المفاتيح",
+                "summary": "اعرض اختصار لوحة المفاتيح بجانب اسم الأمر الذي ينفّذه."
+            }
+        },
+        "copy-code": {
+            "de": {
+                "title": "Code kopieren",
+                "summary": "Kopiere Code mit der Tastatur oder per Klick. Wenn der Browser das Kopieren verweigert, erscheint ein Hinweis."
+            },
+            "ar": {
+                "title": "نسخ الشيفرة",
+                "summary": "انسخ الشيفرة كما تظهر باستخدام الفأرة أو لوحة المفاتيح، واحصل على تنبيه إذا تعذّر النسخ."
+            }
+        },
+        "empty-state-page": {
+            "de": {
+                "title": "Leere Suchergebnisse",
+                "summary": "Hilf Besuchern weiter, wenn keine Einträge zu ihrer Suche passen."
+            },
+            "ar": {
+                "title": "صفحة البحث بلا نتائج",
+                "summary": "ساعد الزائر على متابعة التصفّح عندما لا يعثر على نتائج لبحثه."
+            }
+        },
+        "url-filters": {
+            "de": {
+                "title": "Teilbare URL-Filter",
+                "summary": "Speichere Suchbegriff und Kategorie in einem Link, den du teilen oder als Lesezeichen ablegen kannst."
+            },
+            "ar": {
+                "title": "مرشّحات بحث قابلة للمشاركة",
+                "summary": "احفظ عبارة البحث والفئة في رابط واحد يمكنك مشاركته أو إضافته إلى المفضّلة."
+            }
+        },
+        "catalogue-search": {
+            "de": {
+                "title": "Suchendpunkt für den Katalog",
+                "summary": "Validiere Suchanfragen mit Laravel und liefere passende Katalogeinträge als JSON zurück."
+            },
+            "ar": {
+                "title": "واجهة البحث في الفهرس",
+                "summary": "تحقّق من طلب البحث في Laravel وأعد العناصر المطابقة بصيغة JSON."
+            }
+        },
+        "accessible-ui-review": {
+            "de": {
+                "title": "Barrierefreiheit prüfen",
+                "summary": "Prüfe eine Oberfläche mit einem Claude-Skill oder Gemini-Gem und halte nachvollziehbare Befunde fest."
+            },
+            "ar": {
+                "title": "مراجعة إمكانية الوصول",
+                "summary": "راجع واجهة باستخدام مهارة Claude أو أداة Gemini Gem، وسجّل ملاحظات يستطيع المطوّر التحقّق منها."
+            }
+        }
+    },
+    "requirements": {
+        "Claude Code or Gemini Gems": {
+            "ar": "Claude Code أو Gemini Gems",
+            "de": "Claude Code oder Gemini Gems"
+        }
+    }
+}

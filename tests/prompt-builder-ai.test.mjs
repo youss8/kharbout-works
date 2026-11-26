@@ -1,6 +1,22 @@
 import { strict as assert } from 'node:assert';
 import { test } from 'node:test';
 import { providerRequest, readOutput, readRequest } from '../supabase/functions/prompt-ai/contract.ts';
+import { reconcileUsage } from '../supabase/functions/prompt-ai/reconciliation.ts';
+
+test('usage reconciliation retries both response errors and lost responses using one reservation', async () => {
+    const failures = [];
+    const delays = [];
+    let attempts = 0;
+    await reconcileUsage('fixture-reservation', async () => {
+        attempts++;
+        if (attempts === 1) return { error: { message: 'Temporary database error' } };
+        if (attempts === 2) throw new Error('Network dropped');
+        return { error: null };
+    }, (...event) => failures.push(event), async delay => { delays.push(delay); });
+    assert.equal(attempts, 3);
+    assert.deepEqual(failures, [['fixture-reservation', 1, true], ['fixture-reservation', 2, true]]);
+    assert.deepEqual(delays, [250, 1_000]);
+});
 
 test('AI intake accepts only known, unique fields and leaves missing answers absent', () => {
     const notes = 'Lina will confirm the workshop room.';

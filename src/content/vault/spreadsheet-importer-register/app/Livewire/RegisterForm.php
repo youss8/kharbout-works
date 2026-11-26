@@ -9,7 +9,7 @@ final class RegisterForm extends Form
 {
     public const FIELDS = [
         'name' => ['label' => 'Backup job', 'type' => 'text', 'required' => true, 'aliases' => ['Job name', 'Job']],
-        'interval' => ['label' => 'Interval (h)', 'type' => 'number', 'aliases' => ['Interval']],
+        'interval' => ['label' => 'Interval (h)', 'type' => 'number', 'aliases' => ['Interval'], 'min' => 0],
         'last' => ['label' => 'Last run', 'type' => 'date'],
         'notes' => ['label' => 'Internal notes', 'type' => 'textarea', 'detail' => true],
     ];
@@ -37,6 +37,9 @@ final class RegisterForm extends Form
                     'number' => 'numeric','date' => 'date_format:Y-m-d',default => 'string'
                 },
             ];
+            if (isset($field['min'])) {
+                $rules['values.'.$key][] = 'min:'.$field['min'];
+            }
         }
         $this->validate($rules);
         $patch = array_intersect_key($this->values, self::fields($detail));

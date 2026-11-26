@@ -1,0 +1,1436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kharbout Works | Website QA and security review</title>
+<style>
+:root{color-scheme:light;--paper:#f9f8f4;--surface:#fffefb;--ink:#192721;--muted:#4b5b52;--line:#c9d0c8;--green:#195440;--high:#8b251f;--medium:#744400;--low:#3c5869;--mono:"Cascadia Mono",Consolas,monospace;--sans:"Segoe UI",Arial,sans-serif}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;background:var(--paper);color:var(--ink);font:1rem/1.6 var(--sans)}a{color:var(--green);text-underline-offset:.19em}a:focus-visible,summary:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #126947;outline-offset:3px}
+.wrap{width:min(1120px,calc(100% - 2.7rem));margin-inline:auto}.mast{border-top:6px solid #224d3b;border-bottom:1px solid var(--line);background:var(--surface)}.mast .wrap{display:flex;align-items:center;justify-content:space-between;gap:.7rem;min-height:3.65rem;flex-wrap:wrap;padding-block:.45rem}.brand{font-weight:750;letter-spacing:-.02em}.date,.ticket,.stamp,.line,.eyebrow,.count,.badge{font-family:var(--mono)}.date,.stamp,.line{color:var(--muted);font-size:.8rem}.skip{position:absolute;left:-10000px;top:.4rem;background:white;padding:.5rem;z-index:5}.skip:focus{left:1rem}
+.hero{padding-block:clamp(2.2rem,5vw,4.4rem) 1.5rem}.eyebrow{color:var(--green);font-size:.78rem;letter-spacing:.065em;text-transform:uppercase;margin:0 0 .65rem}h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:500;line-height:1.08;letter-spacing:-.035em}h1{font-size:clamp(2.65rem,6.3vw,5.3rem);margin:.1rem 0 .8rem}h2{font-size:clamp(2rem,4vw,3.15rem);margin:0 0 .65rem}h3{font-size:1.06rem;margin:.2rem 0 .4rem}.lead{max-width:76ch;font-size:clamp(1.08rem,2vw,1.35rem);line-height:1.48;margin:.8rem 0}.stamp{margin:1.2rem 0 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);border-block:1px solid var(--line);margin-top:2rem}.stat{padding:1rem 1.1rem .9rem 0}.stat+.stat{border-left:1px solid var(--line);padding-left:1.3rem}.stat b{font:500 clamp(1.9rem,4vw,3.4rem)/1 Georgia,serif}.stat span{display:block;font-size:.84rem;color:var(--muted);margin-top:.25rem}.stat:nth-child(2) b{color:var(--high)}
+.jump{display:flex;gap:.6rem 1.6rem;flex-wrap:wrap;padding:0 0 1.4rem;font-size:.92rem;font-weight:650}.section{border-top:1px solid var(--line);padding:clamp(1.85rem,4vw,3.2rem) 0}.intro{max-width:78ch;margin:.35rem 0 1.4rem;color:var(--muted)}.urgent{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.urgent article{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--high);padding:1.15rem 1.3rem}.urgent article p{margin:.55rem 0}.urgent a{font-weight:650}.steps{padding-inline-start:1.4rem;max-width:94ch;margin-bottom:0}.steps li{margin:.42rem 0}
+.tools{display:flex;gap:.8rem;align-items:flex-end;flex-wrap:wrap;margin:1rem 0}.tools label{font-size:.83rem;font-weight:650;display:grid;gap:.22rem}.tools label:first-child{flex:1 1 16rem}.tools input,.tools select,button{font:inherit;color:var(--ink);background:var(--surface);border:1px solid #7b897f;border-radius:4px;min-height:2.55rem;padding:.4rem .65rem}.tools input,.tools select{max-width:100%;width:100%}button{cursor:pointer;font-size:.86rem;font-weight:650}.tools[hidden],[hidden]{display:none!important}.count{font-size:.78rem;color:var(--muted)}.findings{border-top:1px solid var(--line)}
+.finding{border-bottom:1px solid var(--line);background:var(--surface);scroll-margin-top:1rem}.finding summary{padding:1rem .95rem;display:grid;grid-template-columns:3.2rem 4.9rem 1fr 1.3rem;align-items:start;gap:.65rem;list-style:none;cursor:pointer}.finding summary::-webkit-details-marker{display:none}.finding summary:hover,.folder summary:hover{background:#f0f3ed}.ticket{font-size:.73rem;margin-top:.32rem;color:var(--muted)}.badge{padding:.1rem .42rem;border:1px solid;justify-self:start;border-radius:.28rem;font-size:.73rem;font-weight:bold;margin-top:.13rem}.high{color:var(--high);background:#fff1ef}.medium{color:var(--medium);background:#fff6df}.low{color:var(--low);background:#edf3f8}.issue strong{font-size:1.05rem;line-height:1.36;display:block}.issue small{font-size:.8rem;color:var(--muted);display:block;margin-top:.23rem}.expand::after{content:"+";font-size:1.3rem;color:var(--muted)}details[open]>summary .expand::after{content:"−"}
+.finding-body{padding:0 clamp(1rem,3vw,2.2rem) 1.5rem;max-width:95ch}.impact{font-weight:650;font-size:1.05rem;margin:0 0 .8rem}.finding-body dl{margin:0}.finding-body dl>div{padding:.35rem 0}.finding-body dt,.sources h4{font-size:.83rem;color:var(--green);font-weight:750;margin:0}.finding-body dd{margin:.1rem 0 .4rem}.sources{padding-top:.75rem;border-top:1px solid var(--line);margin-top:.6rem}.sources ul{padding:0;list-style:none;margin:.28rem 0}.sources a,.sources code,.folder pre{overflow-wrap:anywhere}.sources code{font: .8rem/1.45 var(--mono)}.sources>a{font-size:.85rem;margin-right:1rem}.scroll{overflow:auto;max-width:100%}table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{padding:.7rem .75rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}thead{background:#e8eee7}th{font-weight:650}td:first-child{font-weight:600}td:nth-child(2){min-width:8rem}.scroll table{min-width:640px}.small-table{font-size:.83rem}
+.scope-cols{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}.scope-cols ul{padding-left:1.15rem;margin:.4rem 0}.scope-cols li{margin:.4rem 0}.appendix{border:1px solid var(--line);border-radius:.25rem;margin:.65rem 0;background:var(--surface)}.appendix>summary,.folder>summary{cursor:pointer;padding:.65rem .85rem;color:var(--green);font-weight:650}.appendix>.inside{padding:0 .85rem 1rem}.folder pre{padding:.55rem;background:var(--paper);font:.76rem/1.6 var(--mono);white-space:pre-wrap;max-height:22rem;overflow:auto}.folder summary{padding:.35rem .6rem;font-size:.86rem}.folder small{font-weight:400}.brief{font-size:.87rem}.foot{border-top:1px solid var(--line);padding:1.2rem 0 2rem;color:var(--muted);display:flex;justify-content:space-between;gap:1rem;font-size:.84rem}
+@media(max-width:680px){.wrap{width:calc(100% - 2rem)}.urgent,.scope-cols{grid-template-columns:1fr}.stat+.stat{padding-left:.65rem}.stat{padding-right:.25rem}.stat span{font-size:.73rem}.finding summary{grid-template-columns:3.5rem 1fr 1rem;gap:.35rem .4rem;padding:.8rem}.finding .issue{grid-column:1/3;grid-row:2}.finding .expand{grid-column:3;grid-row:1/3}.tools label{flex:1 1 8rem}.scroll{border:1px solid var(--line)}.mast .date{font-size:.72rem}.lead{font-size:1.05rem}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+@media print{@page{margin:15mm}.wrap{width:100%}body{font-size:10pt;color:#111;background:white}.hero,.section{padding:1rem 0}.tools,.jump,.skip,.expand,.foot a,.count,.appendix,#inventory{display:none!important}.finding[hidden]{display:block!important}.finding-body{padding:0 0 .6rem}.finding summary{padding:.65rem 0;break-after:avoid}.finding,.urgent article{background:white}.finding-body dl>div,.sources,.urgent article,tr{break-inside:avoid}.scroll{overflow:visible;border:0}.scroll table{min-width:0}h1{font-size:34pt}h2{font-size:22pt}a{color:inherit}.urgent,.scope-cols{grid-template-columns:1fr 1fr}.stats{margin-top:1rem}.section h2,h3{break-after:avoid}}
+</style></head><body>
+<a class="skip" href="#main">Skip to report</a>
+<header class="mast"><div class="wrap"><span class="brand">Kharbout Works</span><span class="date">Engineering QA review · 26 November 2026</span></div></header>
+<main id="main" class="wrap"><header class="hero"><p class="eyebrow">Website quality assurance</p><h1>QA and security review</h1>
+<p class="lead">The two high-priority cloud defects have fixes and regression coverage. Sign-out clears account-owned editor data. Folder ownership can be handed off before account deletion, preserving collaborators’ drafts and versions.</p>
+<p class="stamp">Baseline <code>3769718</code> · Remediation verified in the local working tree · 26 November 2026</p>
+<div class="stats" aria-label="Remediation counts"><div class="stat"><b>30</b><span>Original findings</span></div><div class="stat"><b>2</b><span>High-priority fixes</span></div><div class="stat"><b>26</b><span>Verified locally</span></div><div class="stat"><b>4</b><span>Further verification</span></div></div></header>
+<nav class="jump" aria-label="Report sections"><a href="#decision">High-priority fixes</a><a href="#findings">Findings</a><a href="#checks">Test results</a><a href="#coverage">Coverage and limits</a><a href="#inventory">Scan inventory</a></nav>
+<section class="section" id="decision"><h2>High-priority fixes</h2>
+<div class="urgent"><article><h3>Account data clears on sign-out</h3><p>The regression opens a private cloud draft with an AI answer, signs out and verifies that the previous account’s data disappears from the same browser tab.</p><a href="#QA-01">View sign-out evidence</a></article>
+<article><h3>Shared folder history survives handoff</h3><p>The database blocks deletion while the account owns shared work. The verified handoff keeps the folder, drafts and versions available to the team.</p><a href="#QA-02">View deletion evidence</a></article></div></section>
+<section class="section" id="findings"><h2>Findings</h2><p class="intro">Each record includes the implemented repair, its verification result and any remaining environment-specific check. Open the original evidence to review the behavior the test is intended to prevent.</p>
+<div class="tools" id="filters" hidden><label>Search findings<input id="q" type="search" autocomplete="off" placeholder="Search title, source or evidence"></label><label>Priority<select id="level"><option value="">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select></label><label>Area<select id="area"><option value="">All areas</option><option>Accessibility</option><option>Build &amp; release</option><option>Laravel catalogue</option><option>Performance</option><option>Prompt Builder</option><option>Vault &amp; demos</option></select></label><label>Status<select id="status"><option value="">All statuses</option><option>CI run pending</option><option>Staging needed</option><option>Verified locally</option></select></label><button id="toggle" type="button">Expand shown</button><button id="clear" type="button">Reset filters</button></div>
+<p class="count" aria-live="polite" id="count">30 findings</p><div class="findings"><details class="finding" id="QA-01" data-level="High" data-status="Verified locally" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-01</span><span class="badge high">High</span><span class="issue"><strong>Signing out leaves a private draft and AI answer visible</strong><small>Prompt Builder · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Clear account-owned drafts and AI state on sign-out or account change. Abort the active AI request and ignore late results.</dd></div><div><dt>Verification</dt><dd>Chromium mock-account regression opened a private draft with a saved answer, signed out with another request outstanding and checked the editor after that request returned.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/lib/prompt-builder/workspace.ts"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 144</span></li><li><a href="../tests/workbench/prompt-builder-cloud.spec.mjs"><code>tests/workbench/prompt-builder-cloud.spec.mjs</code></a> <span class="line">line 151</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Someone using the same open tab can read a cloud-only draft after its owner signs out.</p><dl><div><dt>Evidence</dt><dd>A fictional cloud draft and saved AI answer remained in the editor after the library disappeared and the sign-in form returned. No device draft had been saved. A reload cleared the editor. The account-change handler clears library state while the editor holds its own copy.</dd></div><div><dt>Acceptance check</dt><dd>Load a private draft as A, sign out, then sign in as B in the same tab. The old title, fields, answers and pending requests must be absent throughout.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud-state.ts#L48"><code>src/lib/prompt-builder/cloud-state.ts</code></a> <span class="line">line 48</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud-state.ts#L91"><code>src/lib/prompt-builder/cloud-state.ts</code></a> <span class="line">line 91</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/workspace.ts#L278"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 278</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/toolkit/BuilderAI.astro#L65"><code>src/components/toolkit/BuilderAI.astro</code></a> <span class="line">line 65</span></li></ul></div></div></details></div></details><details class="finding" id="QA-02" data-level="High" data-status="Staging needed" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-02</span><span class="badge high">High</span><span class="issue"><strong>Deleting a folder owner’s account can erase collaborators’ unexported drafts</strong><small>Prompt Builder · <b class="outcome">Staging needed</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Allow owners to hand a shared folder to an existing editor. The database protects shared folders during account deletion, deletes personal drafts and preserves a deleted author’s drafts in surviving folders.</dd></div><div><dt>Verification</dt><dd>All four migrations and the PostgreSQL 17 regression passed. The fixture rejected deletion before handoff and verified shared drafts and revisions after deletion. The mocked browser exercised the deletion block, the handoff and the resulting sign-out.</dd></div><div><dt>Still to verify</dt><dd>Apply the migration to an isolated hosted Supabase project and verify deletion through the deployed Auth Admin API with two test accounts.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../supabase/migrations/20261126070216_protect_prompt_folder_data.sql"><code>supabase/migrations/20261126070216_protect_prompt_folder_data.sql</code></a> <span class="line">line 28</span></li><li><a href="../supabase/migrations/20261126070216_protect_prompt_folder_data.sql"><code>supabase/migrations/20261126070216_protect_prompt_folder_data.sql</code></a> <span class="line">line 46</span></li><li><a href="../tests/database/prompt-builder.sql"><code>tests/database/prompt-builder.sql</code></a> <span class="line">line 125</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A collaborator can lose a shared draft and its version history even if the departing owner uses the offered cloud export first.</p><dl><div><dt>Evidence</dt><dd>In a disposable database, the owner could read an editor-created folder draft. The account export’s creator predicate selected zero drafts. Deleting the fictional owner left the editor account intact, but the draft and its versions were gone. The account-deletion copy identifies owned folders without explaining the loss of collaborators’ work.</dd></div><div><dt>Acceptance check</dt><dd>Place an editor-created draft with two revisions in an owned folder. Before deleting the owner, verify that the editor can retain both revisions or that the confirmed archive includes them.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L5"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 5</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L26"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 26</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L37"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 37</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud-state.ts#L257"><code>src/lib/prompt-builder/cloud-state.ts</code></a> <span class="line">line 257</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/copy.ts#L141"><code>src/lib/prompt-builder/copy.ts</code></a> <span class="line">line 141</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/functions/prompt-account/index.ts#L6"><code>supabase/functions/prompt-account/index.ts</code></a> <span class="line">line 6</span></li></ul></div></div></details></div></details><details class="finding" id="QA-03" data-level="Medium" data-status="Verified locally" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-03</span><span class="badge medium">Medium</span><span class="issue"><strong>Owners cannot revoke an outstanding folder invitation</strong><small>Prompt Builder · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>List pending invitations for folder owners and offer a revocation action. Lock the folder consistently while issuing, accepting or revoking a link.</dd></div><div><dt>Verification</dt><dd>PostgreSQL 17 confirmed that revoking one invitation prevents its use and a second invitation remains valid. Role checks covered access to invitation metadata. The mocked browser also exercised the owner’s pending-invitation list and revocation action.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../supabase/migrations/20261126070216_protect_prompt_folder_data.sql"><code>supabase/migrations/20261126070216_protect_prompt_folder_data.sql</code></a> <span class="line">line 70</span></li><li><a href="../supabase/migrations/20261126070216_protect_prompt_folder_data.sql"><code>supabase/migrations/20261126070216_protect_prompt_folder_data.sql</code></a> <span class="line">line 82</span></li><li><a href="../tests/database/prompt-builder.sql"><code>tests/database/prompt-builder.sql</code></a> <span class="line">line 79</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A mistaken or forwarded viewer or editor invitation remains usable until consumption or expiry. Revoking a public snapshot solves a different problem.</p><dl><div><dt>Evidence</dt><dd>The invitation function stores a hashed token with a seven-day lifetime. Acceptance consumes it. The owner interface creates links and manages existing members but exposes no pending-invitation list or revocation action.</dd></div><div><dt>Acceptance check</dt><dd>Issue two fictional invitations and revoke one. Its acceptance must fail and the second link must still work.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L17"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 17</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L161"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 161</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L183"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 183</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/toolkit/BuilderCloud.astro#L101"><code>src/components/toolkit/BuilderCloud.astro</code></a> <span class="line">line 101</span></li></ul></div></div></details></div></details><details class="finding" id="QA-04" data-level="Medium" data-status="Verified locally" data-area="Build &amp; release">
+    <summary><span class="ticket">QA-04</span><span class="badge medium">Medium</span><span class="issue"><strong>Local logs and extraction notes enter the Docker build context and final image</strong><small>Build &amp; release · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Use a Docker build-context allowlist and explicit runtime copies. Exclude development logs, extraction notes, keys and generated dependencies.</dd></div><div><dt>Verification</dt><dd>Built and ran the catalogue container with fictional root and nested fixtures. The excluded files were absent in the running image. The home page, entry and all seven source downloads were checked.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../.dockerignore"><code>.dockerignore</code></a> <span class="line">line 1</span></li><li><a href="../Dockerfile"><code>Dockerfile</code></a> <span class="line">line 1</span></li><li><a href="../.github/workflows/checks.yml"><code>.github/workflows/checks.yml</code></a> <span class="line">line 115</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Sharing an image built from this checkout can distribute local development material to image recipients.</p><dl><div><dt>Evidence</dt><dd>Both image stages copy the whole Docker context. The Docker ignore list excludes environment files and dependency trees but omits root logs and extraction notes. Both file types existed in this checkout. Image publication and public HTTP access were not observed.</dd></div><div><dt>Acceptance check</dt><dd>Build from a checkout containing harmless sentinel log and notes files. Inspect the resulting image and confirm both are absent while all catalogue downloads work.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/Dockerfile#L5"><code>Dockerfile</code></a> <span class="line">line 5</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/Dockerfile#L15"><code>Dockerfile</code></a> <span class="line">line 15</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/.dockerignore#L1"><code>.dockerignore</code></a> <span class="line">line 1</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/.gitignore#L32"><code>.gitignore</code></a> <span class="line">line 32</span></li></ul></div></div></details></div></details><details class="finding" id="QA-05" data-level="Medium" data-status="Verified locally" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-05</span><span class="badge medium">Medium</span><span class="issue"><strong>A valid draft can become unsaveable when its generated text enters Edit mode</strong><small>Prompt Builder · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Keep a long generated prompt available for copy and export and disable manual editing if the text exceeds the editing limit. Keep the draft saveable and explain the limit in the editor.</dd></div><div><dt>Verification</dt><dd>Chromium generated the long Claude handover variant, verified the editing guard, saved it locally and reopened the unchanged content.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/lib/prompt-builder/workspace.ts"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 216</span></li><li><a href="../tests/workbench/prompt-builder.spec.mjs"><code>tests/workbench/prompt-builder.spec.mjs</code></a> <span class="line">line 166</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A writer can finish a long prompt and then lose access to normal save or import round trips.</p><dl><div><dt>Evidence</dt><dd>Four individually valid 7,500-character handover fields produced a 46,574-character detailed variant for the Claude profile. The model accepted the draft before Edit copied the generated variant into the manual field and rejected it afterwards.</dd></div><div><dt>Acceptance check</dt><dd>Round-trip the generated long variant through Edit, save and import with all characters preserved, or give an actionable limit before entering Edit.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/model.ts#L18"><code>src/lib/prompt-builder/model.ts</code></a> <span class="line">line 18</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/model.ts#L153"><code>src/lib/prompt-builder/model.ts</code></a> <span class="line">line 153</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/workspace.ts#L196"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 196</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/workspace.ts#L237"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 237</span></li></ul></div></div></details></div></details><details class="finding" id="QA-06" data-level="Medium" data-status="Verified locally" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-06</span><span class="badge medium">Medium</span><span class="issue"><strong>The cloud library fetches every draft body to display a list</strong><small>Prompt Builder · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Load one page of draft or revision metadata. Fetch bodies only for a selected draft or revision, and apply local list changes after saving.</dd></div><div><dt>Verification</dt><dd>The mocked Chromium suite verified that an initial 20-row page requested metadata only, paging exposed 23 results, and opening a draft or version requested just that selected payload.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/lib/prompt-builder/cloud.ts"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 71</span></li><li><a href="../src/lib/prompt-builder/cloud.ts"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 115</span></li><li><a href="../tests/workbench/prompt-builder-cloud.spec.mjs"><code>tests/workbench/prompt-builder-cloud.spec.mjs</code></a> <span class="line">line 203</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Opening or refreshing a large library downloads private content the user has not selected and increases memory and network use.</p><dl><div><dt>Evidence</dt><dd>The client walks every 100-row page and requests payloads when listing drafts and versions. Saving refreshes the library. A single draft can approach 400,000 bytes and revisions store full snapshots. No production latency was measured.</dd></div><div><dt>Acceptance check</dt><dd>Seed several pages with large fictional drafts. The initial response should contain metadata for one page, and opening a draft should fetch only that body.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud.ts#L45"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 45</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud.ts#L67"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 67</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud.ts#L105"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 105</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud-state.ts#L165"><code>src/lib/prompt-builder/cloud-state.ts</code></a> <span class="line">line 165</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L102"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 102</span></li></ul></div></div></details></div></details><details class="finding" id="QA-07" data-level="Medium" data-status="Verified locally" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-07</span><span class="badge medium">Medium</span><span class="issue"><strong>A viewer’s “Save as new cloud copy” points to a read-only folder</strong><small>Prompt Builder · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Use a writable copy destination and default viewers’ copies to the personal library. Keep the original folder read-only.</dd></div><div><dt>Verification</dt><dd>The mock browser opened a draft as a viewer and verified that the new copy request used the personal destination.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/lib/prompt-builder/cloud-state.ts"><code>src/lib/prompt-builder/cloud-state.ts</code></a> <span class="line">line 195</span></li><li><a href="../tests/workbench/prompt-builder-cloud.spec.mjs"><code>tests/workbench/prompt-builder-cloud.spec.mjs</code></a> <span class="line">line 203</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A viewer offered a copy of a shared draft cannot use that action to create a personal cloud draft.</p><dl><div><dt>Evidence</dt><dd>The copy action stayed enabled. The destination control was disabled and submitted the original read-only folder. The simulated service returned the same permission rejection the SQL write guard specifies.</dd></div><div><dt>Acceptance check</dt><dd>As a viewer, save a copy to the personal library, reopen it and confirm the original remains unchanged.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/toolkit/BuilderCloud.astro#L37"><code>src/components/toolkit/BuilderCloud.astro</code></a> <span class="line">line 37</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/toolkit/BuilderCloud.astro#L42"><code>src/components/toolkit/BuilderCloud.astro</code></a> <span class="line">line 42</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud-state.ts#L158"><code>src/lib/prompt-builder/cloud-state.ts</code></a> <span class="line">line 158</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104659_prompt_builder_library.sql#L107"><code>supabase/migrations/20261125104659_prompt_builder_library.sql</code></a> <span class="line">line 107</span></li></ul></div></div></details></div></details><details class="finding" id="QA-08" data-level="Medium" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-08</span><span class="badge medium">Medium</span><span class="issue"><strong>Two CSV columns can silently collapse into one</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Reject duplicate normalized CSV field mappings before preparing a preview. Apply the same behavior in JavaScript and Livewire.</dd></div><div><dt>Verification</dt><dd>Node and browser tests covered ambiguous aliases and valid imports. The Livewire verifier covered duplicates including full-width aliases.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/lib/kernels/safeCsv.ts"><code>src/lib/kernels/safeCsv.ts</code></a> <span class="line">line 81</span></li><li><a href="../src/content/vault/spreadsheet-importer-register/Example.php"><code>src/content/vault/spreadsheet-importer-register/Example.php</code></a> <span class="line">line 96</span></li><li><a href="../tests/workbench/tier3-livewire.php"><code>tests/workbench/tier3-livewire.php</code></a> <span class="line">line 1</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A consumer reusing the register can import the wrong job name without a warning.</p><dl><div><dt>Evidence</dt><dd>The importer accepted “Job, Job Name, Interval” with different values in the first two columns. Both headers mapped to the same field. The second value replaced the first and the preview showed zero warnings. The PHP path agreed.</dd></div><div><dt>Acceptance check</dt><dd>Try duplicate headers, distinct aliases of the same field and distinct valid columns. Only unambiguous mappings should load.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/kernels/safeCsv.ts#L94"><code>src/lib/kernels/safeCsv.ts</code></a> <span class="line">line 94</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/kernels/safeCsv.ts#L116"><code>src/lib/kernels/safeCsv.ts</code></a> <span class="line">line 116</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/spreadsheet-importer-register/Example.php#L78"><code>src/content/vault/spreadsheet-importer-register/Example.php</code></a> <span class="line">line 78</span></li></ul></div></div></details></div></details><details class="finding" id="QA-09" data-level="Medium" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-09</span><span class="badge medium">Medium</span><span class="issue"><strong>Livewire imports an old CSV preview after the source changes</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Discard a staged Livewire preview when the source changes and check the source again before committing rows.</dd></div><div><dt>Verification</dt><dd>The Livewire browser test edited a staged CSV and verified that Load became disabled immediately. Re-previewing loaded only the new rows.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/content/vault/spreadsheet-importer-register/Example.php"><code>src/content/vault/spreadsheet-importer-register/Example.php</code></a> <span class="line">line 156</span></li><li><a href="../tests/workbench/livewire-hooks.browser.mjs"><code>tests/workbench/livewire-hooks.browser.mjs</code></a> <span class="line">line 107</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">The rows committed to the register can differ from the CSV currently in the editor.</p><dl><div><dt>Evidence</dt><dd>The component parsed “Alpha backup”. Changing the input to “Beta backup” before Load still inserted “Alpha backup”. The Livewire action commits the stored preview without checking the current input.</dd></div><div><dt>Acceptance check</dt><dd>After editing a staged CSV, Load must require a new preview. The next commit must contain only the newly previewed rows.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/spreadsheet-importer-register/Example.php#L47"><code>src/content/vault/spreadsheet-importer-register/Example.php</code></a> <span class="line">line 47</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/spreadsheet-importer-register/Example.php#L119"><code>src/content/vault/spreadsheet-importer-register/Example.php</code></a> <span class="line">line 119</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/spreadsheet-importer-register/view.blade.php#L2"><code>src/content/vault/spreadsheet-importer-register/view.blade.php</code></a> <span class="line">line 2</span></li></ul></div></div></details></div></details><details class="finding" id="QA-10" data-level="Medium" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-10</span><span class="badge medium">Medium</span><span class="issue"><strong>Funding with no commitment displays “0% received”</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Show the received and committed amounts and identify an unavailable ratio when commitment is zero.</dd></div><div><dt>Verification</dt><dd>React, Alpine and Livewire checks covered zero commitment, ordinary funding and overfunding. The zero-commitment state has no percentage progress indicator.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/content/vault/two-band-progress-sla/model.ts"><code>src/content/vault/two-band-progress-sla/model.ts</code></a> <span class="line">line 19</span></li><li><a href="../tests/workbench/vault-primitives-parity.spec.mjs"><code>tests/workbench/vault-primitives-parity.spec.mjs</code></a> <span class="line">line 1</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">The percentage gives a false operational signal when the denominator is zero. This is a reusable demonstration with fictional funds.</p><dl><div><dt>Evidence</dt><dd>The UI reported 40,000.00 USD received, 0.00 USD committed and 0% received together. The shared model and PHP implementation substitute zero for an undefined ratio.</dd></div><div><dt>Acceptance check</dt><dd>Verify zero and positive receipts against a zero commitment, then test an ordinary commitment and an overfunded case.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/two-band-progress-sla/model.ts#L22"><code>src/content/vault/two-band-progress-sla/model.ts</code></a> <span class="line">line 22</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/two-band-progress-sla/Example.tsx#L167"><code>src/content/vault/two-band-progress-sla/Example.tsx</code></a> <span class="line">line 167</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/two-band-progress-sla/app/Vault/FundingCurrency.php#L16"><code>src/content/vault/two-band-progress-sla/app/Vault/FundingCurrency.php</code></a> <span class="line">line 16</span></li></ul></div></div></details></div></details><details class="finding" id="QA-11" data-level="Medium" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-11</span><span class="badge medium">Medium</span><span class="issue"><strong>Saving a habit check-in in another tab can erase the first tab’s change</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Store check-ins per habit and day and synchronize changes between tabs.</dd></div><div><dt>Verification</dt><dd>Two Chromium tabs made separate changes before reload. Both survived, and an undo propagated to the other tab.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/components/lab/prototypes.js"><code>src/components/lab/prototypes.js</code></a> <span class="line">line 43</span></li><li><a href="../tests/workbench/lab.spec.mjs"><code>tests/workbench/lab.spec.mjs</code></a> <span class="line">line 37</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Independent check-ins on the same device can disappear while both clicks appear successful.</p><dl><div><dt>Evidence</dt><dd>With two Lab tabs open, tab A recorded Read and tab B recorded Walk. After reload, Walk remained and Read was back to zero. Each tab writes its own snapshot of the whole history.</dd></div><div><dt>Acceptance check</dt><dd>Record different habits from two tabs before either reloads. Both records must survive refresh in either order.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/lab/prototypes.js#L53"><code>src/components/lab/prototypes.js</code></a> <span class="line">line 53</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/lab/prototypes.js#L66"><code>src/components/lab/prototypes.js</code></a> <span class="line">line 66</span></li></ul></div></div></details></div></details><details class="finding" id="QA-12" data-level="Medium" data-status="Verified locally" data-area="Laravel catalogue">
+    <summary><span class="ticket">QA-12</span><span class="badge medium">Medium</span><span class="issue"><strong>A bundle failure leaves the entire catalogue blank</strong><small>Laravel catalogue · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Serve an HTML catalogue and entry fallback until the interactive app mounts.</dd></div><div><dt>Verification</dt><dd>With JavaScript disabled, Chromium followed home to an entry and downloaded its source. Blocking the entry bundle also left the fallback usable.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/views/catalogue-fallback.blade.php"><code>resources/views/catalogue-fallback.blade.php</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/catalogue.spec.ts"><code>tests/browser/catalogue.spec.ts</code></a> <span class="line">line 101</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Visitors lose navigation, entries and download links when the catalogue client fails to initialize.</p><dl><div><dt>Evidence</dt><dd>Both the catalogue home and a direct search-dialog entry returned HTTP 200 with zero visible text, links or headings when JavaScript was disabled. The Blade shell only mounts Inertia.</dd></div><div><dt>Acceptance check</dt><dd>Block the application script and open the home page and an entry directly. Reach a source download using only HTML navigation.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/views/app.blade.php#L14"><code>resources/views/app.blade.php</code></a> <span class="line">line 14</span></li></ul></div></div></details></div></details><details class="finding" id="QA-13" data-level="Medium" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-13</span><span class="badge medium">Medium</span><span class="issue"><strong>Without JavaScript the Vault register can reach only one of twenty kits</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Provide visible static kit descriptions and source links, then let the interactive register narrow the view when scripts run.</dd></div><div><dt>Verification</dt><dd>Chromium and Windows WebKit followed all 20 directory links with scripts disabled. Kit descriptions and source links stayed reachable.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/pages/vault/index.astro"><code>src/pages/vault/index.astro</code></a> <span class="line">line 34</span></li><li><a href="../tests/workbench/vault.spec.mjs"><code>tests/workbench/vault.spec.mjs</code></a> <span class="line">line 10</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">The directory looks navigable after a script failure but sends readers to hidden content.</p><dl><div><dt>Evidence</dt><dd>Selecting the CSV importer changed the fragment. The first kit stayed visible. Nineteen articles have hidden attributes in the generated HTML and directory links target only those fragments.</dd></div><div><dt>Acceptance check</dt><dd>With JavaScript disabled, follow every register link and reach the corresponding description or source.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/pages/vault/index.astro#L22"><code>src/pages/vault/index.astro</code></a> <span class="line">line 22</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/pages/vault/index.astro#L28"><code>src/pages/vault/index.astro</code></a> <span class="line">line 28</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/pages/vault/index.astro#L55"><code>src/pages/vault/index.astro</code></a> <span class="line">line 55</span></li></ul></div></div></details></div></details><details class="finding" id="QA-14" data-level="Medium" data-status="Verified locally" data-area="Laravel catalogue">
+    <summary><span class="ticket">QA-14</span><span class="badge medium">Medium</span><span class="issue"><strong>Closing the workflow drawer discards edits without warning</strong><small>Laravel catalogue · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Keep in-progress drawer fields in Browse state keyed by the workflow.</dd></div><div><dt>Verification</dt><dd>The browser reopened the drawer after Escape, backdrop and Close and verified the entered fields persisted without leaking between workflows.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/js/pages/Browse.tsx"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/vault.spec.ts"><code>tests/browser/vault.spec.ts</code></a> <span class="line">line 152</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A user can lose a long prompt configuration with a single Escape press or backdrop click.</p><dl><div><dt>Evidence</dt><dd>After changing the stack field, closing the drawer and reopening the same workflow showed an empty value. The form lives inside a conditionally mounted drawer.</dd></div><div><dt>Acceptance check</dt><dd>Type into several fields and close with Escape, backdrop and close button. Confirm the values survive or a discard decision is required.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultDrawer.tsx#L55"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 55</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultDrawer.tsx#L177"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 177</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultDrawer.tsx#L185"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 185</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Browse.tsx#L322"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 322</span></li></ul></div></div></details></div></details><details class="finding" id="QA-15" data-level="Medium" data-status="Verified locally" data-area="Laravel catalogue">
+    <summary><span class="ticket">QA-15</span><span class="badge medium">Medium</span><span class="issue"><strong>The provider tab opens even when copying the prompt fails</strong><small>Laravel catalogue · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Copy first and provide explicit provider links. Show a manual copy path when clipboard permission is denied.</dd></div><div><dt>Verification</dt><dd>Chromium checked both provider links after successful copy. With clipboard denied, it verified the fallback and checked that opening the simulated destination required a separate action.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/js/components/VaultDrawer.tsx"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/vault.spec.ts"><code>tests/browser/vault.spec.ts</code></a> <span class="line">line 178</span></li><li><a href="../tests/browser/vault.spec.ts"><code>tests/browser/vault.spec.ts</code></a> <span class="line">line 209</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A user can paste stale clipboard contents into the provider, including unrelated personal text.</p><dl><div><dt>Evidence</dt><dd>With clipboard access denied, Open in Claude opened a new tab while the failure message stayed in the original drawer. The external destination was intercepted locally in this check. No prompt was sent.</dd></div><div><dt>Acceptance check</dt><dd>Deny clipboard permission. The current page should show the fallback and the provider should open only after a deliberate continuation.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultDrawer.tsx#L154"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 154</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultDrawer.tsx#L356"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 356</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultDrawer.tsx#L370"><code>resources/js/components/VaultDrawer.tsx</code></a> <span class="line">line 370</span></li></ul></div></div></details></div></details><details class="finding" id="QA-16" data-level="Medium" data-status="Verified locally" data-area="Laravel catalogue">
+    <summary><span class="ticket">QA-16</span><span class="badge medium">Medium</span><span class="issue"><strong>Submitting a catalogue search drops keyboard focus</strong><small>Laravel catalogue · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Keep the search input mounted during filter changes and retain the catalogue fragment.</dd></div><div><dt>Verification</dt><dd>The browser submitted a search with Enter, verified focus stayed on the input, and followed Tab to the Search button. Clearing also returned focus to the input.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/js/pages/Browse.tsx"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/catalogue.spec.ts"><code>tests/browser/catalogue.spec.ts</code></a> <span class="line">line 49</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Keyboard users must navigate back from the document body after applying a filter.</p><dl><div><dt>Evidence</dt><dd>Submitting “keyboard” replaced the keyed input. The active element became BODY and the catalogue fragment disappeared. The next Tab resumed from the page’s initial focus order.</dd></div><div><dt>Acceptance check</dt><dd>Submit a search using Enter. Verify focus and the next Tab stay in the filter/results workflow, including when the result set is empty.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Browse.tsx#L135"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 135</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Browse.tsx#L142"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 142</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Browse.tsx#L203"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 203</span></li></ul></div></div></details></div></details><details class="finding" id="QA-17" data-level="Medium" data-status="Verified locally" data-area="Accessibility">
+    <summary><span class="ticket">QA-17</span><span class="badge medium">Medium</span><span class="issue"><strong>The catalogue’s global slash shortcut cannot be disabled or remapped</strong><small>Accessibility · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Remove the catalogue-wide single-character shortcut. Keep the modified command-search shortcut and the dedicated Vault input.</dd></div><div><dt>Verification</dt><dd>The browser pressed slash from main content and verified focus stayed there. It also exercised Ctrl+K and normal keyboard access.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/js/components/VaultSection.tsx"><code>resources/js/components/VaultSection.tsx</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/vault.spec.ts"><code>tests/browser/vault.spec.ts</code></a> <span class="line">line 13</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Speech and keyboard input can accidentally move focus into Vault search.</p><dl><div><dt>Evidence</dt><dd>The slash handler runs at document scope outside editable fields. The browser test confirms a slash from the main content moves focus. There is no off setting or modifier requirement. WCAG 2.2 SC 2.1.4 addresses this behavior.</dd></div><div><dt>Acceptance check</dt><dd>With character shortcuts disabled, pressing slash from main content must leave focus alone. Search must remain accessible by keyboard.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultSection.tsx#L33"><code>resources/js/components/VaultSection.tsx</code></a> <span class="line">line 33</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/components/VaultSection.tsx#L65"><code>resources/js/components/VaultSection.tsx</code></a> <span class="line">line 65</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/tests/browser/vault.spec.ts#L37"><code>tests/browser/vault.spec.ts</code></a> <span class="line">line 37</span></li></ul><a href="https://www.w3.org/WAI/WCAG22/Understanding/character-key-shortcuts.html">W3C guidance on character-key shortcuts</a></div></div></details></div></details><details class="finding" id="QA-18" data-level="Medium" data-status="Verified locally" data-area="Accessibility">
+    <summary><span class="ticket">QA-18</span><span class="badge medium">Medium</span><span class="issue"><strong>Two legacy Vault previews have small controls or an unreachable scroll region</strong><small>Accessibility · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Enlarge the legacy register buttons and give the overflowing quote an accessible, keyboard-focusable region.</dd></div><div><dt>Verification</dt><dd>Chromium checked both engines at 320 px. Each action measured at least 24 px and End scrolled the quote. Targeted axe checks returned zero violations for the two flagged rules.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../tests/workbench/vault.spec.mjs"><code>tests/workbench/vault.spec.mjs</code></a> <span class="line">line 45</span></li><li><a href="../src/content/vault/config-driven-register.json"><code>src/content/vault/config-driven-register.json</code></a> <span class="line">line 15</span></li><li><a href="../src/content/vault/live-quoting-composer.json"><code>src/content/vault/live-quoting-composer.json</code></a> <span class="line">line 14</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Touch users can hit adjacent actions in the register. Keyboard users can have difficulty reading the full content of the quoting preview.</p><dl><div><dt>Evidence</dt><dd>axe found four undersized or closely spaced buttons in the legacy register. An Edit button measured 22.8 × 16 CSS pixels. In the legacy quoting composer, a scroll region had neither a focusable descendant nor its own focus stop. These are separate locations in earlier examples still linked by the Vault.</dd></div><div><dt>Acceptance check</dt><dd>Retest both default previews. At a narrow viewport, activate each row action independently and scroll the full quotation text using only the keyboard.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/config-driven-register.json#L15"><code>src/content/vault/config-driven-register.json</code></a> <span class="line">line 15</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/content/vault/live-quoting-composer.json#L14"><code>src/content/vault/live-quoting-composer.json</code></a> <span class="line">line 14</span></li></ul></div></div></details></div></details><details class="finding" id="QA-19" data-level="Medium" data-status="CI run pending" data-area="Build &amp; release">
+    <summary><span class="ticket">QA-19</span><span class="badge medium">Medium</span><span class="issue"><strong>CI can pass while cloud permissions and release-output checks never run</strong><small>Build &amp; release · <b class="outcome">CI run pending</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Run the public-output audit in CI. Add a cloud job with disposable PostgreSQL 17, required SQL role checks and an explicitly enabled mocked browser suite.</dd></div><div><dt>Verification</dt><dd>The public audit, PostgreSQL 17 commands and mocked browser suite ran locally. The workflow configuration was parsed and its job commands checked.</dd></div><div><dt>Still to verify</dt><dd>Confirm the new jobs complete on the first GitHub Actions run.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../.github/workflows/checks.yml"><code>.github/workflows/checks.yml</code></a> <span class="line">line 37</span></li><li><a href="../.github/workflows/checks.yml"><code>.github/workflows/checks.yml</code></a> <span class="line">line 59</span></li><li><a href="../tests/database/supabase-fixture.sql"><code>tests/database/supabase-fixture.sql</code></a> <span class="line">line 1</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A green pull request can miss regressions in folder roles, cloud interactions, or files and links in the static export.</p><dl><div><dt>Evidence</dt><dd>The workflow invokes the main browser suite. Its cloud test skips without an opt-in variable. The documented SQL regression script and Python public-output audit have no step in this workflow. The unit source scan covers a different set of checks.</dd></div><div><dt>Acceptance check</dt><dd>A clean CI run should show a separate result for all three checks and fail when a controlled fixture violates each one.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/.github/workflows/checks.yml#L33"><code>.github/workflows/checks.yml</code></a> <span class="line">line 33</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/.github/workflows/checks.yml#L44"><code>.github/workflows/checks.yml</code></a> <span class="line">line 44</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/tests/workbench/prompt-builder-cloud.spec.mjs#L3"><code>tests/workbench/prompt-builder-cloud.spec.mjs</code></a> <span class="line">line 3</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/docs/prompt-builder.md#L45"><code>docs/prompt-builder.md</code></a> <span class="line">line 45</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/scripts/audit-public.py#L176"><code>scripts/audit-public.py</code></a> <span class="line">line 176</span></li></ul></div></div></details></div></details><details class="finding" id="QA-20" data-level="Medium" data-status="Verified locally" data-area="Build &amp; release">
+    <summary><span class="ticket">QA-20</span><span class="badge medium">Medium</span><span class="issue"><strong>The Livewire verifier can report success before testing a component</strong><small>Build &amp; release · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Catch Laravel bootstrap failures before they can return success and require every expected Livewire example to verify.</dd></div><div><dt>Verification</dt><dd>An invalid package-cache path returned exit 1 with the expected message. With a working cache, the verifier mounted and updated all 30 examples.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../tests/workbench/verify-livewire.php"><code>tests/workbench/verify-livewire.php</code></a> <span class="line">line 28</span></li><li><a href="../.github/workflows/checks.yml"><code>.github/workflows/checks.yml</code></a> <span class="line">line 50</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">An environment failure can leave CI or a maintainer believing the examples were verified.</p><dl><div><dt>Evidence</dt><dd>One local run printed a Laravel package-cache permission error and returned process status 0 with zero mount results. The script installs its explicit failure handler after framework bootstrap. With a writable cache, all 30 examples mounted and updated.</dd></div><div><dt>Acceptance check</dt><dd>Run with an unavailable fixture cache and assert nonzero status. Run again with a working cache and require all 30 confirmations.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/tests/workbench/verify-livewire.php#L30"><code>tests/workbench/verify-livewire.php</code></a> <span class="line">line 30</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/tests/workbench/verify-livewire.php#L36"><code>tests/workbench/verify-livewire.php</code></a> <span class="line">line 36</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/.github/workflows/checks.yml#L49"><code>.github/workflows/checks.yml</code></a> <span class="line">line 49</span></li></ul></div></div></details></div></details><details class="finding" id="QA-21" data-level="Medium" data-status="Verified locally" data-area="Performance">
+    <summary><span class="ticket">QA-21</span><span class="badge medium">Medium</span><span class="issue"><strong>Three static diagrams depend on a 5.54 MB rendering library</strong><small>Performance · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Ship prerendered light and dark SVGs with source hashes. Keep zoom and the original Mermaid text available.</dd></div><div><dt>Verification</dt><dd>The browser loaded both themes on all three case-study pages and exercised zoom. The build published the six SVGs and the case studies requested no Mermaid runtime.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/components/ui/MermaidDiagram.astro"><code>src/components/ui/MermaidDiagram.astro</code></a> <span class="line">line 1</span></li><li><a href="../scripts/render-system-diagrams.mjs"><code>scripts/render-system-diagrams.mjs</code></a> <span class="line">line 1</span></li><li><a href="../tests/workbench/case-studies.spec.mjs"><code>tests/workbench/case-studies.spec.mjs</code></a> <span class="line">line 49</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Readers who open a case-study diagram must download and execute a general diagram renderer.</p><dl><div><dt>Evidence</dt><dd>The built Mermaid asset is 5,537,838 bytes before compression. The page defers loading until the figure is near the viewport. The three diagram sources are known at build time. Public-host compression and user timing were not measured. The same file compressed to 1,598,442 bytes using local gzip defaults.</dd></div><div><dt>Acceptance check</dt><dd>Open each diagram cold and switch themes. Both states and zoom must work without transferring the Mermaid runtime.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/ui/MermaidDiagram.astro#L2"><code>src/components/ui/MermaidDiagram.astro</code></a> <span class="line">line 2</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/ui/MermaidDiagram.astro#L82"><code>src/components/ui/MermaidDiagram.astro</code></a> <span class="line">line 82</span></li></ul></div></div></details></div></details><details class="finding" id="QA-22" data-level="Medium" data-status="Staging needed" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-22</span><span class="badge medium">Medium</span><span class="issue"><strong>New users may receive a confirmation link when the UI asks for a code</strong><small>Prompt Builder · <b class="outcome">Staging needed</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Configure both signup confirmation and returning-user magic link to send the numeric code the app expects.</dd></div><div><dt>Verification</dt><dd>The configuration points both events to the same code template. Local configuration and mock sign-in checks verified the declared template and app flow.</dd></div><div><dt>Still to verify</dt><dd>Verify real code delivery and successful sign-in for a new inbox and a returning account on staging.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../supabase/config.toml"><code>supabase/config.toml</code></a> <span class="line">line 13</span></li><li><a href="../supabase/templates/prompt-sign-in.html"><code>supabase/templates/prompt-sign-in.html</code></a> <span class="line">line 1</span></li><li><a href="../docs/prompt-builder.md"><code>docs/prompt-builder.md</code></a> <span class="line">line 32</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">On a fresh deployment using the supplied templates and provider defaults, a first-time visitor may be unable to complete the on-screen sign-in flow.</p><dl><div><dt>Evidence</dt><dd>Confirmations are enabled and only the magic-link email template is customized. Upstream Auth routes a new or unconfirmed email through signup. Its default confirmation template supplies a link. The app disables URL session detection and asks the user to type a code. Hosted template overrides and inbox delivery were outside this review.</dd></div><div><dt>Acceptance check</dt><dd>In isolated staging, verify a fresh address and a returning address using exactly what each email contains. Confirm a session opens for each.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/config.toml#L9"><code>supabase/config.toml</code></a> <span class="line">line 9</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/config.toml#L13"><code>supabase/config.toml</code></a> <span class="line">line 13</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud.ts#L32"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 32</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/cloud.ts#L84"><code>src/lib/prompt-builder/cloud.ts</code></a> <span class="line">line 84</span></li></ul><a href="https://supabase.com/docs/guides/local-development/customizing-email-templates#authemailtemplateconfirmation">Supabase email template defaults</a> <a href="https://github.com/supabase/auth/blob/master/internal/api/magic_link.go#L93-L135">Supabase Auth signup branch</a></div></div></details></div></details><details class="finding" id="QA-23" data-level="Medium" data-status="Staging needed" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-23</span><span class="badge medium">Medium</span><span class="issue"><strong>AI usage reconciliation can fail silently after a successful response</strong><small>Prompt Builder · <b class="outcome">Staging needed</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Retry AI usage reconciliation with the original reservation ID. Log failed attempts using the reservation ID and retry state, and preserve the completed user response.</dd></div><div><dt>Verification</dt><dd>The Node regression exercised a returned database error and a lost response before recovery. PostgreSQL 17 confirmed repeating settlement did not overwrite the recorded charge.</dd></div><div><dt>Still to verify</dt><dd>Confirm the deployed Edge runtime finishes background retries and emits the expected operational event during a staging failure.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../supabase/functions/prompt-ai/reconciliation.ts"><code>supabase/functions/prompt-ai/reconciliation.ts</code></a> <span class="line">line 1</span></li><li><a href="../tests/prompt-builder-ai.test.mjs"><code>tests/prompt-builder-ai.test.mjs</code></a> <span class="line">line 6</span></li><li><a href="../tests/database/prompt-builder.sql"><code>tests/database/prompt-builder.sql</code></a> <span class="line">line 115</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A completed call can remain pending and hold more of the site-wide budget than it actually used, potentially cutting off later users.</p><dl><div><dt>Evidence</dt><dd>The Edge Function finalizer discards both returned database errors and rejected requests. The budget calculation counts unreconciled records at their full reservation for the current month. This finding concerns a known completed response followed by a database failure; unknown upstream bills intentionally keep their hold. No paid call was made.</dd></div><div><dt>Acceptance check</dt><dd>Simulate a temporary settlement failure after a successful fixture response. The user receives that response and a retry updates the original reservation exactly once.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/functions/prompt-ai/index.ts#L94"><code>supabase/functions/prompt-ai/index.ts</code></a> <span class="line">line 94</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104703_prompt_builder_ai.sql#L44"><code>supabase/migrations/20261125104703_prompt_builder_ai.sql</code></a> <span class="line">line 44</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/supabase/migrations/20261125104703_prompt_builder_ai.sql#L52"><code>supabase/migrations/20261125104703_prompt_builder_ai.sql</code></a> <span class="line">line 52</span></li></ul></div></div></details></div></details><details class="finding" id="QA-24" data-level="Low" data-status="Verified locally" data-area="Accessibility">
+    <summary><span class="ticket">QA-24</span><span class="badge low">Low</span><span class="issue"><strong>The visible command-search label differs from its accessible name</strong><small>Accessibility · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Show Search as the button text and expose the keyboard shortcut as metadata. Fit the compact navigation at 320 px.</dd></div><div><dt>Verification</dt><dd>Chromium opened the search control and checked 320 px RTL navigation. A targeted axe check verified the button on all 13 shell routes from the original sweep.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/components/layout/TopNav.astro"><code>src/components/layout/TopNav.astro</code></a> <span class="line">line 33</span></li><li><a href="../tests/workbench/phase1.spec.mjs"><code>tests/workbench/phase1.spec.mjs</code></a> <span class="line">line 24</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A speech user reading the header sees “Ctrl K”, while assistive technology identifies the button as “Open command search”.</p><dl><div><dt>Evidence</dt><dd>The same .ask-trigger label-content-name-mismatch appeared on all 13 tested shell pages. The button shows only the shortcut and sets a different aria-label.</dd></div><div><dt>Acceptance check</dt><dd>Verify that the visible label can activate the control with speech and that the shared header clears the axe rule.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/layout/TopNav.astro#L33"><code>src/components/layout/TopNav.astro</code></a> <span class="line">line 33</span></li></ul></div></div></details></div></details><details class="finding" id="QA-25" data-level="Low" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-25</span><span class="badge low">Low</span><span class="issue"><strong>Filtering the Vault leaves the URL pointing at another kit</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Update the Vault fragment when filtering changes the active kit and restore selection and filters from history.</dd></div><div><dt>Verification</dt><dd>Chromium and Windows WebKit exercised the active kit, shared URL, reload, Back and Forward.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/pages/vault/index.astro"><code>src/pages/vault/index.astro</code></a> <span class="line">line 87</span></li><li><a href="../tests/workbench/vault.spec.mjs"><code>tests/workbench/vault.spec.mjs</code></a> <span class="line">line 24</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A copied link or reload can open a different kit from the one the reader just saw.</p><dl><div><dt>Evidence</dt><dd>Selecting CSV Importer and then Tier 1 displayed Status Tone Vocabulary but kept the CSV importer fragment. Reload reopened the importer in both tested engines.</dd></div><div><dt>Acceptance check</dt><dd>Apply a filter that hides the active kit. Copy and reopen the URL, then exercise Back. The selected content should agree with the address.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/pages/vault/index.astro#L66"><code>src/pages/vault/index.astro</code></a> <span class="line">line 66</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/pages/vault/index.astro#L77"><code>src/pages/vault/index.astro</code></a> <span class="line">line 77</span></li></ul></div></div></details></div></details><details class="finding" id="QA-26" data-level="Low" data-status="Verified locally" data-area="Vault &amp; demos">
+    <summary><span class="ticket">QA-26</span><span class="badge low">Low</span><span class="issue"><strong>An overnight habit-tracker tab writes today’s check-in to yesterday</strong><small>Vault &amp; demos · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Refresh the local date at midnight and before a check-in. Retain existing saved dates.</dd></div><div><dt>Verification</dt><dd>A simulated midnight changed the check-in label before the user clicked. The browser recorded the new day, preserved the previous one and verified legacy data after reload.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/components/lab/prototypes.js"><code>src/components/lab/prototypes.js</code></a> <span class="line">line 43</span></li><li><a href="../tests/workbench/lab.spec.mjs"><code>tests/workbench/lab.spec.mjs</code></a> <span class="line">line 55</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A user returning after midnight can record the correct action against the wrong date.</p><dl><div><dt>Evidence</dt><dd>A tab held from 23:58 on November 26 through 00:02 on November 27 used November 26 for “Check in today”. A reload showed November 27 unchecked. The component captures today when it starts.</dd></div><div><dt>Acceptance check</dt><dd>Keep a tab open over a simulated local midnight and check in. Verify the new date is selected and the previous day stays unchanged.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/lab/prototypes.js#L44"><code>src/components/lab/prototypes.js</code></a> <span class="line">line 44</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/lab/prototypes.js#L57"><code>src/components/lab/prototypes.js</code></a> <span class="line">line 57</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/components/lab/HabitTracker.astro#L11"><code>src/components/lab/HabitTracker.astro</code></a> <span class="line">line 11</span></li></ul></div></div></details></div></details><details class="finding" id="QA-27" data-level="Low" data-status="Verified locally" data-area="Prompt Builder">
+    <summary><span class="ticket">QA-27</span><span class="badge low">Low</span><span class="issue"><strong>A freshly saved draft can immediately show an unsaved-changes warning</strong><small>Prompt Builder · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Compare normalized draft content and include the title in the saved baseline.</dd></div><div><dt>Verification</dt><dd>The Chromium regression saved a new draft and switched workflows without a warning, then verified that an edited title alone triggered the discard prompt.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/lib/prompt-builder/workspace.ts"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 107</span></li><li><a href="../tests/workbench/prompt-builder.spec.mjs"><code>tests/workbench/prompt-builder.spec.mjs</code></a> <span class="line">line 182</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Unnecessary discard warnings make it harder to tell when real edits are at risk.</p><dl><div><dt>Evidence</dt><dd>The default draft and its normalized saved form have equivalent fields in different property orders. The workspace compares JSON strings. A fresh save can therefore compare unequal; the separate title is outside that comparison.</dd></div><div><dt>Acceptance check</dt><dd>Save a new draft and switch workflows without edits. No discard prompt should appear. Change just the title and verify that it is protected.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/model.ts#L51"><code>src/lib/prompt-builder/model.ts</code></a> <span class="line">line 51</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/model.ts#L186"><code>src/lib/prompt-builder/model.ts</code></a> <span class="line">line 186</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/workspace.ts#L113"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 113</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/lib/prompt-builder/workspace.ts#L248"><code>src/lib/prompt-builder/workspace.ts</code></a> <span class="line">line 248</span></li></ul></div></div></details></div></details><details class="finding" id="QA-28" data-level="Low" data-status="Verified locally" data-area="Laravel catalogue">
+    <summary><span class="ticket">QA-28</span><span class="badge low">Low</span><span class="issue"><strong>Back to catalogue discards the search that led to the entry</strong><small>Laravel catalogue · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Carry the validated search and category into the entry’s Back link and retain the catalogue fragment.</dd></div><div><dt>Verification</dt><dd>The browser returned from a filtered entry and recovered the query, category and result set. A direct entry visit returned to the catalogue home.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/js/pages/Entry.tsx"><code>resources/js/pages/Entry.tsx</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/catalogue.spec.ts"><code>tests/browser/catalogue.spec.ts</code></a> <span class="line">line 81</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Opening a result interrupts the user’s browsing context.</p><dl><div><dt>Evidence</dt><dd>From the Utilities-only view, opening its sole entry and following Back to catalogue returned to the unfiltered seven-entry index. The link points to the root.</dd></div><div><dt>Acceptance check</dt><dd>Open a result from a filtered URL and return using the page link. Query, filters and result count must match the previous view.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Entry.tsx#L13"><code>resources/js/pages/Entry.tsx</code></a> <span class="line">line 13</span></li></ul></div></div></details></div></details><details class="finding" id="QA-29" data-level="Low" data-status="Verified locally" data-area="Performance">
+    <summary><span class="ticket">QA-29</span><span class="badge low">Low</span><span class="issue"><strong>Filtering seven catalogue entries refetches the entire registry</strong><small>Performance · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Apply filters and history transitions locally using the preloaded catalogue registry.</dd></div><div><dt>Verification</dt><dd>A browser request listener saw no catalogue refetch during category and search changes, Back, Forward and Clear.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../resources/js/pages/Browse.tsx"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 1</span></li><li><a href="../tests/browser/catalogue.spec.ts"><code>tests/browser/catalogue.spec.ts</code></a> <span class="line">line 49</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">Every filter change adds an avoidable round trip and repeats static data as the catalogue grows.</p><dl><div><dt>Evidence</dt><dd>Selecting Utilities retrieved a 22,154-byte decoded Inertia response containing all seven entries and eight workflows. The browser already had that data and filtered it locally.</dd></div><div><dt>Acceptance check</dt><dd>Change a category, share the URL and navigate Back. Results must stay correct without a second transfer of the registry.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/app/Http/Controllers/CatalogueController.php#L14"><code>app/Http/Controllers/CatalogueController.php</code></a> <span class="line">line 14</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Browse.tsx#L124"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 124</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/resources/js/pages/Browse.tsx#L238"><code>resources/js/pages/Browse.tsx</code></a> <span class="line">line 238</span></li></ul></div></div></details></div></details><details class="finding" id="QA-30" data-level="Low" data-status="Verified locally" data-area="Performance">
+    <summary><span class="ticket">QA-30</span><span class="badge low">Low</span><span class="issue"><strong>A CV visit loads code for unrelated interactive features</strong><small>Performance · <b class="outcome">Verified locally</b></small></span><span class="expand" aria-hidden="true"></span></summary>
+    <div class="finding-body"><dl><div><dt>Implemented repair</dt><dd>Load Lab, Prompt Builder and system feature modules when the corresponding interactive sections are present on the page.</dd></div><div><dt>Verification</dt><dd>A cold CV load used 64,126 decoded JavaScript bytes across four resources, down from 160,960 in the original audit. Chromium opened shared search, checked that the four unrelated feature families made no script requests, and printed both CV formats.</dd></div></dl><div class="sources"><h4>Updated source and tests</h4><ul><li><a href="../src/alpine.js"><code>src/alpine.js</code></a> <span class="line">line 1</span></li><li><a href="../tests/workbench/phase1.spec.mjs"><code>tests/workbench/phase1.spec.mjs</code></a> <span class="line">line 24</span></li></ul></div>
+    <details class="appendix original"><summary>Original audit evidence and acceptance check</summary><div class="inside"><p class="impact">A visitor opening a printable CV pays for demo and editor code that the page does not use.</p><dl><div><dt>Evidence</dt><dd>A cold CV visit loaded four JavaScript resources totaling 160,960 decoded bytes, including a funding-fixture chunk. The shared Alpine entry registers HR, portfolio, Lab and Prompt Builder alongside global search.</dd></div><div><dt>Acceptance check</dt><dd>Cold-load the CV, confirm its print and theme controls work, and verify that Lab, funding and editor modules are absent from the network record.</dd></div></dl><div class="sources"><h4>Original source at 3769718</h4><ul><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/src/alpine.js#L1"><code>src/alpine.js</code></a> <span class="line">line 1</span></li><li><a href="https://github.com/youss8/youssef-operations-kit/blob/3769718053101983bed8c8a5c47506ba26638c92/astro.config.mjs#L24"><code>astro.config.mjs</code></a> <span class="line">line 24</span></li></ul></div></div></details></div></details></div><p id="empty" hidden>No findings match these filters.</p></section>
+<section class="section" id="checks"><h2>Test results</h2><p class="intro">Remediation checks ran against the updated working tree. The separate suites exercise some of the same features.</p>
+<div class="scroll" role="region" aria-label="Remediation test results" tabindex="0"><table><thead><tr><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Evidence and boundaries</th></tr></thead><tbody><tr><td>Astro production build and type diagnostics</td><td>Passed</td><td>225 generated HTML documents. Astro checked 138 files with zero errors, warnings or hints.</td></tr><tr><td>Node regressions</td><td>50 passed</td><td>Includes duplicate CSV headers, draft profiles and AI usage recovery after returned and thrown errors.</td></tr><tr><td>Public static output</td><td>Passed</td><td>225 HTML documents, 7,676 references, six datasets and three diagrams. The credential signatures, local links and public asset checks passed.</td></tr><tr><td>Workbench browser regression</td><td>168 passed</td><td>Chromium against the local production preview. The optional cloud suite runs separately with fictional responses. The four opt-in tests passed separately. After the final Search label adjustment, all 20 affected browser cases passed again.</td></tr><tr><td>Prompt Builder cloud browser</td><td>4 passed</td><td>A dedicated compiled build used the CI environment values. Fictional fixtures covered account changes, conflicts, snapshots, AI actions, pagination, personal copies, invitation revocation and ownership handoff.</td></tr><tr><td>PostgreSQL 17 role and data tests</td><td>36 assertions passed</td><td>Applied all four migrations to a clean PostgreSQL 17 container with minimal Supabase auth fixtures. Rollback left zero test users.</td></tr><tr><td>Laravel catalogue</td><td>Passed</td><td>27 Chromium browser tests, 9 PHP tests with 288 assertions, 4 URL-filter tests, plus catalogue build, type checks, lint, formatting, Pint and Larastan.</td></tr><tr><td>Livewire examples</td><td>Passed</td><td>30/30 examples mounted and updated. The intentional bootstrap failure exited 1. Tier 4 contracts and 11 browser tests passed.</td></tr><tr><td>Docker build and packaging</td><td>Passed</td><td>Built and ran the image. Fictional root and nested development files were absent. All seven entries and ZIPs loaded, the extracted search dialog built independently, and the search API matched its fixture.</td></tr><tr><td>Targeted accessibility and mobile</td><td>Passed</td><td>Chromium axe checks on the 13 shell Search controls and four legacy preview/engine states. Chromium checked 320 px RTL and Windows WebKit checked static and filtered Vault navigation.</td></tr><tr><td>CI execution</td><td>Pending</td><td>The workflow parses and the job commands ran locally. A GitHub Actions run will verify hosted runner behavior.</td></tr><tr><td>Hosted Prompt Builder</td><td>Staging needed</td><td>Verify live signup and returning-account mail, hosted account deletion after folder handoff, and background billing settlement.</td></tr></tbody></table></div>
+<details class="appendix"><summary>Original audit results at 3769718</summary><div class="inside"><div class="scroll" role="region" aria-label="Original audit test results" tabindex="0"><table><thead><tr><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Evidence and boundaries</th></tr></thead><tbody><tr><td>Astro production build and diagnostics</td><td>Passed</td><td>npm run build generated 225 HTML documents. npm run check examined 138 files and reported zero errors, warnings or hints.</td></tr><tr><td>Node tests and public-output audit</td><td>Passed</td><td>48/48 Node tests. The Python audit checked 501 publishable repository files, 732 built files, 7,639 references, six fixture datasets and three diagrams. Its configured credential signatures and internal-reference checks found no matches or broken targets.</td></tr><tr><td>Workbench browser suite</td><td>159 passed / 1 skipped</td><td>Chromium on the documented Astro preview. Includes both one-page, text-selectable A4 CVs. The skipped opt-in cloud test ran separately. Earlier temporary-server runs had connection and hydration failures. Those did not recur in the full Astro preview run.</td></tr><tr><td>Optional cloud browser flow</td><td>1/1 passed</td><td>Real editor with mocked auth, storage and AI responses. Covered sign-in, conflicts, sharing, revocation, transfer consent, timeouts and quota UX. Separate manual scenarios exposed the sign-out and viewer-copy defects.</td></tr><tr><td>Disposable database</td><td>22 assertions passed</td><td>All three unmodified migrations and the SQL fixture ran against an in-memory PostgreSQL 19 engine via PGlite 0.6.0 with pgcrypto and minimal Supabase auth roles. The transaction rolled back. A separate fictional owner/editor scenario confirmed the deletion cascade.</td></tr><tr><td>Laravel catalogue</td><td>Passed</td><td>Strict Composer validation, Pint, Larastan, ESLint, Prettier, TypeScript/Vite catalogue build, 9 PHP tests with 288 assertions, 4 URL-filter tests and 22 Chromium browser tests.</td></tr><tr><td>Reusable Livewire examples</td><td>Passed after setup</td><td>30 mount-and-update checks on Laravel 13.44.1 and Livewire 4.4.10. Tier 4 contracts passed and 10/10 Livewire browser tests passed. The initial false-success exit is recorded in QA-20.</td></tr><tr><td>Dependency advisories</td><td>Zero reported</td><td>npm audit returned zero advisories for the root and standalone search-dialog lockfiles. The catalogue Composer advisory check also returned zero. Results apply to the queried registries and versions on the review date.</td></tr><tr><td>Automated accessibility</td><td>Findings on workbench</td><td>axe-core 4.14.1 checked 43 workbench pages/previews at desktop width and 11 Laravel states including Arabic mobile and dialogs. The latter returned zero automated violations; some rules needed human judgment. Shared header and legacy preview details appear in QA-18 and QA-24.</td></tr><tr><td>Reflow and keyboard</td><td>Sampled</td><td>A separate 73-check sweep at 320 × 740 covered 13 content routes and both UI engines for all 30 previews. No document-level horizontal overflow, initial page errors, duplicate IDs or dangling tested ARIA references were observed. Chrome and Windows WebKit verified selected mobile navigation, search and deep-link behavior.</td></tr><tr><td>Packaging</td><td>Partial</td><td>Docker Compose configuration validated. The Docker daemon was stopped. Image contents were inferred from the Dockerfile, ignore rules and file presence; native Laravel routes and downloads ran locally.</td></tr></tbody></table></div></div></details></section>
+<section class="section" id="coverage"><h2>Coverage and limits</h2><div class="scroll" role="region" aria-label="Coverage by feature area" tabindex="0"><table><thead><tr><th scope="col">Area</th><th scope="col">Items reviewed</th><th scope="col">Method</th></tr></thead><tbody><tr><td>Workbench shell, systems and CV</td><td>Home, system comparison, three case studies, six fictional workflows, global command search, navigation, themes, narrow layout and both PDF formats.</td><td>Build, browser regressions, axe, keyboard, reflow and emitted asset sizes.</td></tr><tr><td>Vault and downloadable examples</td><td>20 current kits, 10 legacy previews and 60 generated stack-source fragments. Alpine, React and Livewire behavior, CSV, funding and Office samples.</td><td>All preview paths in the export scan; current and legacy UI preview sweeps, normal component actions and focused data checks.</td></tr><tr><td>AI Kit, templates, Lab and skills</td><td>11 starter prompts, 5 operations templates, 4 Lab prototypes and 123 skill-guide pages plus the directory.</td><td>Build, search destinations, directory, exports, examples and links. Each published guide&#x27;s declared links were checked by the repository audit; publisher availability was not checked live.</td></tr><tr><td>Prompt Builder</td><td>Local editor and saved drafts, profile rendering, account changes, folders, roles, invitations, snapshots, database migrations, account deletion, AI request limits and finalization.</td><td>Model checks, mock-service browser tests, source review and isolated database scenarios. Hosting and billing boundaries are listed below.</td></tr><tr><td>Laravel reference catalogue</td><td>Browse and all seven entries, search, URL filters, EN/DE/AR support, source ZIPs, workflow drawer, clipboard feedback, sessions, Docker and CI.</td><td>PHP and browser suites, accessibility states, empty/filtered/direct entry visits, JS-disabled pages, denied clipboard and decoded list-response size.</td></tr><tr><td>Release and public assets</td><td>Static asset allowlist, deployment notes, lockfiles, dependency advisories, CI commands, published links, fixtures and packaging exclusions.</td><td>Whole-export and tracked-file automated checks. Build tooling and sensitive controllers received targeted source review.</td></tr></tbody></table></div>
+<div class="scope-cols"><div><h3>Security controls with supporting evidence</h3><ul><li>The static export allowlist and repository signature scan passed. The scan covered configured patterns and publishable files.</li><li>Local database fixtures passed ownership, viewer/editor, revision, snapshot expiry/revocation, and AI pause/budget checks. Browser fixtures exercised explicit AI transfer consent.</li><li>Catalogue downloads resolve through an explicit file registry. The PHP and browser suites exercised public downloads and ordinary routing.</li></ul></div>
+<div><h3>External verification</h3><ul><li>The public origin, live configuration and deployed build version remain outside the local review.</li><li>Use a staging Supabase project to check real mail delivery, hosted account deletion and billing settlement. The cloud suite uses fictional responses and the database suite uses a disposable instance.</li><li>GitHub Actions execution and broader production and device coverage are separate from the local regression results.</li></ul></div></div>
+<p class="brief">The six systems demonstrations use fictional fixtures. Their results describe the website’s demonstrations. The underlying employer systems, linked publishers and visitor accounts were outside the review. High priority means material exposure or unrecoverable loss in the affected workflow. Medium covers incorrect results, lost work, access barriers or material release risks. Low covers narrower usability, performance or correctness issues.</p></section>
+<section class="section" id="inventory"><h2>Scan inventory</h2><p class="intro">These inventories show exactly which paths the automated scan covered. Manual review and browser interaction were concentrated on the feature areas above. Source references in findings open the local files when this report stays in the repository’s <code>docs</code> directory.</p>
+<details class="appendix"><summary>Original 43-page accessibility and reflow sweep</summary><div class="inside"><p class="brief">These baseline results preceded the fixes. Desktop axe checks on initial rendered states used WCAG A/AA tags through 2.2. The width column is the document scroll width at a 320 CSS-pixel viewport. Each preview in this table uses its default engine.</p><div class="scroll" tabindex="0" role="region" aria-label="Original browser sweep results"><table class="small-table"><thead><tr><th scope="col">Route</th><th scope="col">Automated rule flags</th><th scope="col">Width</th></tr></thead><tbody><tr><td>/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/systems/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/systems/01-it-ops-helpdesk/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/systems/02-hr-lifecycle-crm/</td><td>label-content-name-mismatch × 3</td><td>320 px</td></tr><tr><td>/systems/03-portfolio-kpi-engine/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/vault/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/ai-kit/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/ai-kit/prompt-builder/</td><td>label-content-name-mismatch × 3</td><td>320 px</td></tr><tr><td>/templates/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/lab/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/cv/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/claude-code-skills/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/claude-code-skills/design-ux-copy/</td><td>label-content-name-mismatch × 1</td><td>320 px</td></tr><tr><td>/vault/preview/amendment-diff-org-chart/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/approval-stepper-checklist/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/bilingual-ask-palette/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/command-ask-bar/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/config-driven-register/</td><td>target-size × 4</td><td>320 px</td></tr><tr><td>/vault/preview/currency-guard-balance/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/dirty-modal-guard/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/fail-closed-role-drawer/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/failure-honest-boundaries/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/flush-row-desk-grid/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/gantt-and-timesheet-machines/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/guarded-modals-dirty-close/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/guarded-workflow-kanban/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/html-svg-sankey-flow/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/live-quoting-composer/</td><td>scrollable-region-focusable × 1</td><td>320 px</td></tr><tr><td>/vault/preview/needs-action-inbox/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/office-pdf-preview/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/patch-panel-estate-strip/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/patch-panel-strip/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/redacted-pay-day-state/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/saved-views-sticky-filters/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/shared-options-popover/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/sla-priority-queue/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/slice-kpi-tiles/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/spreadsheet-importer-register/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/status-gate-lifecycle/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/status-tone-vocabulary/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/status-vocabulary-primitives/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/two-band-progress-sla/</td><td>None flagged</td><td>320 px</td></tr><tr><td>/vault/preview/zero-safe-signal-tiles/</td><td>None flagged</td><td>320 px</td></tr></tbody></table></div></div></details>
+<details class="appendix"><summary>513 publishable repository paths</summary><div class="inside"><details class="folder"><summary>Root files <small>(31)</small></summary><pre>.dockerignore
+.editorconfig
+.env.example
+.gitattributes
+.gitignore
+.prettierrc.json
+AGENTS.md
+CHANGELOG.md
+CLAUDE.md
+CONTRIBUTING.md
+DESIGN.md
+Dockerfile
+HANDOFF_MASTER_SPEC.md
+LICENSE
+README.md
+VAULT_MASTER_BLUEPRINT.md
+artisan
+astro.config.mjs
+compose.yaml
+composer.json
+composer.lock
+eslint.config.js
+package-lock.json
+package.json
+phpstan.neon
+phpunit.xml
+playwright.config.ts
+playwright.workbench.config.mjs
+tsconfig.catalogue.json
+tsconfig.json
+vite.config.ts</pre></details><details class="folder"><summary>.github <small>(1)</small></summary><pre>.github/workflows/checks.yml</pre></details><details class="folder"><summary>app <small>(7)</small></summary><pre>app/Catalogue/EntryBundles.php
+app/Catalogue/EntryCatalogue.php
+app/Catalogue/WorkflowVault.php
+app/Http/Controllers/CatalogueController.php
+app/Http/Controllers/EntryDownloadController.php
+app/Http/Middleware/HandleInertiaRequests.php
+app/Providers/AppServiceProvider.php</pre></details><details class="folder"><summary>bootstrap <small>(3)</small></summary><pre>bootstrap/app.php
+bootstrap/cache/.gitignore
+bootstrap/providers.php</pre></details><details class="folder"><summary>docker <small>(1)</small></summary><pre>docker/start-catalogue.sh</pre></details><details class="folder"><summary>docs <small>(24)</small></summary><pre>docs/SECURITY_CHECKLIST.md
+docs/adding-an-entry.md
+docs/adr/0001-catalogue-foundation.md
+docs/adr/0002-versioned-catalogue-entries.md
+docs/adr/0003-distribute-entry-source.md
+docs/adr/0004-reuse-catalogue-search-dialog.md
+docs/adr/0005-static-engineering-workbench.md
+docs/adr/0006-keep-prompt-building-available-without-an-account.md
+docs/design/README.md
+docs/design/catalogue-desktop.png
+docs/design/catalogue-mobile.png
+docs/design/catalogue-motion.webp
+docs/design/catalogue.html
+docs/design/cobalt-concept.webp
+docs/design/illustrated-catalogue-desktop-1440x900.png
+docs/design/illustrated-catalogue-ios-393x852.png
+docs/design/illustrated-catalogue.html
+docs/design/kharbout-works-logo-concept.png
+docs/design/portfolio-ux-review.md
+docs/design/youssefs-operations-kit-concept-note.txt
+docs/production-verification.md
+docs/prompt-builder.md
+docs/vault-upgrade-verification.md
+docs/website-qa-report.html</pre></details><details class="folder"><summary>kit <small>(24)</small></summary><pre>kit/ai-tools/accessible-ui-review/README.md
+kit/ai-tools/accessible-ui-review/SKILL.md
+kit/ai-tools/accessible-ui-review/gem-instructions.md
+kit/components/copy-code/README.md
+kit/components/keyboard-shortcut-label/README.md
+kit/components/keyboard-shortcut-label/index.html
+kit/components/keyboard-shortcut-label/shortcut.css
+kit/components/search-dialog/Example.tsx
+kit/components/search-dialog/README.md
+kit/components/search-dialog/SearchDialog.tsx
+kit/components/search-dialog/index.html
+kit/components/search-dialog/main.tsx
+kit/components/search-dialog/package-lock.json
+kit/components/search-dialog/package.json
+kit/components/search-dialog/search-dialog.css
+kit/modules/catalogue-search/CatalogueSearchTest.php
+kit/modules/catalogue-search/README.md
+kit/modules/catalogue-search/entries.php
+kit/modules/catalogue-search/routes.php
+kit/pages/empty-state-page/README.md
+kit/pages/empty-state-page/index.html
+kit/utilities/url-filters/README.md
+kit/utilities/url-filters/filters.test.mjs
+kit/utilities/url-filters/filters.ts</pre></details><details class="folder"><summary>public <small>(4)</small></summary><pre>public/.htaccess
+public/favicon.svg
+public/index.php
+public/robots.txt</pre></details><details class="folder"><summary>resources <small>(27)</small></summary><pre>resources/css/app.css
+resources/css/browse.css
+resources/css/copy-code.css
+resources/css/kit-recipe.css
+resources/css/locale.css
+resources/css/vault.css
+resources/images/operations-case-small.webp
+resources/images/operations-case.webp
+resources/js/app.tsx
+resources/js/catalogue.ts
+resources/js/components/CatalogueSearch.tsx
+resources/js/components/CatalogueShell.tsx
+resources/js/components/CodeExample.tsx
+resources/js/components/CopyCodeButton.tsx
+resources/js/components/CopyCodeRecipe.tsx
+resources/js/components/KitRecipe.tsx
+resources/js/components/SearchDialogRecipe.tsx
+resources/js/components/ShortcutRecipe.tsx
+resources/js/components/VaultDrawer.tsx
+resources/js/components/VaultSection.tsx
+resources/js/i18n.tsx
+resources/js/pages/Browse.tsx
+resources/js/pages/Entry.tsx
+resources/js/searchEntries.ts
+resources/js/vault.ts
+resources/views/app.blade.php
+resources/views/catalogue-fallback.blade.php</pre></details><details class="folder"><summary>routes <small>(1)</small></summary><pre>routes/web.php</pre></details><details class="folder"><summary>scripts <small>(4)</small></summary><pre>scripts/audit-public.py
+scripts/prompt-builder-eval.mjs
+scripts/render-system-diagrams.mjs
+scripts/vault-previews.mjs</pre></details><details class="folder"><summary>src <small>(306)</small></summary><pre>src/alpine.js
+src/components/demos/AttendanceAmendDemo.astro
+src/components/demos/EstateOverviewDemo.tsx
+src/components/demos/FeaturedWorkflows.tsx
+src/components/demos/FundingFlowDemo.astro
+src/components/demos/KpiCockpitDemo.astro
+src/components/demos/LeaveEngineDemo.astro
+src/components/demos/ServiceDeskDemo.tsx
+src/components/demos/hr-alpine.js
+src/components/demos/hr-demos.css
+src/components/demos/portfolio-alpine.js
+src/components/lab/DatePlanner.astro
+src/components/lab/HabitTracker.astro
+src/components/lab/LandingStudy.astro
+src/components/lab/MealConfigurator.astro
+src/components/lab/prototypes.js
+src/components/layout/BaseLayout.astro
+src/components/layout/CommandAskBar.astro
+src/components/layout/Footer.astro
+src/components/layout/TopNav.astro
+src/components/layout/ask-palette.ts
+src/components/toolkit/BuilderAI.astro
+src/components/toolkit/BuilderCloud.astro
+src/components/toolkit/ExportBar.astro
+src/components/toolkit/PromptCompiler.astro
+src/components/ui/CodeTabs.astro
+src/components/ui/FlagshipCaseStudy.astro
+src/components/ui/GitHubMark.astro
+src/components/ui/MermaidDiagram.astro
+src/components/ui/MetricStrip.astro
+src/components/ui/PreviewFrame.astro
+src/components/ui/SandboxGuide.astro
+src/components/ui/SectionRail.astro
+src/components/ui/StatusBadge.astro
+src/components/ui/SystemSandboxes.astro
+src/components/vault/ReactExample.tsx
+src/components/vault/useKitModel.ts
+src/content.config.ts
+src/content/ai-kit/gem-bug-to-spec.md
+src/content/ai-kit/gem-laravel-livewire-reviewer.md
+src/content/ai-kit/gem-postgres-rls-hardener.md
+src/content/ai-kit/gem-schema-architect.md
+src/content/ai-kit/skill-clean-room-sanitizer.md
+src/content/ai-kit/skill-expand-contract-migration.md
+src/content/ai-kit/skill-n1-pooled-sql-auditor.md
+src/content/ai-kit/skill-token-budget-context.md
+src/content/ai-kit/workflow-intake-triage-pipeline.md
+src/content/ai-kit/workflow-llm-gateway-fallback.md
+src/content/ai-kit/workflow-mcp-oauth-ops.md
+src/content/systems/01-it-ops-helpdesk.mdx
+src/content/systems/02-hr-lifecycle-crm.mdx
+src/content/systems/03-portfolio-kpi-engine.mdx
+src/content/templates/01-system-architecture-spec.md
+src/content/templates/02-pre-code-readiness-checklist.md
+src/content/templates/03-state-machine-permission-matrix.md
+src/content/templates/04-scope-tradeoff-alignment.md
+src/content/templates/05-technical-handover-guide.md
+src/content/vault/amendment-diff-org-chart/Example.php
+src/content/vault/amendment-diff-org-chart/Example.tsx
+src/content/vault/amendment-diff-org-chart/alpine.html
+src/content/vault/amendment-diff-org-chart/app/Livewire/ContractDescriber.php
+src/content/vault/amendment-diff-org-chart/kit.json
+src/content/vault/amendment-diff-org-chart/model.ts
+src/content/vault/amendment-diff-org-chart/pay-fixture.ts
+src/content/vault/amendment-diff-org-chart/style.css
+src/content/vault/amendment-diff-org-chart/view.blade.php
+src/content/vault/approval-stepper-checklist.json
+src/content/vault/bilingual-ask-palette/Example.php
+src/content/vault/bilingual-ask-palette/Example.tsx
+src/content/vault/bilingual-ask-palette/alpine.html
+src/content/vault/bilingual-ask-palette/app/Livewire/AskIndex.php
+src/content/vault/bilingual-ask-palette/kit.json
+src/content/vault/bilingual-ask-palette/model.ts
+src/content/vault/bilingual-ask-palette/view.blade.php
+src/content/vault/command-ask-bar.json
+src/content/vault/config-driven-register.json
+src/content/vault/currency-guard-balance/Example.php
+src/content/vault/currency-guard-balance/Example.tsx
+src/content/vault/currency-guard-balance/alpine.html
+src/content/vault/currency-guard-balance/app/Vault/BalancePricing.php
+src/content/vault/currency-guard-balance/app/Vault/Currency.php
+src/content/vault/currency-guard-balance/kit.json
+src/content/vault/currency-guard-balance/model.ts
+src/content/vault/currency-guard-balance/style.css
+src/content/vault/currency-guard-balance/view.blade.php
+src/content/vault/dirty-modal-guard.json
+src/content/vault/fail-closed-role-drawer/Example.php
+src/content/vault/fail-closed-role-drawer/Example.tsx
+src/content/vault/fail-closed-role-drawer/alpine.html
+src/content/vault/fail-closed-role-drawer/kit.json
+src/content/vault/fail-closed-role-drawer/model.ts
+src/content/vault/fail-closed-role-drawer/style.css
+src/content/vault/fail-closed-role-drawer/view.blade.php
+src/content/vault/failure-honest-boundaries/Example.php
+src/content/vault/failure-honest-boundaries/Example.tsx
+src/content/vault/failure-honest-boundaries/alpine.html
+src/content/vault/failure-honest-boundaries/kit.json
+src/content/vault/failure-honest-boundaries/model.ts
+src/content/vault/failure-honest-boundaries/view.blade.php
+src/content/vault/flush-row-desk-grid/Example.php
+src/content/vault/flush-row-desk-grid/Example.tsx
+src/content/vault/flush-row-desk-grid/alpine.html
+src/content/vault/flush-row-desk-grid/kit.json
+src/content/vault/flush-row-desk-grid/model.ts
+src/content/vault/flush-row-desk-grid/style.css
+src/content/vault/flush-row-desk-grid/view.blade.php
+src/content/vault/gantt-and-timesheet-machines/Example.php
+src/content/vault/gantt-and-timesheet-machines/Example.tsx
+src/content/vault/gantt-and-timesheet-machines/alpine.html
+src/content/vault/gantt-and-timesheet-machines/kit.json
+src/content/vault/gantt-and-timesheet-machines/model.ts
+src/content/vault/gantt-and-timesheet-machines/style.css
+src/content/vault/gantt-and-timesheet-machines/view.blade.php
+src/content/vault/guarded-modals-dirty-close/Example.php
+src/content/vault/guarded-modals-dirty-close/Example.tsx
+src/content/vault/guarded-modals-dirty-close/alpine.html
+src/content/vault/guarded-modals-dirty-close/app/Livewire/Concerns/WithDirtyGuard.php
+src/content/vault/guarded-modals-dirty-close/kit.json
+src/content/vault/guarded-modals-dirty-close/model.ts
+src/content/vault/guarded-modals-dirty-close/public/vault/schedule-guard.js
+src/content/vault/guarded-modals-dirty-close/style.css
+src/content/vault/guarded-modals-dirty-close/view.blade.php
+src/content/vault/guarded-workflow-kanban.json
+src/content/vault/html-svg-sankey-flow/Example.php
+src/content/vault/html-svg-sankey-flow/Example.tsx
+src/content/vault/html-svg-sankey-flow/alpine.html
+src/content/vault/html-svg-sankey-flow/kit.json
+src/content/vault/html-svg-sankey-flow/model.ts
+src/content/vault/html-svg-sankey-flow/style.css
+src/content/vault/html-svg-sankey-flow/view.blade.php
+src/content/vault/live-quoting-composer.json
+src/content/vault/needs-action-inbox/Example.php
+src/content/vault/needs-action-inbox/Example.tsx
+src/content/vault/needs-action-inbox/alpine.html
+src/content/vault/needs-action-inbox/app/Livewire/WorkInbox.php
+src/content/vault/needs-action-inbox/digest.ts
+src/content/vault/needs-action-inbox/kit.json
+src/content/vault/needs-action-inbox/model.ts
+src/content/vault/needs-action-inbox/view.blade.php
+src/content/vault/office-pdf-preview/Example.php
+src/content/vault/office-pdf-preview/Example.tsx
+src/content/vault/office-pdf-preview/alpine.html
+src/content/vault/office-pdf-preview/kit.json
+src/content/vault/office-pdf-preview/model.ts
+src/content/vault/office-pdf-preview/office-reader.ts
+src/content/vault/office-pdf-preview/register.ts
+src/content/vault/office-pdf-preview/sample.docx
+src/content/vault/office-pdf-preview/sample.pdf
+src/content/vault/office-pdf-preview/sample.xlsx
+src/content/vault/office-pdf-preview/sample.zip
+src/content/vault/office-pdf-preview/style.css
+src/content/vault/office-pdf-preview/view.blade.php
+src/content/vault/patch-panel-estate-strip/Example.php
+src/content/vault/patch-panel-estate-strip/Example.tsx
+src/content/vault/patch-panel-estate-strip/alpine.html
+src/content/vault/patch-panel-estate-strip/kit.json
+src/content/vault/patch-panel-estate-strip/model.ts
+src/content/vault/patch-panel-estate-strip/style.css
+src/content/vault/patch-panel-estate-strip/view.blade.php
+src/content/vault/patch-panel-strip.json
+src/content/vault/redacted-pay-day-state/Example.php
+src/content/vault/redacted-pay-day-state/Example.tsx
+src/content/vault/redacted-pay-day-state/alpine.html
+src/content/vault/redacted-pay-day-state/app/Livewire/Forms/ContractTerms.php
+src/content/vault/redacted-pay-day-state/kit.json
+src/content/vault/redacted-pay-day-state/model.ts
+src/content/vault/redacted-pay-day-state/view.blade.php
+src/content/vault/saved-views-sticky-filters/Example.php
+src/content/vault/saved-views-sticky-filters/Example.tsx
+src/content/vault/saved-views-sticky-filters/alpine.html
+src/content/vault/saved-views-sticky-filters/app/Livewire/Concerns/HasSavedViews.php
+src/content/vault/saved-views-sticky-filters/header-picker.ts
+src/content/vault/saved-views-sticky-filters/kit.json
+src/content/vault/saved-views-sticky-filters/model.ts
+src/content/vault/saved-views-sticky-filters/resources/views/components/ui/header-select.blade.php
+src/content/vault/saved-views-sticky-filters/style.css
+src/content/vault/saved-views-sticky-filters/view.blade.php
+src/content/vault/shared-options-popover/Example.php
+src/content/vault/shared-options-popover/Example.tsx
+src/content/vault/shared-options-popover/alpine.html
+src/content/vault/shared-options-popover/directory.json
+src/content/vault/shared-options-popover/kit.json
+src/content/vault/shared-options-popover/model.ts
+src/content/vault/shared-options-popover/view.blade.php
+src/content/vault/sla-priority-queue.json
+src/content/vault/slice-kpi-tiles.json
+src/content/vault/spreadsheet-importer-register/Example.php
+src/content/vault/spreadsheet-importer-register/Example.tsx
+src/content/vault/spreadsheet-importer-register/alpine.html
+src/content/vault/spreadsheet-importer-register/app/Livewire/RegisterForm.php
+src/content/vault/spreadsheet-importer-register/kit.json
+src/content/vault/spreadsheet-importer-register/model.ts
+src/content/vault/spreadsheet-importer-register/view.blade.php
+src/content/vault/status-gate-lifecycle/Example.php
+src/content/vault/status-gate-lifecycle/Example.tsx
+src/content/vault/status-gate-lifecycle/alpine.html
+src/content/vault/status-gate-lifecycle/kit.json
+src/content/vault/status-gate-lifecycle/model.ts
+src/content/vault/status-gate-lifecycle/style.css
+src/content/vault/status-gate-lifecycle/view.blade.php
+src/content/vault/status-tone-vocabulary/Example.php
+src/content/vault/status-tone-vocabulary/Example.tsx
+src/content/vault/status-tone-vocabulary/alpine.html
+src/content/vault/status-tone-vocabulary/app/Vault/HasStatusTone.php
+src/content/vault/status-tone-vocabulary/app/Vault/WorkState.php
+src/content/vault/status-tone-vocabulary/kit.json
+src/content/vault/status-tone-vocabulary/model.ts
+src/content/vault/status-tone-vocabulary/resources/views/components/ui/status-chip.blade.php
+src/content/vault/status-tone-vocabulary/style.css
+src/content/vault/status-tone-vocabulary/view.blade.php
+src/content/vault/status-vocabulary-primitives.json
+src/content/vault/two-band-progress-sla/Example.php
+src/content/vault/two-band-progress-sla/Example.tsx
+src/content/vault/two-band-progress-sla/alpine.html
+src/content/vault/two-band-progress-sla/app/Vault/FundingCurrency.php
+src/content/vault/two-band-progress-sla/kit.json
+src/content/vault/two-band-progress-sla/model.ts
+src/content/vault/two-band-progress-sla/resources/views/components/ui/progress-bands.blade.php
+src/content/vault/two-band-progress-sla/style.css
+src/content/vault/two-band-progress-sla/view.blade.php
+src/content/vault/zero-safe-signal-tiles/Example.php
+src/content/vault/zero-safe-signal-tiles/Example.tsx
+src/content/vault/zero-safe-signal-tiles/alpine.html
+src/content/vault/zero-safe-signal-tiles/kit.json
+src/content/vault/zero-safe-signal-tiles/model.ts
+src/content/vault/zero-safe-signal-tiles/style.css
+src/content/vault/zero-safe-signal-tiles/view.blade.php
+src/data/brand.ts
+src/data/claude-skill-compatibility.ts
+src/data/claude-skill-delivery.json
+src/data/claude-skill-discovery.json
+src/data/claude-skills.ts
+src/data/claude-skills/ai-automation.json
+src/data/claude-skills/branding.json
+src/data/claude-skills/collections-tools.json
+src/data/claude-skills/content-marketing.json
+src/data/claude-skills/design.json
+src/data/claude-skills/development.json
+src/data/claude-skills/office-data.json
+src/data/claude-skills/product.json
+src/data/claude-skills/visual.json
+src/data/command-index.ts
+src/data/demos/hr-attendance.json
+src/data/demos/hr-leave-desk.json
+src/data/demos/it-estate-branches.json
+src/data/demos/it-estate-ops.json
+src/data/demos/it-service-desk.json
+src/data/demos/pt-funding-flow.json
+src/data/demos/pt-kpi-cockpit.json
+src/data/diagrams/rendered/sys01-dark.svg
+src/data/diagrams/rendered/sys01-light.svg
+src/data/diagrams/rendered/sys02-dark.svg
+src/data/diagrams/rendered/sys02-light.svg
+src/data/diagrams/rendered/sys03-dark.svg
+src/data/diagrams/rendered/sys03-light.svg
+src/data/diagrams/sys01.mmd
+src/data/diagrams/sys02.mmd
+src/data/diagrams/sys03.mmd
+src/data/lab.ts
+src/data/profile.ts
+src/data/sandbox-directory.ts
+src/data/vault-legacy.ts
+src/lib/claude-skill-exports.ts
+src/lib/kernels/bilingualAsk.ts
+src/lib/kernels/cleanForWrite.ts
+src/lib/kernels/dirtyGuard.ts
+src/lib/kernels/flushRows.ts
+src/lib/kernels/pooledRatio.ts
+src/lib/kernels/safeCsv.ts
+src/lib/kernels/sla.ts
+src/lib/prompt-builder/cloud-state.ts
+src/lib/prompt-builder/cloud.ts
+src/lib/prompt-builder/copy.ts
+src/lib/prompt-builder/example-runs.json
+src/lib/prompt-builder/model.ts
+src/lib/prompt-builder/profile-sources.json
+src/lib/prompt-builder/profiles.ts
+src/lib/prompt-builder/release.ts
+src/lib/prompt-builder/storage.ts
+src/lib/prompt-builder/workflows.ts
+src/lib/prompt-builder/workspace.ts
+src/lib/prompt-template.ts
+src/lib/vault-sources.ts
+src/pages/ai-kit/index.astro
+src/pages/ai-kit/prompt-builder/[...path].astro
+src/pages/claude-code-skills/[slug].astro
+src/pages/claude-code-skills/download/[slug]/[file].ts
+src/pages/claude-code-skills/download/catalogue.zip.ts
+src/pages/claude-code-skills/index.astro
+src/pages/cv.astro
+src/pages/index.astro
+src/pages/lab/index.astro
+src/pages/raw/[collection]/[...file].ts
+src/pages/search-index.json.ts
+src/pages/systems/[slug].astro
+src/pages/systems/index.astro
+src/pages/templates/index.astro
+src/pages/vault/index.astro
+src/pages/vault/preview/[slug].astro
+src/pages/vault/source/[slug]/[stack].astro
+src/styles/print-cv.css
+src/styles/prompt-builder.css
+src/styles/sys01.css
+src/styles/tokens.css
+src/styles/vault-preview.css
+src/styles/workbench.css</pre></details><details class="folder"><summary>storage <small>(10)</small></summary><pre>storage/app/.gitignore
+storage/app/private/.gitignore
+storage/app/public/.gitignore
+storage/framework/.gitignore
+storage/framework/cache/.gitignore
+storage/framework/cache/data/.gitignore
+storage/framework/sessions/.gitignore
+storage/framework/testing/.gitignore
+storage/framework/views/.gitignore
+storage/logs/.gitignore</pre></details><details class="folder"><summary>supabase <small>(11)</small></summary><pre>supabase/config.toml
+supabase/functions/_shared/http.ts
+supabase/functions/prompt-account/index.ts
+supabase/functions/prompt-ai/contract.ts
+supabase/functions/prompt-ai/index.ts
+supabase/functions/prompt-ai/reconciliation.ts
+supabase/migrations/20261125104659_prompt_builder_library.sql
+supabase/migrations/20261125104703_prompt_builder_ai.sql
+supabase/migrations/20261125104956_index_prompt_folder_references.sql
+supabase/migrations/20261126070216_protect_prompt_folder_data.sql
+supabase/templates/prompt-sign-in.html</pre></details><details class="folder"><summary>tests <small>(59)</small></summary><pre>tests/Feature/CatalogueTest.php
+tests/Feature/EntryDownloadTest.php
+tests/Pest.php
+tests/TestCase.php
+tests/bilingual-cases.mjs
+tests/browser/catalogue.spec.ts
+tests/browser/copy-code.spec.ts
+tests/browser/search-dialog.spec.ts
+tests/browser/vault.spec.ts
+tests/claude-skill-exports.test.mjs
+tests/contrast.test.mjs
+tests/database/prompt-builder.sql
+tests/database/supabase-fixture.sql
+tests/grid-guard-cases.mjs
+tests/kernels.test.mjs
+tests/prompt-builder-ai.test.mjs
+tests/prompt-builder-profiles.test.mjs
+tests/register-cases.mjs
+tests/sanitization.test.mjs
+tests/saved-views.test.mjs
+tests/tier3-kits.test.mjs
+tests/vault-catalogue.test.mjs
+tests/workbench/ai-kit.spec.mjs
+tests/workbench/ask.spec.mjs
+tests/workbench/build-livewire-office.mjs
+tests/workbench/case-studies.spec.mjs
+tests/workbench/claude-skill-downloads.spec.mjs
+tests/workbench/claude-skills.spec.mjs
+tests/workbench/controls-livewire.php
+tests/workbench/guarded-file-cases.mjs
+tests/workbench/guarded-file-livewire.php
+tests/workbench/guarded-file.browser.mjs
+tests/workbench/guarded-file.spec.mjs
+tests/workbench/homepage.spec.mjs
+tests/workbench/lab.spec.mjs
+tests/workbench/livewire-browser.php
+tests/workbench/livewire-hooks.browser.mjs
+tests/workbench/livewire.playwright.config.mjs
+tests/workbench/phase1.spec.mjs
+tests/workbench/prompt-builder-cloud.spec.mjs
+tests/workbench/prompt-builder.spec.mjs
+tests/workbench/saved-views-livewire.php
+tests/workbench/sys01.spec.mjs
+tests/workbench/sys02.spec.mjs
+tests/workbench/sys03.spec.mjs
+tests/workbench/templates.spec.mjs
+tests/workbench/tier3-livewire.php
+tests/workbench/vault-controls.spec.mjs
+tests/workbench/vault-forms.spec.mjs
+tests/workbench/vault-primitives-parity.spec.mjs
+tests/workbench/vault-primitives.spec.mjs
+tests/workbench/vault-queues.spec.mjs
+tests/workbench/vault-tier3.spec.mjs
+tests/workbench/vault-tier4.spec.mjs
+tests/workbench/vault-workflow.spec.mjs
+tests/workbench/vault.spec.mjs
+tests/workbench/verify-livewire.php
+tests/workbench/verify-tier4-contracts.php
+tests/workflow-machines.test.mjs</pre></details></div></details>
+<details class="appendix"><summary>741 files in the rebuilt static export</summary><div class="inside"><details class="folder"><summary>_astro <small>(127)</small></summary><pre>_astro/BaseLayout.DiBSCojY.css
+_astro/BaseLayout.astro_astro_type_script_index_0_lang.rIuyNjHs.js
+_astro/EstateOverviewDemo.BFCOiP_i.js
+_astro/Example.1l9EkF-U.js
+_astro/Example.B-w1aLjv.js
+_astro/Example.B8DR6gfT.js
+_astro/Example.BFHwsmnv.js
+_astro/Example.BYS1d4is.js
+_astro/Example.Bb6SGur2.js
+_astro/Example.BokhR6ua.js
+_astro/Example.BzcTftQr.js
+_astro/Example.C4GDB2zq.js
+_astro/Example.CKR3oUTP.js
+_astro/Example.CXRf1dh5.js
+_astro/Example.Cz_RimOe.js
+_astro/Example.D-0ACgWR.js
+_astro/Example.D6b5hJa5.js
+_astro/Example.D6iAmmkL.js
+_astro/Example.DhpQsVhH.js
+_astro/Example.DtNteGBB.js
+_astro/Example.IQIdl4fu.js
+_astro/Example.bG4Qujsd.js
+_astro/Example.ht0QxEiM.js
+_astro/FeaturedWorkflows.Cqr2DD0W.js
+_astro/ReactExample.DElyjqXF.js
+_astro/ServiceDeskDemo.-3Nk8N2S.js
+_astro/_...QO_JXnBU.css
+_astro/_slug_.DtDWMhwQ.css
+_astro/_slug_.VmP5iHOV.css
+_astro/_slug_.astro_astro_type_script_index_0_lang.Ty0nK7or.js
+_astro/ai-kit.Cxec6Whw.css
+_astro/approval-stepper-checklist.DYA2qj_P.js
+_astro/bilingualAsk.CDiAVFJF.js
+_astro/claude-code-skills.kjqb7vR8.css
+_astro/client.C85ntPSk.js
+_astro/command-ask-bar.B9vrJ6C0.js
+_astro/config-driven-register.ClRXqP11.js
+_astro/cv.CMswnlFM.css
+_astro/directory.CRj_YUhW.json
+_astro/dirty-modal-guard.BVF7hEav.js
+_astro/docx-preview.wMmFnWao.js
+_astro/guarded-workflow-kanban.BPu7X4nz.js
+_astro/hr-alpine.CmNtwLyc.js
+_astro/it-estate-ops.Rbg8pCRX.js
+_astro/jetbrains-mono-latin-400-normal.6-qcROiO.woff
+_astro/jetbrains-mono-latin-400-normal.V6pRDFza.woff2
+_astro/jetbrains-mono-latin-500-normal.BWZEU5yA.woff2
+_astro/jetbrains-mono-latin-500-normal.CJOVTJB7.woff
+_astro/jetbrains-mono-latin-600-normal.BfsvjouI.woff
+_astro/jetbrains-mono-latin-600-normal.C8RAYTDA.woff2
+_astro/jsx-runtime.Bzw2NH-W.js
+_astro/live-quoting-composer.DEuHFyie.js
+_astro/model.75TEtqk4.js
+_astro/model.B1vNEkHR.js
+_astro/model.BQ-pswrE.js
+_astro/model.Bl0FLD6T.js
+_astro/model.BqW9aiSn.js
+_astro/model.BtXlS42A.js
+_astro/model.C1PqViis.js
+_astro/model.CDSOuli8.js
+_astro/model.CMX7_w0G.js
+_astro/model.CRtTpaUd.js
+_astro/model.CxXEukWW.js
+_astro/model.Dl4qTRew.js
+_astro/model.DsGNpu9_.js
+_astro/model.DyUUQKOm.js
+_astro/model.DynHU2h8.js
+_astro/model.FK-ERcSJ.js
+_astro/model.HZcmwF0z.js
+_astro/model.PH0Llzio.js
+_astro/model.U94PHJVE.js
+_astro/model.Y9PZRWf2.js
+_astro/module.esm.CvIi2q49.js
+_astro/office-reader.Mh8MMin4.js
+_astro/pages.CdRlNdOo.css
+_astro/patch-panel-strip.Bt5BkiJ8.js
+_astro/pay-fixture.CDuhZEUY.js
+_astro/plus-jakarta-sans-latin-400-normal.BDKaGhyp.woff
+_astro/plus-jakarta-sans-latin-400-normal.Dhut76fR.woff2
+_astro/plus-jakarta-sans-latin-500-normal.Bf-nb4oT.woff2
+_astro/plus-jakarta-sans-latin-500-normal.DYtqi0QS.woff
+_astro/plus-jakarta-sans-latin-600-normal.BR_Ojra4.woff
+_astro/plus-jakarta-sans-latin-600-normal.DLTa1BUW.woff2
+_astro/plus-jakarta-sans-latin-700-normal.CfpNZvy6.woff2
+_astro/plus-jakarta-sans-latin-700-normal.DqEcQeE5.woff
+_astro/portfolio-alpine.BJjh0SFa.js
+_astro/preload-helper.DygEbaNj.js
+_astro/prototypes._EzPkFB7.js
+_astro/pt-funding-flow.BHZdn0FS.js
+_astro/react-dom.mM2qrfXQ.js
+_astro/react.VDQxPH_c.js
+_astro/rolldown-runtime.pP25SEvz.js
+_astro/safeCsv.C2pmN4Jh.js
+_astro/sample.Cl7B1tcY.pdf
+_astro/sample.D4Q9esQn.zip
+_astro/sample.DpDxjbWD.docx
+_astro/sample.dhBAzS79.xlsx
+_astro/sla-priority-queue.B7OhQKhr.js
+_astro/sla.HqH3f_Ti.js
+_astro/slice-kpi-tiles.C2lKGUwL.js
+_astro/status-vocabulary-primitives.BEOOKHf0.js
+_astro/style.2L1zfA3s.css
+_astro/style.7Ued3Rpp.css
+_astro/style.BGRB7Zog.css
+_astro/style.BloE-jZW.css
+_astro/style.BsolsaK5.css
+_astro/style.C5ouc71F.css
+_astro/style.Cc9vzQkQ.css
+_astro/style.CjtJim3-.css
+_astro/style.D0Z881SM.css
+_astro/style.DA0xLq4c.css
+_astro/style.Dljcln3i.css
+_astro/style.DoI5isVu.css
+_astro/style.GULUEYvZ.css
+_astro/style.Odg2wJ9b.css
+_astro/sys01-dark.36moZKAs.svg
+_astro/sys01-light.CTkArxT7.svg
+_astro/sys01.CI0rqcOO.js
+_astro/sys02-dark.D0eOzrnx.svg
+_astro/sys02-light.Bl_O1YXB.svg
+_astro/sys03-dark.COg1sdy5.svg
+_astro/sys03-light.BGelnbnX.svg
+_astro/tokens.jhwxWjey.css
+_astro/useKitModel.CLrW2TW-.js
+_astro/vault.BD91Gu6W.css
+_astro/workspace.jsheKQZL.js
+_astro/xlsx.BM386auU.js</pre></details><details class="folder"><summary>ai-kit <small>(2)</small></summary><pre>ai-kit/index.html
+ai-kit/prompt-builder/index.html</pre></details><details class="folder"><summary>claude-code-skills <small>(494)</small></summary><pre>claude-code-skills/accessibility/index.html
+claude-code-skills/agent-browser/index.html
+claude-code-skills/agent-skills/index.html
+claude-code-skills/ai-marketing-team/index.html
+claude-code-skills/algorithmic-art/index.html
+claude-code-skills/animation-vocabulary/index.html
+claude-code-skills/anthropic-brand-guidelines/index.html
+claude-code-skills/anthropic-canvas-design/index.html
+claude-code-skills/anthropic-divi-edit/index.html
+claude-code-skills/anthropic-docx/index.html
+claude-code-skills/anthropic-frontend-design/index.html
+claude-code-skills/anthropic-pdf/index.html
+claude-code-skills/anthropic-pptx/index.html
+claude-code-skills/anthropic-schedule/index.html
+claude-code-skills/anthropic-setup-cowork/index.html
+claude-code-skills/anthropic-skill-creator/index.html
+claude-code-skills/anthropic-xlsx/index.html
+claude-code-skills/apple-design/index.html
+claude-code-skills/azure-ai/index.html
+claude-code-skills/azure-storage/index.html
+claude-code-skills/azure-validate/index.html
+claude-code-skills/b2b-value-proposition-mapper/index.html
+claude-code-skills/backlink-kampagne/index.html
+claude-code-skills/brand-serp-optimierung/index.html
+claude-code-skills/brand-voice-discover-brand/index.html
+claude-code-skills/brand-voice-enforcement/index.html
+claude-code-skills/brand-voice-guideline-generation/index.html
+claude-code-skills/brandkit/index.html
+claude-code-skills/caveman/index.html
+claude-code-skills/claude-api/index.html
+claude-code-skills/code-review-and-quality/index.html
+claude-code-skills/code-simplifier/index.html
+claude-code-skills/cowork-cowork-plugin-customizer/index.html
+claude-code-skills/cowork-create-cowork-plugin/index.html
+claude-code-skills/defuddle/index.html
+claude-code-skills/design-accessibility-review/index.html
+claude-code-skills/design-design-critique/index.html
+claude-code-skills/design-design-handoff/index.html
+claude-code-skills/design-design-system/index.html
+claude-code-skills/design-research-synthesis/index.html
+claude-code-skills/design-user-research/index.html
+claude-code-skills/design-ux-copy/index.html
+claude-code-skills/doc-coauthoring/index.html
+claude-code-skills/download/accessibility/SKILL.md
+claude-code-skills/download/accessibility/accessibility.zip
+claude-code-skills/download/accessibility/guide.json
+claude-code-skills/download/agent-browser/SKILL.md
+claude-code-skills/download/agent-browser/agent-browser.zip
+claude-code-skills/download/agent-browser/guide.json
+claude-code-skills/download/agent-skills/SKILL.md
+claude-code-skills/download/agent-skills/agent-skills.zip
+claude-code-skills/download/agent-skills/guide.json
+claude-code-skills/download/ai-marketing-team/SKILL.md
+claude-code-skills/download/ai-marketing-team/ai-marketing-team.zip
+claude-code-skills/download/ai-marketing-team/guide.json
+claude-code-skills/download/algorithmic-art/SKILL.md
+claude-code-skills/download/algorithmic-art/algorithmic-art.zip
+claude-code-skills/download/algorithmic-art/guide.json
+claude-code-skills/download/animation-vocabulary/SKILL.md
+claude-code-skills/download/animation-vocabulary/animation-vocabulary.zip
+claude-code-skills/download/animation-vocabulary/guide.json
+claude-code-skills/download/anthropic-brand-guidelines/SKILL.md
+claude-code-skills/download/anthropic-brand-guidelines/anthropic-brand-guidelines.zip
+claude-code-skills/download/anthropic-brand-guidelines/guide.json
+claude-code-skills/download/anthropic-canvas-design/SKILL.md
+claude-code-skills/download/anthropic-canvas-design/anthropic-canvas-design.zip
+claude-code-skills/download/anthropic-canvas-design/guide.json
+claude-code-skills/download/anthropic-divi-edit/SKILL.md
+claude-code-skills/download/anthropic-divi-edit/anthropic-divi-edit.zip
+claude-code-skills/download/anthropic-divi-edit/guide.json
+claude-code-skills/download/anthropic-docx/SKILL.md
+claude-code-skills/download/anthropic-docx/anthropic-docx.zip
+claude-code-skills/download/anthropic-docx/guide.json
+claude-code-skills/download/anthropic-frontend-design/SKILL.md
+claude-code-skills/download/anthropic-frontend-design/anthropic-frontend-design.zip
+claude-code-skills/download/anthropic-frontend-design/guide.json
+claude-code-skills/download/anthropic-pdf/SKILL.md
+claude-code-skills/download/anthropic-pdf/anthropic-pdf.zip
+claude-code-skills/download/anthropic-pdf/guide.json
+claude-code-skills/download/anthropic-pptx/SKILL.md
+claude-code-skills/download/anthropic-pptx/anthropic-pptx.zip
+claude-code-skills/download/anthropic-pptx/guide.json
+claude-code-skills/download/anthropic-schedule/SKILL.md
+claude-code-skills/download/anthropic-schedule/anthropic-schedule.zip
+claude-code-skills/download/anthropic-schedule/guide.json
+claude-code-skills/download/anthropic-setup-cowork/SKILL.md
+claude-code-skills/download/anthropic-setup-cowork/anthropic-setup-cowork.zip
+claude-code-skills/download/anthropic-setup-cowork/guide.json
+claude-code-skills/download/anthropic-skill-creator/SKILL.md
+claude-code-skills/download/anthropic-skill-creator/anthropic-skill-creator.zip
+claude-code-skills/download/anthropic-skill-creator/guide.json
+claude-code-skills/download/anthropic-xlsx/SKILL.md
+claude-code-skills/download/anthropic-xlsx/anthropic-xlsx.zip
+claude-code-skills/download/anthropic-xlsx/guide.json
+claude-code-skills/download/apple-design/SKILL.md
+claude-code-skills/download/apple-design/apple-design.zip
+claude-code-skills/download/apple-design/guide.json
+claude-code-skills/download/azure-ai/SKILL.md
+claude-code-skills/download/azure-ai/azure-ai.zip
+claude-code-skills/download/azure-ai/guide.json
+claude-code-skills/download/azure-storage/SKILL.md
+claude-code-skills/download/azure-storage/azure-storage.zip
+claude-code-skills/download/azure-storage/guide.json
+claude-code-skills/download/azure-validate/SKILL.md
+claude-code-skills/download/azure-validate/azure-validate.zip
+claude-code-skills/download/azure-validate/guide.json
+claude-code-skills/download/b2b-value-proposition-mapper/SKILL.md
+claude-code-skills/download/b2b-value-proposition-mapper/b2b-value-proposition-mapper.zip
+claude-code-skills/download/b2b-value-proposition-mapper/guide.json
+claude-code-skills/download/backlink-kampagne/SKILL.md
+claude-code-skills/download/backlink-kampagne/backlink-kampagne.zip
+claude-code-skills/download/backlink-kampagne/guide.json
+claude-code-skills/download/brand-serp-optimierung/SKILL.md
+claude-code-skills/download/brand-serp-optimierung/brand-serp-optimierung.zip
+claude-code-skills/download/brand-serp-optimierung/guide.json
+claude-code-skills/download/brand-voice-discover-brand/SKILL.md
+claude-code-skills/download/brand-voice-discover-brand/brand-voice-discover-brand.zip
+claude-code-skills/download/brand-voice-discover-brand/guide.json
+claude-code-skills/download/brand-voice-enforcement/SKILL.md
+claude-code-skills/download/brand-voice-enforcement/brand-voice-enforcement.zip
+claude-code-skills/download/brand-voice-enforcement/guide.json
+claude-code-skills/download/brand-voice-guideline-generation/SKILL.md
+claude-code-skills/download/brand-voice-guideline-generation/brand-voice-guideline-generation.zip
+claude-code-skills/download/brand-voice-guideline-generation/guide.json
+claude-code-skills/download/brandkit/SKILL.md
+claude-code-skills/download/brandkit/brandkit.zip
+claude-code-skills/download/brandkit/guide.json
+claude-code-skills/download/catalogue.zip
+claude-code-skills/download/caveman/SKILL.md
+claude-code-skills/download/caveman/caveman.zip
+claude-code-skills/download/caveman/guide.json
+claude-code-skills/download/claude-api/SKILL.md
+claude-code-skills/download/claude-api/claude-api.zip
+claude-code-skills/download/claude-api/guide.json
+claude-code-skills/download/code-review-and-quality/SKILL.md
+claude-code-skills/download/code-review-and-quality/code-review-and-quality.zip
+claude-code-skills/download/code-review-and-quality/guide.json
+claude-code-skills/download/code-simplifier/SKILL.md
+claude-code-skills/download/code-simplifier/code-simplifier.zip
+claude-code-skills/download/code-simplifier/guide.json
+claude-code-skills/download/cowork-cowork-plugin-customizer/SKILL.md
+claude-code-skills/download/cowork-cowork-plugin-customizer/cowork-cowork-plugin-customizer.zip
+claude-code-skills/download/cowork-cowork-plugin-customizer/guide.json
+claude-code-skills/download/cowork-create-cowork-plugin/SKILL.md
+claude-code-skills/download/cowork-create-cowork-plugin/cowork-create-cowork-plugin.zip
+claude-code-skills/download/cowork-create-cowork-plugin/guide.json
+claude-code-skills/download/defuddle/SKILL.md
+claude-code-skills/download/defuddle/defuddle.zip
+claude-code-skills/download/defuddle/guide.json
+claude-code-skills/download/design-accessibility-review/SKILL.md
+claude-code-skills/download/design-accessibility-review/design-accessibility-review.zip
+claude-code-skills/download/design-accessibility-review/guide.json
+claude-code-skills/download/design-design-critique/SKILL.md
+claude-code-skills/download/design-design-critique/design-design-critique.zip
+claude-code-skills/download/design-design-critique/guide.json
+claude-code-skills/download/design-design-handoff/SKILL.md
+claude-code-skills/download/design-design-handoff/design-design-handoff.zip
+claude-code-skills/download/design-design-handoff/guide.json
+claude-code-skills/download/design-design-system/SKILL.md
+claude-code-skills/download/design-design-system/design-design-system.zip
+claude-code-skills/download/design-design-system/guide.json
+claude-code-skills/download/design-research-synthesis/SKILL.md
+claude-code-skills/download/design-research-synthesis/design-research-synthesis.zip
+claude-code-skills/download/design-research-synthesis/guide.json
+claude-code-skills/download/design-user-research/SKILL.md
+claude-code-skills/download/design-user-research/design-user-research.zip
+claude-code-skills/download/design-user-research/guide.json
+claude-code-skills/download/design-ux-copy/SKILL.md
+claude-code-skills/download/design-ux-copy/design-ux-copy.zip
+claude-code-skills/download/design-ux-copy/guide.json
+claude-code-skills/download/doc-coauthoring/SKILL.md
+claude-code-skills/download/doc-coauthoring/doc-coauthoring.zip
+claude-code-skills/download/doc-coauthoring/guide.json
+claude-code-skills/download/emil-design-eng/SKILL.md
+claude-code-skills/download/emil-design-eng/emil-design-eng.zip
+claude-code-skills/download/emil-design-eng/guide.json
+claude-code-skills/download/fastify-best-practices/SKILL.md
+claude-code-skills/download/fastify-best-practices/fastify-best-practices.zip
+claude-code-skills/download/fastify-best-practices/guide.json
+claude-code-skills/download/figma-to-code/SKILL.md
+claude-code-skills/download/figma-to-code/figma-to-code.zip
+claude-code-skills/download/figma-to-code/guide.json
+claude-code-skills/download/find-skills/SKILL.md
+claude-code-skills/download/find-skills/find-skills.zip
+claude-code-skills/download/find-skills/guide.json
+claude-code-skills/download/founder-pitch-deck-coach/SKILL.md
+claude-code-skills/download/founder-pitch-deck-coach/founder-pitch-deck-coach.zip
+claude-code-skills/download/founder-pitch-deck-coach/guide.json
+claude-code-skills/download/github-actions-sparen/SKILL.md
+claude-code-skills/download/github-actions-sparen/github-actions-sparen.zip
+claude-code-skills/download/github-actions-sparen/guide.json
+claude-code-skills/download/google-ads-analyzer/SKILL.md
+claude-code-skills/download/google-ads-analyzer/google-ads-analyzer.zip
+claude-code-skills/download/google-ads-analyzer/guide.json
+claude-code-skills/download/google-agents-cli-adk-code/SKILL.md
+claude-code-skills/download/google-agents-cli-adk-code/google-agents-cli-adk-code.zip
+claude-code-skills/download/google-agents-cli-adk-code/guide.json
+claude-code-skills/download/google-agents-cli-deploy/SKILL.md
+claude-code-skills/download/google-agents-cli-deploy/google-agents-cli-deploy.zip
+claude-code-skills/download/google-agents-cli-deploy/guide.json
+claude-code-skills/download/google-agents-cli-publish/SKILL.md
+claude-code-skills/download/google-agents-cli-publish/google-agents-cli-publish.zip
+claude-code-skills/download/google-agents-cli-publish/guide.json
+claude-code-skills/download/google-agents-cli-workflow/SKILL.md
+claude-code-skills/download/google-agents-cli-workflow/google-agents-cli-workflow.zip
+claude-code-skills/download/google-agents-cli-workflow/guide.json
+claude-code-skills/download/grill-me/SKILL.md
+claude-code-skills/download/grill-me/grill-me.zip
+claude-code-skills/download/grill-me/guide.json
+claude-code-skills/download/gws-drive/SKILL.md
+claude-code-skills/download/gws-drive/guide.json
+claude-code-skills/download/gws-drive/gws-drive.zip
+claude-code-skills/download/gws-gmail/SKILL.md
+claude-code-skills/download/gws-gmail/guide.json
+claude-code-skills/download/gws-gmail/gws-gmail.zip
+claude-code-skills/download/herdrdev-herdr/SKILL.md
+claude-code-skills/download/herdrdev-herdr/guide.json
+claude-code-skills/download/herdrdev-herdr/herdrdev-herdr.zip
+claude-code-skills/download/humanizer/SKILL.md
+claude-code-skills/download/humanizer/guide.json
+claude-code-skills/download/humanizer/humanizer.zip
+claude-code-skills/download/imagegen-frontend-mobile/SKILL.md
+claude-code-skills/download/imagegen-frontend-mobile/guide.json
+claude-code-skills/download/imagegen-frontend-mobile/imagegen-frontend-mobile.zip
+claude-code-skills/download/impeccable/SKILL.md
+claude-code-skills/download/impeccable/guide.json
+claude-code-skills/download/impeccable/impeccable.zip
+claude-code-skills/download/improve-codebase-architecture/SKILL.md
+claude-code-skills/download/improve-codebase-architecture/guide.json
+claude-code-skills/download/improve-codebase-architecture/improve-codebase-architecture.zip
+claude-code-skills/download/indexierungs-audit/SKILL.md
+claude-code-skills/download/indexierungs-audit/guide.json
+claude-code-skills/download/indexierungs-audit/indexierungs-audit.zip
+claude-code-skills/download/internal-comms/SKILL.md
+claude-code-skills/download/internal-comms/guide.json
+claude-code-skills/download/internal-comms/internal-comms.zip
+claude-code-skills/download/interne-verlinkung/SKILL.md
+claude-code-skills/download/interne-verlinkung/guide.json
+claude-code-skills/download/interne-verlinkung/interne-verlinkung.zip
+claude-code-skills/download/keyword-recherche-cluster/SKILL.md
+claude-code-skills/download/keyword-recherche-cluster/guide.json
+claude-code-skills/download/keyword-recherche-cluster/keyword-recherche-cluster.zip
+claude-code-skills/download/keyword-strategy-planner/SKILL.md
+claude-code-skills/download/keyword-strategy-planner/guide.json
+claude-code-skills/download/keyword-strategy-planner/keyword-strategy-planner.zip
+claude-code-skills/download/lark-event/SKILL.md
+claude-code-skills/download/lark-event/guide.json
+claude-code-skills/download/lark-event/lark-event.zip
+claude-code-skills/download/lark-im/SKILL.md
+claude-code-skills/download/lark-im/guide.json
+claude-code-skills/download/lark-im/lark-im.zip
+claude-code-skills/download/local-seo-audit/SKILL.md
+claude-code-skills/download/local-seo-audit/guide.json
+claude-code-skills/download/local-seo-audit/local-seo-audit.zip
+claude-code-skills/download/marketing-brand-review/SKILL.md
+claude-code-skills/download/marketing-brand-review/guide.json
+claude-code-skills/download/marketing-brand-review/marketing-brand-review.zip
+claude-code-skills/download/marketing-campaign-plan/SKILL.md
+claude-code-skills/download/marketing-campaign-plan/guide.json
+claude-code-skills/download/marketing-campaign-plan/marketing-campaign-plan.zip
+claude-code-skills/download/marketing-competitive-brief/SKILL.md
+claude-code-skills/download/marketing-competitive-brief/guide.json
+claude-code-skills/download/marketing-competitive-brief/marketing-competitive-brief.zip
+claude-code-skills/download/marketing-content-creation/SKILL.md
+claude-code-skills/download/marketing-content-creation/guide.json
+claude-code-skills/download/marketing-content-creation/marketing-content-creation.zip
+claude-code-skills/download/marketing-email-sequence/SKILL.md
+claude-code-skills/download/marketing-email-sequence/guide.json
+claude-code-skills/download/marketing-email-sequence/marketing-email-sequence.zip
+claude-code-skills/download/marketing-performance-report/SKILL.md
+claude-code-skills/download/marketing-performance-report/guide.json
+claude-code-skills/download/marketing-performance-report/marketing-performance-report.zip
+claude-code-skills/download/marketing-seo-audit/SKILL.md
+claude-code-skills/download/marketing-seo-audit/guide.json
+claude-code-skills/download/marketing-seo-audit/marketing-seo-audit.zip
+claude-code-skills/download/mattpocock-handoff/SKILL.md
+claude-code-skills/download/mattpocock-handoff/guide.json
+claude-code-skills/download/mattpocock-handoff/mattpocock-handoff.zip
+claude-code-skills/download/mattpocock-skills/SKILL.md
+claude-code-skills/download/mattpocock-skills/guide.json
+claude-code-skills/download/mattpocock-skills/mattpocock-skills.zip
+claude-code-skills/download/mattpocock-tdd/SKILL.md
+claude-code-skills/download/mattpocock-tdd/guide.json
+claude-code-skills/download/mattpocock-tdd/mattpocock-tdd.zip
+claude-code-skills/download/mcp-builder/SKILL.md
+claude-code-skills/download/mcp-builder/guide.json
+claude-code-skills/download/mcp-builder/mcp-builder.zip
+claude-code-skills/download/notion-ops-connector/SKILL.md
+claude-code-skills/download/notion-ops-connector/guide.json
+claude-code-skills/download/notion-ops-connector/notion-ops-connector.zip
+claude-code-skills/download/obsidian-bases/SKILL.md
+claude-code-skills/download/obsidian-bases/guide.json
+claude-code-skills/download/obsidian-bases/obsidian-bases.zip
+claude-code-skills/download/obsidian-markdown/SKILL.md
+claude-code-skills/download/obsidian-markdown/guide.json
+claude-code-skills/download/obsidian-markdown/obsidian-markdown.zip
+claude-code-skills/download/onpage-optimierung/SKILL.md
+claude-code-skills/download/onpage-optimierung/guide.json
+claude-code-skills/download/onpage-optimierung/onpage-optimierung.zip
+claude-code-skills/download/persona-workshop-facilitator/SKILL.md
+claude-code-skills/download/persona-workshop-facilitator/guide.json
+claude-code-skills/download/persona-workshop-facilitator/persona-workshop-facilitator.zip
+claude-code-skills/download/pick-ui-library/SKILL.md
+claude-code-skills/download/pick-ui-library/guide.json
+claude-code-skills/download/pick-ui-library/pick-ui-library.zip
+claude-code-skills/download/planetscale/SKILL.md
+claude-code-skills/download/planetscale/guide.json
+claude-code-skills/download/planetscale/planetscale.zip
+claude-code-skills/download/playwright-cli/SKILL.md
+claude-code-skills/download/playwright-cli/guide.json
+claude-code-skills/download/playwright-cli/playwright-cli.zip
+claude-code-skills/download/ponytail/SKILL.md
+claude-code-skills/download/ponytail/guide.json
+claude-code-skills/download/ponytail/ponytail.zip
+claude-code-skills/download/rea/SKILL.md
+claude-code-skills/download/rea/guide.json
+claude-code-skills/download/rea/rea.zip
+claude-code-skills/download/review-animations/SKILL.md
+claude-code-skills/download/review-animations/guide.json
+claude-code-skills/download/review-animations/review-animations.zip
+claude-code-skills/download/sales-enablement-pack/SKILL.md
+claude-code-skills/download/sales-enablement-pack/guide.json
+claude-code-skills/download/sales-enablement-pack/sales-enablement-pack.zip
+claude-code-skills/download/schema-markup-generator/SKILL.md
+claude-code-skills/download/schema-markup-generator/guide.json
+claude-code-skills/download/schema-markup-generator/schema-markup-generator.zip
+claude-code-skills/download/search-console-analyse/SKILL.md
+claude-code-skills/download/search-console-analyse/guide.json
+claude-code-skills/download/search-console-analyse/search-console-analyse.zip
+claude-code-skills/download/security-and-hardening/SKILL.md
+claude-code-skills/download/security-and-hardening/guide.json
+claude-code-skills/download/security-and-hardening/security-and-hardening.zip
+claude-code-skills/download/security-audit/SKILL.md
+claude-code-skills/download/security-audit/guide.json
+claude-code-skills/download/security-audit/security-audit.zip
+claude-code-skills/download/seo-artikel-schreiben/SKILL.md
+claude-code-skills/download/seo-artikel-schreiben/guide.json
+claude-code-skills/download/seo-artikel-schreiben/seo-artikel-schreiben.zip
+claude-code-skills/download/seo-geo-aeo-audit/SKILL.md
+claude-code-skills/download/seo-geo-aeo-audit/guide.json
+claude-code-skills/download/seo-geo-aeo-audit/seo-geo-aeo-audit.zip
+claude-code-skills/download/seo-strategie-roadmap/SKILL.md
+claude-code-skills/download/seo-strategie-roadmap/guide.json
+claude-code-skills/download/seo-strategie-roadmap/seo-strategie-roadmap.zip
+claude-code-skills/download/seo-wettbewerbsanalyse/SKILL.md
+claude-code-skills/download/seo-wettbewerbsanalyse/guide.json
+claude-code-skills/download/seo-wettbewerbsanalyse/seo-wettbewerbsanalyse.zip
+claude-code-skills/download/setup-matt-pocock-skills/SKILL.md
+claude-code-skills/download/setup-matt-pocock-skills/guide.json
+claude-code-skills/download/setup-matt-pocock-skills/setup-matt-pocock-skills.zip
+claude-code-skills/download/shadcn/SKILL.md
+claude-code-skills/download/shadcn/guide.json
+claude-code-skills/download/shadcn/shadcn.zip
+claude-code-skills/download/slack-gif-creator/SKILL.md
+claude-code-skills/download/slack-gif-creator/guide.json
+claude-code-skills/download/slack-gif-creator/slack-gif-creator.zip
+claude-code-skills/download/spartan-ai-toolkit/SKILL.md
+claude-code-skills/download/spartan-ai-toolkit/guide.json
+claude-code-skills/download/spartan-ai-toolkit/spartan-ai-toolkit.zip
+claude-code-skills/download/supabase-postgres-best-practices/SKILL.md
+claude-code-skills/download/supabase-postgres-best-practices/guide.json
+claude-code-skills/download/supabase-postgres-best-practices/supabase-postgres-best-practices.zip
+claude-code-skills/download/supabase/SKILL.md
+claude-code-skills/download/supabase/guide.json
+claude-code-skills/download/supabase/supabase.zip
+claude-code-skills/download/superpowers/SKILL.md
+claude-code-skills/download/superpowers/guide.json
+claude-code-skills/download/superpowers/superpowers.zip
+claude-code-skills/download/tailwind-design-system/SKILL.md
+claude-code-skills/download/tailwind-design-system/guide.json
+claude-code-skills/download/tailwind-design-system/tailwind-design-system.zip
+claude-code-skills/download/task-observer/SKILL.md
+claude-code-skills/download/task-observer/guide.json
+claude-code-skills/download/task-observer/task-observer.zip
+claude-code-skills/download/terrashark/SKILL.md
+claude-code-skills/download/terrashark/guide.json
+claude-code-skills/download/terrashark/terrashark.zip
+claude-code-skills/download/theme-factory/SKILL.md
+claude-code-skills/download/theme-factory/guide.json
+claude-code-skills/download/theme-factory/theme-factory.zip
+claude-code-skills/download/turborepo/SKILL.md
+claude-code-skills/download/turborepo/guide.json
+claude-code-skills/download/turborepo/turborepo.zip
+claude-code-skills/download/typescript-advanced-types/SKILL.md
+claude-code-skills/download/typescript-advanced-types/guide.json
+claude-code-skills/download/typescript-advanced-types/typescript-advanced-types.zip
+claude-code-skills/download/ux-copy-refiner/SKILL.md
+claude-code-skills/download/ux-copy-refiner/guide.json
+claude-code-skills/download/ux-copy-refiner/ux-copy-refiner.zip
+claude-code-skills/download/ux-flow-wireframer/SKILL.md
+claude-code-skills/download/ux-flow-wireframer/guide.json
+claude-code-skills/download/ux-flow-wireframer/ux-flow-wireframer.zip
+claude-code-skills/download/ux-research-interview-kit/SKILL.md
+claude-code-skills/download/ux-research-interview-kit/guide.json
+claude-code-skills/download/ux-research-interview-kit/ux-research-interview-kit.zip
+claude-code-skills/download/vercel-react-best-practices/SKILL.md
+claude-code-skills/download/vercel-react-best-practices/guide.json
+claude-code-skills/download/vercel-react-best-practices/vercel-react-best-practices.zip
+claude-code-skills/download/vercel-web-design-guidelines/SKILL.md
+claude-code-skills/download/vercel-web-design-guidelines/guide.json
+claude-code-skills/download/vercel-web-design-guidelines/vercel-web-design-guidelines.zip
+claude-code-skills/download/vopixsounds/SKILL.md
+claude-code-skills/download/vopixsounds/guide.json
+claude-code-skills/download/vopixsounds/vopixsounds.zip
+claude-code-skills/download/webapp-testing/SKILL.md
+claude-code-skills/download/webapp-testing/guide.json
+claude-code-skills/download/webapp-testing/webapp-testing.zip
+claude-code-skills/download/website-builder/SKILL.md
+claude-code-skills/download/website-builder/guide.json
+claude-code-skills/download/website-builder/website-builder.zip
+claude-code-skills/download/workers-best-practices/SKILL.md
+claude-code-skills/download/workers-best-practices/guide.json
+claude-code-skills/download/workers-best-practices/workers-best-practices.zip
+claude-code-skills/emil-design-eng/index.html
+claude-code-skills/fastify-best-practices/index.html
+claude-code-skills/figma-to-code/index.html
+claude-code-skills/find-skills/index.html
+claude-code-skills/founder-pitch-deck-coach/index.html
+claude-code-skills/github-actions-sparen/index.html
+claude-code-skills/google-ads-analyzer/index.html
+claude-code-skills/google-agents-cli-adk-code/index.html
+claude-code-skills/google-agents-cli-deploy/index.html
+claude-code-skills/google-agents-cli-publish/index.html
+claude-code-skills/google-agents-cli-workflow/index.html
+claude-code-skills/grill-me/index.html
+claude-code-skills/gws-drive/index.html
+claude-code-skills/gws-gmail/index.html
+claude-code-skills/herdrdev-herdr/index.html
+claude-code-skills/humanizer/index.html
+claude-code-skills/imagegen-frontend-mobile/index.html
+claude-code-skills/impeccable/index.html
+claude-code-skills/improve-codebase-architecture/index.html
+claude-code-skills/index.html
+claude-code-skills/indexierungs-audit/index.html
+claude-code-skills/internal-comms/index.html
+claude-code-skills/interne-verlinkung/index.html
+claude-code-skills/keyword-recherche-cluster/index.html
+claude-code-skills/keyword-strategy-planner/index.html
+claude-code-skills/lark-event/index.html
+claude-code-skills/lark-im/index.html
+claude-code-skills/local-seo-audit/index.html
+claude-code-skills/marketing-brand-review/index.html
+claude-code-skills/marketing-campaign-plan/index.html
+claude-code-skills/marketing-competitive-brief/index.html
+claude-code-skills/marketing-content-creation/index.html
+claude-code-skills/marketing-email-sequence/index.html
+claude-code-skills/marketing-performance-report/index.html
+claude-code-skills/marketing-seo-audit/index.html
+claude-code-skills/mattpocock-handoff/index.html
+claude-code-skills/mattpocock-skills/index.html
+claude-code-skills/mattpocock-tdd/index.html
+claude-code-skills/mcp-builder/index.html
+claude-code-skills/notion-ops-connector/index.html
+claude-code-skills/obsidian-bases/index.html
+claude-code-skills/obsidian-markdown/index.html
+claude-code-skills/onpage-optimierung/index.html
+claude-code-skills/persona-workshop-facilitator/index.html
+claude-code-skills/pick-ui-library/index.html
+claude-code-skills/planetscale/index.html
+claude-code-skills/playwright-cli/index.html
+claude-code-skills/ponytail/index.html
+claude-code-skills/rea/index.html
+claude-code-skills/review-animations/index.html
+claude-code-skills/sales-enablement-pack/index.html
+claude-code-skills/schema-markup-generator/index.html
+claude-code-skills/search-console-analyse/index.html
+claude-code-skills/security-and-hardening/index.html
+claude-code-skills/security-audit/index.html
+claude-code-skills/seo-artikel-schreiben/index.html
+claude-code-skills/seo-geo-aeo-audit/index.html
+claude-code-skills/seo-strategie-roadmap/index.html
+claude-code-skills/seo-wettbewerbsanalyse/index.html
+claude-code-skills/setup-matt-pocock-skills/index.html
+claude-code-skills/shadcn/index.html
+claude-code-skills/slack-gif-creator/index.html
+claude-code-skills/spartan-ai-toolkit/index.html
+claude-code-skills/supabase-postgres-best-practices/index.html
+claude-code-skills/supabase/index.html
+claude-code-skills/superpowers/index.html
+claude-code-skills/tailwind-design-system/index.html
+claude-code-skills/task-observer/index.html
+claude-code-skills/terrashark/index.html
+claude-code-skills/theme-factory/index.html
+claude-code-skills/turborepo/index.html
+claude-code-skills/typescript-advanced-types/index.html
+claude-code-skills/ux-copy-refiner/index.html
+claude-code-skills/ux-flow-wireframer/index.html
+claude-code-skills/ux-research-interview-kit/index.html
+claude-code-skills/vercel-react-best-practices/index.html
+claude-code-skills/vercel-web-design-guidelines/index.html
+claude-code-skills/vopixsounds/index.html
+claude-code-skills/webapp-testing/index.html
+claude-code-skills/website-builder/index.html
+claude-code-skills/workers-best-practices/index.html</pre></details><details class="folder"><summary>cv <small>(1)</small></summary><pre>cv/index.html</pre></details><details class="folder"><summary>Root files <small>(4)</small></summary><pre>favicon.svg
+index.html
+robots.txt
+search-index.json</pre></details><details class="folder"><summary>lab <small>(1)</small></summary><pre>lab/index.html</pre></details><details class="folder"><summary>raw <small>(16)</small></summary><pre>raw/ai-kit/gem-bug-to-spec.md
+raw/ai-kit/gem-laravel-livewire-reviewer.md
+raw/ai-kit/gem-postgres-rls-hardener.md
+raw/ai-kit/gem-schema-architect.md
+raw/ai-kit/skill-clean-room-sanitizer.md
+raw/ai-kit/skill-expand-contract-migration.md
+raw/ai-kit/skill-n1-pooled-sql-auditor.md
+raw/ai-kit/skill-token-budget-context.md
+raw/ai-kit/workflow-intake-triage-pipeline.md
+raw/ai-kit/workflow-llm-gateway-fallback.md
+raw/ai-kit/workflow-mcp-oauth-ops.md
+raw/templates/01-system-architecture-spec.md
+raw/templates/02-pre-code-readiness-checklist.md
+raw/templates/03-state-machine-permission-matrix.md
+raw/templates/04-scope-tradeoff-alignment.md
+raw/templates/05-technical-handover-guide.md</pre></details><details class="folder"><summary>systems <small>(4)</small></summary><pre>systems/01-it-ops-helpdesk/index.html
+systems/02-hr-lifecycle-crm/index.html
+systems/03-portfolio-kpi-engine/index.html
+systems/index.html</pre></details><details class="folder"><summary>templates <small>(1)</small></summary><pre>templates/index.html</pre></details><details class="folder"><summary>vault <small>(91)</small></summary><pre>vault/index.html
+vault/preview/amendment-diff-org-chart/index.html
+vault/preview/approval-stepper-checklist/index.html
+vault/preview/bilingual-ask-palette/index.html
+vault/preview/command-ask-bar/index.html
+vault/preview/config-driven-register/index.html
+vault/preview/currency-guard-balance/index.html
+vault/preview/dirty-modal-guard/index.html
+vault/preview/fail-closed-role-drawer/index.html
+vault/preview/failure-honest-boundaries/index.html
+vault/preview/flush-row-desk-grid/index.html
+vault/preview/gantt-and-timesheet-machines/index.html
+vault/preview/guarded-modals-dirty-close/index.html
+vault/preview/guarded-workflow-kanban/index.html
+vault/preview/html-svg-sankey-flow/index.html
+vault/preview/live-quoting-composer/index.html
+vault/preview/needs-action-inbox/index.html
+vault/preview/office-pdf-preview/index.html
+vault/preview/patch-panel-estate-strip/index.html
+vault/preview/patch-panel-strip/index.html
+vault/preview/redacted-pay-day-state/index.html
+vault/preview/saved-views-sticky-filters/index.html
+vault/preview/shared-options-popover/index.html
+vault/preview/sla-priority-queue/index.html
+vault/preview/slice-kpi-tiles/index.html
+vault/preview/spreadsheet-importer-register/index.html
+vault/preview/status-gate-lifecycle/index.html
+vault/preview/status-tone-vocabulary/index.html
+vault/preview/status-vocabulary-primitives/index.html
+vault/preview/two-band-progress-sla/index.html
+vault/preview/zero-safe-signal-tiles/index.html
+vault/source/amendment-diff-org-chart/alpine/index.html
+vault/source/amendment-diff-org-chart/livewire/index.html
+vault/source/amendment-diff-org-chart/react/index.html
+vault/source/bilingual-ask-palette/alpine/index.html
+vault/source/bilingual-ask-palette/livewire/index.html
+vault/source/bilingual-ask-palette/react/index.html
+vault/source/currency-guard-balance/alpine/index.html
+vault/source/currency-guard-balance/livewire/index.html
+vault/source/currency-guard-balance/react/index.html
+vault/source/fail-closed-role-drawer/alpine/index.html
+vault/source/fail-closed-role-drawer/livewire/index.html
+vault/source/fail-closed-role-drawer/react/index.html
+vault/source/failure-honest-boundaries/alpine/index.html
+vault/source/failure-honest-boundaries/livewire/index.html
+vault/source/failure-honest-boundaries/react/index.html
+vault/source/flush-row-desk-grid/alpine/index.html
+vault/source/flush-row-desk-grid/livewire/index.html
+vault/source/flush-row-desk-grid/react/index.html
+vault/source/gantt-and-timesheet-machines/alpine/index.html
+vault/source/gantt-and-timesheet-machines/livewire/index.html
+vault/source/gantt-and-timesheet-machines/react/index.html
+vault/source/guarded-modals-dirty-close/alpine/index.html
+vault/source/guarded-modals-dirty-close/livewire/index.html
+vault/source/guarded-modals-dirty-close/react/index.html
+vault/source/html-svg-sankey-flow/alpine/index.html
+vault/source/html-svg-sankey-flow/livewire/index.html
+vault/source/html-svg-sankey-flow/react/index.html
+vault/source/needs-action-inbox/alpine/index.html
+vault/source/needs-action-inbox/livewire/index.html
+vault/source/needs-action-inbox/react/index.html
+vault/source/office-pdf-preview/alpine/index.html
+vault/source/office-pdf-preview/livewire/index.html
+vault/source/office-pdf-preview/react/index.html
+vault/source/patch-panel-estate-strip/alpine/index.html
+vault/source/patch-panel-estate-strip/livewire/index.html
+vault/source/patch-panel-estate-strip/react/index.html
+vault/source/redacted-pay-day-state/alpine/index.html
+vault/source/redacted-pay-day-state/livewire/index.html
+vault/source/redacted-pay-day-state/react/index.html
+vault/source/saved-views-sticky-filters/alpine/index.html
+vault/source/saved-views-sticky-filters/livewire/index.html
+vault/source/saved-views-sticky-filters/react/index.html
+vault/source/shared-options-popover/alpine/index.html
+vault/source/shared-options-popover/livewire/index.html
+vault/source/shared-options-popover/react/index.html
+vault/source/spreadsheet-importer-register/alpine/index.html
+vault/source/spreadsheet-importer-register/livewire/index.html
+vault/source/spreadsheet-importer-register/react/index.html
+vault/source/status-gate-lifecycle/alpine/index.html
+vault/source/status-gate-lifecycle/livewire/index.html
+vault/source/status-gate-lifecycle/react/index.html
+vault/source/status-tone-vocabulary/alpine/index.html
+vault/source/status-tone-vocabulary/livewire/index.html
+vault/source/status-tone-vocabulary/react/index.html
+vault/source/two-band-progress-sla/alpine/index.html
+vault/source/two-band-progress-sla/livewire/index.html
+vault/source/two-band-progress-sla/react/index.html
+vault/source/zero-safe-signal-tiles/alpine/index.html
+vault/source/zero-safe-signal-tiles/livewire/index.html
+vault/source/zero-safe-signal-tiles/react/index.html</pre></details></div></details>
+</section></main><footer class="foot wrap"><span>Kharbout Works · Local QA report</span><a href="#main">Back to top</a></footer>
+<script>
+const findings = Array.from(document.querySelectorAll('.finding'));
+const query = document.getElementById('q');
+const selectors = ['level', 'area', 'status'].map(id => document.getElementById(id));
+const toggle = document.getElementById('toggle');
+const visible = () => findings.filter(item => !item.hidden);
+
+function updateToggle() {
+    const items = visible();
+    toggle.disabled = items.length === 0;
+    toggle.textContent = items.length && items.every(item => item.open) ? 'Collapse shown' : 'Expand shown';
+}
+
+function filter() {
+    const text = query.value.trim().toLowerCase();
+    for (const item of findings) {
+        const matchesFilters = selectors.every(select => !select.value || item.dataset[select.id] === select.value);
+        item.hidden = !matchesFilters || !item.textContent.toLowerCase().includes(text);
+    }
+    const count = visible().length;
+    document.getElementById('count').textContent = count + ' of ' + findings.length + ' findings shown';
+    document.getElementById('empty').hidden = count !== 0;
+    updateToggle();
+}
+
+function reset() {
+    query.value = '';
+    selectors.forEach(select => select.value = '');
+    filter();
+}
+
+function reveal(hash = location.hash) {
+    const item = document.getElementById(hash.slice(1));
+    if (!item?.classList.contains('finding')) return;
+    if (item.hidden) reset();
+    item.open = true;
+    item.scrollIntoView({ block: 'start' });
+}
+
+query.addEventListener('input', filter);
+selectors.forEach(select => select.addEventListener('change', filter));
+document.getElementById('clear').addEventListener('click', reset);
+toggle.addEventListener('click', () => {
+    const items = visible();
+    const open = items.some(item => !item.open);
+    items.forEach(item => item.open = open);
+    updateToggle();
+});
+findings.forEach(item => item.addEventListener('toggle', updateToggle));
+document.getElementById('filters').hidden = false;
+filter();
+document.querySelectorAll('a[href^="#QA-"]').forEach(link => link.addEventListener('click', () => reveal(link.hash)));
+window.addEventListener('hashchange', () => reveal());
+reveal();
+
+let initialPrintState;
+window.addEventListener('beforeprint', () => {
+    if (initialPrintState) return;
+    initialPrintState = findings.map(item => [item.open, item.hidden]);
+    findings.forEach(item => {
+        item.hidden = false;
+        item.open = true;
+    });
+});
+window.addEventListener('afterprint', () => {
+    if (!initialPrintState) return;
+    findings.forEach((item, index) => {
+        [item.open, item.hidden] = initialPrintState[index];
+    });
+    initialPrintState = null;
+    updateToggle();
+});
+</script></body></html>

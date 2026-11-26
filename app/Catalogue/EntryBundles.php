@@ -2,6 +2,7 @@
 
 namespace App\Catalogue;
 
+use Illuminate\Support\Facades\Cache;
 use LogicException;
 use Phar;
 use PharData;
@@ -56,13 +57,29 @@ final class EntryBundles
     public function zip(string $publishedSlug): string
     {
         $files = self::FILES[$publishedSlug] ?? throw new LogicException('Published entry is missing its bundle.');
+        $members = [];
+        foreach (['LICENSE' => 'LICENSE', ...$files] as $name => $source) {
+            $contents = file_get_contents(base_path($source));
+            if ($contents === false) {
+                throw new RuntimeException('Could not read a published source file.');
+            }
+            $members[$name] = $contents;
+        }
+        $revision = hash('sha256', serialize($members));
+
+        return Cache::remember('catalogue.zip.v1.'.$publishedSlug.'.'.$revision, now()->addDay(), fn (): string => $this->archive($members));
+    }
+
+    /** @param array<string, string> $members */
+    private function archive(array $members): string
+    {
         $path = sys_get_temp_dir().'/operations-kit-'.bin2hex(random_bytes(16)).'.zip';
         $archive = new PharData($path);
 
         try {
             $archive->startBuffering();
-            foreach (['LICENSE' => 'LICENSE', ...$files] as $name => $source) {
-                $archive->addFile(base_path($source), $name);
+            foreach ($members as $name => $contents) {
+                $archive->addFromString($name, $contents);
             }
             $archive->stopBuffering();
 

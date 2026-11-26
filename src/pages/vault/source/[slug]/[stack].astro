@@ -1,12 +1,20 @@
 ---
 import { getCollection } from 'astro:content';
 import { Code } from 'astro:components';
+import BaseLayout from '../../../../components/layout/BaseLayout.astro';
+import '../../../../styles/workbench.css';
 import { sourceFiles, type Stack } from '../../../../lib/vault-sources';
-export const partial = true;
 export async function getStaticPaths() {
-  return (await getCollection('vault')).flatMap(item => ['alpine','react','livewire'].map(stack => ({params:{slug:item.id, stack}})));
+    return (await getCollection('vault')).flatMap((item) =>
+        ['alpine', 'react', 'livewire'].map((stack) => ({
+            params: { slug: item.id, stack },
+            props: { title: item.data.title },
+        })),
+    );
 }
 const { slug, stack } = Astro.params;
+const { title } = Astro.props;
+const stackName = { alpine: 'Alpine', react: 'React', livewire: 'Livewire' }[stack as Stack];
 const files = sourceFiles(slug!, stack as Stack);
 function laravelPath(file: (typeof files)[number]) {
     const name = file.path.split('/' + slug + '/')[1] ?? '';
@@ -14,15 +22,94 @@ function laravelPath(file: (typeof files)[number]) {
     if (name === 'Example.php') {
         const component = file.code.match(/class\s+(\w+)\s+extends\s+Component/);
         const namespace = file.code.match(/namespace App\\([^;]+);/);
-        return component && namespace ? 'app/' + namespace[1].replaceAll('\\','/') + '/' + component[1] + '.php' : '';
+        return component && namespace
+            ? 'app/' + namespace[1].replaceAll('\\', '/') + '/' + component[1] + '.php'
+            : '';
     }
     if (/^(app|resources|public)\//.test(name)) return name;
-    if (slug === 'office-pdf-preview' && name.endsWith('.ts')) return 'resources/js/office-preview/' + name;
+    if (slug === 'office-pdf-preview' && name.endsWith('.ts'))
+        return 'resources/js/office-preview/' + name;
     return '';
 }
-const fixtures = import.meta.glob<string>('../../../../content/vault/*/sample.*', {eager:true,query:'?url&no-inline',import:'default'});
-const themes = {light:'github-light', dark:'github-dark-dimmed'} as const;
+const fixtures = import.meta.glob<string>('../../../../content/vault/*/sample.*', {
+    eager: true,
+    query: '?url&no-inline',
+    import: 'default',
+});
+const themes = { light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' } as const;
 ---
-{stack === 'alpine' && <p>Register the model with <code>Alpine.data('vaultKit', model)</code> before starting Alpine.</p>}
-{files.map(file => <section class="source-file"><p class="file-label">{file.path}</p>{stack === 'livewire' && laravelPath(file) && <p class="type-meta">Laravel path · <code>{laravelPath(file)}</code></p>}<button type="button" data-copy-file>Copy file</button><Code code={file.code} lang={file.lang} themes={themes}/></section>)}
-{Object.entries(fixtures).filter(([path])=>path.includes('/'+slug+'/')).map(([path,url]) => <p><a href={url} download={path.split('/').pop()}>Download {path.split('/').pop()}</a></p>)}
+
+<BaseLayout title={title + ' · ' + stackName + ' source'}>
+    <div class="page-shell" data-source-reader>
+        <a href={'/vault/#' + slug}>Return to the kit</a>
+        <header class="page-heading">
+            <h1>
+                {title} · {stackName} source
+            </h1>
+        </header>
+        <p class="feedback" role="status"></p>
+        <label class="manual-copy" hidden>
+            Source to copy<textarea readonly rows="6"></textarea>
+        </label>
+        <div data-source-files>
+            {stack === 'alpine' && (
+                <p>
+                    Register the model with <code>Alpine.data('vaultKit', model)</code> before
+                    starting Alpine.
+                </p>
+            )}
+            {files.map((file) => (
+                <section class="source-file">
+                    <p class="file-label">{file.path}</p>
+                    {stack === 'livewire' && laravelPath(file) && (
+                        <p class="type-meta">
+                            Laravel path · <code>{laravelPath(file)}</code>
+                        </p>
+                    )}
+                    <button type="button" hidden data-copy-file>
+                        Copy file
+                    </button>
+                    <Code code={file.code} lang={file.lang} themes={themes} />
+                </section>
+            ))}
+            {Object.entries(fixtures)
+                .filter(([path]) => path.includes('/' + slug + '/'))
+                .map(([path, url]) => (
+                    <p>
+                        <a href={url} download={path.split('/').pop()}>
+                            Download {path.split('/').pop()}
+                        </a>
+                    </p>
+                ))}
+        </div>
+    </div>
+</BaseLayout>
+<script>
+    import { bindSourceCopy } from '../../../../components/vault/copy-source';
+    const reader = document.querySelector<HTMLElement>('[data-source-reader]')!;
+    bindSourceCopy(reader);
+    reader.querySelectorAll<HTMLButtonElement>('[data-copy-file]').forEach((button) => {
+        button.hidden = false;
+    });
+</script>
+<style>
+    .file-label {
+        margin-block: 1.4rem 0.25rem;
+        overflow-wrap: anywhere;
+        font-family: var(--font-mono);
+    }
+    [data-source-reader] :is(button, a) {
+        color: var(--accent-primary);
+        text-decoration: underline;
+    }
+    .manual-copy textarea {
+        display: block;
+        width: 100%;
+    }
+    [data-source-reader] :global(pre.astro-code) {
+        overflow: auto;
+        max-height: 32rem;
+        padding: 0.8rem;
+        font-size: 0.85rem;
+    }
+</style>

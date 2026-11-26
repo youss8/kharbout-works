@@ -1,9 +1,42 @@
 import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
+import { newDraft, readDraft } from '../../src/lib/prompt-builder/model.ts';
 
 const route = '/ai-kit/prompt-builder/';
 const prompt = (page, variant = 'concise') => page.locator('pre[data-variant=' + variant + ']');
 const button = (page, name) => page.getByRole('button', { name, exact: true });
+
+test('the builder restores its own large multilingual backup and protects unsaved navigation', async ({ page }) => {
+    await page.goto(route);
+    const seed = newDraft('handover');
+    for (const key of ['RECIPIENT', 'NEXT', 'BLOCKERS']) seed.values[key] = '界'.repeat(8000);
+    seed.edits = { concise: '界'.repeat(40000), detailed: '界'.repeat(40000) };
+    seed.runs = Array.from({ length: 4 }, (_, i) => ({ prompt: '界'.repeat(6900) + i, result: 'OK' }));
+    const input = page.locator('input[type=file]');
+    await input.setInputFiles({ name: 'Backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(seed)) });
+    const state = page.getByRole('textbox', { name: 'Current state', exact: true });
+    await state.fill('界'.repeat(8000));
+    const dialog = page.waitForEvent('dialog');
+    const navigation = page.getByRole('link', { name: 'AI engineering toolkit', exact: true }).click({ noWaitAfter: true });
+    const leave = await dialog;
+    expect(leave.type()).toBe('beforeunload');
+    await leave.dismiss();
+    await navigation;
+    await expect(state).toHaveValue('界'.repeat(8000));
+    const pending = page.waitForEvent('download');
+    await button(page, 'Download draft JSON (.json)').click();
+    const bytes = await readFile(await (await pending).path());
+    expect(bytes.length).toBeGreaterThan(400000);
+    const exported = JSON.parse(bytes);
+    expect(readDraft(exported)).toEqual(exported);
+    page.once('dialog', dialog => dialog.accept());
+    await input.setInputFiles({ name: 'Recovered.json', mimeType: 'application/json', buffer: bytes });
+    await expect(page.getByRole('textbox', { name: 'Draft name' })).toHaveValue('Recovered');
+    await expect(state).toHaveValue(exported.values.STATUS);
+    await page.reload();
+    await page.getByRole('listitem').filter({ hasText: 'Recovered' }).getByRole('button', { name: 'Open' }).click();
+    await expect(state).toHaveValue(exported.values.STATUS);
+});
 
 test('find a preset from search and preserve literal content in previews, edits, and exports', async ({ page, context }) => {
     const errors = [];
@@ -33,7 +66,7 @@ test('find a preset from search and preserve literal content in previews, edits,
     expect(await prompt(page).textContent()).toBe(edit);
     await button(page, 'Copy prompt').click();
     await expect.poll(async () => (await page.evaluate(() => navigator.clipboard.readText())).replaceAll('\r\n', '\n')).toBe(edit);
-    for (const [label, extension] of [['Download Markdown', 'md'], ['Download plain text', 'txt']]) {
+    for (const [label, extension] of [['Download Markdown (.md)', 'md'], ['Download plain text (.txt)', 'txt']]) {
         const pending = page.waitForEvent('download');
         await button(page, label).click();
         const download = await pending;
@@ -73,7 +106,7 @@ test('imports a new draft, restores the device library on reload, and confirms e
     await expect(page.getByRole('combobox', { name: 'Workflow', exact: true })).toHaveValue('verification-checklist');
 
     const pending = page.waitForEvent('download');
-    await button(page, 'Download draft JSON').click();
+    await button(page, 'Download draft JSON (.json)').click();
     const file = await pending;
     const input = page.locator('input[type=file]');
     await input.setInputFiles({ name: 'Imported.json', mimeType: 'application/json', buffer: await readFile(await file.path()) });
@@ -161,6 +194,40 @@ test('claims an example run only for a profile with a completed benchmark pair',
     await expect(page.getByText('Example run recorded · claude-haiku-4-5-20251001')).toBeVisible();
     await page.getByRole('combobox', { name: 'Target model or assistant' }).selectOption('gemini');
     await expect(page.getByText('Example planned')).toBeVisible();
+});
+
+test('long compiled prompts stay available and saveable when manual editing exceeds the limit', async ({ page }) => {
+    await page.goto(route + '?workflow=handover&model=claude');
+    for (const name of ['Current state', 'Next action']) {
+        await page.getByRole('textbox', { name, exact: true }).fill('<'.repeat(7_500));
+    }
+    const compiled = await prompt(page).textContent();
+    expect(compiled.length).toBeGreaterThan(40_000);
+    await button(page, 'Edit prompt').click();
+    await expect(page.locator('#builder-output').getByRole('status').filter({ hasText: /exceeds the 40,000-character editor limit/ })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Editing prompt · Concise' })).toBeHidden();
+    expect(await prompt(page).textContent()).toBe(compiled);
+    await page.getByRole('textbox', { name: 'Draft name' }).fill('Long handover');
+    await button(page, 'Save draft').click();
+    await expect(page.getByText('Long handover', { exact: true })).toBeVisible();
+});
+
+test('a freshly saved draft is clean and a title-only edit is protected', async ({ page }) => {
+    await page.goto(route + '?workflow=bug-to-spec');
+    await button(page, 'Load example').click();
+    await page.getByRole('textbox', { name: 'Draft name' }).fill('QA example');
+    await button(page, 'Save draft').click();
+    await expect(page.getByText('QA example', { exact: true })).toBeVisible();
+    const workflow = page.getByRole('combobox', { name: 'Workflow', exact: true });
+    await workflow.selectOption('handover');
+    await expect(workflow).toHaveValue('handover');
+    await page.getByRole('textbox', { name: 'Draft name' }).fill('New title without a body edit');
+    let prompted = false;
+    page.once('dialog', dialog => { prompted = true; return dialog.dismiss(); });
+    await workflow.selectOption('bug-to-spec');
+    expect(prompted).toBe(true);
+    await expect(workflow).toHaveValue('handover');
+    await expect(page.getByRole('textbox', { name: 'Draft name' })).toHaveValue('New title without a body edit');
 });
 
 test('matches benchmark evidence to the language of the loaded example and answer', async ({ page }) => {

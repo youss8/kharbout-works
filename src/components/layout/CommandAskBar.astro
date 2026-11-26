@@ -1,71 +1,323 @@
 ---
-import { ArrowDown, ArrowUp, CornerDownLeft, Search, X } from "lucide-react";
-import { siteName } from "../../data/brand";
+import { ArrowDown, ArrowUp, CornerDownLeft, Search, X } from 'lucide-react';
+import { siteName } from '../../data/brand';
 ---
-<div class="no-print" x-data="commandPalette" x-on:yok-open-ask.window="open()" x-on:yok-theme-change.window="syncTheme()" x-on:keydown.window="shortcut($event)">
-  <dialog id="ask-workbench" class="ask-dialog" aria-labelledby="ask-title" x-on:cancel.prevent="close()" x-on:click.self="close()">
-    <div class="ask-shell">
-      <header class="ask-header"><h2 id="ask-title">Search {siteName}</h2>
-        <button class="ask-close" type="button" aria-label="Close command search" x-on:click="close()"><X size={18} aria-hidden="true"/></button></header>
-      <div class="ask-input">
-        <Search size={19} aria-hidden="true"/>
-        <input id="ask-query" type="text" role="combobox" aria-label="Search pages, assets and quick actions" aria-describedby="ask-help" aria-controls="ask-results" aria-autocomplete="list" x-bind:aria-expanded="opened" x-bind:aria-activedescendant="activeId" dir="auto" placeholder="Search in English or Arabic" maxlength="200" autocomplete="off" spellcheck="false" autofocus
-          x-bind:value="query" x-on:input="filter($event.target.value)" x-on:keydown="navigate($event)"/>
-      </div>
-      <p id="ask-help" class="ask-help">Search in English or Arabic <span aria-hidden="true">·</span> <bdi lang="ar">ابحث بالعربية أو الإنجليزية</bdi></p>
-      <div class="ask-scroller">
-        <p class="ask-message" role="status" x-show="showLoading">Loading the search index…</p>
-        <div class="ask-message error-card" role="alert" x-show="state === 'error'"><p>The search index could not be loaded.</p><button type="button" x-on:click="load()">Retry search</button></div>
-        <p class="ask-message" role="status" x-show="state === 'ready' && !choices.length">No results. Try a system name, a tool or a topic like “pooled”.</p>
-        <div id="ask-results" role="listbox" aria-label="Search results" x-bind:aria-busy="state === 'loading'" x-bind:data-loading="state === 'loading' ? 'true' : null">
-          <template x-for="group in groups" x-bind:key="group.title">
-            <section class="ask-group" role="group" x-bind:aria-label="group.title">
-              <h3 x-text="group.title"></h3>
-              <template x-for="option in group.items" x-bind:key="option.key">
-                <div class="ask-option" role="option" x-bind:id="'ask-option-' + option.index" x-bind:aria-selected="option.index === selected" x-on:mouseenter="selected = option.index" x-on:mousedown.prevent x-on:click="choose(option)">
-                  <div>
-                    <strong x-bind:aria-label="option.label"><template x-for="(part,i) in option.highlights" x-bind:key="i"><span x-bind:class="{ 'ask-match': part.matched }" x-text="part.text"></span></template></strong>
-                    <bdi lang="ar" x-show="option.matchedAlias.length" class="ask-alias"><template x-for="(part,i) in option.matchedAlias" x-bind:key="i"><span x-bind:class="{ 'ask-match': part.matched }" x-text="part.text"></span></template></bdi>
-                    <p x-text="option.summary"></p>
-                  </div>
-                  <span class="ask-kind" x-text="option.kind"></span>
+
+<div
+    class="no-print"
+    x-data="commandPalette"
+    x-on:yok-open-ask.window="open()"
+    x-on:yok-theme-change.window="syncTheme()"
+    x-on:keydown.window="shortcut($event)"
+>
+    <dialog
+        id="ask-workbench"
+        class="ask-dialog"
+        aria-labelledby="ask-title"
+        x-on:cancel.prevent="close()"
+        x-on:click.self="close()"
+    >
+        <div class="ask-shell">
+            <header class="ask-header">
+                <h2 id="ask-title">Search {siteName}</h2>
+                <button
+                    class="ask-close"
+                    type="button"
+                    aria-label="Close command search"
+                    x-on:click="close()"
+                >
+                    <X size={18} aria-hidden="true" />
+                </button>
+            </header>
+            <div class="ask-input">
+                <Search size={19} aria-hidden="true" />
+                <input
+                    id="ask-query"
+                    type="text"
+                    role="combobox"
+                    aria-label="Search pages, assets and quick actions"
+                    aria-describedby="ask-help"
+                    aria-controls="ask-results"
+                    aria-autocomplete="list"
+                    x-bind:aria-expanded="opened"
+                    x-bind:aria-activedescendant="activeId"
+                    dir="auto"
+                    placeholder="Search in English or Arabic"
+                    maxlength="200"
+                    autocomplete="off"
+                    spellcheck="false"
+                    autofocus
+                    x-bind:value="query"
+                    x-on:input="filter($event.target.value)"
+                    x-on:keydown="navigate($event)"
+                />
+            </div>
+            <p id="ask-help" class="ask-help">
+                Search in English or Arabic <span aria-hidden="true">·</span>{' '}
+                <bdi lang="ar">ابحث بالعربية أو الإنجليزية</bdi>
+            </p>
+            <div class="ask-scroller">
+                <p class="ask-message" role="status" x-show="showLoading">
+                    Loading the search index…
+                </p>
+                <div class="ask-message error-card" role="alert" x-show="state === 'error'">
+                    <p>The search index could not be loaded.</p>
+                    <button type="button" x-on:click="load()">
+                        Retry search
+                    </button>
                 </div>
-              </template>
-            </section>
-          </template>
+                <p class="ask-message" role="status" x-show="state === 'ready' && !choices.length">
+                    No results. Try a system name, a tool or a topic like “pooled”.
+                </p>
+                <div
+                    id="ask-results"
+                    role="listbox"
+                    aria-label="Search results"
+                    x-bind:aria-busy="state === 'loading'"
+                    x-bind:data-loading="state === 'loading' ? 'true' : null"
+                >
+                    <template x-for="group in groups" x-bind:key="group.title">
+                        <section class="ask-group" role="group" x-bind:aria-label="group.title">
+                            <div
+                                class="ask-group-label"
+                                aria-hidden="true"
+                                x-text="group.title"
+                            ></div>
+                            <template x-for="option in group.items" x-bind:key="option.key">
+                                <div
+                                    class="ask-option"
+                                    role="option"
+                                    x-bind:id="'ask-option-' + option.index"
+                                    x-bind:aria-selected="option.index === selected"
+                                    x-on:mouseenter="selected = option.index"
+                                    x-on:mousedown.prevent
+                                    x-on:click="choose(option)"
+                                >
+                                    <div>
+                                        <strong x-bind:aria-label="option.label">
+                                            <template
+                                                x-for="(part,i) in option.highlights"
+                                                x-bind:key="i"
+                                            >
+                                                <span
+                                                    x-bind:class="{ 'ask-match': part.matched }"
+                                                    x-text="part.text"
+                                                ></span>
+                                            </template>
+                                        </strong>
+                                        <bdi
+                                            lang="ar"
+                                            x-show="option.matchedAlias.length"
+                                            class="ask-alias"
+                                        >
+                                            <template
+                                                x-for="(part,i) in option.matchedAlias"
+                                                x-bind:key="i"
+                                            >
+                                                <span
+                                                    x-bind:class="{ 'ask-match': part.matched }"
+                                                    x-text="part.text"
+                                                ></span>
+                                            </template>
+                                        </bdi>
+                                        <p x-text="option.summary"></p>
+                                    </div>
+                                    <span class="ask-kind" x-text="option.kind"></span>
+                                </div>
+                            </template>
+                        </section>
+                    </template>
+                </div>
+            </div>
+            <footer class="ask-footer">
+                <span>
+                    <kbd>
+                        <ArrowUp size={11} />
+                    </kbd>
+                    <kbd>
+                        <ArrowDown size={11} />
+                    </kbd>{' '}
+                    Move
+                </span>
+                <span>
+                    <kbd>
+                        <CornerDownLeft size={11} />
+                    </kbd>{' '}
+                    Open
+                </span>
+                <span>
+                    <kbd>Esc</kbd> Close
+                </span>
+            </footer>
         </div>
-      </div>
-      <footer class="ask-footer"><span><kbd><ArrowUp size={11}/></kbd><kbd><ArrowDown size={11}/></kbd> Move</span><span><kbd><CornerDownLeft size={11}/></kbd> Open</span><span><kbd>Esc</kbd> Close</span></footer>
-    </div>
-  </dialog>
+    </dialog>
 </div>
 <style>
-  .ask-dialog { position: fixed; inset: min(12dvh, 6rem) 0 auto; margin: 0 auto; width: min(40rem, calc(100% - 1.4rem)); max-width: 100%; max-height: min(76dvh, 46rem); padding: 0; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--bg-surface); color: var(--ink-primary); overflow: clip; }
-  .ask-dialog::backdrop { background: rgb(8 18 13 / 50%); }
-  .ask-shell { display: flex; flex-direction: column; max-height: inherit; }
-  .ask-header, .ask-input, .ask-footer, .ask-option, .ask-footer span { display: flex; align-items: center; }
-  .ask-header { justify-content: space-between; padding: .8rem 1rem .5rem; }
-  .ask-header h2 { font-size: 1.05rem; font-weight: 700; }
-  .ask-close { display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid var(--border-hairline); border-radius: 4px; }
-  .ask-close:hover { background: var(--bg-subtle); }
-  .ask-input { gap: .6rem; padding: .5rem .75rem; margin: 0 1rem .7rem; color: var(--accent-primary); border: 1px solid var(--border-strong); border-radius: 4px; background: var(--bg-canvas); }
-  .ask-input:focus-within { outline: 2px solid var(--accent-primary); outline-offset: 1px; }
-  .ask-input input { border: 0; outline: none; min-width: 0; flex: 1; color: var(--ink-primary); background: transparent; }
-  .ask-scroller { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
-  .ask-help { margin: 0 1rem .6rem; color: var(--ink-secondary); font-size: .75rem; }
-  .ask-match { text-decoration: underline; text-decoration-color: var(--accent-primary); text-underline-offset: .15em; }
-  .ask-alias { display: block; font-size: .78rem; color: var(--ink-secondary); }
-  .ask-message { padding: .75rem 1rem; color: var(--ink-secondary); font-size: .84rem; }
-  .ask-message button { margin-block-start: .4rem; color: var(--accent-primary); text-decoration: underline; }
-  .ask-group { padding-block-end: .35rem; }
-  .ask-group h3 { border-block-start: 1px solid var(--border-hairline); padding: .6rem 1rem .4rem; text-transform: uppercase; color: var(--ink-secondary); font: 500 .64rem var(--font-mono); letter-spacing: .06em; }
-  .ask-option { justify-content: space-between; gap: .7rem; border-inline-start: 3px solid transparent; padding: .5rem .85rem; cursor: pointer; overflow-wrap: anywhere; }
-  .ask-option[aria-selected="true"] { border-color: var(--accent-primary); background: var(--accent-tint); }
-  .ask-option strong { font-size: .86rem; font-weight: 650; }
-  .ask-option p { color: var(--ink-secondary); font-size: .74rem; line-height: 1.45; }
-  .ask-kind { font: .64rem var(--font-mono); color: var(--ink-secondary); flex-shrink: 0; text-transform: capitalize; }
-  .ask-footer { gap: 1rem; padding: .5rem 1rem; border-block-start: 1px solid var(--border-hairline); font-size: .69rem; color: var(--ink-secondary); }
-  .ask-footer span { gap: .25rem; }
-  .ask-footer kbd { display: grid; place-items: center; min-height: 1.1rem; min-width: 1.1rem; padding: .05rem .15rem; border: 1px solid var(--border-hairline); border-radius: 2px; font-size: .6rem; }
-  @media (max-width: 520px) { .ask-dialog { inset-block-start: .7rem; max-height: calc(100dvh - 1.4rem); } .ask-kind { max-width: 5rem; } }
+    .ask-dialog {
+        position: fixed;
+        inset: min(12dvh, 6rem) 0 auto;
+        margin: 0 auto;
+        width: min(40rem, calc(100% - 1.4rem));
+        max-width: 100%;
+        max-height: min(76dvh, 46rem);
+        padding: 0;
+        border-radius: 6px;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-surface);
+        color: var(--ink-primary);
+        overflow: clip;
+    }
+    .ask-dialog::backdrop {
+        background: rgb(8 18 13 / 50%);
+    }
+    .ask-shell {
+        display: flex;
+        flex-direction: column;
+        max-height: inherit;
+    }
+    .ask-header,
+    .ask-input,
+    .ask-footer,
+    .ask-option,
+    .ask-footer span {
+        display: flex;
+        align-items: center;
+    }
+    .ask-header {
+        justify-content: space-between;
+        padding: 0.8rem 1rem 0.5rem;
+    }
+    .ask-header h2 {
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+    .ask-close {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--border-hairline);
+        border-radius: 4px;
+    }
+    .ask-close:hover {
+        background: var(--bg-subtle);
+    }
+    .ask-input {
+        gap: 0.6rem;
+        padding: 0.5rem 0.75rem;
+        margin: 0 1rem 0.7rem;
+        color: var(--accent-primary);
+        border: 1px solid var(--border-strong);
+        border-radius: 4px;
+        background: var(--bg-canvas);
+    }
+    .ask-input:focus-within {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 1px;
+    }
+    .ask-input input {
+        border: 0;
+        outline: none;
+        min-width: 0;
+        flex: 1;
+        color: var(--ink-primary);
+        background: transparent;
+    }
+    .ask-scroller {
+        min-height: 0;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+    }
+    .ask-help {
+        margin: 0 1rem 0.6rem;
+        color: var(--ink-secondary);
+        font-size: 0.75rem;
+    }
+    .ask-match {
+        text-decoration: underline;
+        text-decoration-color: var(--accent-primary);
+        text-underline-offset: 0.15em;
+    }
+    .ask-alias {
+        display: block;
+        font-size: 0.78rem;
+        color: var(--ink-secondary);
+    }
+    .ask-message {
+        padding: 0.75rem 1rem;
+        color: var(--ink-secondary);
+        font-size: 0.84rem;
+    }
+    .ask-message button {
+        margin-block-start: 0.4rem;
+        color: var(--accent-primary);
+        text-decoration: underline;
+    }
+    .ask-group {
+        padding-block-end: 0.35rem;
+    }
+    .ask-group-label {
+        border-block-start: 1px solid var(--border-hairline);
+        padding: 0.6rem 1rem 0.4rem;
+        text-transform: uppercase;
+        color: var(--ink-secondary);
+        font: 500 0.64rem var(--font-mono);
+        letter-spacing: 0.06em;
+    }
+    .ask-option {
+        justify-content: space-between;
+        gap: 0.7rem;
+        border-inline-start: 3px solid transparent;
+        padding: 0.5rem 0.85rem;
+        cursor: pointer;
+        overflow-wrap: anywhere;
+    }
+    .ask-option[aria-selected='true'] {
+        border-color: var(--accent-primary);
+        background: var(--accent-tint);
+    }
+    .ask-option strong {
+        font-size: 0.86rem;
+        font-weight: 650;
+    }
+    .ask-option p {
+        color: var(--ink-secondary);
+        font-size: 0.74rem;
+        line-height: 1.45;
+    }
+    .ask-kind {
+        font: 0.64rem var(--font-mono);
+        color: var(--ink-secondary);
+        flex-shrink: 0;
+        text-transform: capitalize;
+    }
+    .ask-footer {
+        gap: 1rem;
+        padding: 0.5rem 1rem;
+        border-block-start: 1px solid var(--border-hairline);
+        font-size: 0.69rem;
+        color: var(--ink-secondary);
+    }
+    .ask-footer span {
+        gap: 0.25rem;
+    }
+    .ask-footer kbd {
+        display: grid;
+        place-items: center;
+        min-height: 1.1rem;
+        min-width: 1.1rem;
+        padding: 0.05rem 0.15rem;
+        border: 1px solid var(--border-hairline);
+        border-radius: 2px;
+        font-size: 0.6rem;
+    }
+    @media (max-width: 520px) {
+        .ask-dialog {
+            inset-block-start: 0.7rem;
+            max-height: calc(100dvh - 1.4rem);
+        }
+        .ask-kind {
+            max-width: 5rem;
+        }
+    }
 </style>

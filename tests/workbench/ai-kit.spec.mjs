@@ -8,6 +8,8 @@ test('kind, category and search combine, recover from empty results and open dir
     await expect(list.getByRole('link')).toHaveCount(11);
     await page.getByRole('button', { name: 'Coding Skills' }).click();
     await expect(list.getByRole('link')).toHaveCount(4);
+    const selectedId = await page.locator('.kit-detail article:visible').getAttribute('id');
+    await expect(page).toHaveURL(new RegExp('#' + selectedId + '$'));
     await page.getByRole('button', { name: 'Backend & SQL' }).click();
     await expect(list.getByRole('link')).toHaveCount(2);
     await page.getByRole('searchbox', { name: 'Search toolkit' }).fill('pooled GROUP_BY_MODE');
@@ -23,6 +25,17 @@ test('kind, category and search combine, recover from empty results and open dir
     await page.setViewportSize({ width: 375, height: 812 });
     await expect(page.locator('#gem-schema-architect')).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
+});
+
+test('reopening the active prompt through global search retains typed variables', async ({ page }) => {
+    await page.goto('/ai-kit/#gem-schema-architect');
+    const input = page.locator('#gem-schema-architect .variable-fields textarea').first();
+    await input.fill('Local equipment register example');
+    await page.keyboard.press('Control+k');
+    await page.locator('#ask-query').fill('First-principles database');
+    await page.getByRole('option').filter({ hasText: 'First-principles database' }).click();
+    await expect(page.locator('#gem-schema-architect')).toBeFocused();
+    await expect(input).toHaveValue('Local equipment register example');
 });
 
 test('every starter compiles literal values, copies both forms, and downloads valid Markdown and JSON', async ({ page, context }) => {

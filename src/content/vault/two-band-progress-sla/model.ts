@@ -19,7 +19,7 @@ export function delivery(value: number | null, pending: number, max: number = 10
 export function fundingCapacity(received: number, committed: number, currency: string) {
     if (!['USD', 'EUR'].includes(currency))
         throw new RangeError('Choose a funding currency to show capacity.');
-    const percent = committed > 0 ? (received / committed) * 100 : 0;
+    const percent = committed > 0 ? (received / committed) * 100 : null;
     const format = new Intl.NumberFormat('en', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
@@ -27,10 +27,12 @@ export function fundingCapacity(received: number, committed: number, currency: s
     return {
         received: format.format(received) + ' ' + currency,
         committed: format.format(committed) + ' ' + currency,
-        width: Math.min(100, Math.max(0, percent)),
-        over: percent > 100,
+        width: percent === null ? null : Math.min(100, Math.max(0, percent)),
+        over: percent !== null && percent > 100,
         label:
-            percent > 100
+            percent === null
+                ? 'No funding committed. Percentage unavailable.'
+                : percent > 100
                 ? 'Over by ' + Number((percent - 100).toFixed(2)) + '%'
                 : Number(percent.toFixed(2)) + '% received',
     };

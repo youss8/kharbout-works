@@ -1,4 +1,5 @@
 import { mountHeaderPicker } from './header-picker.ts';
+import { demoStorage } from '../../../lib/kernels/demoStorage.ts';
 
 type Role = 'Regional HR' | 'Employee';
 type Region = '' | 'North' | 'East';
@@ -27,7 +28,7 @@ function sanitize(raw: Partial<Filters>, role: Role): Filters {
 }
 function read(key: string) {
     try {
-        return JSON.parse(localStorage.getItem(key) ?? 'null') as unknown;
+        return JSON.parse(demoStorage().getItem(key) ?? 'null') as unknown;
     } catch {
         return null;
     }
@@ -125,7 +126,7 @@ export default function createViews() {
         persist() {
             if (memoryOnly) return;
             try {
-                localStorage.setItem(
+                demoStorage().setItem(
                     stateKey,
                     JSON.stringify({ ...readStates(), [this.role]: this.state }),
                 );
@@ -191,7 +192,7 @@ export default function createViews() {
             this.views = views.slice(-40);
             if (memoryOnly) return;
             try {
-                localStorage.setItem(viewKey, JSON.stringify(this.views));
+                demoStorage().setItem(viewKey, JSON.stringify(this.views));
             } catch {
                 memoryOnly = true;
                 this.notice = 'Browser storage unavailable. Views last for this visit.';

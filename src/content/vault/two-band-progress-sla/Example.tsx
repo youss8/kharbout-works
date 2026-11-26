@@ -159,13 +159,13 @@ export default function Progress() {
                                 <dd>{funding.committed}</dd>
                             </div>
                         </dl>
-                        <div
+                        {funding.width !== null && <div
                             role="progressbar"
                             className="kit-track"
                             aria-label="Funding received"
                             aria-valuemin={0}
                             aria-valuemax={committed}
-                            aria-valuenow={Math.min(committed, received)}
+                            aria-valuenow={Math.max(0, Math.min(committed, received))}
                             aria-valuetext={
                                 funding.received +
                                 ' of ' +
@@ -182,7 +182,7 @@ export default function Progress() {
                                         : 'var(--accent-primary)',
                                 }}
                             />
-                        </div>
+                        </div>}
                         <p aria-live="polite" data-tone={funding.over ? 'warn' : 'neutral'}>
                             {funding.over ? '◐ ' : ''}
                             {funding.label}

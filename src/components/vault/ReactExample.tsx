@@ -1,4 +1,5 @@
 import { Component, lazy, Suspense, type ComponentType, type ReactNode } from 'react';
+import { createRoot } from 'react-dom/client';
 
 const sources = import.meta.glob<{ default: ComponentType }>(
     '../../../.astro/vault-previews/*.tsx',
@@ -30,8 +31,11 @@ class PreviewBoundary extends Component<{ children: ReactNode }, { failed: boole
         return this.props.children;
     }
 }
-export default function ReactExample({ id }: { id: string }) {
-    if (document.documentElement.dataset.engine !== 'react') return null;
+export function mountReactExample(host: HTMLElement, id: string) {
+    createRoot(host).render(<ReactExample id={id} />);
+}
+
+function ReactExample({ id }: { id: string }) {
     const Example = examples[id];
     return (
         <PreviewBoundary>

@@ -6,6 +6,8 @@ export type PromptRequest =
     | { action: 'evaluate'; runs: Run[]; checks: string[] };
 
 export const requestByteLimit = 24_000;
+export const providerByteLimit = requestByteLimit + 2_000;
+export const jsonBytes = (value: unknown): number => new TextEncoder().encode(JSON.stringify(value)).byteLength;
 export const model = 'gpt-5.4-mini-2026-03-17';
 export const outputTokenLimit = 1_800;
 export const maximumChargeMicros = 33_000;

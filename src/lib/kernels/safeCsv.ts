@@ -92,6 +92,18 @@ export function parseRegisterCsv(
         ),
     );
     const columns = headers.map((header) => aliases.get(headerKey(header)));
+    const targets = new Set<string>();
+    headers.forEach((header, index) => {
+        const field = columns[index];
+        const target = field ? 'field:' + field.key : 'metadata:' + header;
+        if (targets.has(target)) {
+            const label = field?.label ?? header;
+            throw new Error(
+                `${file}:1 · More than one column maps to "${label}". Rename or remove one of the columns.`,
+            );
+        }
+        targets.add(target);
+    });
     const warnings: string[] = [];
     const rows = records.flatMap((record, index) => {
         if (record.every((cell) => !cell.trim())) return [];
@@ -111,6 +123,10 @@ export function parseRegisterCsv(
             if (value !== null && field.type === 'date') value = parseRegisterDate(raw);
             if (value !== null && field.type === 'number')
                 value = Number.isFinite(Number(raw)) ? Number(raw) : null;
+            if (typeof value === 'number' && field.min !== undefined && value < field.min)
+                throw new Error(
+                    `${file}:${index + 2} · ${field.label ?? field.key} must be ${field.min} or greater.`,
+                );
             if (raw && value === null && !/^n\/a$/i.test(raw))
                 warn(`Invalid ${field.type} in ${field.label ?? field.key}.`);
             values[field.key] = value;

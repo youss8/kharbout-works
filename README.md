@@ -41,7 +41,11 @@ Astro builds static routes from four Zod-validated content collections. The serv
 
 Each kit runs inside an isolated preview. Choose a viewport, theme, writing direction, grayscale, or preview implementation. The Alpine and React previews use the same source files shown in their code tabs. The Livewire tab includes PHP and Blade. Shiki highlights the files at build time, and the browser fetches a source tab when it opens. Tailwind 4 and locally bundled Plus Jakarta Sans and JetBrains Mono supply the shared design tokens.
 
+Vault previews on Vercel run in a sandbox. Use the embedded Vault preview to persist demo layout and saved-view preferences.
+
 Ctrl+K searches the generated index in English and Arabic. The matcher normalizes Arabic spelling, tries the other keyboard layout, tolerates small typos and gives recently or frequently selected destinations a higher rank on this device.
+
+The case-study diagrams ship as light and dark SVG assets. After changing a Mermaid source, run `npx playwright install chromium` and `node scripts/render-system-diagrams.mjs` to refresh the assets.
 
 ## Vault catalogue
 
@@ -88,6 +92,8 @@ To run the Livewire examples in isolation, create `test-results/livewire-runtime
 php tests/workbench/verify-tier4-contracts.php
 npx playwright test --config tests/workbench/livewire.playwright.config.mjs
 ~~~
+
+Set `PLAYWRIGHT_LIVEWIRE_PORT` to an available loopback port when 4398 is occupied or blocked. Set `PLAYWRIGHT_LIVEWIRE_URL` to use an already prepared local fixture server.
 
 In Vercel, import the GitHub repository with the Astro preset. In Cloudflare Pages, connect the same repository and select the Astro preset. In either provider, use the repository root, Node 24, `npm run build` and output directory `dist`. Set `SITE_URL` to the public origin when a domain is assigned. Source links use `PUBLIC_SOURCE_REF` when set, then the provider’s Git commit SHA, then the public `main` branch. Only portfolio assets are copied into the static export. [Vercel deployment guide](https://docs.astro.build/en/guides/deploy/vercel/) · [Cloudflare Pages deployment guide](https://developers.cloudflare.com/pages/framework-guides/deploy-an-astro-site/)
 
@@ -140,7 +146,7 @@ Open [the development server](http://127.0.0.1:8000). Keep Laravel running and u
 
 Each entry has a **Download source (.zip)** link. Extract the archive and open its README for requirements, setup and a quick check. The archive includes the MIT notice. Individual examples also have a Copy button.
 
-On the home page, press `/` to search the **AI Skills, Gems & Command Vault** by keyword, platform or `#tag`. Open a workflow to fill its prompt variables, compare a simulated before-and-after example and copy the compiled prompt. Add or edit workflows in [the Vault registry](app/Catalogue/WorkflowVault.php). **Example tested** means the built-in example ran in the intended tool or review process.
+On the home page, use the **AI Skills, Gems & Command Vault** search or press Ctrl+K or Cmd+K to find a workflow by keyword, platform or `#tag`. Open it to fill its prompt variables, compare a simulated before-and-after example and copy the compiled prompt before continuing to your assistant. Add or edit workflows in [the Vault registry](app/Catalogue/WorkflowVault.php). **Example tested** means the built-in example ran in the intended tool or review process.
 
 To try the dialog outside Laravel, download it from its entry into an empty folder and extract it there. From the folder containing the extracted `package.json`, run `npm ci` and `npm run dev`, then open the local URL printed by Vite.
 
@@ -150,10 +156,13 @@ The [routes](routes/web.php) send page requests to the [catalogue controller](ap
 
 See the [entry authoring guide](docs/adding-an-entry.md), the [architecture decisions](docs/adr/) and the [security checklist](docs/SECURITY_CHECKLIST.md).
 
+The download route caches ZIPs by the names and contents of their published files. HTTP clients can revalidate a download with its ETag. Catalogue links retain their query and category when the browser loads the HTML fallback.
+
 ### Run the catalogue checks
 
 ```sh
 composer validate --strict
+composer audit --locked --no-dev
 vendor/bin/pint --test
 composer analyse
 composer test
@@ -164,6 +173,10 @@ npm run build:catalogue
 npx playwright install chromium
 npm run test:browser
 ```
+
+ESLint checks the maintained workbench JavaScript, TypeScript, React and Astro source. Prettier also checks changed workbench source and CSS. Published Vault source snapshots keep their original formatting and have separate reuse tests. Local formatting checks compare with HEAD. Set `FORMAT_BASE_REF` to a commit to check a wider change. Run `node scripts/format-workbench-changes.mjs --write` to format those files.
+
+After building both applications, run `npx playwright install chromium firefox webkit` and `npm run test:smoke:browsers`. This runs the same six core flows in all three engines. Use the existing `PLAYWRIGHT_WORKBENCH_URL` and `PLAYWRIGHT_BASE_URL` overrides to test local servers already running.
 
 Playwright starts Laravel on port 8029 and uses the built assets. To test a running native or Docker preview, set `PLAYWRIGHT_BASE_URL` to its local URL. On Linux CI, install the browser with `npx playwright install --with-deps chromium`. To use an existing Chromium executable locally, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE` to its path.
 

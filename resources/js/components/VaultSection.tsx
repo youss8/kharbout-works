@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import { useLocale } from '../i18n';
 import {
@@ -26,45 +26,6 @@ export default function VaultSection({ workflows, onInspect }: VaultSectionProps
         locale,
     );
     const count = new Intl.NumberFormat(locale).format(matches.length);
-
-    useEffect(() => {
-        function focusSearch(event: globalThis.KeyboardEvent) {
-            if (
-                event.key !== '/' ||
-                event.defaultPrevented ||
-                event.isComposing ||
-                event.repeat ||
-                event.altKey ||
-                event.ctrlKey ||
-                event.metaKey ||
-                document.querySelector('dialog:modal')
-            )
-                return;
-
-            const target = event.target;
-            if (
-                target instanceof HTMLElement &&
-                (target.isContentEditable ||
-                    target.closest('input, textarea, select, [role="textbox"], [role="combobox"]'))
-            )
-                return;
-
-            const input = searchInput.current;
-            if (!input) return;
-
-            event.preventDefault();
-            input.focus({ preventScroll: true });
-            input.scrollIntoView({
-                block: 'nearest',
-                behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-                    ? 'instant'
-                    : 'smooth',
-            });
-        }
-
-        document.addEventListener('keydown', focusSearch);
-        return () => document.removeEventListener('keydown', focusSearch);
-    }, []);
 
     function navigateResults(event: KeyboardEvent<HTMLElement>) {
         if (
@@ -142,16 +103,12 @@ export default function VaultSection({ workflows, onInspect }: VaultSectionProps
                             'Stichwort, Plattform, #Tag',
                             'كلمة أو منصة أو وسم',
                         )}
-                        aria-keyshortcuts="/"
                         aria-describedby="vault-search-keys"
                         aria-controls="vault-results"
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
                         autoComplete="off"
                     />
-                    <kbd aria-hidden="true" dir="ltr">
-                        /
-                    </kbd>
                     <p id="vault-search-keys" className="browse-sr-only">
                         {t(
                             'Use the arrow keys to move to results and Enter to open a workflow.',

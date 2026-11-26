@@ -1,4 +1,5 @@
 import { cleanLayout, flushRows, resizePanel } from '../../../lib/kernels/flushRows';
+import { demoStorage } from '../../../lib/kernels/demoStorage.ts';
 
 export const catalog = [
     { panel: 'returns', title: 'Monthly returns', cols: 6, rows: 2, minCols: 4 },
@@ -9,7 +10,7 @@ export const catalog = [
 const storageKey = 'vault.operations-desk.v1';
 function readLayout() {
     try {
-        return cleanLayout(JSON.parse(localStorage.getItem(storageKey) ?? 'null'), catalog);
+        return cleanLayout(JSON.parse(demoStorage().getItem(storageKey) ?? 'null'), catalog);
     } catch {
         return cleanLayout(null, catalog);
     }
@@ -74,7 +75,7 @@ export default function deskGrid() {
             this.layout = this.saved;
             this.editing = false;
             try {
-                localStorage.setItem(storageKey, JSON.stringify(this.saved));
+                demoStorage().setItem(storageKey, JSON.stringify(this.saved));
                 this.notice = 'Layout saved.';
             } catch {
                 this.notice = 'Layout saved for this visit. Browser storage unavailable.';

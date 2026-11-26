@@ -25,17 +25,22 @@ foreach (['app', 'bootstrap/cache', 'storage/framework/views', 'storage/framewor
         mkdir($runtime.'/'.$dir, 0755, true);
     }
 }
-$app = Application::configure(basePath: $runtime)
-    ->withProviders([LivewireServiceProvider::class])
-    ->withExceptions()
-    ->withMiddleware()
-    ->withRouting(using: static function (): void {})
-    ->create();
-$app->make(Kernel::class)->bootstrap();
-set_exception_handler(static function (Throwable $exception): void {
+$fail = static function (Throwable $exception): never {
     fwrite(STDERR, $exception->getMessage().PHP_EOL);
     exit(1);
-});
+};
+try {
+    $app = Application::configure(basePath: $runtime)
+        ->withProviders([LivewireServiceProvider::class])
+        ->withExceptions()
+        ->withMiddleware()
+        ->withRouting(using: static function (): void {})
+        ->create();
+    $app->make(Kernel::class)->bootstrap();
+} catch (Throwable $exception) {
+    $fail($exception);
+}
+set_exception_handler($fail);
 config([
     'app.key' => 'base64:'.base64_encode(random_bytes(32)),
     'cache.default' => 'array',
@@ -107,11 +112,12 @@ foreach (['resources/views', 'public'] as $subpath) {
         }
     }
 }
+$verified = [];
 foreach ([...glob($base.'/*.json'), ...glob($base.'/*/kit.json')] as $path) {
     $entry = json_decode(file_get_contents($path), true, flags: JSON_THROW_ON_ERROR);
     $slug = $entry['id'];
-    if (! preg_match('/^[a-z0-9-]+$/D', $slug)) {
-        throw new RuntimeException('Invalid example identifier');
+    if (! isset($actions[$slug]) || isset($verified[$slug])) {
+        throw new RuntimeException('Unexpected or duplicate example identifier');
     }
     $code = $entry['codeLivewirePhp'] ?? file_get_contents(dirname($path).'/Example.php');
     preg_match('/namespace\s+([^;]+);/', $code, $namespace);
@@ -143,5 +149,10 @@ foreach ([...glob($base.'/*.json'), ...glob($base.'/*/kit.json')] as $path) {
     if ($renderless ? ! array_key_exists(0, $effects['returns'] ?? []) : ($updated['data'] === $snapshot['data'] || empty($effects['html']))) {
         throw new RuntimeException($slug.' failed to update its rendered state');
     }
+    $verified[$slug] = true;
     echo $slug.' mounted and updated via '.($method ?? 'wire:model').PHP_EOL;
+}
+$missing = array_diff_key($actions, $verified);
+if ($missing !== []) {
+    throw new RuntimeException('Examples not verified: '.implode(', ', array_keys($missing)));
 }

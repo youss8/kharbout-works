@@ -51,8 +51,14 @@ for (const engine of ['react', 'alpine']) {
         await page.getByLabel('Received amount').fill('70800');
         await expect(funding).toHaveAttribute('aria-valuetext', /Over by 18%/);
         await page.getByLabel('Committed amount').fill('0');
+        await expect(funding).toHaveCount(0);
+        await expect(page.getByText('70,800.00 USD')).toBeVisible();
+        await expect(page.getByText('No funding committed. Percentage unavailable.')).toBeVisible();
+        await page.getByLabel('Received amount').fill('0');
+        await expect(page.getByText('No funding committed. Percentage unavailable.')).toBeVisible();
+        await expect(funding).toHaveCount(0);
+        await page.getByLabel('Committed amount').fill('60000');
         await expect(funding).toHaveAttribute('aria-valuetext', /0% received/);
-        await expect(funding).toHaveAttribute('aria-valuenow', '0');
         await page.getByLabel('Funding currency').selectOption('');
         await expect(funding).toHaveCount(0);
         await expect(page.getByRole('alert')).toContainText('Choose a funding currency');

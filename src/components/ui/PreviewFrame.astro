@@ -1,85 +1,180 @@
 ---
-interface Props { slug: string; title: string; engine: 'alpine' | 'react' }
+interface Props {
+    slug: string;
+    title: string;
+    engine: 'alpine' | 'react';
+}
 const { slug, title, engine } = Astro.props;
+// Astro dev rejects cross-origin requests for workspace source. The compiled site serves public assets.
+const sandbox = import.meta.env.DEV
+    ? undefined
+    : 'allow-scripts allow-forms allow-downloads allow-popups allow-modals';
 ---
-<vault-frame class="frame-box">
+
+<vault-frame class="frame-box" data-slug={slug}>
     <div class="frame-controls">
         <div role="group" aria-label="Preview viewport">
-            {['Desktop','Tablet','Mobile'].map((size, i) => <button type="button" data-width={['100%','768px','375px'][i]} aria-pressed={i === 0 ? 'true' : 'false'}>{size}</button>)}
+            {['Desktop', 'Tablet', 'Mobile'].map((size, i) => (
+                <button
+                    type="button"
+                    data-width={['100%', '768px', '375px'][i]}
+                    aria-pressed={i === 0 ? 'true' : 'false'}
+                >
+                    {size}
+                </button>
+            ))}
         </div>
         <div role="group" aria-label="Preview appearance">
-            <button data-appearance="light" aria-pressed="true">Light</button><button data-appearance="dark" aria-pressed="false">Dark</button>
+            <button data-appearance="light" aria-pressed="true">
+                Light
+            </button>
+            <button data-appearance="dark" aria-pressed="false">
+                Dark
+            </button>
         </div>
         <div role="group" aria-label="Preview direction">
-            <button data-direction="ltr" aria-pressed="true">LTR</button><button data-direction="rtl" aria-pressed="false">RTL</button>
+            <button data-direction="ltr" aria-pressed="true">
+                LTR
+            </button>
+            <button data-direction="rtl" aria-pressed="false">
+                RTL
+            </button>
         </div>
-        <button type="button" data-grayscale aria-pressed="false">Grayscale</button>
-        <label>Preview implementation
+        <button type="button" data-grayscale aria-pressed="false">
+            Grayscale
+        </button>
+        <label>
+            Preview implementation
             <select data-engine-select>
-                <option value="alpine" selected={engine === 'alpine'}>Alpine.js</option>
-                <option value="react" selected={engine === 'react'}>React</option>
+                <option value="alpine" selected={engine === 'alpine'}>
+                    Alpine.js
+                </option>
+                <option value="react" selected={engine === 'react'}>
+                    React
+                </option>
             </select>
         </label>
     </div>
-    <div class="frame-canvas"><iframe title={title + ' live preview'} loading="lazy" data-src={'/vault/preview/'+slug+'/'}></iframe></div>
+    <div class="frame-canvas">
+        <iframe
+            title={title + ' live preview'}
+            loading="lazy"
+            sandbox={sandbox}
+            data-src={'/vault/preview/' + slug + '/'}
+        ></iframe>
+    </div>
 </vault-frame>
 <script>
+    import { managePreview } from '../../lib/vault-preview-frame';
+
     class VaultFrame extends HTMLElement {
+        disconnect?: () => void;
         connectedCallback() {
             const frame = this.querySelector('iframe')!;
-            let theme = 'light', dir = 'ltr';
-            let observer: ResizeObserver | undefined;
-            const appearance = () => {
-                const root = frame.contentDocument?.documentElement;
-                if (root) { root.dataset.theme = theme; root.dir = dir; }
+            const preview = managePreview(frame, this.dataset.slug!);
+            const lifecycle = new AbortController();
+            const options = { signal: lifecycle.signal };
+            this.disconnect = () => {
+                lifecycle.abort();
+                preview.disconnect();
             };
-            frame.addEventListener('load', () => {
-                appearance();
-                observer?.disconnect();
-                if (!frame.contentDocument?.body) return;
-                observer = new ResizeObserver(() => {
-                    const height = frame.contentDocument?.body.getBoundingClientRect().height;
-                    if (height) frame.style.height = Math.ceil(Math.max(270, Math.min(height + 4, 680))) + 'px';
-                });
-                observer.observe(frame.contentDocument.body);
-            });
-            this.addEventListener('click', event => {
-                const control = event.target instanceof Element && event.target.closest('button');
-                if (!control) return;
-                if (control.hasAttribute('data-grayscale')) {
-                    const enabled = control.getAttribute('aria-pressed') !== 'true';
-                    control.setAttribute('aria-pressed', String(enabled));
-                    frame.style.filter = enabled ? 'grayscale(1)' : '';
-                    return;
-                }
-                control.parentElement!.querySelectorAll('button').forEach(btn => btn.setAttribute('aria-pressed', String(btn === control)));
-                if (control.dataset.width) frame.style.width = control.dataset.width;
-                theme = control.dataset.appearance ?? theme;
-                dir = control.dataset.direction ?? dir;
-                appearance();
-            });
-            const load = () => { if (!frame.hasAttribute('src')) frame.src = frame.dataset.src!; };
-            this.addEventListener('activate-preview', load);
-            this.querySelector('select')!.addEventListener('change', event => {
-                const url = new URL(frame.dataset.src!, location.href);
-                url.searchParams.set('engine', (event.target as HTMLSelectElement).value);
-                url.searchParams.set('theme', theme);
-                url.searchParams.set('dir', dir);
-                frame.src = url.href;
-            });
+            this.addEventListener(
+                'click',
+                (event) => {
+                    const control =
+                        event.target instanceof Element && event.target.closest('button');
+                    if (!control) return;
+                    if (control.hasAttribute('data-grayscale')) {
+                        const enabled = control.getAttribute('aria-pressed') !== 'true';
+                        control.setAttribute('aria-pressed', String(enabled));
+                        frame.style.filter = enabled ? 'grayscale(1)' : '';
+                        return;
+                    }
+                    control
+                        .parentElement!.querySelectorAll('button')
+                        .forEach((btn) =>
+                            btn.setAttribute('aria-pressed', String(btn === control)),
+                        );
+                    if (control.dataset.width) frame.style.width = control.dataset.width;
+                    if (control.dataset.appearance || control.dataset.direction) {
+                        preview.appearance(control.dataset.appearance, control.dataset.direction);
+                    }
+                },
+                options,
+            );
+            const load = () => {
+                if (!frame.hasAttribute('src')) preview.navigate();
+            };
+            this.addEventListener('activate-preview', load, options);
+            this.querySelector('select')!.addEventListener(
+                'change',
+                (event) => {
+                    preview.navigate((event.target as HTMLSelectElement).value);
+                },
+                options,
+            );
             if (!this.closest('[hidden]')) load();
+        }
+        disconnectedCallback() {
+            this.disconnect?.();
         }
     }
     customElements.define('vault-frame', VaultFrame);
 </script>
 <style>
-    .frame-box { display:block; }
-    .frame-controls { display:flex; align-items:center; gap:.55rem 1rem; flex-wrap:wrap; padding:.65rem; border:1px solid var(--border-hairline); }
-    .frame-controls div { display:inline-flex; flex-wrap:wrap; }
-    .frame-controls label { display:flex; align-items:center; flex-wrap:wrap; gap:.4rem; font:500 .76rem var(--font-mono); }
-    .frame-controls select { padding:.32rem; border:1px solid var(--border-strong); background:var(--bg-surface); }
-    .frame-controls button { padding:.32rem .5rem; color:var(--ink-secondary); border:1px solid var(--border-strong); font:500 .76rem var(--font-mono); }
-    .frame-controls button[aria-pressed="true"] { color:var(--accent-primary); background:var(--accent-tint); border-color:var(--accent-primary); }
-    .frame-canvas { padding:clamp(.3rem,1.4vw,1rem); background:var(--bg-subtle); border:1px solid var(--border-hairline); border-block-start:0; }
-    iframe { display:block; width:100%; max-width:100%; height:320px; background:var(--bg-surface); margin-inline:auto; border:0; outline:1px solid var(--border-strong); border-radius:3px; }
+    .frame-box {
+        display: block;
+    }
+    .frame-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem 1rem;
+        flex-wrap: wrap;
+        padding: 0.65rem;
+        border: 1px solid var(--border-hairline);
+    }
+    .frame-controls div {
+        display: inline-flex;
+        flex-wrap: wrap;
+    }
+    .frame-controls label {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font: 500 0.76rem var(--font-mono);
+    }
+    .frame-controls select {
+        padding: 0.32rem;
+        border: 1px solid var(--border-strong);
+        background: var(--bg-surface);
+    }
+    .frame-controls button {
+        padding: 0.32rem 0.5rem;
+        color: var(--ink-secondary);
+        border: 1px solid var(--border-strong);
+        font: 500 0.76rem var(--font-mono);
+    }
+    .frame-controls button[aria-pressed='true'] {
+        color: var(--accent-primary);
+        background: var(--accent-tint);
+        border-color: var(--accent-primary);
+    }
+    .frame-canvas {
+        padding: clamp(0.3rem, 1.4vw, 1rem);
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-hairline);
+        border-block-start: 0;
+    }
+    iframe {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: 320px;
+        background: var(--bg-surface);
+        margin-inline: auto;
+        border: 0;
+        outline: 1px solid var(--border-strong);
+        border-radius: 3px;
+    }
 </style>

@@ -34,12 +34,6 @@
     color: var(--ink);
 }
 
-.vault .browse-search kbd {
-    flex: none;
-    color: var(--accent-ink);
-    font: 0.76rem var(--mono);
-}
-
 .vault .browse-categories button {
     padding: 0.52rem 0.78rem;
     border: 1px solid var(--line);

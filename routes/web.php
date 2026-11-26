@@ -9,6 +9,7 @@ Route::get('/entries/{slug}', [CatalogueController::class, 'show'])
     ->where('slug', '[a-z0-9-]+')
     ->name('catalogue.entry');
 Route::get('/entries/{slug}/download', EntryDownloadController::class)
+    ->withoutMiddleware('web')
     ->where('slug', '[a-z0-9-]+')
     ->name('catalogue.download');
 
