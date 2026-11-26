@@ -87,7 +87,14 @@ test('the entry Back link restores the query, category and results', async ({ pa
     const back = page.getByRole('link', { name: 'Back to catalogue' });
     await expect(back).toHaveAttribute('href', '/?q=url&category=utilities#catalogue');
     await back.click();
-    await expect(page).toHaveURL(/\?q=url&category=utilities#catalogue$/);
+    await expect(page).toHaveURL(
+        (url) =>
+            url.pathname === '/' &&
+            url.hash === '#catalogue' &&
+            url.searchParams.size === 2 &&
+            url.searchParams.get('q') === 'url' &&
+            url.searchParams.get('category') === 'utilities',
+    );
     await expect(page.getByRole('searchbox', { name: 'Search catalogue' })).toHaveValue('url');
     await expect(page.getByRole('link', { name: 'Utilities', exact: true })).toHaveAttribute(
         'aria-current',
