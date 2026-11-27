@@ -1,0 +1,14 @@
+---
+import DeveloperPage from '../../components/layout/DeveloperPage.astro';
+import SqlResultLab from '../../components/tools/SqlResultLab';
+---
+
+<DeveloperPage
+    title="SQL Result Lab"
+    description="Compare two editable queries and find the joined rows responsible for a doubled funding total."
+>
+    <SqlResultLab client:load />
+    <noscript>
+        <p>Enable JavaScript to run the local SQLite worksheet.</p>
+    </noscript>
+</DeveloperPage>

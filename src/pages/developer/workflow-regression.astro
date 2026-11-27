@@ -1,0 +1,20 @@
+---
+import { getEntry } from 'astro:content';
+import DeveloperPage from '../../components/layout/DeveloperPage.astro';
+import WorkflowRegressionLab from '../../components/tools/WorkflowRegressionLab';
+import { workflowRegressionExamples } from '../../lib/tools/workflow-regression';
+import { workflowExample } from '../../lib/tools/workflow-tester';
+
+const template = await getEntry('templates', '03-state-machine-permission-matrix');
+const example = workflowRegressionExamples(workflowExample(template?.body ?? ''));
+---
+
+<DeveloperPage
+    title="Workflow Regression Lab"
+    description="Run the same cases against two approval policies. Inspect each decision and download the suite to run in CI."
+>
+    <WorkflowRegressionLab {example} client:load />
+    <noscript>
+        <p>Enable JavaScript to compare policies and export a test suite on this device.</p>
+    </noscript>
+</DeveloperPage>

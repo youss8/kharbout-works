@@ -5,6 +5,7 @@ import {
     BookOpen,
     Boxes,
     ChevronDown,
+    Code2,
     FileText,
     FlaskConical,
     FolderOpen,
@@ -44,6 +45,12 @@ const sections = [
         slug: 'templates',
         description: 'Architecture and operations documents',
         icon: FolderOpen,
+    },
+    {
+        label: 'Developer tools',
+        slug: 'developer',
+        description: 'Debug requests, write tests and install code',
+        icon: Code2,
     },
     { label: 'Lab', slug: 'lab', description: 'Try the personal prototypes', icon: FlaskConical },
     { label: 'CV', slug: 'cv', description: 'Experience and printable profiles', icon: FileText },
@@ -223,6 +230,7 @@ const href = (slug: string) => '/' + slug + '/';
     if (key && /Macintosh|iPhone|iPad/.test(navigator.userAgent)) key.textContent = '⌘ K';
     const drawer = document.querySelector<HTMLDialogElement>('#mobile-nav');
     const menuButton = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+    const compactNavigation = window.matchMedia('(max-width: 860px)');
     menuButton?.addEventListener('click', () => {
         if (!drawer || drawer.open) return;
         drawer.showModal();
@@ -237,10 +245,9 @@ const href = (slug: string) => '/' + slug + '/';
     });
     drawer?.addEventListener('close', () => {
         menuButton?.setAttribute('aria-expanded', 'false');
-        if (window.matchMedia('(max-width: 780px)').matches)
-            menuButton?.focus({ preventScroll: true });
+        if (compactNavigation.matches) menuButton?.focus({ preventScroll: true });
     });
-    window.matchMedia('(max-width: 780px)').addEventListener('change', (event) => {
+    compactNavigation.addEventListener('change', (event) => {
         if (!event.matches && drawer?.open) drawer.close();
         if (event.matches && resourceMenu) resourceMenu.open = false;
     });
@@ -294,10 +301,11 @@ const href = (slug: string) => '/' + slug + '/';
     .desktop-links {
         display: flex;
         align-items: center;
-        gap: clamp(0.7rem, 2.4vw, 2.5rem);
+        gap: clamp(0.7rem, 2vw, 2.05rem);
     }
     .nav-link {
         cursor: pointer;
+        white-space: nowrap;
         min-height: 44px;
         gap: 0.35rem;
         position: relative;
@@ -511,7 +519,7 @@ const href = (slug: string) => '/' + slug + '/';
             display: none;
         }
     }
-    @media (max-width: 780px) {
+    @media (max-width: 860px) {
         .desktop-links {
             display: none;
         }

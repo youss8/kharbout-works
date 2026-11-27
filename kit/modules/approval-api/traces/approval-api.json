@@ -1,0 +1,270 @@
+{
+    "schemaVersion": 1,
+    "runtime": {
+        "php": "8.4.12",
+        "laravel": "13.44.1",
+        "database": "SQLite"
+    },
+    "scenarios": [
+        {
+            "id": "concurrent-approval",
+            "title": "Two reviewers, one approval",
+            "description": "Two PHP processes send the same observed version to independent Laravel HTTP kernels and share one SQLite database.",
+            "steps": [
+                {
+                    "id": "open",
+                    "title": "Both reviewers see version 1",
+                    "detail": "Each process starts from the same request version. The browser view is replaying a recorded run.",
+                    "source": {
+                        "path": "kit/modules/approval-api/tests/Support/Fixture.php",
+                        "line": 123
+                    },
+                    "data": {
+                        "reference": "REQ-1042",
+                        "state": "in_review",
+                        "version": 1,
+                        "approvalCount": 0,
+                        "auditEventCount": 0,
+                        "events": [],
+                        "receiptCount": 0
+                    }
+                },
+                {
+                    "id": "send",
+                    "title": "Send both approval requests",
+                    "detail": "The two processes wait at a shared start barrier and then submit independently. Their equal key strings belong to different authenticated actors.",
+                    "source": {
+                        "path": "kit/modules/approval-api/scripts/approve-once.php",
+                        "line": 22
+                    },
+                    "data": {
+                        "method": "POST",
+                        "path": "/api/requests/REQ-1042/approve",
+                        "actors": [
+                            "Samira Noor",
+                            "Aaron Lin"
+                        ],
+                        "idempotencyKey": "shared-example-key",
+                        "body": {
+                            "expectedVersion": 1
+                        }
+                    }
+                },
+                {
+                    "id": "authorize",
+                    "title": "Resolve identity on the server",
+                    "detail": "Laravel looks up each actor from the bearer token. The approval action requires a reviewer in the request branch and checks that the actor did not author the request.",
+                    "source": {
+                        "path": "kit/modules/approval-api/app/Http/AuthenticateFixtureActor.php",
+                        "line": 19
+                    },
+                    "data": {
+                        "role": "reviewer",
+                        "branch": "north",
+                        "author": "Casey Reed"
+                    }
+                },
+                {
+                    "id": "commit",
+                    "title": "One update matches version 1",
+                    "detail": "The winner updates the request and writes the approval event and response receipt in the same database transaction.",
+                    "source": {
+                        "path": "kit/modules/approval-api/app/ApproveRequest.php",
+                        "line": 52
+                    },
+                    "data": {
+                        "actor": "Samira Noor",
+                        "status": 200,
+                        "body": {
+                            "reference": "REQ-1042",
+                            "state": "approved",
+                            "version": 2
+                        },
+                        "replayed": false
+                    }
+                },
+                {
+                    "id": "conflict",
+                    "title": "The other request sees version 2",
+                    "detail": "The second update cannot match the version predicate. The response reports the current version and the request remains approved.",
+                    "source": {
+                        "path": "kit/modules/approval-api/app/ApproveRequest.php",
+                        "line": 69
+                    },
+                    "data": {
+                        "actor": "Aaron Lin",
+                        "status": 409,
+                        "body": {
+                            "error": "stale_version",
+                            "reference": "REQ-1042",
+                            "state": "approved",
+                            "version": 2
+                        },
+                        "replayed": false
+                    }
+                },
+                {
+                    "id": "verify",
+                    "title": "Verify the durable result",
+                    "detail": "The test reads the request and its audit records from the database after both processes finish.",
+                    "source": {
+                        "path": "kit/modules/approval-api/tests/ApprovalTest.php",
+                        "line": 20
+                    },
+                    "data": {
+                        "reference": "REQ-1042",
+                        "state": "approved",
+                        "version": 2,
+                        "approvalCount": 1,
+                        "auditEventCount": 1,
+                        "events": [
+                            {
+                                "actor": "Samira Noor",
+                                "type": "approved",
+                                "fromVersion": 1,
+                                "toVersion": 2
+                            }
+                        ],
+                        "receiptCount": 2
+                    }
+                }
+            ],
+            "result": {
+                "reference": "REQ-1042",
+                "state": "approved",
+                "version": 2,
+                "approvalCount": 1,
+                "auditEventCount": 1,
+                "events": [
+                    {
+                        "actor": "Samira Noor",
+                        "type": "approved",
+                        "fromVersion": 1,
+                        "toVersion": 2
+                    }
+                ],
+                "receiptCount": 2
+            }
+        },
+        {
+            "id": "lost-response-retry",
+            "title": "A lost response, one approval",
+            "description": "The first call commits. A second Laravel application instance retries against the same database with the same actor, key and payload.",
+            "steps": [
+                {
+                    "id": "open",
+                    "title": "The reviewer sees version 1",
+                    "detail": "The retried request carries that same observed version, even after the first approval commits.",
+                    "source": {
+                        "path": "kit/modules/approval-api/tests/Support/Fixture.php",
+                        "line": 103
+                    },
+                    "data": {
+                        "reference": "REQ-1042",
+                        "state": "in_review",
+                        "version": 1,
+                        "approvalCount": 0,
+                        "auditEventCount": 0,
+                        "events": [],
+                        "receiptCount": 0
+                    }
+                },
+                {
+                    "id": "send",
+                    "title": "Submit the first request",
+                    "detail": "The caller identifies this operation with an idempotency key. The server derives the actor from the bearer token.",
+                    "source": {
+                        "path": "kit/modules/approval-api/app/Http/ApproveRequestController.php",
+                        "line": 17
+                    },
+                    "data": {
+                        "method": "POST",
+                        "path": "/api/requests/REQ-1042/approve",
+                        "actor": "Samira Noor",
+                        "idempotencyKey": "retry-key",
+                        "body": {
+                            "expectedVersion": 1
+                        }
+                    }
+                },
+                {
+                    "id": "commit",
+                    "title": "The database commits before the response is lost",
+                    "detail": "The test captures the first response after commit. The replay treats that response as lost to the client.",
+                    "source": {
+                        "path": "kit/modules/approval-api/app/ApproveRequest.php",
+                        "line": 76
+                    },
+                    "data": {
+                        "status": 200,
+                        "body": {
+                            "reference": "REQ-1042",
+                            "state": "approved",
+                            "version": 2
+                        },
+                        "replayed": false
+                    }
+                },
+                {
+                    "id": "retry",
+                    "title": "Retry with the same actor and key",
+                    "detail": "The matching actor, key and request fingerprint yield the stored response. The replay header identifies the reuse.",
+                    "source": {
+                        "path": "kit/modules/approval-api/app/ApproveRequest.php",
+                        "line": 45
+                    },
+                    "data": {
+                        "status": 200,
+                        "body": {
+                            "reference": "REQ-1042",
+                            "state": "approved",
+                            "version": 2
+                        },
+                        "replayed": true
+                    }
+                },
+                {
+                    "id": "verify",
+                    "title": "Verify one approval and one audit event",
+                    "detail": "The durable state and event count are identical before and after the retry.",
+                    "source": {
+                        "path": "kit/modules/approval-api/tests/ApprovalTest.php",
+                        "line": 39
+                    },
+                    "data": {
+                        "reference": "REQ-1042",
+                        "state": "approved",
+                        "version": 2,
+                        "approvalCount": 1,
+                        "auditEventCount": 1,
+                        "events": [
+                            {
+                                "actor": "Samira Noor",
+                                "type": "approved",
+                                "fromVersion": 1,
+                                "toVersion": 2
+                            }
+                        ],
+                        "receiptCount": 1
+                    }
+                }
+            ],
+            "result": {
+                "reference": "REQ-1042",
+                "state": "approved",
+                "version": 2,
+                "approvalCount": 1,
+                "auditEventCount": 1,
+                "events": [
+                    {
+                        "actor": "Samira Noor",
+                        "type": "approved",
+                        "fromVersion": 1,
+                        "toVersion": 2
+                    }
+                ],
+                "receiptCount": 1
+            }
+        }
+    ]
+}

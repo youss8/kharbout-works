@@ -18,6 +18,7 @@ import {
     Workflow,
 } from 'lucide-react';
 import FeaturedWorkflows from '../components/demos/FeaturedWorkflows';
+import RequestDebugger from '../components/tools/RequestDebugger';
 import { leaveDesk } from '../components/demos/hr-alpine.js';
 import { kpiCockpit } from '../components/demos/portfolio-alpine.js';
 import SystemExplorer from '../components/home/SystemExplorer.astro';
@@ -26,7 +27,9 @@ import { siteName } from '../data/brand';
 import { skillGuides } from '../data/claude-skills';
 import { labProjects } from '../data/lab';
 import { profile } from '../data/profile';
+import { approvalScenarios } from '../lib/approval-trace';
 import { sponsorScenario, timesheetScenario } from '../lib/operations-scenarios';
+import '../styles/developer.css';
 import '../styles/home-assembly.css';
 
 const [systems, vault, blueprints, templates] = await Promise.all([
@@ -45,6 +48,18 @@ const pooledRate = kpi.show(pooled.actual);
 kpi.method = 'naive';
 const portfolio = '/systems/03-portfolio-kpi-engine/';
 const hr = '/systems/02-hr-lifecycle-crm/';
+const homepageTrace = approvalScenarios
+    .filter((scenario) => scenario.id === 'concurrent-approval')
+    .map((scenario) => ({
+        ...scenario,
+        steps: scenario.steps.map(({ id, title, source }) => ({
+            id,
+            title,
+            source,
+            detail: '',
+            data: null,
+        })),
+    }));
 const demos = [
     {
         title: 'KPI cockpit',
@@ -145,8 +160,8 @@ const resources = [
                     operations.
                 </p>
                 <nav aria-label="Start exploring">
-                    <a class="ha-replay-link" href={sponsorScenario}>
-                        Run the scenario <ArrowRight size={15} aria-hidden="true" />
+                    <a class="ha-replay-link" href="#approval-debugger">
+                        Replay the approval race <ArrowRight size={15} aria-hidden="true" />
                     </a>
                     <a href="/cv/">
                         Read my CV <ArrowUpRight size={15} aria-hidden="true" />
@@ -160,6 +175,10 @@ const resources = [
 
         <SystemExplorer />
 
+        <section id="approval-debugger" aria-label="Developer request debugger">
+            <RequestDebugger scenarios={homepageTrace} compact client:visible />
+        </section>
+
         <section class="ha-workflow-section" aria-labelledby="ha-workflows">
             <div class="ha-workflow-intro">
                 <h2 id="ha-workflows">
@@ -168,6 +187,11 @@ const resources = [
                 <p>
                     Change an input and watch the calculation update. Open the full demo to trace
                     the rule behind the result.
+                </p>
+                <p>
+                    <a href={sponsorScenario}>
+                        Run the scenario <span aria-hidden="true">↗</span>
+                    </a>
                 </p>
                 <p>
                     <a href={timesheetScenario}>

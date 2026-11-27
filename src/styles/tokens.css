@@ -180,7 +180,7 @@ table {
     position: fixed;
     inset-block-start: 0.5rem;
     inset-inline-start: 0.5rem;
-    transform: translateY(-160%);
+    clip-path: inset(50%);
     padding: 0.65rem 1rem;
     z-index: 99;
     background: var(--bg-surface);
@@ -188,7 +188,7 @@ table {
     color: var(--ink-primary);
 }
 .skip-link:focus {
-    transform: translateY(0);
+    clip-path: none;
 }
 .status-badge {
     --tone: var(--ink-secondary);

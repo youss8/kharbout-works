@@ -108,7 +108,8 @@ test('mobile navigation works with scripts turned off', async ({ browser }, info
         await page.goto('/templates/');
         await page.locator('noscript summary').filter({ hasText: 'Navigation' }).click();
         const links = page.getByRole('navigation', { name: 'Mobile navigation' });
-        await expect(links.getByRole('link')).toHaveCount(7);
+        await expect(links.getByRole('link')).toHaveCount(8);
+        await expect(links.getByRole('link', { name: 'Developer tools' })).toBeVisible();
         await links.getByRole('link', { name: 'Vault' }).click();
         await expect(page).toHaveURL(/\/vault\/$/);
     } finally {

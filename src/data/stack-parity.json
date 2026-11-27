@@ -1,0 +1,35 @@
+{
+    "fixtureVersion": 1,
+    "approval": {
+        "target": "Approved",
+        "signed": true,
+        "budget": true,
+        "reason": "Agreement reviewed"
+    },
+    "expected": {
+        "initial": {
+            "stage": "Review",
+            "version": 1,
+            "message": "",
+            "event": null
+        },
+        "stale": {
+            "stage": "Review",
+            "version": 2,
+            "message": "Record changed. Reload the latest version.",
+            "event": null
+        },
+        "fresh": {
+            "stage": "Approved",
+            "version": 3,
+            "message": "Moved to Approved · Agreement reviewed",
+            "event": {
+                "type": "status_changed",
+                "from": "Review",
+                "to": "Approved",
+                "version": 3,
+                "reason": "Agreement reviewed"
+            }
+        }
+    }
+}

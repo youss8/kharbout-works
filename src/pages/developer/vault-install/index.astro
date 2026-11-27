@@ -1,0 +1,158 @@
+---
+import { Download } from 'lucide-react';
+import DeveloperPage from '../../../components/layout/DeveloperPage.astro';
+import { installableVaultKits, vaultKitDependencies } from '../../../lib/tools/vault-install';
+---
+
+<DeveloperPage
+    title="Installable Vault Kits"
+    description="Open a kit, review the exact source paths, and run the React example and smoke test in a clean project."
+>
+    <div class="install-kits">
+        {installableVaultKits.map((kit) => (
+            <section class="install-kit" aria-labelledby={`install-${kit.id}`}>
+                <header class="install-kit-heading">
+                    <h2 id={`install-${kit.id}`} class="dev-section-title">
+                        {kit.title}
+                    </h2>
+                    <p>{kit.summary}</p>
+                </header>
+                <div class="install-kit-content">
+                    <details>
+                        <summary>Preview files and dependencies</summary>
+                        <ul class="install-kit-files">
+                            {Object.keys(kit.files).map((path) => (
+                                <li>
+                                    <code>{path}</code>
+                                </li>
+                            ))}
+                        </ul>
+                        <dl class="install-kit-deps">
+                            <dt>React source</dt>
+                            <dd>{vaultKitDependencies.runtime.join(', ')}</dd>
+                            <dt>Standalone build</dt>
+                            <dd>{vaultKitDependencies.development.join(', ')} · Node.js 24</dd>
+                        </dl>
+                    </details>
+                    <div class="dev-actions">
+                        <a
+                            class="dev-button dev-button--primary"
+                            href={`./${kit.id}.zip`}
+                            download={`kharbout-vault-${kit.id}.zip`}
+                        >
+                            <Download size={16} aria-hidden="true" /> Download project
+                        </a>
+                        <a class="dev-button" href={kit.preview}>
+                            Try the component
+                        </a>
+                    </div>
+                    <p>Extract the project and run its smoke test before starting Vite.</p>
+                    <pre
+                        class="dev-code"
+                        tabindex="0"
+                    ><code>{'npm ci\nnpm test\nnpm run dev'}</code></pre>
+                    <details class="install-kit-host">
+                        <summary>Install in an existing React project</summary>
+                        <p>
+                            Preview the paths from the extracted folder. The installer requires an
+                            unused destination for each file.
+                        </p>
+                        <pre
+                            class="dev-code"
+                            tabindex="0"
+                        ><code>{'node install.mjs /path/to/react-project\nnode install.mjs /path/to/react-project --apply'}</code></pre>
+                        <p>
+                            For a shadcn project, download the registry item and run{' '}
+                            <code>{`npx shadcn add ./${kit.id}.json`}</code> from that project.
+                        </p>
+                        <a
+                            class="install-kit-registry"
+                            href={`./${kit.id}.json`}
+                            download={`${kit.id}.json`}
+                        >
+                            Download shadcn registry item
+                        </a>
+                    </details>
+                </div>
+            </section>
+        ))}
+    </div>
+</DeveloperPage>
+
+<style>
+    .install-kits {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: clamp(0.85rem, 2.5vw, 1.75rem);
+    }
+    .install-kit {
+        min-inline-size: 0;
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    .install-kit-heading,
+    .install-kit-content {
+        padding: clamp(0.85rem, 2.5vw, 1.65rem);
+    }
+    .install-kit-heading {
+        border-block-end: 1px solid var(--border-hairline);
+    }
+    .install-kit :is(p, dd) {
+        margin: 0;
+        color: var(--ink-secondary);
+    }
+    .install-kit-content > p {
+        margin-block: 0.9rem 0.45rem;
+    }
+    .install-kit-content > details {
+        border: 1px solid var(--border-hairline);
+        padding-inline: 0.75rem;
+    }
+    .install-kit summary {
+        align-content: center;
+        min-block-size: 44px;
+        font-size: 0.9rem;
+        font-weight: 650;
+        cursor: pointer;
+    }
+    .install-kit-files {
+        margin: 0.35rem 0 0.6rem;
+        padding-inline-start: 1.15rem;
+        color: var(--ink-secondary);
+        font-size: 0.8rem;
+        overflow-wrap: anywhere;
+    }
+    .install-kit-deps {
+        display: grid;
+        grid-template-columns: minmax(6rem, 0.48fr) minmax(0, 1fr);
+        gap: 0.3rem 0.65rem;
+        margin-block: 0.55rem 0.85rem;
+        font-size: 0.82rem;
+    }
+    .install-kit-deps dt {
+        font-weight: 650;
+    }
+    .install-kit-host {
+        margin-block-start: 0.85rem;
+    }
+    .install-kit-host .dev-code {
+        margin-block: 0.6rem;
+    }
+    .install-kit-host p {
+        font-size: 0.87rem;
+        overflow-wrap: anywhere;
+    }
+    .install-kit-registry {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: 44px;
+        color: var(--accent-primary);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+    @media (max-width: 770px) {
+        .install-kits {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+</style>

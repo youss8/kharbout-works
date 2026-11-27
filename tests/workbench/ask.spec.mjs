@@ -55,6 +55,13 @@ test('command index covers each public collection and resolves internal anchors'
         '/templates/kpi-report-check/',
         '/vault/recipes/approval-workflow/',
         '/ai-kit/prompt-evidence/',
+        '/developer/',
+        '/developer/request-trace/',
+        '/developer/workflow-regression/',
+        '/developer/csv-test-packs/',
+        '/developer/vault-install/',
+        '/developer/sql/',
+        '/developer/stack-parity/',
     ];
     expect(entries.filter(({ kind }) => kind === 'Page').map(({ href }) => href)).toEqual(
         expect.arrayContaining(additions),

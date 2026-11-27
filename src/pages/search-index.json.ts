@@ -5,6 +5,7 @@ import { vaultAliases } from '../data/command-index';
 import { siteName } from '../data/brand';
 import { profile } from '../data/profile';
 import { labProjects } from '../data/lab';
+import { developerPath, developerTools } from '../data/developer-tools';
 import { sandboxTitles } from '../data/sandbox-directory';
 import { skillGuides, skillPath } from '../data/claude-skills';
 import { promptBuilderEnabled } from '../lib/prompt-builder/release';
@@ -77,6 +78,12 @@ const pages = [
         'Prompt Evidence',
         'Compare recorded results for original and structured prompts in English and Arabic.',
     ],
+    [
+        '/developer/',
+        'Developer tools',
+        'Debug APIs, test workflows, build fixtures, compare SQL and install code.',
+    ],
+    ...developerTools.map((tool) => [developerPath(tool.id), tool.title, tool.description]),
 ];
 const pageAliases: Record<string, string[]> = {
     '/': [siteName, 'الصفحة الرئيسية', 'نبذة عن يوسف'],
@@ -93,6 +100,10 @@ const pageAliases: Record<string, string[]> = {
     '/templates/kpi-report-check/': ['CSV preflight', 'data validation', 'تدقيق مؤشرات الأداء'],
     '/vault/recipes/approval-workflow/': ['React starter', 'Vault recipe', 'قالب الموافقة'],
     '/ai-kit/prompt-evidence/': ['prompt benchmarks', 'model scores', 'تقييم الموجهات'],
+    '/developer/': ['programmer tools', 'developer workbench', 'أدوات المطور'],
+    ...Object.fromEntries(
+        developerTools.map((tool) => [developerPath(tool.id), [...tool.keywords]]),
+    ),
 };
 const sourceAliases: Record<string, string[]> = {
     'SYS-01': ['IT', 'helpdesk', 'الدعم الفني', 'إدارة الأصول'],

@@ -1,0 +1,35 @@
+{
+    "name": "kharbout-works/approval-api",
+    "description": "A small Laravel approval API with a reproducible concurrency and retry example.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "ext-pdo_sqlite": "*",
+        "laravel/framework": "^13.0"
+    },
+    "require-dev": {
+        "pestphp/pest": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "ApprovalApi\\": "app/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ApprovalApiTests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true
+    },
+    "scripts": {
+        "test": "@php vendor/pestphp/pest/bin/pest",
+        "capture": "@php scripts/capture-traces.php"
+    }
+}

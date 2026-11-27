@@ -1,0 +1,44 @@
+---
+import SearchExample from '../../../../kit/components/search-dialog/Example';
+import DeveloperPage from '../../../components/layout/DeveloperPage.astro';
+---
+
+<DeveloperPage
+    title="Keyboard search dialog"
+    description="Search for harbour, choose a reading-list result with Enter, or escape to return focus to the trigger."
+>
+    <section class="install-search-example" aria-label="Reading list search">
+        <SearchExample client:only="react" />
+        <noscript>
+            <p>Enable JavaScript to try the search dialog.</p>
+        </noscript>
+    </section>
+    <div class="dev-actions">
+        <a class="dev-button" href="/developer/vault-install/">
+            Open install instructions
+        </a>
+        <a
+            class="dev-button dev-button--primary"
+            href="/developer/vault-install/search-dialog.zip"
+            download="kharbout-vault-search-dialog.zip"
+        >
+            Download project
+        </a>
+    </div>
+</DeveloperPage>
+
+<style>
+    .install-search-example {
+        max-inline-size: 34rem;
+        padding: clamp(0.9rem, 3vw, 1.65rem);
+        border: 1px solid var(--border-strong);
+        background: var(--bg-surface);
+    }
+
+    .install-search-example :global(.recipe-demo > button) {
+        min-block-size: 44px;
+        border: 1px solid var(--border-strong);
+        padding: 0.5rem 0.75rem;
+        font: 650 0.93rem/1.4 var(--font-sans);
+    }
+</style>

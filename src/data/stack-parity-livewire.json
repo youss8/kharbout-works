@@ -1,0 +1,35 @@
+{
+    "recordedOn": "2026-11-27",
+    "phpVersion": "8.4.12",
+    "laravelVersion": "v13.44.1",
+    "livewireVersion": "v4.4.10",
+    "fixtureSha256": "2c3f6e1482e67d7fd16f091d82abac3c7ac6b50867fea99875f6cb550e416dd9",
+    "componentSha256": "2831168d37450a6107f924fc6865bfa410a54c36682cceead3d7bc1325edce54",
+    "viewSha256": "caf14c0ec04591b7d5027ba7f4bb4228ee1bcf914c000f041135cfac08e3a710",
+    "trace": {
+        "initial": {
+            "stage": "Review",
+            "version": 1,
+            "message": "",
+            "event": null
+        },
+        "stale": {
+            "stage": "Review",
+            "version": 2,
+            "message": "Record changed. Reload the latest version.",
+            "event": null
+        },
+        "fresh": {
+            "stage": "Approved",
+            "version": 3,
+            "message": "Moved to Approved · Agreement reviewed",
+            "event": {
+                "type": "status_changed",
+                "from": "Review",
+                "to": "Approved",
+                "version": 3,
+                "reason": "Agreement reviewed"
+            }
+        }
+    }
+}

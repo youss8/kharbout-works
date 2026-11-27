@@ -1,0 +1,10 @@
+{
+    "original": [
+        { "project": "Field Training", "funding": 2000 },
+        { "project": "Water Access", "funding": 500 }
+    ],
+    "corrected": [
+        { "project": "Field Training", "funding": 1000 },
+        { "project": "Water Access", "funding": 500 }
+    ]
+}
