@@ -9,6 +9,7 @@ import {
     type WorkflowDecision,
     type WorkflowRequest,
 } from '../../lib/tools/workflow-tester';
+import { useClientReady } from '../../lib/use-client-ready';
 import './workflow-tester.css';
 
 interface WorkflowCase {
@@ -79,6 +80,7 @@ function download(name: string, body: string, mime: string) {
 }
 
 export default function WorkflowTester({ example }: { example: WorkflowContract }) {
+    const ready = useClientReady();
     const [contract, setContract] = useState(example);
     const [source, setSource] = useState(() => json(example));
     const [request, setRequest] = useState(sampleRequest);
@@ -167,7 +169,7 @@ export default function WorkflowTester({ example }: { example: WorkflowContract 
     }
 
     return (
-        <div className="workflow-tester">
+        <div className="workflow-tester" inert={!ready}>
             <div className="workflow-tester__desk">
                 <section aria-labelledby="workflow-request">
                     <h2 id="workflow-request">Try a transition</h2>

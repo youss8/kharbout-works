@@ -35,7 +35,7 @@ test('the reusable approval desk blocks invalid actions and records successful r
     await page.setViewportSize({ width: 320, height: 800 });
     await page.goto('/vault/recipes/approval-workflow/');
     const desk = page.getByRole('region', { name: 'Approval workflow demo' });
-    await expect(page.locator('astro-island').filter({ has: desk })).not.toHaveAttribute('ssr', '');
+    await expect(page.locator('.approval-recipe')).not.toHaveAttribute('inert', '');
 
     const record = desk.getByLabel('In-scope request');
     await record.selectOption('REQ-1043');

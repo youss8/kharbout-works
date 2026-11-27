@@ -3,10 +3,57 @@ import { expect, test } from '@playwright/test';
 
 const route = '/templates/workflow-tester/';
 
+async function openTester(page) {
+    await page.goto(route);
+    await expect(page.locator('.workflow-tester')).not.toHaveAttribute('inert', '');
+}
+
+test('the server-rendered tester waits for React before accepting keyboard input', async ({
+    page,
+}) => {
+    let releaseIsland = () => {};
+    let markIslandRequested = () => {};
+    const islandRequested = new Promise((resolve) => {
+        markIslandRequested = resolve;
+    });
+    const waitingForRelease = new Promise((resolve) => {
+        releaseIsland = resolve;
+    });
+    await page.route(
+        /\/(?:_astro\/WorkflowTester\.[^/]+\.js|src\/components\/tools\/WorkflowTester\.tsx)(?:\?.*)?$/u,
+        async (request) => {
+            markIslandRequested();
+            await waitingForRelease;
+            await request.fallback();
+        },
+    );
+
+    try {
+        await page.goto(route, { waitUntil: 'commit' });
+        await islandRequested;
+        await expect(page.locator('.workflow-tester')).toHaveAttribute('inert', '');
+        const canFocus = await page.locator('#workflow-json').evaluate((editor) => {
+            editor.focus();
+            return document.activeElement === editor;
+        });
+        expect(canFocus).toBe(false);
+    } finally {
+        releaseIsland();
+    }
+
+    await expect(page.locator('.workflow-tester')).not.toHaveAttribute('inert', '');
+    const actor = page.getByRole('textbox', { name: 'Actor identifier' });
+    await actor.fill('amir');
+    await page.getByRole('button', { name: 'Test transition', exact: true }).press('Enter');
+    const decision = page.getByRole('region', { name: 'Decision' });
+    await expect(decision.getByRole('heading', { name: 'Blocked' })).toBeVisible();
+    await expect(decision.getByText(/reviewer differs from the author/u).first()).toBeVisible();
+});
+
 test('the approval example checks three decisions and exports its acceptance cases', async ({
     page,
 }) => {
-    await page.goto(route);
+    await openTester(page);
     await expect(page.getByRole('heading', { name: 'Workflow & Permission Tester' })).toBeVisible();
     const decision = page.getByRole('region', { name: 'Decision' });
     const run = page.getByRole('button', { name: 'Test transition', exact: true });
@@ -37,7 +84,7 @@ test('the approval example checks three decisions and exports its acceptance cas
 test('invalid edits keep the active contract and an imported contract can be evaluated and downloaded', async ({
     page,
 }) => {
-    await page.goto(route);
+    await openTester(page);
     const jsonEditor = page.getByRole('textbox', { name: 'Contract JSON' });
     await jsonEditor.fill('invalid');
     await page.getByRole('button', { name: 'Validate and use contract' }).click();
@@ -90,7 +137,7 @@ test('the transition map remains operable by keyboard on a narrow right-to-left 
 }) => {
     await page.setViewportSize({ width: 320, height: 780 });
     await page.emulateMedia({ reducedMotion: 'reduce', colorScheme: 'dark' });
-    await page.goto(route);
+    await openTester(page);
     await page.evaluate(() => {
         document.documentElement.dir = 'rtl';
         document.documentElement.dataset.theme = 'dark';

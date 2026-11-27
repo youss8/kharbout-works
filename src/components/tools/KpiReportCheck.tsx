@@ -10,6 +10,7 @@ import {
     validateKpiMapping,
 } from '../../lib/tools/kpi-report';
 import type { KpiDataset, KpiMapping, KpiReport } from '../../lib/tools/kpi-report';
+import { useClientReady } from '../../lib/use-client-ready';
 import './kpi-report-check.css';
 
 const pageSize = 25;
@@ -188,6 +189,7 @@ function ReportResults({ report }: { report: KpiReport }) {
 }
 
 export default function KpiReportCheck({ sample }: { sample: string }) {
+    const ready = useClientReady();
     const [draft, setDraft] = useState(sample);
     const [dataset, setDataset] = useState<KpiDataset | null>(() => readKpiCsv(sample));
     const [mapping, setMapping] = useState<KpiMapping | null>(() => dataset?.mapping ?? null);
@@ -246,7 +248,7 @@ export default function KpiReportCheck({ sample }: { sample: string }) {
     }
 
     return (
-        <div className="kpi-check">
+        <div className="kpi-check" inert={!ready}>
             <section className="kpi-check-panel" aria-labelledby="kpi-check-source-title">
                 <header className="kpi-check-panel-title">
                     <h2 id="kpi-check-source-title">Source CSV</h2>

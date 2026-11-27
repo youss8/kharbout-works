@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState, useSyncExternalStore } from 'react';
 import {
     actors,
     availableActions,
@@ -11,6 +11,9 @@ import {
 } from './workflow.mjs';
 
 const initial = { records: requests, result: '', committed: false };
+const subscribeToReadiness = () => () => undefined;
+const clientReady = () => true;
+const serverReady = () => false;
 
 function approvalReducer(state, event) {
     if (event.type === 'reset') return initial;
@@ -67,6 +70,7 @@ function PermissionMatrix() {
 }
 
 export default function ApprovalDesk() {
+    const ready = useSyncExternalStore(subscribeToReadiness, clientReady, serverReady);
     const [state, dispatch] = useReducer(approvalReducer, initial);
     const [actorId, setActorId] = useState('samira');
     const [recordId, setRecordId] = useState('REQ-1042');
@@ -109,7 +113,7 @@ export default function ApprovalDesk() {
     }
 
     return (
-        <section className="approval-recipe" aria-label="Approval workflow demo">
+        <section className="approval-recipe" aria-label="Approval workflow demo" inert={!ready}>
             <div className="approval-toolbar">
                 <label>
                     Active actor

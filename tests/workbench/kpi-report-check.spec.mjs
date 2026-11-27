@@ -5,9 +5,7 @@ const route = '/templates/kpi-report-check/';
 
 async function openReport(page) {
     await page.goto(route);
-    await page
-        .locator('astro-island[component-url*="KpiReportCheck"]:not([ssr])')
-        .waitFor({ state: 'attached' });
+    await expect(page.locator('.kpi-check')).not.toHaveAttribute('inert');
 }
 
 test('check a portfolio KPI sample, map a pasted report, and download all periods', async ({
