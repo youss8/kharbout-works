@@ -1,0 +1,29 @@
+---
+import { Download } from 'lucide-react';
+import DeveloperPage from '../../components/layout/DeveloperPage.astro';
+import StackParity from '../../components/tools/StackParity';
+---
+
+<DeveloperPage
+    title="Stack Parity Lab"
+    description="Run the React lifecycle model against the same approval fixture used to verify the Livewire implementation."
+>
+    <div class="dev-actions" slot="actions">
+        <a class="dev-button" href="/developer/stack-parity.zip" download>
+            <Download size={16} aria-hidden="true" /> Download fixture and checks
+        </a>
+        <a class="dev-button" href="/vault/source/status-gate-lifecycle/react/">
+            React source
+        </a>
+        <a class="dev-button" href="/vault/source/status-gate-lifecycle/livewire/">
+            Livewire source
+        </a>
+    </div>
+    <StackParity client:load />
+    <noscript>
+        <p>
+            Enable JavaScript to run the React model. The recorded Livewire trace is shown below the
+            controls.
+        </p>
+    </noscript>
+</DeveloperPage>

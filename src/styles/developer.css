@@ -1,0 +1,113 @@
+.dev-shell {
+    margin-inline: auto;
+    max-inline-size: 1440px;
+    padding: clamp(2rem, 5.5vw, 5rem) var(--page-gutter) clamp(3rem, 7vw, 6rem);
+}
+
+.dev-heading {
+    margin-block-end: clamp(1.5rem, 4vw, 3rem);
+}
+
+.dev-heading h1,
+.dev-intro h1 {
+    margin-block: 0.4rem 0.55rem;
+    color: var(--ink-primary);
+    font: 720 clamp(2.25rem, 6vw, 5.2rem) / 0.98 var(--font-display);
+    letter-spacing: -0.067em;
+    overflow-wrap: anywhere;
+}
+
+.dev-heading p,
+.dev-intro p {
+    margin-block: 0.7rem 0;
+    max-inline-size: 65ch;
+    color: var(--ink-secondary);
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+    line-height: 1.55;
+}
+
+.dev-back {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    gap: 0.52rem;
+    color: var(--accent-primary);
+    font-size: 0.9rem;
+    font-weight: 650;
+}
+
+.dev-back:dir(rtl) svg {
+    transform: scaleX(-1);
+}
+
+.dev-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem 0.8rem;
+    margin-block-start: 1.25rem;
+}
+
+.dev-button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-block-size: 44px;
+    gap: 0.55rem;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--ink-primary);
+    font: 650 0.92rem/1.25 var(--font-sans);
+    text-align: start;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.dev-button:hover {
+    background: var(--bg-subtle);
+}
+
+.dev-button:disabled {
+    opacity: 0.65;
+    cursor: default;
+}
+
+.dev-button--primary {
+    border-color: var(--accent-primary);
+    background: var(--accent-primary);
+    color: var(--bg-surface);
+}
+
+.dev-button--primary:hover {
+    border-color: var(--accent-hover);
+    background: var(--accent-hover);
+}
+
+.dev-section-title {
+    margin-block: 0 0.65rem;
+    font: 700 clamp(1.45rem, 3.6vw, 2.4rem) / 1.03 var(--font-display);
+    letter-spacing: -0.045em;
+}
+
+.dev-code,
+.dev-scroll {
+    overflow: auto;
+    max-inline-size: 100%;
+}
+
+.dev-code {
+    padding: 0.85rem 1rem;
+    margin: 0;
+    background: var(--bg-subtle);
+    color: var(--ink-primary);
+    font: 400 0.82rem/1.65 var(--font-mono);
+    direction: ltr;
+    text-align: left;
+    tab-size: 4;
+}
+
+.dev-workbench {
+    min-inline-size: 0;
+    color: var(--ink-primary);
+}

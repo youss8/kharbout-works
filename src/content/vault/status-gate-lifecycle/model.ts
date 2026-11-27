@@ -8,6 +8,13 @@ export const stops = [
     'Complete',
 ] as const;
 export type Stage = (typeof stops)[number] | 'Rejected';
+interface TransitionEvent {
+    type: 'status_changed';
+    from: Stage;
+    to: Stage;
+    version: number;
+    reason: string;
+}
 const routes: Record<Stage, readonly Stage[]> = {
     Brief: ['Draft'],
     Draft: ['Review'],
@@ -70,6 +77,7 @@ export default function createModel() {
         signed: false,
         budget: false,
         notice: '',
+        transitionEvent: null as TransitionEvent | null,
         get legal() {
             return routes[this.current];
         },
@@ -98,10 +106,19 @@ export default function createModel() {
         },
         apply() {
             if (this.errors.length) return false;
+            const from = this.current;
+            const reason = this.reason.trim();
             this.current = this.target;
             this.dates = { ...this.dates, [this.current]: '2026-02-04' };
             this.version++;
-            this.notice = 'Moved to ' + this.current + ' · ' + this.reason.trim();
+            this.transitionEvent = {
+                type: 'status_changed',
+                from,
+                to: this.current,
+                version: this.version,
+                reason,
+            };
+            this.notice = 'Moved to ' + this.current + ' · ' + reason;
             return true;
         },
         center: centerStep,

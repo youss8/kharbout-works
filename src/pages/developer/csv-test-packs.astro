@@ -1,0 +1,14 @@
+---
+import DeveloperPage from '../../components/layout/DeveloperPage.astro';
+import CsvTestPackBuilder from '../../components/tools/CsvTestPackBuilder';
+---
+
+<DeveloperPage
+    title="CSV Test Pack Builder"
+    description="Generate tricky CSV fixtures, set the import rules, and download a Node test with an expected outcome for every record. Everything is generated in your browser."
+>
+    <noscript>
+        <p>Enable JavaScript to generate and download the fixtures.</p>
+    </noscript>
+    <CsvTestPackBuilder client:load />
+</DeveloperPage>

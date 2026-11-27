@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added a Developer tools section with a recorded Laravel approval race and retry, a downloadable Laravel reference app, a workflow regression runner, a CSV fixture builder, an SQLite worksheet, installable Vault kits and a React and Livewire comparison.
 - Added a source ZIP to every published entry, with its usage guide, requirements and MIT license.
 - Added keyboard search on Browse and Entry. Ctrl+K or Cmd+K opens it, the arrow keys move between matches, Enter selects one and Escape returns focus.
 - Published the same search dialog as the seventh entry, with a standalone React example.

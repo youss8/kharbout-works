@@ -6,6 +6,14 @@ Youssef Kharbout’s engineering workbench brings six interactive system demonst
 
 The homepage opens with three instruments. Choose a site to inspect retention, a calendar day to price leave, or a device to read its telemetry. Each instrument leads to its working demo and the engineering decisions behind it. [Watch the system explorer](docs/design/workbench-explorer.webp).
 
+## Developer tools
+
+- [Replay an approval race](http://localhost:4321/developer/request-trace/) or a retry after a lost response. Inspect recorded Laravel requests, database outcomes and the source lines behind them. Download the standalone app and run `composer install` and `composer test` from the extracted directory with PHP 8.4 and PDO SQLite.
+- [Compare workflow changes](http://localhost:4321/developer/workflow-regression/) against the same acceptance cases. Download the runner and reproduce the result with Node.js 24.
+- [Build a CSV test pack](http://localhost:4321/developer/csv-test-packs/) with repeatable input, expected row outcomes and a test adapter for your importer.
+- [Install a Vault kit](http://localhost:4321/developer/vault-install/) or [compare one workflow test in React and Livewire](http://localhost:4321/developer/stack-parity/). The comparison labels the recorded PHP run and links to the implementation.
+- [Compare SQL results](http://localhost:4321/developer/sql/) against a local SQLite fixture and download the worksheet and its expected-result test.
+
 ## Run a scenario or use an operations tool
 
 - [Decide what to report](http://localhost:4321/scenarios/sponsor-report/) or [close a timesheet](http://localhost:4321/scenarios/close-timesheet/). Both scenarios use fictional data. Their versioned links reopen the same decisions on another device.

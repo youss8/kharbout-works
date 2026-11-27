@@ -1,0 +1,27 @@
+---
+import { Download } from 'lucide-react';
+import DeveloperPage from '../../components/layout/DeveloperPage.astro';
+import RequestDebugger from '../../components/tools/RequestDebugger';
+import { approvalRuntime, approvalScenarios } from '../../lib/approval-trace';
+---
+
+<DeveloperPage
+    title="Request Debugger"
+    description="Replay two Laravel test runs and follow request versions, policy decisions, and durable database writes."
+>
+    <div slot="actions" class="dev-actions">
+        <small>
+            Recorded with Laravel {approvalRuntime.laravel} and {approvalRuntime.database}
+        </small>
+        <a class="dev-button" href="/developer/approval-api.zip" download>
+            <Download size={17} aria-hidden="true" /> Download Laravel app and tests
+        </a>
+    </div>
+    <RequestDebugger client:load scenarios={approvalScenarios} />
+    <noscript>
+        <p>
+            Enable JavaScript to replay the recorded steps. The source and tests are available in
+            the download.
+        </p>
+    </noscript>
+</DeveloperPage>

@@ -1,0 +1,164 @@
+---
+import { ArrowRight, ArrowUpRight, Bug, Download } from 'lucide-react';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { developerPath, developerTools } from '../../data/developer-tools';
+import '../../styles/developer.css';
+
+const [feature, ...tools] = developerTools;
+---
+
+<BaseLayout
+    title="Developer tools"
+    description="Trace a Laravel request, test workflow changes, generate CSV fixtures, compare SQL results and install reusable code."
+>
+    <div class="dev-shell dev-directory">
+        <header class="dev-intro">
+            <h1>Developer tools</h1>
+            <p>
+                Debug an approval race, build test fixtures, or take tested source into your own
+                project.
+            </p>
+        </header>
+
+        <section class="dev-feature" aria-labelledby="dev-feature-title">
+            <div class="dev-feature-copy">
+                <Bug size={24} aria-hidden="true" />
+                <h2 id="dev-feature-title">Two reviewers. One approval.</h2>
+                <p>
+                    Follow both reviewers’ requests through Laravel. See which one committed, what
+                    the other received, and how many audit entries survived.
+                </p>
+                <div class="dev-actions">
+                    <a class="dev-button dev-button--primary" href={developerPath(feature.id)}>
+                        Replay the race <ArrowRight size={17} aria-hidden="true" />
+                    </a>
+                    <a class="dev-button" href="/developer/approval-api.zip" download>
+                        <Download size={17} aria-hidden="true" /> Download the Laravel app
+                    </a>
+                </div>
+            </div>
+            <div class="dev-feature-proof" aria-label="Expected result of the race">
+                <p>
+                    <span>Reviewer A</span>
+                    <b>200 OK</b>
+                </p>
+                <p>
+                    <span>Reviewer B</span>
+                    <b>409 Conflict</b>
+                </p>
+                <p>
+                    <span>Audit trail</span>
+                    <b>1 approval event</b>
+                </p>
+            </div>
+        </section>
+
+        <nav aria-label="Open a developer tool" class="dev-tool-list">
+            <ul>
+                {tools.map((tool) => (
+                    <li>
+                        <a href={developerPath(tool.id)}>
+                            <strong>{tool.title}</strong>
+                            <span>{tool.description}</span>
+                            <ArrowUpRight size={19} aria-hidden="true" />
+                        </a>
+                    </li>
+                ))}
+            </ul>
+        </nav>
+    </div>
+</BaseLayout>
+
+<style>
+    .dev-feature {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+        border: 1px solid var(--border-strong);
+        margin-block: clamp(1.65rem, 4vw, 3.6rem);
+        background: var(--bg-surface);
+    }
+    .dev-feature-copy {
+        padding: clamp(1rem, 4vw, 2.8rem);
+    }
+    .dev-feature-copy > :global(svg) {
+        color: var(--accent-primary);
+    }
+    .dev-feature h2 {
+        margin: 0.65rem 0;
+        font: 710 clamp(1.75rem, 4vw, 3.8rem) / 0.99 var(--font-display);
+        letter-spacing: -0.065em;
+    }
+    .dev-feature-copy p {
+        margin: 0;
+        max-inline-size: 53ch;
+        color: var(--ink-secondary);
+    }
+    .dev-feature-proof {
+        display: grid;
+        align-content: center;
+        background: var(--assembly-ink);
+        color: #f3f6fa;
+        padding: clamp(0.85rem, 4vw, 2.8rem);
+    }
+    .dev-feature-proof p {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.35rem 0.65rem;
+        padding: 0.85rem 0;
+        margin: 0;
+        border-block-end: 1px solid #687585;
+    }
+    .dev-feature-proof p:first-child {
+        border-block-start: 1px solid #687585;
+    }
+    .dev-feature-proof b {
+        color: var(--assembly-lime);
+        font: 600 0.91rem/1.3 var(--font-mono);
+    }
+    .dev-tool-list ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        border-block-start: 1px solid var(--border-strong);
+    }
+    .dev-tool-list a {
+        min-block-size: 70px;
+        display: grid;
+        grid-template-columns: minmax(11rem, 0.55fr) minmax(0, 1fr) auto;
+        gap: 0.5rem 1rem;
+        align-items: center;
+        border-block-end: 1px solid var(--border-hairline);
+        padding: 0.85rem 0.55rem;
+        color: var(--ink-primary);
+        text-decoration: none;
+    }
+    .dev-tool-list a:hover {
+        background: var(--bg-subtle);
+    }
+    .dev-tool-list strong {
+        font: 650 clamp(1.05rem, 2vw, 1.35rem) / 1.15 var(--font-display);
+    }
+    .dev-tool-list span {
+        color: var(--ink-secondary);
+    }
+    .dev-tool-list :global(svg) {
+        color: var(--accent-primary);
+    }
+    @media (max-width: 690px) {
+        .dev-feature {
+            grid-template-columns: minmax(0, 1fr);
+        }
+        .dev-tool-list a {
+            grid-template-columns: minmax(0, 1fr) auto;
+        }
+        .dev-tool-list span {
+            grid-row: 2;
+        }
+        .dev-tool-list :global(svg) {
+            grid-column: 2;
+            grid-row: span 2;
+        }
+    }
+</style>

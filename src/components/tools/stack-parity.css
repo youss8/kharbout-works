@@ -1,0 +1,141 @@
+.stack-parity {
+    display: grid;
+    gap: 1.2rem;
+    min-inline-size: 0;
+    --parity-gutter: clamp(0.9rem, 3vw, 1.6rem);
+}
+
+.parity-toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.85rem 1.5rem;
+    padding: var(--parity-gutter);
+    border: 1px solid var(--border-hairline);
+    border-block-start: 3px solid var(--accent-primary);
+    background: var(--bg-surface);
+}
+
+.parity-toolbar h2,
+.parity-checkpoint__title h2 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+}
+
+.parity-toolbar p,
+.parity-state p {
+    color: var(--ink-secondary);
+    overflow-wrap: anywhere;
+}
+
+.parity-toolbar .parity-runtime {
+    margin-block-start: 0.65rem;
+    color: var(--ink-muted);
+    font: 500 0.76rem / 1.5 var(--font-mono);
+}
+
+.parity-feedback {
+    grid-column: 1 / -1;
+    font-weight: 650;
+}
+
+.parity-checkpoints {
+    display: grid;
+    gap: 0.7rem;
+    padding: 0;
+    list-style: none;
+}
+
+.parity-checkpoint {
+    min-inline-size: 0;
+    padding: var(--parity-gutter);
+    border: 1px solid var(--border-hairline);
+    background: var(--bg-surface);
+}
+
+.parity-checkpoint__title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.65rem;
+    margin-block-end: 0.5rem;
+}
+
+.parity-checkpoint__title h2 {
+    margin: 0;
+}
+
+.parity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.45rem;
+    color: var(--status-crit);
+    background: var(--status-crit-tint);
+    font: 650 0.78rem / 1.35 var(--font-mono);
+}
+
+.parity-badge[data-match='true'] {
+    color: var(--status-ok);
+    background: var(--status-ok-tint);
+}
+
+.parity-checkpoint__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+}
+
+.parity-state {
+    min-inline-size: 0;
+    padding: 0.75rem;
+    border-inline-start: 2px solid var(--border-strong);
+    background: var(--bg-canvas);
+}
+
+.parity-state h3 {
+    margin: 0 0 0.35rem;
+    color: var(--ink-secondary);
+    font-size: 0.85rem;
+}
+
+.parity-state .parity-reading {
+    color: var(--ink-primary);
+    font: 650 clamp(1rem, 2.5vw, 1.35rem) / 1.3 var(--font-mono);
+    margin-block-end: 0.25rem;
+}
+
+.parity-reading span {
+    color: var(--ink-muted);
+    font-size: 0.8em;
+}
+
+.parity-event {
+    margin-block-start: 0.65rem;
+    padding-block-start: 0.55rem;
+    border-block-start: 1px solid var(--border-hairline);
+}
+
+.parity-event dt {
+    color: var(--ink-secondary);
+    font-size: 0.8rem;
+}
+
+.parity-event dd {
+    margin-inline-start: 0;
+    color: var(--ink-primary);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 660px) {
+    .parity-toolbar {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 450px) {
+    .parity-checkpoint__columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -55,6 +55,13 @@ test('command index covers each public collection and resolves internal anchors'
         '/templates/kpi-report-check/',
         '/vault/recipes/approval-workflow/',
         '/ai-kit/prompt-evidence/',
+        '/developer/',
+        '/developer/request-trace/',
+        '/developer/workflow-regression/',
+        '/developer/csv-test-packs/',
+        '/developer/vault-install/',
+        '/developer/sql/',
+        '/developer/stack-parity/',
     ];
     expect(entries.filter(({ kind }) => kind === 'Page').map(({ href }) => href)).toEqual(
         expect.arrayContaining(additions),
@@ -146,8 +153,11 @@ test('command palette resolves every intent, navigates options and restores focu
     await page.keyboard.press('ArrowDown');
     await expect(search(page)).toHaveAttribute('aria-activedescendant', 'ask-option-1');
     await page.keyboard.press('ArrowUp');
-    await page.keyboard.press('Enter');
-    await expect(page).toHaveURL(/\/cv\/?$/);
+    await expect(search(page)).toHaveAttribute('aria-activedescendant', 'ask-option-0');
+    await Promise.all([
+        page.waitForURL(/\/cv\/?$/, { waitUntil: 'load', timeout: 15_000 }),
+        search(page).press('Enter'),
+    ]);
     await expect(page.getByRole('button', { name: 'Print / Save PDF' })).toBeVisible();
     const employer = page.getByLabel('Employer for private PDF');
     await employer.focus();

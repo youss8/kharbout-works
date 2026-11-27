@@ -34,6 +34,7 @@
 **/*.pem
 **/*.p12
 **/VAULT_EXTRACTION_*.md
+kit/modules/approval-api
 **/node_modules
 **/dist
 **/.git

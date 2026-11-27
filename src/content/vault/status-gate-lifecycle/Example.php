@@ -24,6 +24,9 @@ class StatusGateLifecycle extends Component
     #[Locked]
     public array $dates = ['Brief' => '2026-01-12', 'Draft' => '2026-01-20', 'Review' => '2026-02-03'];
 
+    #[Locked]
+    public ?array $transitionEvent = null;
+
     public bool $held = false;
 
     public bool $signed = false;
@@ -76,11 +79,20 @@ class StatusGateLifecycle extends Component
         if (! $this->editing || $this->requirements()) {
             return;
         }
+        $from = $this->current;
+        $reason = trim($this->reason);
         $this->current = $this->target;
         $this->dates[$this->current] = '2026-02-04';
         $this->version++;
+        $this->transitionEvent = [
+            'type' => 'status_changed',
+            'from' => $from,
+            'to' => $this->current,
+            'version' => $this->version,
+            'reason' => $reason,
+        ];
         $this->editing = false;
-        $this->notice = "Moved to {$this->current} · ".trim($this->reason);
+        $this->notice = "Moved to {$this->current} · ".$reason;
     }
 
     public function render()
