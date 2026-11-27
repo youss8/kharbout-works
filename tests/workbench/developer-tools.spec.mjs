@@ -36,9 +36,13 @@ test('the homepage replays the approval race and opens the recorded PHP evidence
     await sequence.getByRole('button').last().click();
     await expect(observation).toContainText('1 approval · 1 audit event');
 
-    const response = await request.get('/developer/approval-api.zip');
-    expect(response.ok()).toBe(true);
-    const archive = await JSZip.loadAsync(await response.body());
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('link', { name: 'Download Laravel app and tests' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe('kharbout-approval-api.zip');
+    expect(new URL(download.url()).pathname).toBe('/developer/kharbout-approval-api.zip');
+    expect((await request.get('/developer/approval-api.zip')).ok()).toBe(true);
+    const archive = await JSZip.loadAsync(await readFile(await download.path()));
     for (const path of [
         'README.md',
         '.env.example',

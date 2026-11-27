@@ -37,6 +37,8 @@ const searchPath = 'src/kharbout/kits/search-dialog';
 const viewsPath = 'src/kharbout/content/vault/saved-views-sticky-filters';
 const searchEntry = `${searchPath}/SearchDialog.tsx`;
 
+export const vaultKitArchiveStem = (id: string) => `kharbout-vault-${id}`;
+
 export const installableVaultKits: InstallableKit[] = [
     {
         id: 'search-dialog',
@@ -148,7 +150,7 @@ Keep the bundled MIT notice with redistributed source.
 }
 
 export async function createVaultKitArchive(kit: InstallableKit): Promise<Uint8Array<ArrayBuffer>> {
-    const name = `kharbout-vault-${kit.id}`;
+    const name = vaultKitArchiveStem(kit.id);
     const manifest = {
         ...baseManifest,
         name,
