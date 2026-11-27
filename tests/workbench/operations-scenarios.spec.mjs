@@ -1,6 +1,27 @@
 import { expect, test } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
 
+test('scenario choices become available after the interactive module loads', async ({ page }) => {
+    let releaseModule;
+    const moduleReady = new Promise((resolve) => {
+        releaseModule = resolve;
+    });
+    await page.route('**/_astro/OperationsScenario.*.js', async (route) => {
+        await moduleReady;
+        await route.continue();
+    });
+    const firstChoice = page.getByRole('button', { name: /Pool the participants/ });
+    try {
+        await page.goto('/scenarios/sponsor-report/', { waitUntil: 'domcontentloaded' });
+        await expect(firstChoice).toBeDisabled();
+    } finally {
+        releaseModule();
+    }
+    await expect(firstChoice).toBeEnabled();
+    await firstChoice.press('Enter');
+    await expect(page.getByText('67.8%', { exact: true })).toBeVisible();
+});
+
 test('the sponsor scenario shares the chosen method and reporting cutoff', async ({
     page,
     browser,
@@ -16,7 +37,9 @@ test('the sponsor scenario shares the chosen method and reporting cutoff', async
     ).toBeVisible();
     await expect(page.getByText('67.8%', { exact: true })).toHaveCount(0);
 
-    await page.getByRole('button', { name: /Pool the participants/ }).press('Enter');
+    const firstChoice = page.getByRole('button', { name: /Pool the participants/ });
+    await expect(firstChoice).toBeEnabled();
+    await firstChoice.press('Enter');
     await expect(page.getByText('67.8%', { exact: true })).toBeVisible();
     await expect(page.getByText('59.6%', { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Keep the original cutoff' }).click();
@@ -82,7 +105,9 @@ test('the timesheet scenario replays the self-approval guard and one final credi
         ['Approve as a different manager', 'Manager approved the timesheet.'],
         ['Lock the month as HR', '4 overtime hours credited'],
     ]) {
-        await page.getByRole('button', { name: label }).press('Enter');
+        const action = page.getByRole('button', { name: label });
+        await expect(action).toBeEnabled();
+        await action.press('Enter');
         await expect(page.locator('.scenario-board').getByRole('status')).toContainText(message);
     }
     await expect(page.getByRole('region', { name: 'Decision record' })).toContainText(

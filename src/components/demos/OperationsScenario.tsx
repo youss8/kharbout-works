@@ -111,8 +111,8 @@ function DecisionRecord({
     );
 }
 
-function SponsorReport({ search, evidence }: { search: string; evidence: Evidence[] }) {
-    const { method, cutoff } = sponsorChoice(search);
+function SponsorReport({ search, evidence }: { search: string | null; evidence: Evidence[] }) {
+    const { method, cutoff } = sponsorChoice(search ?? '');
     const original = sponsorResult('original');
     const revised = sponsorResult('revised');
     const renderSites = cutoff === 'revised';
@@ -175,6 +175,7 @@ function SponsorReport({ search, evidence }: { search: string; evidence: Evidenc
                             <button
                                 type="button"
                                 key={value}
+                                disabled={search === null}
                                 aria-pressed={method === value}
                                 onClick={() => chooseMethod(value)}
                             >
@@ -251,8 +252,8 @@ function SponsorReport({ search, evidence }: { search: string; evidence: Evidenc
     );
 }
 
-function CloseTimesheet({ search, evidence }: { search: string; evidence: Evidence[] }) {
-    const step = timesheetStep(search);
+function CloseTimesheet({ search, evidence }: { search: string | null; evidence: Evidence[] }) {
+    const step = timesheetStep(search ?? '');
     const { state, unresolved, credit, events } = replayTimesheet(step);
     const next = timesheetActions[step];
 
@@ -289,6 +290,7 @@ function CloseTimesheet({ search, evidence }: { search: string; evidence: Eviden
                         <div className="scenario-actions">
                             <button
                                 type="button"
+                                disabled={search === null}
                                 onClick={(event) => {
                                     if (step === timesheetActions.length - 1) {
                                         event.currentTarget
@@ -336,9 +338,11 @@ export default function OperationsScenario({
     kind: 'sponsor-report' | 'close-timesheet';
     evidence: Evidence[];
 }) {
-    const search = useSyncExternalStore(subscribe, getSearch, () => '');
+    const search = useSyncExternalStore<string | null>(subscribe, getSearch, () => null);
     const sponsor = kind === 'sponsor-report';
-    const started = sponsor ? Boolean(sponsorChoice(search).method) : timesheetStep(search) > 0;
+    const started =
+        search !== null &&
+        (sponsor ? Boolean(sponsorChoice(search).method) : timesheetStep(search) > 0);
 
     return (
         <div className="scenario-run">
