@@ -26,6 +26,7 @@ import { siteName } from '../data/brand';
 import { skillGuides } from '../data/claude-skills';
 import { labProjects } from '../data/lab';
 import { profile } from '../data/profile';
+import { sponsorScenario, timesheetScenario } from '../lib/operations-scenarios';
 import '../styles/home-assembly.css';
 
 const [systems, vault, blueprints, templates] = await Promise.all([
@@ -144,11 +145,14 @@ const resources = [
                     operations.
                 </p>
                 <nav aria-label="Start exploring">
-                    <a href="#featured-workflows">
-                        Try a workflow <ArrowDown size={15} aria-hidden="true" />
+                    <a class="ha-replay-link" href={sponsorScenario}>
+                        Run the scenario <ArrowRight size={15} aria-hidden="true" />
                     </a>
                     <a href="/cv/">
                         Read my CV <ArrowUpRight size={15} aria-hidden="true" />
+                    </a>
+                    <a href="#featured-workflows">
+                        Try a workflow <ArrowDown size={15} aria-hidden="true" />
                     </a>
                 </nav>
             </div>
@@ -164,6 +168,11 @@ const resources = [
                 <p>
                     Change an input and watch the calculation update. Open the full demo to trace
                     the rule behind the result.
+                </p>
+                <p>
+                    <a href={timesheetScenario}>
+                        Try the timesheet scenario <span aria-hidden="true">↗</span>
+                    </a>
                 </p>
                 <nav aria-label="Try a system demo" class="ha-demo-index">
                     {demos.map(({ title, text, href, icon: Icon }) => (

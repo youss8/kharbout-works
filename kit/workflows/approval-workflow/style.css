@@ -1,0 +1,224 @@
+.approval-standalone {
+    color: #10151d;
+    background: #f1f3f6;
+    font-family: system-ui, sans-serif;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.approval-standalone main {
+    max-inline-size: 70rem;
+    margin-inline: auto;
+    padding: 1.25rem;
+}
+.approval-standalone h1 {
+    margin: 0 0 1.25rem;
+}
+.approval-recipe,
+.approval-recipe * {
+    box-sizing: border-box;
+}
+.approval-recipe {
+    --approval-panel: var(--bg-surface, #fff);
+    --approval-subtle: var(--bg-subtle, #eef1f6);
+    --approval-border: var(--border-hairline, #cbd1d8);
+    --approval-ink: var(--ink-primary, #10151d);
+    --approval-muted: var(--ink-secondary, #414c59);
+    --approval-accent: var(--accent-primary, #244aca);
+    --approval-tint: var(--accent-tint, #e4ebff);
+    color: var(--approval-ink);
+    background: var(--approval-panel);
+    border: 1px solid var(--approval-border);
+    border-block-start: 4px solid var(--approval-accent);
+}
+.approval-recipe :is(h2, h3, p, ol, ul) {
+    margin: 0;
+}
+.approval-recipe h2 {
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    line-height: 1.2;
+}
+.approval-recipe h3 {
+    font-size: 1rem;
+}
+.approval-recipe :where(button, input, select) {
+    font: inherit;
+    color: inherit;
+}
+.approval-recipe :where(button, summary) {
+    cursor: pointer;
+}
+.approval-recipe :where(button, input, select, summary, a, [tabindex]):focus-visible {
+    outline: 2px solid var(--approval-accent);
+    outline-offset: 2px;
+}
+.approval-toolbar {
+    display: flex;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    padding: 1rem;
+}
+.approval-recipe label {
+    display: grid;
+    gap: 0.3rem;
+    font-weight: 600;
+    min-inline-size: 0;
+}
+.approval-toolbar label {
+    flex: 1 1 15rem;
+    max-inline-size: 26rem;
+}
+.approval-recipe :is(select, input) {
+    border: 1px solid var(--approval-border);
+    padding: 0.55rem 0.65rem;
+    min-block-size: 44px;
+    min-inline-size: 0;
+    inline-size: 100%;
+    background: var(--approval-panel);
+    font-size: 1rem;
+    font-weight: 400;
+}
+.approval-primary,
+.approval-secondary {
+    padding: 0.55rem 0.8rem;
+    min-block-size: 44px;
+    font-weight: 650;
+}
+.approval-primary {
+    background: var(--approval-accent);
+    color: var(--approval-panel);
+    border: 1px solid var(--approval-accent);
+}
+.approval-secondary {
+    background: var(--approval-panel);
+    border: 1px solid var(--approval-border);
+}
+.approval-primary:hover {
+    filter: brightness(0.9);
+}
+.approval-secondary:hover {
+    background: var(--approval-tint);
+}
+.approval-scope,
+.approval-matrix {
+    background: var(--approval-subtle);
+}
+.approval-scope summary,
+.approval-matrix summary {
+    padding: 0.75rem 1rem;
+    font-weight: 650;
+}
+.approval-scope p {
+    padding: 0 1rem 0.9rem;
+}
+.approval-workspace {
+    display: grid;
+    grid-template-columns: minmax(13rem, 0.75fr) minmax(0, 2fr);
+}
+.approval-inbox,
+.approval-inspector {
+    padding: 1rem;
+    min-inline-size: 0;
+}
+.approval-inbox {
+    border-inline-end: 1px solid var(--approval-border);
+}
+.approval-inbox h2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+.approval-inbox h2 span {
+    font-size: 0.85rem;
+    color: var(--approval-muted);
+}
+.approval-inbox ul {
+    list-style: none;
+    padding: 0;
+}
+.approval-inbox li,
+.approval-inbox p {
+    margin-block-start: 0.7rem;
+}
+.approval-inbox button {
+    background: var(--approval-panel);
+    border: 1px solid var(--approval-border);
+    text-align: start;
+    padding: 0.55rem 0.65rem;
+    inline-size: 100%;
+}
+.approval-inbox button:is(:hover, [aria-current]) {
+    background: var(--approval-tint);
+}
+.approval-inbox button span {
+    display: block;
+    font-weight: 600;
+}
+.approval-inbox button small,
+.approval-inspector header p {
+    color: var(--approval-muted);
+    font-size: 0.85rem;
+}
+.approval-inspector header {
+    margin-block: 1rem 0.75rem;
+}
+.approval-steps {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    list-style: none;
+    padding: 0;
+    margin-block-end: 0.8rem !important;
+}
+.approval-steps li {
+    color: var(--approval-muted);
+    background: var(--approval-subtle);
+    font-size: 0.84rem;
+    padding: 0.25rem 0.55rem;
+}
+.approval-steps [aria-current='step'] {
+    color: var(--approval-accent);
+    background: var(--approval-tint);
+    font-weight: 700;
+}
+.approval-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-block-start: 0.6rem;
+}
+.approval-result {
+    min-block-size: 1.6em;
+    margin-block: 0.45rem !important;
+    color: var(--approval-accent);
+    font-weight: 600;
+}
+.approval-history {
+    padding-inline-start: 1.25rem;
+}
+.approval-table {
+    overflow: auto;
+}
+.approval-table table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    text-align: start;
+    background: var(--approval-panel);
+}
+.approval-table :is(th, td) {
+    padding: 0.5rem 0.7rem;
+    text-align: start;
+    border-block-start: 1px solid var(--approval-border);
+}
+@media (max-width: 43rem) {
+    .approval-workspace {
+        grid-template-columns: 1fr;
+    }
+    .approval-inbox {
+        border-inline-end: 0;
+        border-block-end: 1px solid var(--approval-border);
+    }
+}

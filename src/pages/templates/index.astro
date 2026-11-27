@@ -49,6 +49,14 @@ const browserState = `{
                 Use a worked blueprint to agree on invariants, review a scope change or hand an
                 operating system to its next owner.
             </p>
+            <nav class="resource-links" aria-label="Operations tools">
+                <a href="/templates/workflow-tester/">
+                    Test workflow permissions <span aria-hidden="true">↗</span>
+                </a>
+                <a href="/templates/kpi-report-check/">
+                    Check a KPI report <span aria-hidden="true">↗</span>
+                </a>
+            </nav>
         </header>
         <div
             class="template-workspace resource-workspace"
@@ -118,6 +126,14 @@ const browserState = `{
                                 <p>{data.summary}</p>
                                 {data.isStarterPlaceholder && (
                                     <StatusBadge label="Starter blueprint" shape="dashed" />
+                                )}
+                                {data.id === '03-state-machine-permission-matrix' && (
+                                    <p>
+                                        <a href="/templates/workflow-tester/">
+                                            Try this approval workflow in the tester{' '}
+                                            <span aria-hidden="true">↗</span>
+                                        </a>
+                                    </p>
                                 )}
                             </header>
                             <ExportBar

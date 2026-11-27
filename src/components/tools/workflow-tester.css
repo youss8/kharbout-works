@@ -1,0 +1,376 @@
+.workflow-tester {
+    display: grid;
+    gap: clamp(1rem, 3vw, 2rem);
+    --workflow-padding: clamp(1rem, 3vw, 1.65rem);
+}
+
+.workflow-tester__desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+    border-block-start: 3px solid var(--accent-primary);
+}
+
+.workflow-tester__desk > section,
+.workflow-tester > section {
+    min-inline-size: 0;
+    padding: var(--workflow-padding);
+}
+
+.workflow-tester__desk > section + section {
+    border-inline-start: 1px solid var(--border-hairline);
+}
+
+.workflow-tester > section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hairline);
+}
+
+.workflow-tester h2 {
+    margin-block-end: 0.65rem;
+    font-size: clamp(1.32rem, 2.3vw, 1.75rem);
+}
+
+.workflow-tester p,
+.workflow-tester li,
+.workflow-tester dd {
+    overflow-wrap: anywhere;
+}
+
+.workflow-tester p {
+    color: var(--ink-secondary);
+}
+
+.workflow-tester button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-block-size: 2.75rem;
+    max-inline-size: 100%;
+    padding: 0.45rem 0.7rem;
+    color: var(--ink-primary);
+    background: var(--bg-surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    font-size: 0.89rem;
+    font-weight: 600;
+    text-align: start;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+}
+
+.workflow-tester button svg {
+    flex: none;
+}
+
+.workflow-tester button:hover:not(:disabled),
+.workflow-tester button[aria-pressed='true'] {
+    color: var(--accent-primary);
+    background: var(--accent-tint);
+    border-color: var(--accent-primary);
+}
+
+.workflow-tester button.workflow-tester__primary {
+    color: var(--bg-surface);
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+}
+
+.workflow-tester button.workflow-tester__primary:hover {
+    color: var(--bg-surface);
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+.workflow-tester button:disabled {
+    color: var(--ink-muted);
+    background: var(--bg-canvas);
+    border-color: var(--border-hairline);
+    cursor: default;
+}
+
+.workflow-tester__presets,
+.workflow-tester__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-block: 0.85rem;
+}
+
+.workflow-tester__fields,
+.workflow-tester__facts {
+    display: grid;
+    gap: 0.6rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.workflow-tester__fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.workflow-tester label {
+    display: grid;
+    gap: 0.23rem;
+    align-content: start;
+    min-inline-size: 0;
+    color: var(--ink-secondary);
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.workflow-tester :is(select, input:not([type='checkbox']), textarea) {
+    box-sizing: border-box;
+    inline-size: 100%;
+    min-inline-size: 0;
+    min-block-size: 2.75rem;
+    padding: 0.5rem;
+    color: var(--ink-primary);
+    background: var(--bg-canvas);
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.workflow-tester fieldset {
+    min-inline-size: 0;
+    margin-block: 0.8rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border-hairline);
+}
+
+.workflow-tester legend {
+    padding-inline: 0.25rem;
+    color: var(--ink-secondary);
+    font-size: 0.91rem;
+    font-weight: 700;
+}
+
+.workflow-tester__full {
+    grid-column: 1 / -1;
+}
+
+.workflow-tester label.workflow-tester__check {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    min-block-size: 2rem;
+    overflow-wrap: anywhere;
+}
+
+.workflow-tester input[type='checkbox'] {
+    appearance: auto;
+    inline-size: 1.13rem;
+    block-size: 1.13rem;
+    accent-color: var(--accent-primary);
+}
+
+.workflow-tester__decision {
+    display: grid;
+    gap: 0.55rem;
+    padding: 1rem;
+    border-inline-start: 3px solid var(--border-strong);
+    background: var(--bg-subtle);
+}
+
+.workflow-tester [data-outcome='allowed'] .workflow-tester__decision {
+    border-color: var(--status-ok);
+    background: var(--status-ok-tint);
+}
+
+.workflow-tester [data-outcome='blocked'] .workflow-tester__decision {
+    border-color: var(--status-crit);
+    background: var(--status-crit-tint);
+}
+
+.workflow-tester__decision h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 1.35rem;
+}
+
+.workflow-tester [data-outcome='allowed'] h3 {
+    color: var(--status-ok);
+}
+
+.workflow-tester [data-outcome='blocked'] h3 {
+    color: var(--status-crit);
+}
+
+.workflow-tester__decision h3 svg {
+    inline-size: 1.15em;
+    block-size: 1.15em;
+}
+
+.workflow-tester dl {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.05rem;
+}
+
+.workflow-tester dl > div {
+    min-inline-size: 0;
+}
+
+.workflow-tester dt {
+    color: var(--ink-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.workflow-tester dd {
+    margin: 0;
+    font-weight: 650;
+}
+
+.workflow-tester__trace {
+    margin-block: 0.8rem;
+    padding-inline-start: 1.25rem;
+    list-style: disc;
+}
+
+.workflow-tester__trace li + li {
+    margin-block-start: 0.28rem;
+}
+
+.workflow-tester__desk section > button {
+    margin-block-start: 0.65rem;
+}
+
+.workflow-tester__note:not(:empty) {
+    margin-block-start: 0.55rem;
+    font-size: 0.9rem;
+}
+
+.workflow-tester__map ul,
+.workflow-tester__cases {
+    margin-block-start: 0.9rem;
+    border-block-start: 1px solid var(--border-hairline);
+}
+
+.workflow-tester__map li,
+.workflow-tester__cases li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: 0.55rem 1rem;
+    padding-block: 0.65rem;
+    border-block-end: 1px solid var(--border-hairline);
+}
+
+.workflow-tester__edge {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.35rem;
+    text-align: center;
+}
+
+.workflow-tester__edge > span {
+    padding: 0.45rem 0.25rem;
+    background: var(--bg-subtle);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.workflow-tester__edge > svg {
+    inline-size: 1rem;
+    block-size: 1rem;
+    color: var(--ink-secondary);
+}
+
+.workflow-tester__edge:dir(rtl) > svg {
+    transform: scaleX(-1);
+}
+
+.workflow-tester__edge-facts {
+    color: var(--ink-secondary);
+    font-size: 0.86rem;
+}
+
+.workflow-tester__edge-facts dd {
+    font-weight: 400;
+}
+
+.workflow-tester__contract .workflow-tester__file {
+    max-inline-size: 28rem;
+    margin-block: 0.8rem;
+}
+
+.workflow-tester input::file-selector-button {
+    padding: 0.2rem 0.45rem;
+    color: var(--ink-primary);
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-strong);
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.workflow-tester textarea {
+    margin-block-start: 0.25rem;
+    resize: vertical;
+    font-family: var(--font-mono);
+    line-height: 1.55;
+}
+
+.workflow-tester textarea[aria-invalid='true'] {
+    border-color: var(--status-crit);
+}
+
+.workflow-tester__messages {
+    margin-block-start: 0.55rem;
+    padding: 0.65rem 1.65rem;
+    border-inline-start: 3px solid;
+    list-style: disc;
+}
+
+.workflow-tester__messages[data-severity='error'] {
+    color: var(--status-crit);
+    background: var(--status-crit-tint);
+}
+
+.workflow-tester__messages[data-severity='warning'] {
+    color: var(--status-warn);
+    background: var(--status-warn-tint);
+}
+
+.workflow-tester__cases li {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.workflow-tester__exports > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-block-start: 0.55rem;
+    min-block-size: 2.75rem;
+    color: var(--accent-primary);
+    text-underline-offset: 0.2em;
+}
+
+@media (max-width: 880px) {
+    .workflow-tester__map li {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 730px) {
+    .workflow-tester__desk {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .workflow-tester__desk > section + section {
+        border-inline-start: 0;
+        border-block-start: 1px solid var(--border-hairline);
+    }
+}
+
+@media (max-width: 450px) {
+    .workflow-tester__fields {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

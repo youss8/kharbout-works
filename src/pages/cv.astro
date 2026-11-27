@@ -6,6 +6,7 @@ import StatusBadge from '../components/ui/StatusBadge.astro';
 import SectionRail from '../components/ui/SectionRail.astro';
 import { siteName } from '../data/brand';
 import { profile } from '../data/profile';
+import { sponsorScenario } from '../lib/operations-scenarios';
 import '../styles/print-cv.css';
 
 const { fullName, monogram, headline, contact, availability, coreStack } = profile;
@@ -30,12 +31,33 @@ const contacts = [
     { label: siteName, href: contact.repoUrl },
 ];
 const chapters: Array<[string, string]> = [
+    ['hiring-brief', 'Hiring brief'],
     ['career-focus', 'Career focus'],
     ['technical-stack', 'Technical stack'],
     ['experience', 'Experience'],
     ['education', 'Education & certifications'],
     ['languages', 'Languages'],
     ['leadership', 'Leadership'],
+];
+const projectEvidence = [
+    {
+        name: 'Portfolio and funding',
+        scope: 'Primary architect and builder of roughly 80% on a three-developer team.',
+        label: 'Run the sponsor reporting scenario',
+        href: sponsorScenario,
+    },
+    {
+        name: 'HR lifecycle',
+        scope: 'Core contributor and co-architect on the three-developer pre-RMS team.',
+        label: 'Try the leave pricing and approval rules',
+        href: '/systems/02-hr-lifecycle-crm/#leave-engine',
+    },
+    {
+        name: 'IT operations',
+        scope: 'Solo architect and builder. Architecture-verified, with fleet rollout held.',
+        label: 'Inspect the endpoint monitor',
+        href: '/systems/01-it-ops-helpdesk/#estate-overview',
+    },
 ];
 ---
 
@@ -75,6 +97,40 @@ const chapters: Array<[string, string]> = [
                         )}
                     </div>
                 </header>
+                <section
+                    class="cv-brief no-print"
+                    id="hiring-brief"
+                    aria-labelledby="brief-title"
+                    tabindex="-1"
+                >
+                    <div class="cv-brief-header">
+                        <div>
+                            <h2 id="brief-title">Hiring brief</h2>
+                            <p>
+                                Available from {availability.month} · {availability.mobility}
+                            </p>
+                        </div>
+                        <nav aria-label="Download public CV">
+                            <a href="/cv-international.pdf" download>
+                                International CV (PDF)
+                            </a>
+                            <a href="/cv-dach.pdf" download>
+                                DACH CV (PDF)
+                            </a>
+                        </nav>
+                    </div>
+                    <ul>
+                        {projectEvidence.map(({ name, scope, label, href }) => (
+                            <li>
+                                <h3>{name}</h3>
+                                <p>{scope}</p>
+                                <a href={href}>
+                                    {label} <span aria-hidden="true">↗</span>
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
                 <p class="cv-relocation" x-show="dach" x-cloak>
                     {availability.relocation}
                     {german &&
@@ -224,6 +280,51 @@ const chapters: Array<[string, string]> = [
 </BaseLayout>
 <style>
     @media screen {
+        .cv-brief {
+            margin-block: 1.45rem;
+            border-block: 1px solid var(--border-hairline);
+        }
+        .cv-brief-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem 1.25rem;
+            padding-block: 0.9rem;
+        }
+        .cv-brief-header p,
+        .cv-brief li p {
+            color: var(--ink-secondary);
+        }
+        .cv-brief nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0 1rem;
+        }
+        .cv-brief a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            min-block-size: 44px;
+            color: var(--accent-primary);
+            text-underline-offset: 0.2em;
+        }
+        .cv-brief ul {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+            padding: 0;
+            gap: 1px;
+            background: var(--border-hairline);
+            border-block-start: 1px solid var(--border-hairline);
+            list-style: none;
+        }
+        .cv-brief li {
+            padding: 0.75rem;
+            background: var(--bg-surface);
+        }
+        .cv-brief li h3 {
+            margin-block-end: 0.35rem;
+        }
         .cv-page {
             width: min(1440px, 100%);
             padding-inline: var(--page-gutter, clamp(1rem, 4vw, 4rem));

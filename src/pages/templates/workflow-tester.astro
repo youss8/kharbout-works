@@ -1,0 +1,48 @@
+---
+import { getEntry } from 'astro:content';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import WorkflowTester from '../../components/tools/WorkflowTester';
+import { workflowExample } from '../../lib/tools/workflow-tester';
+import '../../styles/workbench.css';
+
+const templateId = '03-state-machine-permission-matrix';
+const template = await getEntry('templates', templateId);
+const example = workflowExample(template?.body ?? '');
+---
+
+<BaseLayout
+    title="Workflow & Permission Tester"
+    description="Test roles, record scope and transition guards in the browser. Export the workflow contract, state diagram and acceptance cases."
+>
+    <div class="page-shell workflow-page">
+        <header class="page-heading">
+            <a href={'/templates/#' + templateId}>State Machine &amp; Permission Matrix</a>
+            <h1>Workflow &amp; Permission Tester</h1>
+            <p>
+                Try an action as a particular actor. See which rules allow it, where the record
+                would go, and the audit event it would write.
+            </p>
+        </header>
+        <noscript>
+            <p>Enable JavaScript to test actions and import or export a contract on this device.</p>
+        </noscript>
+        <WorkflowTester client:load example={example} />
+    </div>
+</BaseLayout>
+
+<style>
+    .workflow-page .page-heading {
+        margin-block-end: 1.75rem;
+    }
+    .page-heading a {
+        display: inline-flex;
+        align-items: center;
+        min-block-size: 2.75rem;
+        margin-block-end: 0.55rem;
+        color: var(--accent-primary);
+        text-underline-offset: 0.2em;
+    }
+    .page-heading p {
+        max-inline-size: 64ch;
+    }
+</style>

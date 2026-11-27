@@ -1,0 +1,373 @@
+---
+import BaseLayout from '../../../components/layout/BaseLayout.astro';
+import { benchmarkFixture } from '../../../lib/prompt-builder/benchmark-fixtures';
+import recorded from '../../../lib/prompt-builder/example-runs.json';
+import { isModelProfile } from '../../../lib/prompt-builder/profiles';
+import { presets } from '../../../lib/prompt-builder/workflows';
+import '../../../styles/workbench.css';
+
+const labels = { codex: 'Codex', qwen: 'Qwen via Ollama', 'claude-code': 'Claude Code' } as const;
+const date = new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' }).format(
+    new Date(recorded.date),
+);
+const runs = recorded.runs.map((run) => {
+    const { profile, model, results } = run;
+    if (!isModelProfile(profile) || (run.locale !== 'en' && run.locale !== 'ar'))
+        throw new Error('Invalid benchmark run');
+    const locale = run.locale;
+    const assistant = labels[profile as keyof typeof labels] ?? profile;
+    const language = locale === 'ar' ? 'Arabic' : 'English';
+    const examples = results.map((result) => {
+        const preset = presets.find((item) => item.id === result.workflow);
+        if (!preset) throw new Error('Unknown benchmark workflow: ' + result.workflow);
+        const fixture = benchmarkFixture(preset, locale, profile);
+        if (fixture.checks.length !== result.checks)
+            throw new Error('Benchmark rubric has changed');
+        return { ...result, ...fixture, title: preset.title[locale] };
+    });
+    const scores = examples.reduce(
+        (total, item) => ({
+            plain: total.plain + item.plain,
+            builder: total.builder + item.builder,
+            checks: total.checks + item.checks.length,
+        }),
+        { plain: 0, builder: 0, checks: 0 },
+    );
+    return { assistant, model, locale, language, id: `${profile}-${locale}`, examples, scores };
+});
+const lowerScoringRun = runs.find(
+    ({ id, scores }) => id === 'qwen-ar' && scores.builder < scores.plain,
+);
+const lowerScoringExample = lowerScoringRun?.examples.find(
+    ({ workflow, builder, plain }) => workflow === 'summarize-notes' && builder < plain,
+);
+const difference = (value: number) =>
+    value === 0
+        ? 'Same score'
+        : `${value > 0 ? '+' : '−'}${Math.abs(value)} ${Math.abs(value) === 1 ? 'check' : 'checks'}`;
+---
+
+<BaseLayout
+    title="Prompt Evidence"
+    description="Inspect English and Arabic prompt comparisons across Codex, Qwen and Claude Code. Read both inputs, the scoring rubric and the recorded results."
+>
+    <div class="page-shell evidence-page">
+        <header class="page-heading">
+            <a class="back-link" href="/ai-kit/">
+                ← AI engineering toolkit
+            </a>
+            <h1>Prompt Evidence</h1>
+            <p>
+                Compare a plain request with a structured prompt using the same fictional facts.
+                Open a recorded example to read both inputs and the rubric used to score the
+                answers.
+            </p>
+        </header>
+
+        <section aria-labelledby="results-heading">
+            <h2 id="results-heading">Recorded results</h2>
+            <p class="study-meta">
+                Run on <time datetime={recorded.date}>{date}</time> · Scored by {recorded.judge}
+            </p>
+            <div class="table-wrap" tabindex="0" role="region" aria-label="Benchmark scores">
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">Assistant</th>
+                            <th scope="col">Language</th>
+                            <th scope="col">Pairs</th>
+                            <th scope="col">Plain</th>
+                            <th scope="col">Structured</th>
+                            <th scope="col">Change</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {runs.map(({ assistant, model, language, id, examples, scores }) => (
+                            <tr>
+                                <th scope="row">
+                                    <a
+                                        href={`#${id}`}
+                                        aria-label={`${assistant} · ${language} examples`}
+                                    >
+                                        {assistant}
+                                    </a>
+                                    <small>{model}</small>
+                                </th>
+                                <td>{language}</td>
+                                <td>
+                                    {examples.length} of {presets.length}
+                                </td>
+                                <td>
+                                    {scores.plain}/{scores.checks}
+                                </td>
+                                <td>
+                                    {scores.builder}/{scores.checks}
+                                </td>
+                                <td data-change={Math.sign(scores.builder - scores.plain)}>
+                                    {difference(scores.builder - scores.plain)}
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+            {lowerScoringRun && lowerScoringExample && (
+                <aside class="study-finding" aria-label="Example with a lower score">
+                    <strong>Where structure scored lower</strong>
+                    <p>
+                        In Arabic, Qwen met {lowerScoringRun.scores.builder} of{' '}
+                        {lowerScoringRun.scores.checks} checks with the structured prompts and{' '}
+                        {lowerScoringRun.scores.plain} of {lowerScoringRun.scores.checks} with the
+                        plain requests. Its structured response for summarizing notes met{' '}
+                        {lowerScoringExample.builder} of {lowerScoringExample.checks.length} checks,
+                        down from {lowerScoringExample.plain} of {lowerScoringExample.checks.length}
+                        .
+                    </p>
+                    <a href={`#${lowerScoringRun.id}-${lowerScoringExample.workflow}`}>
+                        Inspect the note-summary prompts
+                    </a>
+                </aside>
+            )}
+            <details class="method">
+                <summary>How the comparison was run</summary>
+                <p>
+                    Each pair used the same fictional facts in separate requests to the same
+                    assistant. The scorer alternated the order of the answers across workflows and
+                    counted the checks each answer met. Each result represents one pair using the
+                    detailed Prompt Builder variant.
+                </p>
+                <p>
+                    Qwen used the local 8B checkpoint with thinking disabled. Claude Code finished
+                    two pairs before the configured provider returned a credit limit. The recorded
+                    files contain scores for those completed pairs. The prompt text and rubric below
+                    come from the benchmark fixtures. Original answers and individual check verdicts
+                    were not preserved in that record.
+                </p>
+                <a href="/ai-kit/prompt-evidence/recorded-runs.json" download>
+                    Download recorded scores (JSON)
+                </a>
+            </details>
+        </section>
+
+        <section class="example-section" aria-labelledby="examples-heading">
+            <h2 id="examples-heading">Compare the prompts</h2>
+            {runs.map(({ assistant, model, locale, language, id, examples }) => (
+                <section class="example-group" id={id} aria-labelledby={`${id}-heading`}>
+                    <header>
+                        <h3 id={`${id}-heading`}>
+                            {assistant} · {language}
+                        </h3>
+                        <span>{model}</span>
+                    </header>
+                    {examples.map(({ workflow, title, prompts, checks, plain, builder }) => (
+                        <details class="example" id={`${id}-${workflow}`}>
+                            <summary>
+                                <span
+                                    class="case-title"
+                                    lang={locale}
+                                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                                >
+                                    {title}
+                                </span>
+                                <span class="case-score" data-change={Math.sign(builder - plain)}>
+                                    {plain}/{checks.length} → {builder}/{checks.length} ·{' '}
+                                    {difference(builder - plain)}
+                                </span>
+                            </summary>
+                            <div class="example-body">
+                                <div class="prompt-pair">
+                                    <section>
+                                        <h4>Plain request</h4>
+                                        <pre
+                                            lang={locale}
+                                            dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                                        >{prompts[0]}</pre>
+                                    </section>
+                                    <section>
+                                        <h4>Structured prompt</h4>
+                                        <pre
+                                            lang={locale}
+                                            dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                                        >{prompts[1]}</pre>
+                                    </section>
+                                </div>
+                                <h4>Scoring rubric</h4>
+                                <ol lang={locale} dir={locale === 'ar' ? 'rtl' : 'ltr'}>
+                                    {checks.map((check) => (
+                                        <li>{check}</li>
+                                    ))}
+                                </ol>
+                            </div>
+                        </details>
+                    ))}
+                </section>
+            ))}
+        </section>
+    </div>
+</BaseLayout>
+
+<script>
+    function revealExample() {
+        const target = document.getElementById(window.location.hash.slice(1));
+        if (!(target instanceof HTMLDetailsElement) || !target.classList.contains('example'))
+            return;
+        target.open = true;
+    }
+    revealExample();
+    window.addEventListener('hashchange', revealExample);
+</script>
+
+<style>
+    .evidence-page {
+        max-width: 78rem;
+    }
+    .evidence-page h2 {
+        font: 650 clamp(1.5rem, 3vw, 2.2rem)/1.18 var(--font-display);
+    }
+    .evidence-page a {
+        color: var(--accent-primary);
+        text-decoration: underline;
+        text-underline-offset: 0.18em;
+    }
+    .back-link {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .study-meta {
+        color: var(--ink-secondary);
+        margin-block: 0.45rem 1.25rem;
+    }
+    .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border-hairline);
+    }
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        text-align: start;
+        background: var(--bg-surface);
+    }
+    th,
+    td {
+        padding: 0.7rem clamp(0.65rem, 2vw, 1.25rem);
+        border-block-end: 1px solid var(--border-hairline);
+        text-align: start;
+    }
+    thead {
+        background: var(--bg-subtle);
+    }
+    tbody tr:last-child :is(th, td) {
+        border-block-end: 0;
+    }
+    th small {
+        display: block;
+        font-weight: 400;
+        color: var(--ink-secondary);
+        overflow-wrap: anywhere;
+    }
+    td {
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+    }
+    [data-change='-1'] {
+        color: var(--status-warn);
+    }
+    [data-change='1'] {
+        color: var(--status-ok);
+    }
+    .study-finding {
+        background: var(--status-warn-tint);
+        border-inline-start: 3px solid var(--status-warn);
+        padding: 1rem 1.2rem;
+        margin-block: 1rem;
+    }
+    .study-finding p {
+        margin-block: 0.25rem 0.45rem;
+    }
+    .method {
+        padding: 0.9rem 1.2rem;
+        border: 1px solid var(--border-hairline);
+    }
+    summary {
+        cursor: pointer;
+        font-weight: 650;
+    }
+    .method p {
+        max-width: 80ch;
+        margin-block: 0.65rem;
+    }
+    .example-section {
+        margin-block-start: 2.75rem;
+    }
+    .example-group {
+        margin-block-start: 1.4rem;
+        border: 1px solid var(--border-hairline);
+        background: var(--bg-surface);
+    }
+    .example-group,
+    .example {
+        scroll-margin-block-start: 5rem;
+    }
+    .example-group > header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: baseline;
+        gap: 0.25rem 1rem;
+        padding: 0.9rem 1.2rem;
+        background: var(--bg-subtle);
+    }
+    .example-group h3 {
+        font: 650 1.15rem/1.3 var(--font-display);
+    }
+    .example-group > header span {
+        color: var(--ink-secondary);
+        font-size: 0.85rem;
+    }
+    .example {
+        border-block-start: 1px solid var(--border-hairline);
+    }
+    .example > summary {
+        padding: 0.75rem 1.2rem;
+    }
+    .example > summary:hover {
+        background: var(--bg-subtle);
+    }
+    .case-title {
+        margin-inline: 0.25rem 0.65rem;
+    }
+    .case-score {
+        font-variant-numeric: tabular-nums;
+        font-size: 0.85rem;
+        display: inline-block;
+    }
+    .example-body {
+        padding: 0 1.2rem 1.2rem;
+    }
+    .prompt-pair {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.8rem;
+        margin-block-end: 1rem;
+    }
+    .example h4 {
+        font-weight: 650;
+        margin-block-end: 0.35rem;
+    }
+    pre {
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+        font: inherit;
+        padding: 0.8rem;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-hairline);
+    }
+    ol {
+        list-style: decimal;
+        padding-inline-start: 1.5rem;
+    }
+    @media (max-width: 42rem) {
+        .prompt-pair {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

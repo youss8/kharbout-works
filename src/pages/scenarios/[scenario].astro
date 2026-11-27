@@ -1,0 +1,68 @@
+---
+import OperationsScenario from '../../components/demos/OperationsScenario';
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import { profile } from '../../data/profile';
+import '../../styles/operations-scenarios.css';
+
+export function getStaticPaths() {
+    return [
+        {
+            params: { scenario: 'sponsor-report' },
+            props: {
+                kind: 'sponsor-report' as const,
+                title: 'What number would you report?',
+                description:
+                    'A fictional sponsor report is due. Two sites filed their retention results. One hasn’t. Decide what figure to publish and what to do when the last return comes in.',
+                system: '/systems/03-portfolio-kpi-engine/',
+                demo: '#kpi-cockpit',
+                source: 'src/lib/kernels/pooledRatio.ts',
+                test: 'tests/workbench/sys03.spec.mjs#L14',
+            },
+        },
+        {
+            params: { scenario: 'close-timesheet' },
+            props: {
+                kind: 'close-timesheet' as const,
+                title: 'Can you close this timesheet?',
+                description:
+                    'Two missing punches are holding up a fictional November timesheet. Resolve both exceptions and get the month from employee confirmation to the HR lock.',
+                system: '/systems/02-hr-lifecycle-crm/',
+                demo: '#attendance-amend',
+                source: 'src/components/demos/hr-alpine.js',
+                test: 'tests/workbench/sys02.spec.mjs#L60',
+            },
+        },
+    ];
+}
+
+const { kind, title, description, system, demo, source, test } = Astro.props;
+const sourceRef =
+    import.meta.env.PUBLIC_SOURCE_REF ||
+    process.env.VERCEL_GIT_COMMIT_SHA ||
+    process.env.CF_PAGES_COMMIT_SHA ||
+    'main';
+const repo = profile.contact.repoUrl + '/blob/' + encodeURIComponent(sourceRef) + '/';
+const evidence = [
+    { label: 'Why the rule exists', href: system + '#modeling' },
+    { label: 'Open the full system demo', href: system + demo },
+    { label: 'Read the implementation', href: repo + source },
+    { label: 'Read the verification test', href: repo + test },
+];
+---
+
+<BaseLayout title={title} description={description}>
+    <div class="scenario-page">
+        <header class="scenario-heading">
+            <a href="/systems/">← System case studies</a>
+            <h1>{title}</h1>
+            <p>{description}</p>
+        </header>
+        <OperationsScenario client:load {kind} {evidence} />
+        <noscript>
+            <p>
+                Enable JavaScript to replay the scenario, or{' '}
+                <a href={system + '#modeling'}>read the engineering decisions</a>.
+            </p>
+        </noscript>
+    </div>
+</BaseLayout>

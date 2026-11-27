@@ -12,7 +12,13 @@ const sandboxCors = {
     origin: ['null', /^https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/],
 };
 mkdirSync(staticFiles, { recursive: true });
-for (const name of ['favicon.svg', 'robots.txt', 'photo.jpg']) {
+for (const name of [
+    'favicon.svg',
+    'robots.txt',
+    'photo.jpg',
+    'cv-international.pdf',
+    'cv-dach.pdf',
+]) {
     const source = new URL('./public/' + name, import.meta.url);
     const target = new URL(name, staticFiles);
     if (existsSync(source)) copyFileSync(source, target);

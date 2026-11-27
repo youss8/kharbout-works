@@ -6,6 +6,14 @@ Youssef Kharbout’s engineering workbench brings six interactive system demonst
 
 The homepage opens with three instruments. Choose a site to inspect retention, a calendar day to price leave, or a device to read its telemetry. Each instrument leads to its working demo and the engineering decisions behind it. [Watch the system explorer](docs/design/workbench-explorer.webp).
 
+## Run a scenario or use an operations tool
+
+- [Decide what to report](http://localhost:4321/scenarios/sponsor-report/) or [close a timesheet](http://localhost:4321/scenarios/close-timesheet/). Both scenarios use fictional data. Their versioned links reopen the same decisions on another device.
+- [Test workflow permissions](http://localhost:4321/templates/workflow-tester/) against a sample approval flow or an imported contract. Export the contract, diagram and acceptance cases.
+- [Check a KPI report](http://localhost:4321/templates/kpi-report-check/) by mapping CSV columns and reviewing the rows behind each period's pooled and site-average rates. The browser processes the file locally.
+- [Build an approval workflow](http://localhost:4321/vault/recipes/approval-workflow/) with the downloadable React recipe. [Compare recorded prompt runs](http://localhost:4321/ai-kit/prompt-evidence/) in English and Arabic.
+- Open the [hiring brief](http://localhost:4321/cv/#hiring-brief) for direct project evidence and both public CV PDFs. After changing the CV or profile, run `npm run build` and `npm run export:cv` with Playwright Chromium installed. Rebuild to include the regenerated PDFs.
+
 ## Run the workbench
 
 Use Node.js 24 and npm. From the repository root, run:

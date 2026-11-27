@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../components/layout/BaseLayout.astro';
+import KpiReportCheck from '../../components/tools/KpiReportCheck';
+import fixture from '../../data/demos/pt-kpi-cockpit.json';
+import { toCsv } from '../../lib/kernels/safeCsv';
+import '../../styles/workbench.css';
+
+const retention = fixture.tree[0].children[0].kpis.find(({ code }) => code === 'EMP-02');
+const period = fixture.asOf.slice(0, 7);
+const sample = toCsv([
+    ['site', 'period', 'numerator', 'denominator'],
+    ...fixture.sites.map((site) => {
+        const target = retention?.targets.find((entry) => entry.site === site.id);
+        const reading =
+            target && 'readings' in target
+                ? target.readings?.find(({ month }) => month === period)
+                : undefined;
+        return [site.name, period, reading?.numerator, reading?.denominator];
+    }),
+]).slice(1);
+---
+
+<BaseLayout
+    title="KPI Report Check"
+    description="Check your KPI data, compare pooled and equal-site rates, and download a record-by-record validation report. CSV processing stays in your browser."
+>
+    <div class="page-shell">
+        <header class="page-heading kpi-heading">
+            <a href="/templates/">Operations templates</a>
+            <h1>KPI Report Check</h1>
+            <p>See which site returns contribute to your KPI before you publish the report.</p>
+        </header>
+        <p class="kpi-privacy">Your CSV is processed in your browser.</p>
+        <noscript>
+            <p>This checker needs JavaScript to read and validate your CSV.</p>
+        </noscript>
+        <KpiReportCheck sample={sample} client:load />
+        <p class="kpi-case-link">
+            <a href="/systems/03-portfolio-kpi-engine/#kpi-cockpit">
+                See the retention sample in the KPI cockpit
+            </a>
+        </p>
+    </div>
+</BaseLayout>
+
+<style>
+    .kpi-heading {
+        margin-block-end: 1rem;
+    }
+    .kpi-heading a,
+    .kpi-case-link a {
+        color: var(--accent-primary);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
+    }
+    .kpi-privacy {
+        margin-block-end: clamp(1.25rem, 3vw, 2.25rem);
+        color: var(--ink-secondary);
+        font-size: 0.9rem;
+    }
+    .kpi-case-link {
+        margin-block-start: 1.4rem;
+    }
+</style>

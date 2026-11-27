@@ -37,11 +37,45 @@ const pages = [
         'Architecture, planning, operations and technical handovers.',
     ],
     ['/lab/', 'R&D lab', 'Four interactive personal prototypes.'],
-    ['/claude-code-skills/', 'Claude Code skills', 'Browse skill guides, example prompts and setup instructions by task.'],
+    [
+        '/claude-code-skills/',
+        'Claude Code skills',
+        'Browse skill guides, example prompts and setup instructions by task.',
+    ],
     [
         '/cv/',
         'Interactive CV',
-        'International and DACH formats, employer override and A4 PDF printing.',
+        'Hiring brief, project evidence, International and DACH downloads, and private PDF printing.',
+    ],
+    [
+        '/scenarios/sponsor-report/',
+        'Sponsor report scenario',
+        'Choose a KPI rollup, decide what to do with a late return, and share the calculation.',
+    ],
+    [
+        '/scenarios/close-timesheet/',
+        'Close a timesheet scenario',
+        'Resolve missing punches, test the self-approval rule, and post overtime credit.',
+    ],
+    [
+        '/templates/workflow-tester/',
+        'Workflow & Permission Tester',
+        'Simulate state transitions with role and record guards, then export acceptance cases.',
+    ],
+    [
+        '/templates/kpi-report-check/',
+        'KPI Report Check',
+        'Validate a CSV and compare pooled participant and equal-weight site rates.',
+    ],
+    [
+        '/vault/recipes/approval-workflow/',
+        'Build an approval workflow',
+        'Download a working React starter with an inbox, role rules, and a status gate.',
+    ],
+    [
+        '/ai-kit/prompt-evidence/',
+        'Prompt Evidence',
+        'Compare recorded results for original and structured prompts in English and Arabic.',
     ],
 ];
 const pageAliases: Record<string, string[]> = {
@@ -52,7 +86,13 @@ const pageAliases: Record<string, string[]> = {
     '/templates/': ['نماذج التشغيل', 'القوالب', 'التسليم الفني'],
     '/lab/': ['المختبر', 'تجارب ونماذج أولية'],
     '/claude-code-skills/': ['Claude skills directory', 'مهارات كلود', 'دليل المهارات'],
-    '/cv/': ['السيرة الذاتية', 'السيرة المهنية', 'طباعة'],
+    '/cv/': ['hiring brief', 'resume PDF', 'السيرة الذاتية', 'السيرة المهنية', 'طباعة'],
+    '/scenarios/sponsor-report/': ['run the scenario', 'reporting cutoff', 'سيناريو تقرير الممول'],
+    '/scenarios/close-timesheet/': ['attendance close', 'overtime credit', 'إغلاق سجل الدوام'],
+    '/templates/workflow-tester/': ['permission matrix', 'state machine', 'اختبار الصلاحيات'],
+    '/templates/kpi-report-check/': ['CSV preflight', 'data validation', 'تدقيق مؤشرات الأداء'],
+    '/vault/recipes/approval-workflow/': ['React starter', 'Vault recipe', 'قالب الموافقة'],
+    '/ai-kit/prompt-evidence/': ['prompt benchmarks', 'model scores', 'تقييم الموجهات'],
 };
 const sourceAliases: Record<string, string[]> = {
     'SYS-01': ['IT', 'helpdesk', 'الدعم الفني', 'إدارة الأصول'],
@@ -138,13 +178,19 @@ export const GET: APIRoute = async () => {
     }));
     if (promptBuilderEnabled()) {
         entries.push({
-            group: 'pages', kind: 'Page', title: 'Prompt Builder', href: builderPath,
+            group: 'pages',
+            kind: 'Page',
+            title: 'Prompt Builder',
+            href: builderPath,
             summary: 'Build, edit, and export a prompt in English or Arabic.',
             keywords: ['prompt generator', 'build a prompt', 'منشئ الموجّهات', 'مولّد الأوامر'],
         });
         for (const preset of promptPresets) {
             entries.push({
-                group: 'assets', kind: 'Prompt', title: preset.title.en, summary: preset.description.en,
+                group: 'assets',
+                kind: 'Prompt',
+                title: preset.title.en,
+                summary: preset.description.en,
                 href: builderPath + '?workflow=' + preset.id,
                 keywords: [preset.id, preset.title.ar, preset.description.ar, 'prompt builder'],
             });
@@ -252,9 +298,17 @@ export const GET: APIRoute = async () => {
             title: guide.name,
             summary: guide.description,
             href: skillPath(guide.slug),
-            keywords: [guide.slug, guide.kind, guide.category, 'Claude Code skills', ...guide.aliases,
+            keywords: [
+                guide.slug,
+                guide.kind,
+                guide.category,
+                'Claude Code skills',
+                ...guide.aliases,
                 ...(guide.listing?.author ? [guide.listing.author] : []),
-                ...guide.compatibility.filter(host => host.level !== 'guide').map(host => host.agent)],
+                ...guide.compatibility
+                    .filter((host) => host.level !== 'guide')
+                    .map((host) => host.agent),
+            ],
         });
     }
     const index: CommandIndex = {

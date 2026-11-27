@@ -48,7 +48,18 @@ test('command index covers each public collection and resolves internal anchors'
     const { entries, intents } = await response.json();
     const count = (kind) => entries.filter((entry) => entry.kind === kind).length;
     const builderEnabled = entries.some(entry => entry.href === '/ai-kit/prompt-builder/');
-    expect(count('Page')).toBe(builderEnabled ? 9 : 8);
+    const additions = [
+        '/scenarios/sponsor-report/',
+        '/scenarios/close-timesheet/',
+        '/templates/workflow-tester/',
+        '/templates/kpi-report-check/',
+        '/vault/recipes/approval-workflow/',
+        '/ai-kit/prompt-evidence/',
+    ];
+    expect(entries.filter(({ kind }) => kind === 'Page').map(({ href }) => href)).toEqual(
+        expect.arrayContaining(additions),
+    );
+    expect(count('Page')).toBe((builderEnabled ? 9 : 8) + additions.length);
     expect(count('Prompt')).toBe(builderEnabled ? 8 : 0);
     expect(count('Skill guide')).toBe(123);
     expect(count('Sandbox')).toBe(6);

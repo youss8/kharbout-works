@@ -5,6 +5,7 @@ import StatusBadge from '../../components/ui/StatusBadge.astro';
 import WorkbenchPicker from '../../components/ui/WorkbenchPicker.astro';
 import { ArrowDown, ArrowRight, ArrowUpRight, Play } from 'lucide-react';
 import { sandboxTitles, securitySummaries } from '../../data/sandbox-directory';
+import { sponsorScenario, timesheetScenario } from '../../lib/operations-scenarios';
 import '../../styles/workbench.css';
 const portfolioOrder: Record<string, number> = { 'SYS-03': 0, 'SYS-02': 1, 'SYS-01': 2 };
 const systems = (await getCollection('systems')).sort(
@@ -46,6 +47,11 @@ const rows = [
                 <p>
                     Choose an operations problem to try its workflows and see what Youssef built.
                     Each demonstration uses synthetic data.
+                </p>
+                <p>
+                    <a href={sponsorScenario}>Decide what to report</a>
+                    <span aria-hidden="true"> · </span>
+                    <a href={timesheetScenario}>Close a timesheet</a>
                 </p>
             </div>
             <a class="compare-jump" href="#comparison">

@@ -87,6 +87,12 @@
     text-underline-offset: 0.24rem;
     text-decoration: underline;
 }
+.ha-intro nav .ha-replay-link {
+    padding-inline: 0.85rem;
+    background: var(--accent-primary);
+    color: var(--bg-surface);
+    text-decoration: none;
+}
 .ha-home a:hover {
     text-decoration: underline;
     text-underline-offset: 0.24rem;

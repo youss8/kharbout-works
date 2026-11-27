@@ -13,6 +13,7 @@
     "typecheck": "tsc -p tsconfig.catalogue.json --noEmit",
     "build": "astro build",
     "preview": "astro preview",
+    "export:cv": "node scripts/export-public-cv.mjs",
     "check": "astro check",
     "dev:catalogue": "vite",
     "build:catalogue": "npm run typecheck && vite build",

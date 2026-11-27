@@ -1,0 +1,138 @@
+---
+import BaseLayout from '../../../../components/layout/BaseLayout.astro';
+import ApprovalDesk from '../../../../../kit/workflows/approval-workflow/ApprovalDesk.jsx';
+import '../../../../../kit/workflows/approval-workflow/style.css';
+import '../../../../styles/workbench.css';
+---
+
+<BaseLayout
+    title="Build an approval workflow"
+    description="Run an approval workflow with a React status gate, scoped inbox and audit history. Download the tested starter and its permission matrix."
+>
+    <div class="page-shell recipe-page">
+        <header class="page-heading recipe-heading">
+            <a class="back-link" href="/vault/">
+                ← Component Vault
+            </a>
+            <h1>Build an approval workflow</h1>
+            <p>
+                Approve a request, try to approve your own, or switch branches. The status gate,
+                scoped inbox and audit history run from one permission matrix.
+            </p>
+            <div class="recipe-links">
+                <a class="download" href="/vault/recipes/approval-workflow.zip" download>
+                    Download React starter (.zip)
+                </a>
+                <a href="#run-locally">Run it locally</a>
+            </div>
+        </header>
+
+        <ApprovalDesk client:load />
+        <noscript>
+            <p>
+                Enable JavaScript to try the approval desk. The source download and setup
+                instructions are available below.
+            </p>
+        </noscript>
+
+        <section class="recipe-setup" id="run-locally" aria-labelledby="setup-heading">
+            <div>
+                <h2 id="setup-heading">Run it locally</h2>
+                <p>
+                    Extract the ZIP into an empty folder. With Node.js 24 and npm, run these
+                    commands in the extracted project. Open the address printed by Vite.
+                </p>
+                <pre><code>npm ci<br />npm test<br />npm run dev</code></pre>
+            </div>
+            <div>
+                <h2>What’s included</h2>
+                <ul>
+                    <li>React source, a locked dependency list and an MIT license.</li>
+                    <li>A fictional request fixture and its JSON permission matrix.</li>
+                    <li>Smoke tests for scoped access, approval rules, and audit history.</li>
+                    <li>
+                        Alpine and Livewire recipe variants · <strong>Planned</strong>
+                    </li>
+                </ul>
+                <p>
+                    The preview simulates actors and requests in memory. The README identifies where
+                    to enforce those rules in a connected application.
+                </p>
+                <p class="recipe-patterns">
+                    Explore the <a href="/vault/#status-gate-lifecycle">status gate</a>,
+                    <a href="/vault/#fail-closed-role-drawer">role drawer</a> and
+                    <a href="/vault/#needs-action-inbox">needs-action inbox</a> in the Vault.
+                </p>
+            </div>
+        </section>
+    </div>
+</BaseLayout>
+
+<style>
+    .recipe-page {
+        max-width: 78rem;
+    }
+    .recipe-heading p,
+    .recipe-setup p {
+        color: var(--ink-secondary);
+        max-inline-size: 65ch;
+    }
+    .recipe-page a {
+        color: var(--accent-primary);
+        text-decoration: underline;
+        text-underline-offset: 0.18em;
+    }
+    .back-link {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    .recipe-links {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.65rem 1rem;
+        margin-block-start: 1rem;
+    }
+    .recipe-links .download {
+        background: var(--accent-primary);
+        color: var(--bg-surface);
+        text-decoration: none;
+        padding: 0.65rem 0.85rem;
+        font-weight: 650;
+    }
+    .recipe-links .download:hover {
+        background: var(--accent-hover);
+    }
+    .recipe-setup {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.75rem;
+        margin-block-start: 2rem;
+        scroll-margin-block-start: 5rem;
+    }
+    .recipe-setup h2 {
+        font: 650 clamp(1.3rem, 3vw, 1.9rem)/1.2 var(--font-display);
+        margin-block-end: 0.7rem;
+    }
+    .recipe-setup ul {
+        list-style: disc;
+        padding-inline-start: 1.2rem;
+        margin-block-end: 0.75rem;
+    }
+    .recipe-setup li + li {
+        margin-block-start: 0.35rem;
+    }
+    .recipe-patterns {
+        margin-block-start: 0.65rem;
+    }
+    .recipe-setup pre {
+        background: var(--bg-subtle);
+        padding: 0.8rem 1rem;
+        margin-block-start: 0.8rem;
+    }
+    @media (max-width: 43rem) {
+        .recipe-setup {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

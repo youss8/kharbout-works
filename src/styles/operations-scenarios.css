@@ -1,0 +1,217 @@
+.scenario-page {
+    width: min(100%, 72rem);
+    margin-inline: auto;
+    padding: clamp(2rem, 4vw, 3.5rem) var(--page-gutter, 1.25rem);
+}
+
+.scenario-heading {
+    margin-block-end: clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.scenario-heading h1 {
+    margin-block: 0.55em 0.25em;
+    max-inline-size: 19ch;
+    font: 750 clamp(2.25rem, 5.4vw, 4.4rem) / 1 var(--font-display);
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+}
+
+.scenario-heading p,
+.scenario-next p,
+.scenario-record p {
+    max-inline-size: 67ch;
+    color: var(--ink-secondary);
+}
+
+.scenario-page a {
+    color: var(--accent-primary);
+    text-underline-offset: 0.2em;
+}
+
+.scenario-run h2 {
+    margin-block: 0 0.7rem;
+    font: 700 clamp(1.15rem, 2.5vw, 1.5rem) / 1.25 var(--font-display);
+}
+
+.scenario-board {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 23rem), 1fr));
+    gap: 1px;
+    padding: 1px;
+    background: var(--border-hairline);
+}
+
+.scenario-board > section {
+    padding: clamp(1rem, 3vw, 1.6rem);
+    min-inline-size: 0;
+    background: var(--bg-surface);
+}
+
+.scenario-rows {
+    margin: 0;
+}
+
+.scenario-rows > div {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.35rem 1rem;
+    padding-block: 0.7rem;
+    border-block-start: 1px solid var(--border-hairline);
+}
+
+.scenario-rows dd {
+    margin: 0;
+    color: var(--ink-secondary);
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+}
+
+.scenario-state {
+    text-transform: capitalize;
+}
+
+.scenario-run button {
+    min-block-size: 44px;
+    padding: 0.55rem 0.85rem;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-surface);
+    color: var(--ink-primary);
+    font: 650 0.9rem / 1.4 var(--font-sans);
+    cursor: pointer;
+}
+
+.scenario-run button:hover,
+.scenario-run button[aria-pressed='true'] {
+    background: var(--accent-tint);
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.scenario-run button:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.scenario-choices {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.scenario-choices button {
+    display: grid;
+    gap: 0.15rem;
+    text-align: start;
+}
+
+.scenario-choices span {
+    font-weight: 400;
+}
+
+.scenario-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: 1rem;
+}
+
+.scenario-comparison:not(:empty) {
+    padding: clamp(1rem, 3vw, 1.75rem);
+    border-block-end: 1px solid var(--border-hairline);
+    background: var(--accent-tint);
+}
+
+.scenario-comparison > div {
+    display: grid;
+    align-content: start;
+    gap: 0.4rem;
+}
+
+.scenario-comparison strong {
+    color: var(--accent-primary);
+    font: 700 clamp(2rem, 5vw, 3.65rem) / 1 var(--font-mono);
+    animation: scenario-update 320ms ease-out;
+}
+
+.scenario-comparison progress {
+    inline-size: 100%;
+    block-size: 0.55rem;
+    appearance: none;
+    border: 0;
+    accent-color: var(--accent-primary);
+    background: var(--border-hairline);
+}
+
+.scenario-comparison progress::-webkit-progress-bar {
+    background: var(--border-hairline);
+}
+
+.scenario-comparison progress::-webkit-progress-value {
+    background: var(--accent-primary);
+}
+
+.scenario-comparison progress::-moz-progress-bar {
+    background: var(--accent-primary);
+}
+
+.scenario-comparison p {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+.scenario-next,
+.scenario-record {
+    margin-block-start: 1.75rem;
+}
+
+.scenario-record {
+    padding: clamp(1rem, 3vw, 1.75rem);
+    border: 1px solid var(--border-hairline);
+    border-inline-start: 4px solid var(--accent-primary);
+    background: var(--bg-surface);
+}
+
+.scenario-actions,
+.scenario-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.1rem;
+}
+
+.scenario-footer {
+    margin-block-start: 1.5rem;
+    justify-content: space-between;
+}
+
+.scenario-run ol,
+.scenario-run ul {
+    padding-inline-start: 1.45em;
+}
+
+.scenario-run li + li {
+    margin-block-start: 0.35em;
+}
+
+.scenario-run summary {
+    width: fit-content;
+    cursor: pointer;
+}
+
+.scenario-feedback:empty {
+    margin-block: 0.7rem 0;
+}
+
+@keyframes scenario-update {
+    from {
+        transform: translateY(0.08em);
+    }
+    to {
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scenario-comparison strong {
+        animation: none;
+    }
+}

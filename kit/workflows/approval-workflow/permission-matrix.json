@@ -1,0 +1,32 @@
+{
+    "version": 1,
+    "initial": "draft",
+    "states": ["draft", "review", "approved"],
+    "roles": ["author", "reviewer"],
+    "transitions": [
+        {
+            "from": "draft",
+            "to": "review",
+            "action": "submit",
+            "roles": ["author"],
+            "requires": ["owns_record", "complete"],
+            "auditEvent": "submitted"
+        },
+        {
+            "from": "review",
+            "to": "draft",
+            "action": "return",
+            "roles": ["reviewer"],
+            "requires": ["same_branch", "return_reason"],
+            "auditEvent": "returned"
+        },
+        {
+            "from": "review",
+            "to": "approved",
+            "action": "approve",
+            "roles": ["reviewer"],
+            "requires": ["same_branch", "different_author"],
+            "auditEvent": "approved"
+        }
+    ]
+}
