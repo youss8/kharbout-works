@@ -6,7 +6,18 @@ const test = base.extend({
             const errors = [];
             page.on('pageerror', (error) => errors.push(error.message));
             page.on('console', (message) => {
-                if (['error', 'warning'].includes(message.type())) errors.push(message.text());
+                const kind = message.type();
+                const text = message.text();
+                // Firefox reports Playwright's layout probes as debugger evaluation warnings.
+                if (
+                    kind === 'warning' &&
+                    text.startsWith(
+                        '[JavaScript Warning: "Layout was forced before the page was fully loaded.',
+                    ) &&
+                    text.includes('{file: "debugger eval code"')
+                )
+                    return;
+                if (kind === 'error' || kind === 'warning') errors.push(text);
             });
             await use();
             expect(errors).toEqual([]);
