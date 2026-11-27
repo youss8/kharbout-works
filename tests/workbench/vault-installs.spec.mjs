@@ -32,6 +32,7 @@ test('the keyboard kit preview uses the same search dialog offered in the instal
 
 test('published archives match registry files and the installer refuses to overwrite a host', async ({
     page,
+    request,
 }, testInfo) => {
     await page.goto(route);
     for (const [id, title] of [
@@ -43,6 +44,10 @@ test('published archives match registry files and the installer refuses to overw
         await kit.getByRole('link', { name: 'Download project' }).click();
         const download = await downloading;
         expect(download.suggestedFilename()).toBe(`kharbout-vault-${id}.zip`);
+        expect(new URL(download.url()).pathname).toBe(
+            `/developer/vault-install/kharbout-vault-${id}.zip`,
+        );
+        expect((await request.get(`/developer/vault-install/${id}.zip`)).ok()).toBe(true);
         const zip = await JSZip.loadAsync(await readFile(await download.path()));
         const manifest = JSON.parse(await zip.file('install-manifest.json').async('string'));
         const registry = await page.evaluate(async (kitId) => {

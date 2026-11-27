@@ -1,7 +1,11 @@
 ---
 import { Download } from 'lucide-react';
 import DeveloperPage from '../../../components/layout/DeveloperPage.astro';
-import { installableVaultKits, vaultKitDependencies } from '../../../lib/tools/vault-install';
+import {
+    installableVaultKits,
+    vaultKitArchiveStem,
+    vaultKitDependencies,
+} from '../../../lib/tools/vault-install';
 ---
 
 <DeveloperPage
@@ -37,8 +41,8 @@ import { installableVaultKits, vaultKitDependencies } from '../../../lib/tools/v
                     <div class="dev-actions">
                         <a
                             class="dev-button dev-button--primary"
-                            href={`./${kit.id}.zip`}
-                            download={`kharbout-vault-${kit.id}.zip`}
+                            href={`./${vaultKitArchiveStem(kit.id)}.zip`}
+                            download={`${vaultKitArchiveStem(kit.id)}.zip`}
                         >
                             <Download size={16} aria-hidden="true" /> Download project
                         </a>
