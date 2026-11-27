@@ -8,9 +8,9 @@ import searchStyles from '../../../kit/components/search-dialog/search-dialog.cs
 import hostHtml from '../../../kit/developer/vault-install/index.html?raw';
 import hostCss from '../../../kit/developer/vault-install/host.css?raw';
 import installer from '../../../kit/developer/vault-install/install.mjs?raw';
-import searchMain from '../../../kit/developer/vault-install/search-main.tsx?raw';
+import searchMain from '../../../kit/developer/vault-install/search-main.tsx.txt?raw';
 import searchSmoke from '../../../kit/developer/vault-install/search.smoke.mjs?raw';
-import viewsMain from '../../../kit/developer/vault-install/views-main.tsx?raw';
+import viewsMain from '../../../kit/developer/vault-install/views-main.tsx.txt?raw';
 import viewsSmoke from '../../../kit/developer/vault-install/views.smoke.mjs?raw';
 import viewsExample from '../../content/vault/saved-views-sticky-filters/Example.tsx?raw';
 import viewsModel from '../../content/vault/saved-views-sticky-filters/model.ts?raw';
